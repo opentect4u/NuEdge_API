@@ -88,6 +88,7 @@ Route::prefix('v1')->group(function () {
 
         Route::get('documentsearch',[App\Http\Controllers\v1\Master\DocumentController::class,'search']);
         Route::get('document',[App\Http\Controllers\v1\Master\DocumentController::class,'index']);
+        Route::get('documentshowEdit',[App\Http\Controllers\v1\Master\DocumentController::class,'Edit']);
         Route::post('documentAddEdit',[App\Http\Controllers\v1\Master\DocumentController::class,'createUpdate']);
 
         // operations routes end 

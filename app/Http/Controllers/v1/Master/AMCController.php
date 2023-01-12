@@ -17,7 +17,7 @@ class AMCController extends Controller
             if ($search!='') {
                 $data=AMC::where('amc_name','like', '%' . $search . '%')->get();      
             }else {
-                $data=AMC::get();      
+                $data=AMC::orderBy('updated_at','DESC')->get();      
             }
         } catch (\Throwable $th) {
             //throw $th;

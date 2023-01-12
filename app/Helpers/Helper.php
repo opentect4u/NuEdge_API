@@ -36,4 +36,21 @@ class Helper{
         return DB::table('md_parameters')->where('sl_no',$id)->value('param_value');
     }
 
+    public function TempTINGen($val)
+    {
+        $tin='T00'.$val;
+        return $tin;
+    }
+
+    public function GenTIN($product,$trans_type,$val)
+    {
+        if ($product==1) {  // MUTUAL FUND
+            if ($trans_type==1) {
+                $tin='F00'.$val;
+            // }else if (condition) {
+            }
+        }
+        return $tin;
+    }
+
 }

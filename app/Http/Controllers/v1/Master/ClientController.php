@@ -22,7 +22,7 @@ class ClientController extends Controller
                     ->orWhere('email','like', '%' . $search . '%')
                     ->get();      
             }else{
-                $data=Client::get();      
+                $data=Client::whereDate('updated_at',date('Y-m-d'))->get();      
             }
         } catch (\Throwable $th) {
             //throw $th;

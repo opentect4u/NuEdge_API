@@ -17,7 +17,7 @@ class SchemeController extends Controller
             if ($search!='') {
                 $data=Scheme::where('scheme_name','like', '%' . $search . '%')->get();      
             }
-            $data=Scheme::get();      
+            $data=Scheme::whereDate('updated_at',date('Y-m-d'))->get();      
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
