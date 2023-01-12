@@ -68,6 +68,13 @@ Route::prefix('v1')->group(function () {
         Route::post('employeeAdd',[App\Http\Controllers\v1\Master\EmployeeController::class,'create']);
         Route::post('employeeEdit',[App\Http\Controllers\v1\Master\EmployeeController::class,'update']);
 
+        Route::get('subbroker',[App\Http\Controllers\v1\Master\SubBrokerController::class,'index']);
+        Route::post('subbrokerAddEdit',[App\Http\Controllers\v1\Master\SubBrokerController::class,'createUpdate']);
+
+        Route::get('states',[App\Http\Controllers\v1\Master\StateController::class,'index']);
+
+
+
         // dropdown onchange routes start
         Route::get('amcUsingPro',[App\Http\Controllers\v1\Master\CommonController::class,'showAMC']);
         Route::get('catUsingPro',[App\Http\Controllers\v1\Master\CommonController::class,'showCategory']);
@@ -79,9 +86,12 @@ Route::prefix('v1')->group(function () {
 
         // operations routes start 
         Route::get('formreceived',[App\Http\Controllers\v1\Operation\FormReceivedController::class,'index']);
+        Route::get('formreceivedshow',[App\Http\Controllers\v1\Operation\FormReceivedController::class,'createShow']);
         Route::post('formreceivedAdd',[App\Http\Controllers\v1\Operation\FormReceivedController::class,'create']);
 
         Route::get('formtypeUsingPro',[App\Http\Controllers\v1\Operation\CommonController::class,'showFormType']);
+        Route::get('showsubbroker',[App\Http\Controllers\v1\Operation\CommonController::class,'ShowSubBroker']);
+        Route::get('subbrocodeUsingarn',[App\Http\Controllers\v1\Operation\CommonController::class,'showSubBrokerCode']);
 
         Route::get('client',[App\Http\Controllers\v1\Master\ClientController::class,'index']);
         Route::post('clientAddEdit',[App\Http\Controllers\v1\Master\ClientController::class,'createUpdate']);
