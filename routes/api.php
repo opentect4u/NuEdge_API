@@ -99,7 +99,13 @@ Route::prefix('v1')->group(function () {
         Route::get('documentsearch',[App\Http\Controllers\v1\Master\DocumentController::class,'search']);
         Route::get('document',[App\Http\Controllers\v1\Master\DocumentController::class,'index']);
         Route::get('documentshowEdit',[App\Http\Controllers\v1\Master\DocumentController::class,'Edit']);
-        Route::post('documentAddEdit',[App\Http\Controllers\v1\Master\DocumentController::class,'createUpdate']);
+        Route::post('documentAdd',[App\Http\Controllers\v1\Master\DocumentController::class,'create']);
+        Route::post('documentEdit',[App\Http\Controllers\v1\Master\DocumentController::class,'update']);
+
+
+        Route::get('kyc',[App\Http\Controllers\v1\Operation\KYCController::class,'index']);
+        Route::get('kycshowadd',[App\Http\Controllers\v1\Operation\KYCController::class,'showAdd']);
+        Route::post('kycAddEdit',[App\Http\Controllers\v1\Operation\KYCController::class,'createUpdate']);
 
         // operations routes end 
 

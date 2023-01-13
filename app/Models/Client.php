@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\{Document,Client};
 
 class Client extends Model
 {
@@ -27,4 +28,8 @@ class Client extends Model
         'created_by',
         'updated_by',
     ];
+
+    public function ClientDoc(){
+        return $this->hasMany(Document::class,'client_id','id');  
+    }
 }

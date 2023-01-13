@@ -42,12 +42,13 @@ class Helper{
         return $tin;
     }
 
-    public function GenTIN($product,$trans_type,$val)
+    public function GenTIN($product_id,$trans_type_id,$val)
     {
-        if ($product==1) {  // MUTUAL FUND
-            if ($trans_type==1) {
+        if ($product_id==1) {  // MUTUAL FUND
+            if ($trans_type_id==1) {  // Financial
                 $tin='F00'.$val;
-            // }else if (condition) {
+            }else if ($trans_type_id==2) {  // KYC
+                $tin='KYC00'.$val;
             }
         }
         return $tin;

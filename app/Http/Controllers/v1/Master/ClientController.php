@@ -56,6 +56,7 @@ class ClientController extends Controller
                 // $data->brn_code=$request->brn_code;
                 // $data->brn_name=$request->brn_name;
                 // $data->save();
+                $data='';
             }else{
                 $client_name=ucwords($request->client_name);
                 $words = explode(" ",$client_name);
