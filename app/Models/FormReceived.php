@@ -19,7 +19,7 @@ class FormReceived extends Model
         'sub_arn_no',
         'sub_brk_cd',
         'product_id',
-        'form_type_id',
+        'trans_id',
         'application_no',
         'pan_no',
         'mobile',

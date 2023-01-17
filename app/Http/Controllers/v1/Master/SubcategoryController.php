@@ -14,10 +14,14 @@ class SubcategoryController extends Controller
     {
         try {  
             $search=$request->search;
+            $category_id=$request->category_id;
             if ($search!='') {
                 $data=SubCategory::where('subcategory_name','like', '%' . $search . '%')->get();      
-            }
-            $data=SubCategory::get();      
+            }else if ($category_id!='') {
+                $data=SubCategory::where('category_id',$category_id)->get();      
+            }else{
+                $data=SubCategory::get();   
+            }   
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);

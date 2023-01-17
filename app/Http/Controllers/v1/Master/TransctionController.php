@@ -29,7 +29,7 @@ class TransctionController extends Controller
     public function createUpdate(Request $request)
     {
         $validator = Validator::make(request()->all(),[
-            'trans_id' =>'required',
+            'trans_type_id' =>'required',
             'trns_name' =>'required',
         ]);
     
@@ -40,12 +40,12 @@ class TransctionController extends Controller
         try {
             if ($request->id > 0) {
                 $data=Transction::find($request->id);
-                $data->trans_id=$request->trans_id;
+                $data->trans_type_id=$request->trans_type_id;
                 $data->trns_name=$request->trns_name;
                 $data->save();
             }else{
                 $data=Transction::create(array(
-                    'trans_id'=>$request->trans_id,
+                    'trans_type_id'=>$request->trans_type_id,
                     'trns_name'=>$request->trns_name,
                     // 'created_by'=>'',
                 ));      

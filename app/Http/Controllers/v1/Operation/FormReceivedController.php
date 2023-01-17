@@ -14,6 +14,7 @@ class FormReceivedController extends Controller
     {
         try {  
             $search=$request->search;
+            $temp_tin_id=$request->temp_tin_id;
             if ($search!='') {
                 $data=FormReceived::join('md_products','md_products.id','=','td_form_received.product_id')
                     ->select('td_form_received.*','md_products.product_name as product_name')
@@ -23,7 +24,12 @@ class FormReceivedController extends Controller
                     ->orWhere('td_form_received.email','like', '%' . $search . '%')
                     ->orWhere('td_form_received.application_no','like', '%' . $search . '%')
                     ->get();      
-            }else {
+            }else if ($temp_tin_id!='') {
+                $data=FormReceived::join('md_products','md_products.id','=','td_form_received.product_id')
+                    ->select('td_form_received.*','md_products.product_name as product_name')
+                    ->where('td_form_received.temp_tin_id', $temp_tin_id)
+                    ->get();      
+            } else {
                 $data=FormReceived::whereDate('updated_at',date('Y-m-d'))->get();      
                 // $data=FormReceived::get();      
             }
@@ -51,7 +57,7 @@ class FormReceivedController extends Controller
         $validator = Validator::make(request()->all(),[
             'euin_from' =>'required',
             'product_id' =>'required',
-            'form_type_id' =>'required',
+            'trans_id' =>'required',
             'pan_no' =>'required',
             'mobile' =>'required|min:10|numeric',
             'email' =>'required|email',
@@ -84,7 +90,7 @@ class FormReceivedController extends Controller
                     'sub_arn_no'=>isset($request->sub_arn_no)?$request->sub_arn_no:'',
                     'sub_brk_cd'=>isset($request->sub_brk_cd)?$request->sub_brk_cd:'',
                     'product_id'=>$request->product_id,
-                    'form_type_id'=>$request->form_type_id,
+                    'trans_id'=>$request->trans_id,
                     'application_no'=>isset($request->application_no)?$request->application_no:'NA',
                     'pan_no'=>$request->pan_no,
                     'mobile'=>$request->mobile,

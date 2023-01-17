@@ -92,6 +92,7 @@ Route::prefix('v1')->group(function () {
         Route::get('formtypeUsingPro',[App\Http\Controllers\v1\Operation\CommonController::class,'showFormType']);
         Route::get('showsubbroker',[App\Http\Controllers\v1\Operation\CommonController::class,'ShowSubBroker']);
         Route::get('subbrocodeUsingarn',[App\Http\Controllers\v1\Operation\CommonController::class,'showSubBrokerCode']);
+        Route::get('showTransInFormRec',[App\Http\Controllers\v1\Operation\CommonController::class,'showTransInFormRec']);
 
         Route::get('client',[App\Http\Controllers\v1\Master\ClientController::class,'index']);
         Route::post('clientAddEdit',[App\Http\Controllers\v1\Master\ClientController::class,'createUpdate']);
@@ -106,6 +107,12 @@ Route::prefix('v1')->group(function () {
         Route::get('kyc',[App\Http\Controllers\v1\Operation\KYCController::class,'index']);
         Route::get('kycshowadd',[App\Http\Controllers\v1\Operation\KYCController::class,'showAdd']);
         Route::post('kycAddEdit',[App\Http\Controllers\v1\Operation\KYCController::class,'createUpdate']);
+
+
+        Route::get('showTrans',[App\Http\Controllers\v1\Operation\CommonController::class,'showTrans']);
+
+        Route::get('financial',[App\Http\Controllers\v1\Operation\FinancialController::class,'index']);
+        Route::post('financialAddEdit',[App\Http\Controllers\v1\Operation\FinancialController::class,'createUpdate']);
 
         // operations routes end 
 

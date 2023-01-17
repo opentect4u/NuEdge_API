@@ -14,6 +14,7 @@ class ClientController extends Controller
     {
         try {  
             $search=$request->search;
+            $client_code=$request->client_code;
             if ($search!='') {
                 $data=Client::orWhere('client_name','like', '%' . $search . '%')
                     ->orWhere('client_code','like', '%' . $search . '%')
@@ -21,8 +22,15 @@ class ClientController extends Controller
                     ->orWhere('mobile','like', '%' . $search . '%')
                     ->orWhere('email','like', '%' . $search . '%')
                     ->get();      
-            }else{
-                $data=Client::whereDate('updated_at',date('Y-m-d'))->get();      
+            }elseif ($client_code!='') {
+                $data=Client::leftJoin('td_kyc','td_kyc.client_code','=','md_client.client_code')
+                    ->select('md_client.*','td_kyc.final_kyc_status as final_kyc_status')
+                    ->where('md_client.client_code',$client_code)
+                    ->get();      
+            } else{
+                $data=Client::
+                // whereDate('updated_at',date('Y-m-d'))->
+                get();      
             }
         } catch (\Throwable $th) {
             //throw $th;

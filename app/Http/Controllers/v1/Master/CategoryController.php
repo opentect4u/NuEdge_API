@@ -14,8 +14,11 @@ class CategoryController extends Controller
     {
         try {  
             $search=$request->search;
+            $product_id=$request->product_id;
             if ($search!='') {
                 $data=Category::where('cat_name','like', '%' . $search . '%')->get();      
+            }else if ($product_id!='') {
+                $data=Category::where('product_id',$product_id)->get();      
             }else {
                 $data=Category::get();      
             }

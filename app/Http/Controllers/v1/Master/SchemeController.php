@@ -14,10 +14,20 @@ class SchemeController extends Controller
     {
         try {  
             $search=$request->search;
+            $product_id=$request->product_id;
+            $category_id=$request->category_id;
+            $subcategory_id=$request->subcategory_id;
             if ($search!='') {
                 $data=Scheme::where('scheme_name','like', '%' . $search . '%')->get();      
+            }else if ($product_id!='' && $category_id!='' && $subcategory_id!='') {
+                $data=Scheme::where('product_id',$product_id)
+                    ->where('category_id',$category_id)
+                    ->where('subcategory_id',$subcategory_id)
+                    ->get();      
+            } else {
+                $data=Scheme::where('updated_at',date('Y-m-d'))->get();      
             }
-            $data=Scheme::whereDate('updated_at',date('Y-m-d'))->get();      
+            // $data=Scheme::whereDate('updated_at',date('Y-m-d'))->get();      
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);

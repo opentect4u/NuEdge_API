@@ -10,7 +10,7 @@ class Transction extends Model
     use HasFactory;
     protected $table="md_trans";
     protected $fillable = [
-        'trans_id',
+        'trans_type_id',
         'trns_name',
         'created_by',
         'updated_by',
