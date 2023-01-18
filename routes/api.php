@@ -110,6 +110,8 @@ Route::prefix('v1')->group(function () {
 
 
         Route::get('showTrans',[App\Http\Controllers\v1\Operation\CommonController::class,'showTrans']);
+        // Route::get('checkTransUsingTIN',[App\Http\Controllers\v1\Operation\CommonController::class,'checkTransUsingTIN']);
+
 
         Route::get('financial',[App\Http\Controllers\v1\Operation\FinancialController::class,'index']);
         Route::post('financialAddEdit',[App\Http\Controllers\v1\Operation\FinancialController::class,'createUpdate']);

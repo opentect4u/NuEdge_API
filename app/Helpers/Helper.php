@@ -49,6 +49,10 @@ class Helper{
                 $tin='F00'.$val;
             }else if ($trans_type_id==2) {  // KYC
                 $tin='KYC00'.$val;
+            }else if ($trans_type_id==3) {  // Non Financial
+                $tin='NF00'.$val;
+            }else if ($trans_type_id==4) {  // NFO
+                $tin='NFO00'.$val;
             }
         }
         return $tin;

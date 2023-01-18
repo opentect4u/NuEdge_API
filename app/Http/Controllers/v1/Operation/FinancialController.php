@@ -14,6 +14,7 @@ class FinancialController extends Controller
     {
         try {  
             $search=$request->search;
+            $trans_type_id=$request->trans_type_id;
             if ($search!='') {
                 $data=MutualFund::orWhere('client_name','like', '%' . $search . '%')
                     ->orWhere('client_code','like', '%' . $search . '%')
@@ -22,9 +23,11 @@ class FinancialController extends Controller
                     ->orWhere('email','like', '%' . $search . '%')
                     ->get();      
             }else{
-                $data=MutualFund::
-                whereDate('updated_at',date('Y-m-d'))->
-                get();      
+                $data=MutualFund::join('md_trans','md_trans.id','=','td_mutual_fund.trans_type')
+                ->select('td_mutual_fund.*','md_trans.trans_type_id as trans_type_id')
+                ->where('md_trans.trans_type_id',$trans_type_id)
+                ->whereDate('td_mutual_fund.updated_at',date('Y-m-d'))
+                ->get();      
             }
         } catch (\Throwable $th) {
             //throw $th;
@@ -52,19 +55,69 @@ class FinancialController extends Controller
         //     $errors = $validator->errors();
         //     return Helper::ErrorResponse(parent::VALIDATION_ERROR);
         // }
-        // try {
+        try {
+            
            
             // return $request;
-            $product_id=1;
-            $trans_type_id=1;
-            // 1
-            $is_has=MutualFund::get();
-            if (count($is_has)>0) {
-                $tin_no=Helper::GenTIN($product_id,$trans_type_id,(count($is_has)+1));
-            } else {
-                $tin_no=Helper::GenTIN($product_id,$trans_type_id,1);
-            }
+            // return $request->app_form_scan;
+            
+            // return $request->app_form_scan;
+            // return $request;
 
+            $product_id=1;
+            $tin_no='';
+            $trans_type_id=$request->trans_type_id;
+            if ($trans_type_id==1) { // Financial
+                $is_has=MutualFund::join('md_trans','md_trans.id','=','td_mutual_fund.trans_type')
+                    ->select('td_mutual_fund.*','md_trans.trans_type_id as trans_type_id')
+                    ->where('md_trans.trans_type_id',$trans_type_id)
+                    ->get();
+                // return $is_has; 
+                if (count($is_has)>0) {
+                    $tin_no=Helper::GenTIN($product_id,$trans_type_id,(count($is_has)+1));
+                } else {
+                    $tin_no=Helper::GenTIN($product_id,$trans_type_id,1);
+                }
+            }else if ($trans_type_id==3) { // Non Financial
+                $is_has=MutualFund::join('md_trans','md_trans.id','=','td_mutual_fund.trans_type')
+                    ->select('td_mutual_fund.*','md_trans.trans_type_id as trans_type_id')
+                    ->where('md_trans.trans_type_id',$trans_type_id)
+                    ->get();
+                // return $is_has; 
+                if (count($is_has)>0) {
+                    $tin_no=Helper::GenTIN($product_id,$trans_type_id,(count($is_has)+1));
+                } else {
+                    $tin_no=Helper::GenTIN($product_id,$trans_type_id,1);
+                }
+            }else if ($trans_type_id==4) {  // NFO
+                $is_has=MutualFund::join('md_trans','md_trans.id','=','td_mutual_fund.trans_type')
+                    ->select('td_mutual_fund.*','md_trans.trans_type_id as trans_type_id')
+                    ->where('md_trans.trans_type_id',$trans_type_id)
+                    ->get();
+                // return $is_has; 
+                if (count($is_has)>0) {
+                    $tin_no=Helper::GenTIN($product_id,$trans_type_id,(count($is_has)+1));
+                } else {
+                    $tin_no=Helper::GenTIN($product_id,$trans_type_id,1);
+                }
+            }
+            // return $tin_no;
+
+            // return $request;
+            
+            
+            $has=MutualFund::where('temp_tin_id',$request->temp_tin_id)->get();
+            if (count($has)>0) {
+                $error='Temporary TIN no already exist.';
+                return Helper::ErrorResponse($error);
+            }else {
+                $app_form_scan=$request->app_form_scan;
+                $doc_name='';
+                if ($app_form_scan) {
+                    $cv_path_extension=$app_form_scan->getClientOriginalExtension();
+                    $doc_name=microtime().".".$cv_path_extension;
+                    $app_form_scan->move(public_path('appliaction-form/'),$doc_name);
+                }
                 $data=MutualFund::create(array(
                     'temp_tin_id' =>$request->temp_tin_id,
                     'tin_no'=> $tin_no,
@@ -72,7 +125,7 @@ class FinancialController extends Controller
                     'first_client_code'=>$request->first_client_code,
                     'first_pan'=>$request->first_pan,
                     'first_kyc'=>$request->first_kyc,
-                    'second_client_code'=>isset($request->first_client_code)?$request->first_client_code:'',
+                    'second_client_code'=>isset($request->second_client_code)?$request->second_client_code:'',
                     'second_pan'=>isset($request->second_pan)?$request->second_pan:'',
                     'second_kyc'=>isset($request->second_kyc)?$request->second_kyc:'',
                     'third_client_code'=>isset($request->third_client_code)?$request->third_client_code:'',
@@ -91,13 +144,17 @@ class FinancialController extends Controller
                     'sip_end_date'=>isset($request->sip_end_date)?date('Y-m-d',strtotime($request->sip_end_date)):'',
                     'chq_no'=>$request->chq_no,
                     'chq_bank'=>$request->chq_bank,
+                    'rnt_login_at'=>$request->rnt_login_at,
+                    'app_form_scan'=>$doc_name,
+                    'form_scan_status'=>$request->form_scan_status,
+                    'remarks'=>$request->remarks,
                     // 'created_by'=>'',
                 ));    
-            
-        // } catch (\Throwable $th) {
-        //     //throw $th;
-        //     return Helper::ErrorResponse(parent::DATA_SAVE_ERROR);
-        // }
+            }
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::DATA_SAVE_ERROR);
+        }
         return Helper::SuccessResponse($data);
     }
 }
