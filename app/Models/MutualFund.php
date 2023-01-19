@@ -9,6 +9,7 @@ class MutualFund extends Model
 {
     use HasFactory;
     protected $table="td_mutual_fund";
+    // protected $primaryKey = 'tin_no';
     protected $fillable = [
         'temp_tin_id',
         'tin_no',

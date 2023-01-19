@@ -16,6 +16,7 @@ class FormReceivedController extends Controller
             $search=$request->search;
             $temp_tin_id=$request->temp_tin_id;
             $trans_type_id=$request->trans_type_id;
+            $flag=$request->flag;
 
             if ($search!='') {
                 $data=FormReceived::join('md_products','md_products.id','=','td_form_received.product_id')
@@ -26,7 +27,7 @@ class FormReceivedController extends Controller
                     ->orWhere('td_form_received.email','like', '%' . $search . '%')
                     ->orWhere('td_form_received.application_no','like', '%' . $search . '%')
                     ->get();      
-            }else if ($temp_tin_id!='' && $trans_type_id!='') {
+            }else if ($temp_tin_id!='' && $trans_type_id!='' && $flag=='C') {
                 // return $temp_tin_id;
                 $data=FormReceived::join('md_products','md_products.id','=','td_form_received.product_id')
                     ->join('md_employee','md_employee.emp_code','=','td_form_received.euin_from')
@@ -37,13 +38,26 @@ class FormReceivedController extends Controller
                     ->where('td_form_received.temp_tin_id', $temp_tin_id)
                     ->where('md_trans.trans_type_id',$trans_type_id)
                     ->get(); 
+                // return $data;
                 if (count($data)>0) {
                     $data1=MutualFund::where('temp_tin_id', $temp_tin_id)->get();
+                    // return $data1;
                     if (count($data1)>0) {
                         $data=[];
                         return Helper::SuccessResponse($data);
                     }
-                }     
+                }   
+            }else if ($temp_tin_id!='' && $trans_type_id!='' && $flag=='U') {
+                // return $temp_tin_id;
+                $data=FormReceived::join('md_products','md_products.id','=','td_form_received.product_id')
+                    ->join('md_employee','md_employee.emp_code','=','td_form_received.euin_from')
+                    ->join('md_employee as md_employee1','md_employee1.emp_code','=','td_form_received.euin_to')
+                    ->join('md_trans','md_trans.id','=','td_form_received.trans_id')
+                    ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_form_received.sub_brk_cd')
+                    ->select('td_form_received.*','md_products.product_name as product_name','md_employee.emp_name as euin_from_name','md_employee1.emp_name as euin_to_name','md_sub_broker.bro_name as sub_bro_name')
+                    ->where('td_form_received.temp_tin_id', $temp_tin_id)
+                    ->where('md_trans.trans_type_id',$trans_type_id)
+                    ->get(); 
             } else {
                 $data=FormReceived::whereDate('updated_at',date('Y-m-d'))->get();      
                 // $data=FormReceived::get();      

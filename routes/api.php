@@ -113,8 +113,9 @@ Route::prefix('v1')->group(function () {
         // Route::get('checkTransUsingTIN',[App\Http\Controllers\v1\Operation\CommonController::class,'checkTransUsingTIN']);
 
 
-        Route::get('financial',[App\Http\Controllers\v1\Operation\FinancialController::class,'index']);
-        Route::post('financialAddEdit',[App\Http\Controllers\v1\Operation\FinancialController::class,'createUpdate']);
+        Route::get('mfTraxShow',[App\Http\Controllers\v1\Operation\FinancialController::class,'index']);
+        Route::post('mfTraxCreate',[App\Http\Controllers\v1\Operation\FinancialController::class,'create']);
+        Route::post('mfTraxUpdate',[App\Http\Controllers\v1\Operation\FinancialController::class,'update']);
 
         // operations routes end 
 
