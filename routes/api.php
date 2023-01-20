@@ -19,8 +19,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::prefix('v1')->group(function () {
-    Route::middleware(['cors'])->group(function () {
-        // Route::middleware(['ipcheck'])->group(function () {
+    // Route::middleware(['ipcheck'])->group(function () {
         Route::get('getip',[App\Http\Controllers\v1\TestController::class,'ShowIp']);
         Route::get('index1',[App\Http\Controllers\v1\TestController::class,'index1']);
         Route::get('index2',[App\Http\Controllers\v1\TestController::class,'index2']);
@@ -124,5 +123,5 @@ Route::prefix('v1')->group(function () {
         // =========================== operations routes end =======================================
 
         // Route::post('index1',[App\Http\Controllers\v1\Master\TestController::class,'index1']);
-    });
+    // });
 });
