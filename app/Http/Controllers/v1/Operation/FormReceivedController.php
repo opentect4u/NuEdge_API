@@ -94,7 +94,7 @@ class FormReceivedController extends Controller
             'product_id' =>'required',
             'trans_id' =>'required',
             'pan_no' =>'required',
-            'mobile' =>'required|min:10|numeric',
+            'mobile' =>'required|min:10',
             'email' =>'required|email',
         ]);
     
