@@ -85,7 +85,8 @@ Route::prefix('v1')->group(function () {
         // Route::get('depositbank',[App\Http\Controllers\v1\Master\DepositBankController::class,'index']);
         // Route::post('depositbankAddEdit',[App\Http\Controllers\v1\Master\DepositBankController::class,'createUpdate']);
 
-        // operations routes start 
+        // ================ operations routes start =====================
+
         Route::get('formreceived',[App\Http\Controllers\v1\Operation\FormReceivedController::class,'index']);
         Route::get('formreceivedshow',[App\Http\Controllers\v1\Operation\FormReceivedController::class,'createShow']);
         Route::post('formreceivedAdd',[App\Http\Controllers\v1\Operation\FormReceivedController::class,'create']);
@@ -118,7 +119,9 @@ Route::prefix('v1')->group(function () {
         Route::post('mfTraxCreate',[App\Http\Controllers\v1\Operation\FinancialController::class,'create']);
         Route::post('mfTraxUpdate',[App\Http\Controllers\v1\Operation\FinancialController::class,'update']);
 
-        // operations routes end 
+        Route::get('daysheetReport',[App\Http\Controllers\v1\Operation\ReportController::class,'index']);
+
+        // =========================== operations routes end =======================================
 
         // Route::post('index1',[App\Http\Controllers\v1\Master\TestController::class,'index1']);
     });

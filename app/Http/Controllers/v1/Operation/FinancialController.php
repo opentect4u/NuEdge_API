@@ -148,6 +148,7 @@ class FinancialController extends Controller
                     'app_form_scan'=>$doc_name,
                     'form_scan_status'=>$request->form_scan_status,
                     'remarks'=>$request->remarks,
+                    'form_status'=>'P',
                     // 'created_by'=>'',
                 ));    
             }
