@@ -15,9 +15,9 @@ return [
     |
     */
 
-    'paths' => ['api/*','api/v1/*'],
+    'paths' => ['api/*','api/v1/*','*'],
 
-    'allowed_methods' => ['*'],
+    'allowed_methods' => ['POST', 'GET', 'PUT', '*'],
 
     'allowed_origins' => ['*','https://nuedge.opentech4u.co.in'],
 
