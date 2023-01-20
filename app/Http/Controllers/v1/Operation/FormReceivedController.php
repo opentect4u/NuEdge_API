@@ -20,7 +20,9 @@ class FormReceivedController extends Controller
 
             if ($search!='') {
                 $data=FormReceived::join('md_products','md_products.id','=','td_form_received.product_id')
-                    ->select('td_form_received.*','md_products.product_name as product_name')
+                    ->join('md_trans','md_trans.id','=','td_form_received.trans_id')
+                    ->join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
+                    ->select('td_form_received.*','md_products.product_name as product_name','md_trans.trns_name as trans_name','md_trns_type.trns_type as trans_type')
                     ->where('td_form_received.temp_tin_id','like', '%' . $search . '%')
                     ->orWhere('td_form_received.pan_no','like', '%' . $search . '%')
                     ->orWhere('td_form_received.mobile','like', '%' . $search . '%')
@@ -59,7 +61,11 @@ class FormReceivedController extends Controller
                     ->where('md_trans.trans_type_id',$trans_type_id)
                     ->get(); 
             } else {
-                $data=FormReceived::whereDate('updated_at',date('Y-m-d'))->get();      
+                $data=FormReceived::join('md_trans','md_trans.id','=','td_form_received.trans_id')
+                    ->join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
+                    ->select('td_form_received.*','md_trans.trns_name as trans_name','md_trns_type.trns_type as trans_type')
+                    ->whereDate('td_form_received.updated_at',date('Y-m-d'))
+                    ->get();      
                 // $data=FormReceived::get();      
             }
         } catch (\Throwable $th) {
