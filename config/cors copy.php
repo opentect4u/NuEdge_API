@@ -15,13 +15,20 @@ return [
     |
     */
 
-    'paths' => [],   
-     'allowed_methods' => ['*'],   
-      'allowed_origins' => ['*'], 
-         'allowed_origins_patterns' => [],   
-          'allowed_headers' => ['*'],   
-           'exposed_headers' => false,  
-             'max_age' => false,    
-             'supports_credentials' => false,
+    'paths' => ['*'],
+
+    'allowed_methods' => ['GET','POST','PUT'],
+
+    'allowed_origins' => ['*','nuedge.opentech4u.co.in','opentech4u.co.in:*'],
+
+    'allowed_origins_patterns' => ['/(.*)\wip/','/(.*)\.test/'],
+
+    'allowed_headers' => ['*','content-type','accept','x-custom-header'],
+
+    'exposed_headers' => [],
+
+    'max_age' => 0,
+
+    'supports_credentials' => false,
 
 ];
