@@ -78,24 +78,29 @@ class ClientController extends Controller
                     $client_code=$client_code_1.date('dmy',strtotime($request->dob));
                 }
                 
-
-                $data=Client::create(array(
-                    'client_code'=>$client_code,
-                    'client_name'=>$client_name,
-                    'dob'=>$request->dob,
-                    'add_line_1'=>$request->add_line_1,
-                    'add_line_2'=>$request->add_line_2,
-                    'city'=>$request->city,
-                    'dist'=>$request->dist,
-                    'state'=>$request->state,
-                    'pincode'=>$request->pincode,
-                    'pan'=>$request->pan,
-                    'mobile'=>$request->mobile,
-                    'sec_mobile'=>$request->sec_mobile,
-                    'email'=>$request->email,
-                    'sec_email'=>$request->sec_email,
-                    // 'created_by'=>'',
-                ));    
+                $already=Client::where('pan',$request->pan)->get();
+                if (count($already)>0) {
+                    $ms='PAN no already exist.';
+                    return Helper::ErrorResponse($ms);
+                }else{
+                    $data=Client::create(array(
+                        'client_code'=>$client_code,
+                        'client_name'=>$client_name,
+                        'dob'=>$request->dob,
+                        'add_line_1'=>$request->add_line_1,
+                        'add_line_2'=>$request->add_line_2,
+                        'city'=>$request->city,
+                        'dist'=>$request->dist,
+                        'state'=>$request->state,
+                        'pincode'=>$request->pincode,
+                        'pan'=>$request->pan,
+                        'mobile'=>$request->mobile,
+                        'sec_mobile'=>$request->sec_mobile,
+                        'email'=>$request->email,
+                        'sec_email'=>$request->sec_email,
+                        // 'created_by'=>'',
+                    ));  
+                }  
             }  
         } catch (\Throwable $th) {
             //throw $th;
