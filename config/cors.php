@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'],
+    'allowed_origins' => ['*','https://nuedge.opentech4u.co.in'],
 
     'allowed_origins_patterns' => [],
 
