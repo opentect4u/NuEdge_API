@@ -15,17 +15,17 @@ return [
     |
     */
 
-    'paths' => ['api/*','api/v1/*','*'],
+    'paths' => ['api/*', 'sanctum/csrf-cookie'],
 
-    'allowed_methods' => ['POST', 'GET', 'PUT', '*'],
+    'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*','https://nuedge.opentech4u.co.in'],
+    'allowed_origins' => ['*'],
 
     'allowed_origins_patterns' => [],
 
     'allowed_headers' => ['*'],
 
-    'exposed_headers' => ['*'],
+    'exposed_headers' => [],
 
     'max_age' => 0,
 
