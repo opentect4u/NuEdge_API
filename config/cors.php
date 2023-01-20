@@ -21,7 +21,7 @@ return [
 
     'allowed_origins' => ['*'],
 
-    'allowed_origins_patterns' => ['*'],
+    'allowed_origins_patterns' => ['*','https://nuedge.opentech4u.co.in/'],
 
     'allowed_headers' => ['*'],
 
