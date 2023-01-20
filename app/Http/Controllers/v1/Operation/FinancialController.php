@@ -116,7 +116,7 @@ class FinancialController extends Controller
                 if ($app_form_scan) {
                     $cv_path_extension=$app_form_scan->getClientOriginalExtension();
                     $doc_name=microtime().".".$cv_path_extension;
-                    $app_form_scan->move(public_path('appliaction-form/'),$doc_name);
+                    $app_form_scan->move(public_path('application-form/'),$doc_name);
                 }
                 $data=MutualFund::create(array(
                     'temp_tin_id' =>$request->temp_tin_id,
