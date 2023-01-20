@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'],
+    'allowed_origins' => ['*','opentech4u.co.in:433','opentech4u.co.in:*'],
 
     'allowed_origins_patterns' => [],
 
