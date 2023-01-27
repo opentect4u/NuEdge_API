@@ -41,6 +41,7 @@ class MutualFund extends Model
         'rnt_login_dt',
         'rnt_login_at',
         'rnt_login_cutt_off',
+        'ack_copy_scan',
         'report_scan',
         'logged_in',
         'trans_date',

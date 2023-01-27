@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Helpers\Helper;
 use App\Models\MutualFund;
 use Validator;
+use Illuminate\Support\Carbon;
 
 class FinancialController extends Controller
 {
@@ -162,6 +163,38 @@ class FinancialController extends Controller
     public function update(Request $request)
     {
         // return $request;
+        // return Carbon::parse($request->rnt_login_cutt_off)->format('Y-m-d H:i:s');
+        try {
+            // return $request;
+            $data1=MutualFund::where('tin_no',$request->tin_no)->first();
+            $ack_copy_scan=$request->ack_copy_scan;
+            if ($ack_copy_scan) {
+                $path_extension=$ack_copy_scan->getClientOriginalExtension();
+                $ack_copy_scan_name=microtime().".".$path_extension;
+                $ack_copy_scan->move(public_path('acknowledgement-copy/'),$ack_copy_scan_name);
+            }else{
+                $ack_copy_scan_name=$data1->ack_copy_scan;
+                // return $doc_name;
+            }
+            // ack_copy_scan
+                MutualFund::where('tin_no',$request->tin_no)->update(array(
+                    'rnt_login_dt'=>date('Y-m-d',strtotime($request->rnt_login_date)),
+                    'rnt_login_cutt_off'=>Carbon::parse($request->rnt_login_cutt_off)->format('Y-m-d H:i:s'),
+                    'ack_copy_scan'=>$ack_copy_scan_name,
+                    'form_status'=>'A',
+                ));   
+            // return $data1;
+            $data=MutualFund::where('tin_no',$request->tin_no)->first();
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::DATA_SAVE_ERROR);
+        }
+        return Helper::SuccessResponse($data);
+    }
+
+    public function updateOld(Request $request)
+    {
+        return $request;
         try {
             // return $request;
             $data1=MutualFund::where('tin_no',$request->tin_no)->first();
@@ -169,11 +202,12 @@ class FinancialController extends Controller
             if ($app_form_scan) {
                 $cv_path_extension=$app_form_scan->getClientOriginalExtension();
                 $doc_name=microtime().".".$cv_path_extension;
-                $app_form_scan->move(public_path('application-form/'),$doc_name);
+                $app_form_scan->move(public_path('acknowledgement-copy/'),$doc_name);
             }else{
                 $doc_name=$data1->app_form_scan;
                 // return $doc_name;
             }
+            // ack_copy_scan
                 MutualFund::where('tin_no',$request->tin_no)->update(array(
                     // 'temp_tin_id' =>$request->temp_tin_id,
                     // 'tin_no'=> $tin_no,
