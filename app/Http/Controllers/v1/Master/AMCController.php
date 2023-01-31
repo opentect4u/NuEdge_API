@@ -15,10 +15,13 @@ class AMCController extends Controller
         try {  
             $search=$request->search;
             $product_id=$request->product_id;
+            $rnt_id=$request->rnt_id;
             if ($search!='') {
                 $data=AMC::where('amc_name','like', '%' . $search . '%')->get();      
-            }elseif ($product_id!='') {
+            } elseif ($product_id!='') {
                 $data=AMC::where('product_id',$product_id)->get();      
+            } elseif ($rnt_id!='') {
+                $data=AMC::where('rnt_id',$rnt_id)->get();      
             } else {
                 $data=AMC::orderBy('updated_at','DESC')->get();      
             }

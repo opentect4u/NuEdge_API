@@ -18,5 +18,6 @@ class Controller extends BaseController
     const CONTROLLER_NOT_FOUND='Controller does not exist.';
     const METHOD_NOT_FOUND='Method does not exist.';
     const VALIDATION_ERROR='Some validation related error.';
+    const IMPORT_CSV_ERROR='Error in importing csv.';
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 }

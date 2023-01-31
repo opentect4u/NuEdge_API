@@ -30,6 +30,7 @@ Route::prefix('v1')->group(function () {
 
         Route::get('rnt',[App\Http\Controllers\v1\Master\RNTController::class,'index']);
         Route::post('rntAddEdit',[App\Http\Controllers\v1\Master\RNTController::class,'createUpdate']);
+        Route::post('rntimport', [App\Http\Controllers\v1\Master\RNTController::class,'import']);
 
         Route::get('product',[App\Http\Controllers\v1\Master\ProductController::class,'index']);
         Route::post('productAddEdit',[App\Http\Controllers\v1\Master\ProductController::class,'createUpdate']);
