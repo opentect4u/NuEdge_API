@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Helpers\Helper;
 use App\Models\Category;
 use Validator;
+use Excel;
+use App\Imports\CategoryImport;
 
 class CategoryController extends Controller
 {
@@ -15,10 +17,13 @@ class CategoryController extends Controller
         try {  
             $search=$request->search;
             $product_id=$request->product_id;
+            $id=$request->id;
             if ($search!='') {
                 $data=Category::where('cat_name','like', '%' . $search . '%')->get();      
             }else if ($product_id!='') {
                 $data=Category::where('product_id',$product_id)->get();      
+            }else if ($id!='') {
+                $data=Category::where('id',$id)->get();      
             }else {
                 $data=Category::get();      
             }
@@ -60,5 +65,29 @@ class CategoryController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    public function import(Request $request)
+    {
+        try {
+            // return $request;
+            $path = $request->file('file')->getRealPath();
+            $data = array_map('str_getcsv', file($path));
+            // return $data[0][0];
+            // return gettype($data[0][0]) ;
+            // if (in_array("rnt_id", $data)) {
+            // if ($data[0][0] == "rnt_id" && $data[0][1] == "product_id" && $data[0][2] == "amc_name" && $data[0][3] == "website" && $data[0][4] == "ofc_addr") {
+            //     return "hii";
+                Excel::import(new CategoryImport,$request->file);
+                // Excel::import(new CategoryImport,request()->file('file'));
+                $data1=[];
+            // }else {
+            //     return "else";
+            //     return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
+            // }
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
+        }
+        return Helper::SuccessResponse($data1);
+    }
    
 }

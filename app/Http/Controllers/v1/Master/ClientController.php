@@ -66,6 +66,9 @@ class ClientController extends Controller
                 // $data->save();
                 $data='';
             }else{
+                // if ($request->client_type=='E') {
+                //     # code...
+                // }
                 $client_name=ucwords($request->client_name);
                 $words = explode(" ",$client_name);
                 $client_code="";
@@ -98,6 +101,10 @@ class ClientController extends Controller
                         'sec_mobile'=>$request->sec_mobile,
                         'email'=>$request->email,
                         'sec_email'=>$request->sec_email,
+                        'client_type'=>$request->client_type,
+                        'Guardians_pan'=>$request->Guardians_pan,
+                        'Guardians_name'=>$request->Guardians_name,
+                        'relation'=>$request->relation,
                         // 'created_by'=>'',
                     ));  
                 }  

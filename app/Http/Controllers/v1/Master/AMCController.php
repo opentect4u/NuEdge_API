@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Helpers\Helper;
 use App\Models\AMC;
 use Validator;
+use Excel;
+use App\Imports\AMCImport;
 
 class AMCController extends Controller
 {
@@ -16,12 +18,15 @@ class AMCController extends Controller
             $search=$request->search;
             $product_id=$request->product_id;
             $rnt_id=$request->rnt_id;
+            $id=$request->id;
             if ($search!='') {
                 $data=AMC::where('amc_name','like', '%' . $search . '%')->get();      
             } elseif ($product_id!='') {
                 $data=AMC::where('product_id',$product_id)->get();      
             } elseif ($rnt_id!='') {
                 $data=AMC::where('rnt_id',$rnt_id)->get();      
+            } elseif ($id!='') {
+                $data=AMC::where('id',$id)->get();  
             } else {
                 $data=AMC::orderBy('updated_at','DESC')->get();      
             }
@@ -75,6 +80,8 @@ class AMCController extends Controller
                 $data->l7_name=$request->l7_name;
                 $data->l7_contact_no=$request->l7_contact_no;
                 $data->l7_email=$request->l7_email;
+                $data->sip_start_date=date('Y-m-d',strtotime($request->sip_start_date));
+                $data->sip_end_date=date('Y-m-d',strtotime($request->sip_end_date));
                 $data->save();
             }else{
                 $data=AMC::create(array(
@@ -106,6 +113,8 @@ class AMCController extends Controller
                     'l7_name'=>$request->l7_name,
                     'l7_contact_no'=>$request->l7_contact_no,
                     'l7_email'=>$request->l7_email,
+                    'sip_start_date'=>date('Y-m-d',strtotime($request->sip_start_date)),
+                    'sip_end_date'=>date('Y-m-d',strtotime($request->sip_end_date)),
                     // 'created_by'=>'',
                 ));      
             }    
@@ -116,5 +125,29 @@ class AMCController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    public function import(Request $request)
+    {
+        try {
+            // return $request;
+            $path = $request->file('file')->getRealPath();
+            $data = array_map('str_getcsv', file($path));
+            // return $data[0][0];
+            // return gettype($data[0][0]) ;
+            // if (in_array("rnt_id", $data)) {
+            // if ($data[0][0] == "rnt_id" && $data[0][1] == "product_id" && $data[0][2] == "amc_name" && $data[0][3] == "website" && $data[0][4] == "ofc_addr") {
+            //     return "hii";
+                Excel::import(new AMCImport,$request->file);
+                // Excel::import(new AMCImport,request()->file('file'));
+                $data1=[];
+            // }else {
+            //     return "else";
+            //     return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
+            // }
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
+        }
+        return Helper::SuccessResponse($data1);
+    }
   
 }

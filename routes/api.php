@@ -37,15 +37,24 @@ Route::prefix('v1')->group(function () {
 
         Route::get('amc',[App\Http\Controllers\v1\Master\AMCController::class,'index']);
         Route::post('amcAddEdit',[App\Http\Controllers\v1\Master\AMCController::class,'createUpdate']);
+        Route::post('amcimport', [App\Http\Controllers\v1\Master\AMCController::class,'import']);
 
         Route::get('branch',[App\Http\Controllers\v1\Master\BranchController::class,'index']);
         Route::post('branchAddEdit',[App\Http\Controllers\v1\Master\BranchController::class,'createUpdate']);
 
+        Route::get('plan',[App\Http\Controllers\v1\Master\PlanController::class,'index']);
+        Route::post('planAddEdit',[App\Http\Controllers\v1\Master\PlanController::class,'createUpdate']);
+
+        Route::get('option',[App\Http\Controllers\v1\Master\OptionController::class,'index']);
+        Route::post('optionAddEdit',[App\Http\Controllers\v1\Master\OptionController::class,'createUpdate']);
+
         Route::get('category',[App\Http\Controllers\v1\Master\CategoryController::class,'index']);
         Route::post('categoryAddEdit',[App\Http\Controllers\v1\Master\CategoryController::class,'createUpdate']);
+        Route::post('categoryimport', [App\Http\Controllers\v1\Master\CategoryController::class,'import']);
 
         Route::get('subcategory',[App\Http\Controllers\v1\Master\SubcategoryController::class,'index']);
         Route::post('subcategoryAddEdit',[App\Http\Controllers\v1\Master\SubcategoryController::class,'createUpdate']);
+        Route::post('subcategoryimport', [App\Http\Controllers\v1\Master\SubcategoryController::class,'import']);
 
         Route::get('formtype',[App\Http\Controllers\v1\Master\FormTypeController::class,'index']);
         Route::post('formtypeAddEdit',[App\Http\Controllers\v1\Master\FormTypeController::class,'createUpdate']);
@@ -58,9 +67,11 @@ Route::prefix('v1')->group(function () {
 
         Route::get('scheme',[App\Http\Controllers\v1\Master\SchemeController::class,'index']);
         Route::post('schemeAddEdit',[App\Http\Controllers\v1\Master\SchemeController::class,'createUpdate']);
+        Route::post('schemeimport', [App\Http\Controllers\v1\Master\SchemeController::class,'import']);
 
         Route::get('depositbank',[App\Http\Controllers\v1\Master\DepositBankController::class,'index']);
         Route::post('depositbankAddEdit',[App\Http\Controllers\v1\Master\DepositBankController::class,'createUpdate']);
+        Route::post('depositbankimport', [App\Http\Controllers\v1\Master\DepositBankController::class,'import']);
 
         Route::get('documenttype',[App\Http\Controllers\v1\Master\DocumentTypeController::class,'index']);
         Route::post('documenttypeAddEdit',[App\Http\Controllers\v1\Master\DocumentTypeController::class,'createUpdate']);

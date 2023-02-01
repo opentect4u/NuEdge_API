@@ -4,8 +4,11 @@ namespace App\Imports;
 
 use App\Models\AMC;
 use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Validator;
+use App\Helpers\Helper;
 
-class AMCImport implements ToModel
+class AMCImport implements ToModel, WithHeadingRow
 {
     /**
     * @param array $row
@@ -14,8 +17,55 @@ class AMCImport implements ToModel
     */
     public function model(array $row)
     {
+        $validator = Validator::make($row,[
+            'rnt_id' =>'required',
+            'product_id' =>'required',
+            'amc_name' =>'required',
+            'l1_contact_no'=>'numeric',
+            'l2_contact_no'=>'numeric',
+            'l3_contact_no'=>'numeric',
+            'l4_contact_no'=>'numeric',
+            // 'l5_contact_no'=>'numeric',
+            // 'l6_contact_no'=>'numeric',
+            'l1_email' =>'email',
+            'l2_email' =>'email',
+            'l3_email' =>'email',
+            'l4_email' =>'email',
+            // 'l5_email' =>'email',
+            // 'l6_email' =>'email',
+        ]);
+        if($validator->fails()) {
+            $errors = $validator->errors();
+            return Helper::ErrorResponse(parent::VALIDATION_ERROR);
+        }
         return new AMC([
-            //
+            'rnt_id'=>$row['rnt_id'],
+            'product_id'=>$row['product_id'],
+            'amc_name'=>$row['amc_name'],
+            'website'=>$row['website'],
+            'ofc_addr'=>$row['ofc_addr'],
+            'cus_care_no'=>$row['cus_care_no'],
+            'cus_care_email'=>$row['cus_care_email'],
+            'l1_name'=>$row['l1_name'],
+            'l1_contact_no'=>$row['l1_contact_no'],
+            'l1_email'=>$row['l1_email'],
+            'l2_name'=>$row['l2_name'],
+            'l2_contact_no'=>$row['l2_contact_no'],
+            'l2_email'=>$row['l2_email'],
+            'l3_name'=>$row['l3_name'],
+            'l3_contact_no'=>$row['l3_contact_no'],
+            'l3_email'=>$row['l3_email'],
+            'l4_name'=>$row['l4_name'],
+            'l4_contact_no'=>$row['l4_contact_no'],
+            'l4_email'=>$row['l4_email'],
+            'l5_name'=>$row['l5_name'],
+            'l5_contact_no'=>$row['l5_contact_no'],
+            'l5_email'=>$row['l5_email'],
+            'l6_name'=>$row['l6_name'],
+            'l6_contact_no'=>$row['l6_contact_no'],
+            'l6_email'=>$row['l6_email'],
+            'sip_start_date'=>date('Y-m-d',strtotime($row['sip_start_date'])),
+            'sip_end_date'=>date('Y-m-d',strtotime($row['sip_end_date'])),
         ]);
     }
 }

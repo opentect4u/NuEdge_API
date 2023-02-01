@@ -25,6 +25,10 @@ class Client extends Model
         'sec_mobile',
         'email',
         'sec_email',
+        'client_type',
+        'Guardians_pan',
+        'Guardians_name',
+        'relation',
         'created_by',
         'updated_by',
     ];

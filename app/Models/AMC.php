@@ -38,6 +38,8 @@ class AMC extends Model
         'l7_name',
         'l7_contact_no',
         'l7_email',
+        'sip_start_date',
+        'sip_end_date',
         'created_by',
         'updated_by',
     ];
