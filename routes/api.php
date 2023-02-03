@@ -44,9 +44,11 @@ Route::prefix('v1')->group(function () {
 
         Route::get('plan',[App\Http\Controllers\v1\Master\PlanController::class,'index']);
         Route::post('planAddEdit',[App\Http\Controllers\v1\Master\PlanController::class,'createUpdate']);
+        Route::post('planimport', [App\Http\Controllers\v1\Master\PlanController::class,'import']);
 
         Route::get('option',[App\Http\Controllers\v1\Master\OptionController::class,'index']);
         Route::post('optionAddEdit',[App\Http\Controllers\v1\Master\OptionController::class,'createUpdate']);
+        Route::post('optionimport', [App\Http\Controllers\v1\Master\OptionController::class,'import']);
 
         Route::get('category',[App\Http\Controllers\v1\Master\CategoryController::class,'index']);
         Route::post('categoryAddEdit',[App\Http\Controllers\v1\Master\CategoryController::class,'createUpdate']);
@@ -75,6 +77,7 @@ Route::prefix('v1')->group(function () {
 
         Route::get('documenttype',[App\Http\Controllers\v1\Master\DocumentTypeController::class,'index']);
         Route::post('documenttypeAddEdit',[App\Http\Controllers\v1\Master\DocumentTypeController::class,'createUpdate']);
+        Route::post('documenttypeimport',[App\Http\Controllers\v1\Master\DocumentTypeController::class,'import']);
 
         Route::get('employee',[App\Http\Controllers\v1\Master\EmployeeController::class,'index']);
         Route::post('employeeAdd',[App\Http\Controllers\v1\Master\EmployeeController::class,'create']);
@@ -84,6 +87,8 @@ Route::prefix('v1')->group(function () {
         Route::post('subbrokerAddEdit',[App\Http\Controllers\v1\Master\SubBrokerController::class,'createUpdate']);
 
         Route::get('states',[App\Http\Controllers\v1\Master\StateController::class,'index']);
+        Route::get('districts',[App\Http\Controllers\v1\Master\DistrictController::class,'index']);
+        Route::get('city',[App\Http\Controllers\v1\Master\CityController::class,'index']);
 
 
 
@@ -109,12 +114,14 @@ Route::prefix('v1')->group(function () {
 
         Route::get('client',[App\Http\Controllers\v1\Master\ClientController::class,'index']);
         Route::post('clientAddEdit',[App\Http\Controllers\v1\Master\ClientController::class,'createUpdate']);
+        Route::post('clientimport',[App\Http\Controllers\v1\Master\ClientController::class,'import']);
 
         Route::get('documentsearch',[App\Http\Controllers\v1\Master\DocumentController::class,'search']);
         Route::get('document',[App\Http\Controllers\v1\Master\DocumentController::class,'index']);
         Route::get('documentshowEdit',[App\Http\Controllers\v1\Master\DocumentController::class,'Edit']);
         Route::post('documentAdd',[App\Http\Controllers\v1\Master\DocumentController::class,'create']);
         Route::post('documentEdit',[App\Http\Controllers\v1\Master\DocumentController::class,'update']);
+        Route::post('documentimport',[App\Http\Controllers\v1\Master\DocumentController::class,'import']);
 
 
         Route::get('kyc',[App\Http\Controllers\v1\Operation\KYCController::class,'index']);

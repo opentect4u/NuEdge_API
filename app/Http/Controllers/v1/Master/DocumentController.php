@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Helpers\Helper;
 use App\Models\{Document,Client};
 use Validator;
+use Excel;
+use App\Imports\DocumentImport;
 
 class DocumentController extends Controller
 {
@@ -14,15 +16,21 @@ class DocumentController extends Controller
     {
         try {  
             $search=$request->search;
+            $client_id=$request->client_id;
             if ($search!='') {
-                $data=Client::orWhere('client_name','like', '%' . $search . '%')
+                $data=Client::with('ClientDoc')->orWhere('client_name','like', '%' . $search . '%')
                     ->orWhere('client_code','like', '%' . $search . '%')
                     ->orWhere('pan','like', '%' . $search . '%')
                     ->orWhere('mobile','like', '%' . $search . '%')
                     ->orWhere('email','like', '%' . $search . '%')
                     ->get();      
-            }else{
-                $data=Client::whereDate('updated_at',date('Y-m-d'))->get();      
+            }else if ($client_id!='') {
+                $data=Client::with('ClientDoc')->where('id',$client_id)
+                    ->get();     
+            } else{
+                $data=Document::join('md_client','md_client.id','=','md_documents.client_id')
+                    ->select('md_documents.*','md_client.client_name as client_name','md_client.client_code as client_code')
+                    ->whereDate('md_documents.updated_at',date('Y-m-d'))->groupBy('client_id')->get();      
             }
         } catch (\Throwable $th) {
             //throw $th;
@@ -95,6 +103,7 @@ class DocumentController extends Controller
                         // 'created_by'=>'',
                     ));      
                 }
+            $data=Client::with('ClientDoc')->where('id',$request->client_id)->get();      
             
         } catch (\Throwable $th) {
             //throw $th;
@@ -123,38 +132,41 @@ class DocumentController extends Controller
             $file=$request->file;
             $doc_type_id=$request->doc_type_id;
             $doc_name='';
-            foreach ($request->row_id as $key => $row_id) {
-                // return $row_id;
-                if ($row_id==0) {
-                    if ($file[$key]) {
-                        $cv_path_extension=$file[$key]->getClientOriginalExtension();
-                        $doc_name=microtime().'_'.$request->client_id.".".$cv_path_extension;
-                        $file[$key]->move(public_path('client-doc/'.$request->client_id."/"),$doc_name);
-                    }
-                    Document::create(array(
-                        'client_id'=>$request->client_id,
-                        'doc_type_id'=>$request->doc_type_id[$key],
-                        'doc_name'=>$doc_name,
-                        // 'created_by'=>'',
-                    ));    
-                } else {
-                    if ($file[$key]) {
-                        $cv_path_extension=$file[$key]->getClientOriginalExtension();
-                        $doc_name=microtime().'_'.$request->client_id.".".$cv_path_extension;
-                        $file[$key]->move(public_path('client-doc/'.$request->client_id."/"),$doc_name);
-                    }
-                    $data=Document::find($row_id);
-                    if($data->doc_name!=null){
-                        $filecv = public_path('client-doc/'.$request->client_id."/") . $data->doc_name;
-                        if (file_exists($filecv) != null) {
-                            unlink($filecv);
+            if ($request->row_id!='') {
+                foreach ($request->row_id as $key => $row_id) {
+                    // return $row_id;
+                    if ($row_id==0) {
+                        if ($file[$key]) {
+                            $cv_path_extension=$file[$key]->getClientOriginalExtension();
+                            $doc_name=microtime().'_'.$request->client_id.".".$cv_path_extension;
+                            $file[$key]->move(public_path('client-doc/'.$request->client_id."/"),$doc_name);
                         }
-                    } 
-                    $data->doc_name=$doc_name;
-                    $data->save();
+                        Document::create(array(
+                            'client_id'=>$request->client_id,
+                            'doc_type_id'=>$request->doc_type_id[$key],
+                            'doc_name'=>$doc_name,
+                            // 'created_by'=>'',
+                        ));    
+                    } else {
+                        if ($file[$key]) {
+                            $cv_path_extension=$file[$key]->getClientOriginalExtension();
+                            $doc_name=microtime().'_'.$request->client_id.".".$cv_path_extension;
+                            $file[$key]->move(public_path('client-doc/'.$request->client_id."/"),$doc_name);
+                        }
+                        $data=Document::find($row_id);
+                        if($data->doc_name!=null){
+                            $filecv = public_path('client-doc/'.$request->client_id."/") . $data->doc_name;
+                            if (file_exists($filecv) != null) {
+                                unlink($filecv);
+                            }
+                        } 
+                        $data->doc_name=$doc_name;
+                        $data->save();
+                    }
+                    
                 }
-                
             }
+            $data=Client::with('ClientDoc')->where('id',$request->client_id)->get();      
 
         } catch (\Throwable $th) {
             //throw $th;
@@ -163,4 +175,28 @@ class DocumentController extends Controller
         return Helper::SuccessResponse($data);
     }
   
+    public function import(Request $request)
+    {
+        try {
+            // return $request;
+            $path = $request->file('file')->getRealPath();
+            $data = array_map('str_getcsv', file($path));
+            // return $data[0][0];
+            // return gettype($data[0][0]) ;
+            // if (in_array("rnt_id", $data)) {
+            // if ($data[0][0] == "opt_name") {
+            //     return "hii";
+                Excel::import(new DocumentImport,$request->file);
+                // Excel::import(new DocumentImport,request()->file('file'));
+                $data1=[];
+            // }else {
+            //     return "else";
+            //     return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
+            // }
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
+        }
+        return Helper::SuccessResponse($data1);
+    }
 }

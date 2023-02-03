@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Helpers\Helper;
 use App\Models\Plan;
 use Validator;
+use Excel;
+use App\Imports\PlanImport;
 
 class PlanController extends Controller
 {
@@ -14,9 +16,12 @@ class PlanController extends Controller
     {
         try {  
             $search=$request->search;
+            $id=$request->id;
             if ($search!='') {
                 $data=Plan::where('plan_name','like', '%' . $search . '%')->get();      
-            }else {
+            }else if ($id!='') {
+                $data=Plan::where('id',$id)->get();      
+            } else {
                 $data=Plan::get();      
             }
         } catch (\Throwable $th) {
@@ -54,5 +59,28 @@ class PlanController extends Controller
         return Helper::SuccessResponse($data);
     }
 
-    
+    public function import(Request $request)
+    {
+        try {
+            // return $request;
+            $path = $request->file('file')->getRealPath();
+            $data = array_map('str_getcsv', file($path));
+            // return $data[0][0];
+            // return gettype($data[0][0]) ;
+            // if (in_array("rnt_id", $data)) {
+            // if ($data[0][0] == "plan_name") {
+            //     return "hii";
+                Excel::import(new PlanImport,$request->file);
+                // Excel::import(new PlanImport,request()->file('file'));
+                $data1=[];
+            // }else {
+            //     return "else";
+            //     return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
+            // }
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
+        }
+        return Helper::SuccessResponse($data1);
+    }
 }

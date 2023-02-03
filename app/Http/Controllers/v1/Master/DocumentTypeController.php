@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Helpers\Helper;
 use App\Models\DocumentType;
 use Validator;
+use Excel;
+use App\Imports\DocumentTypeImport;
 
 class DocumentTypeController extends Controller
 {
@@ -14,9 +16,12 @@ class DocumentTypeController extends Controller
     {
         try {  
             $search=$request->search;
+            $id=$request->id;
             if ($search!='') {
                 $data=DocumentType::where('doc_type','like', '%' . $search . '%')->get();      
-            }else {
+            }elseif ($id!='') {
+                $data=DocumentType::where('id',$id)->get();   
+            } else {
                 $data=DocumentType::get();      
             }
         } catch (\Throwable $th) {
@@ -54,5 +59,28 @@ class DocumentTypeController extends Controller
         return Helper::SuccessResponse($data);
     }
 
-    
+    public function import(Request $request)
+    {
+        try {
+            // return $request;
+            $path = $request->file('file')->getRealPath();
+            $data = array_map('str_getcsv', file($path));
+            // return $data[0][0];
+            // return gettype($data[0][0]) ;
+            // if (in_array("rnt_id", $data)) {
+            // if ($data[0][0] == "opt_name") {
+            //     return "hii";
+                Excel::import(new DocumentTypeImport,$request->file);
+                // Excel::import(new DocumentTypeImport,request()->file('file'));
+                $data1=[];
+            // }else {
+            //     return "else";
+            //     return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
+            // }
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
+        }
+        return Helper::SuccessResponse($data1);
+    }
 }

@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Helpers\Helper;
 use App\Models\Option;
 use Validator;
+use Excel;
+use App\Imports\OptionImport;
 
 class OptionController extends Controller
 {
@@ -14,8 +16,11 @@ class OptionController extends Controller
     {
         try {  
             $search=$request->search;
+            $id=$request->id;
             if ($search!='') {
                 $data=Option::where('opt_name','like', '%' . $search . '%')->get();      
+            }else if ($id!='') {
+                $data=Option::where('id',$id)->get();      
             }else {
                 $data=Option::get();      
             }
@@ -54,6 +59,30 @@ class OptionController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    public function import(Request $request)
+    {
+        try {
+            // return $request;
+            $path = $request->file('file')->getRealPath();
+            $data = array_map('str_getcsv', file($path));
+            // return $data[0][0];
+            // return gettype($data[0][0]) ;
+            // if (in_array("rnt_id", $data)) {
+            // if ($data[0][0] == "opt_name") {
+            //     return "hii";
+                Excel::import(new OptionImport,$request->file);
+                // Excel::import(new OptionImport,request()->file('file'));
+                $data1=[];
+            // }else {
+            //     return "else";
+            //     return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
+            // }
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
+        }
+        return Helper::SuccessResponse($data1);
+    }
     
 }
 
