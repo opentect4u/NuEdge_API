@@ -17,10 +17,13 @@ class RNTController extends Controller
         try {
             $search=$request->search;
             $id=$request->id;
+            $paginate=$request->paginate;
             if ($search!='') {
                 $data=RNT::where('rnt_name','like', '%' . $search . '%')->get();      
             }else if ($id!='') {
                 $data=RNT::where('id',$id)->get();      
+            }else if ($paginate!='') {
+                $data=RNT::orderBy('updated_at','DESC')->paginate($paginate);      
             } else {
                 $data=RNT::orderBy('updated_at','DESC')->get();      
             }
