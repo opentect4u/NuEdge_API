@@ -21,6 +21,7 @@ class SchemeController extends Controller
             $subcategory_id=$request->subcategory_id;
             $id=$request->id;
             $scheme_type=$request->scheme_type;
+            $paginate=$request->paginate;
             if ($search!='') {
                 $data=Scheme::where('scheme_name','like', '%' . $search . '%')->get();      
             }else if ($product_id!='' && $category_id!='' && $subcategory_id!='') {
@@ -32,6 +33,8 @@ class SchemeController extends Controller
                 $data=Scheme::where('id',$id)->get();      
             }elseif ($scheme_type!='') {
                 $data=Scheme::where('scheme_type',$scheme_type)->whereDate('updated_at',date('Y-m-d'))->get();      
+            } elseif ($paginate!='') {
+                $data=Scheme::whereDate('updated_at',date('Y-m-d'))->paginate($paginate);      
             } else {
                 $data=Scheme::whereDate('updated_at',date('Y-m-d'))->get();      
             }

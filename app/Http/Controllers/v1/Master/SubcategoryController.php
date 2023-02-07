@@ -18,12 +18,15 @@ class SubcategoryController extends Controller
             $search=$request->search;
             $category_id=$request->category_id;
             $id=$request->id;
+            $paginate=$request->paginate;
             if ($search!='') {
                 $data=SubCategory::where('subcategory_name','like', '%' . $search . '%')->get();      
             }else if ($category_id!='') {
-                $data=SubCategory::where('category_id',$category_id)->get();      
+                $data=SubCategory::where('category_id',$category_id)->paginate($paginate);      
             }else if ($id!='') {
                 $data=SubCategory::where('id',$id)->get();      
+            }else if ($paginate!='') {
+                $data=SubCategory::paginate($paginate);   
             }else{
                 $data=SubCategory::get();   
             }   

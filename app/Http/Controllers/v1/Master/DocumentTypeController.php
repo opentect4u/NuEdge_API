@@ -17,10 +17,13 @@ class DocumentTypeController extends Controller
         try {  
             $search=$request->search;
             $id=$request->id;
+            $paginate=$request->paginate;
             if ($search!='') {
                 $data=DocumentType::where('doc_type','like', '%' . $search . '%')->get();      
             }elseif ($id!='') {
                 $data=DocumentType::where('id',$id)->get();   
+            }elseif ($paginate!='') {
+                $data=DocumentType::paginate($paginate);      
             } else {
                 $data=DocumentType::get();      
             }

@@ -19,14 +19,17 @@ class AMCController extends Controller
             $product_id=$request->product_id;
             $rnt_id=$request->rnt_id;
             $id=$request->id;
+            $paginate=$request->paginate;
             if ($search!='') {
                 $data=AMC::where('amc_name','like', '%' . $search . '%')->get();      
             } elseif ($product_id!='') {
                 $data=AMC::where('product_id',$product_id)->get();      
             } elseif ($rnt_id!='') {
-                $data=AMC::where('rnt_id',$rnt_id)->get();      
+                $data=AMC::where('rnt_id',$rnt_id)->paginate($paginate);      
             } elseif ($id!='') {
                 $data=AMC::where('id',$id)->get();  
+            } elseif ($paginate!='') {
+                $data=AMC::orderBy('updated_at','DESC')->paginate($paginate);      
             } else {
                 $data=AMC::orderBy('updated_at','DESC')->get();      
             }

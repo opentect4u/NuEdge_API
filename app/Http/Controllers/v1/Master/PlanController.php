@@ -17,10 +17,13 @@ class PlanController extends Controller
         try {  
             $search=$request->search;
             $id=$request->id;
+            $paginate=$request->paginate;
             if ($search!='') {
                 $data=Plan::where('plan_name','like', '%' . $search . '%')->get();      
             }else if ($id!='') {
                 $data=Plan::where('id',$id)->get();      
+            }elseif ($paginate!='') {
+                $data=Plan::paginate($paginate);      
             } else {
                 $data=Plan::get();      
             }

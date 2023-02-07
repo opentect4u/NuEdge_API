@@ -17,10 +17,13 @@ class DepositBankController extends Controller
         try {  
             $search=$request->search;
             $id=$request->id;
+            $paginate=$request->paginate;
             if ($search!='') {
                 $data=DepositBank::where('bank_name','like', '%' . $search . '%')->get();      
             }elseif ($id!='') {
                 $data=DepositBank::where('id',$id)->get();      
+            }elseif ($paginate!='') {
+                $data=DepositBank::paginate($paginate);      
             } else {
                 $data=DepositBank::get();      
             }

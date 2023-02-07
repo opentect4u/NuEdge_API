@@ -18,12 +18,15 @@ class CategoryController extends Controller
             $search=$request->search;
             $product_id=$request->product_id;
             $id=$request->id;
+            $paginate=$request->paginate;
             if ($search!='') {
                 $data=Category::where('cat_name','like', '%' . $search . '%')->get();      
             }else if ($product_id!='') {
                 $data=Category::where('product_id',$product_id)->get();      
             }else if ($id!='') {
                 $data=Category::where('id',$id)->get();      
+            }else if ($paginate!='') {
+                $data=Category::paginate($paginate);      
             }else {
                 $data=Category::get();      
             }

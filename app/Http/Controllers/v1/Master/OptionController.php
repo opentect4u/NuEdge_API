@@ -17,10 +17,13 @@ class OptionController extends Controller
         try {  
             $search=$request->search;
             $id=$request->id;
+            $paginate=$request->paginate;
             if ($search!='') {
                 $data=Option::where('opt_name','like', '%' . $search . '%')->get();      
             }else if ($id!='') {
                 $data=Option::where('id',$id)->get();      
+            }elseif ($paginate!='') {
+                $data=Option::paginate($paginate);      
             }else {
                 $data=Option::get();      
             }
