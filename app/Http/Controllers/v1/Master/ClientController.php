@@ -23,12 +23,12 @@ class ClientController extends Controller
             $id=$request->id;
             $paginate=$request->paginate;
             if ($search!='') {
-                $data=Client::orWhere('client_name','like', '%' . $search . '%')
+                $data=Client::with('ClientDoc')->orWhere('client_name','like', '%' . $search . '%')
                     ->orWhere('client_code','like', '%' . $search . '%')
                     ->orWhere('pan','like', '%' . $search . '%')
                     ->orWhere('mobile','like', '%' . $search . '%')
                     ->orWhere('email','like', '%' . $search . '%')
-                    ->get();      
+                    ->paginate($paginate);      
             }else if ($client_code!='') {
                 $data=Client::leftJoin('td_kyc','td_kyc.client_code','=','md_client.client_code')
                     ->select('md_client.*','td_kyc.final_kyc_status as final_kyc_status')
@@ -135,7 +135,7 @@ class ClientController extends Controller
                     }elseif ($request->client_type=='N') {
 
                     }elseif ($request->client_type=='M') {
-                        
+
                     }
                     $data='';
                 }
