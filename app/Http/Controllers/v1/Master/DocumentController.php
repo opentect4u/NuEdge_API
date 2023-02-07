@@ -17,6 +17,7 @@ class DocumentController extends Controller
         try {  
             $search=$request->search;
             $client_id=$request->client_id;
+            $paginate=$request->paginate;
             if ($search!='') {
                 $data=Client::with('ClientDoc')->orWhere('client_name','like', '%' . $search . '%')
                     ->orWhere('client_code','like', '%' . $search . '%')
@@ -27,6 +28,10 @@ class DocumentController extends Controller
             }else if ($client_id!='') {
                 $data=Client::with('ClientDoc')->where('id',$client_id)
                     ->get();     
+            }else if ($paginate!='') {
+                $data=Document::join('md_client','md_client.id','=','md_documents.client_id')
+                    ->select('md_documents.*','md_client.client_name as client_name','md_client.client_code as client_code')
+                    ->whereDate('md_documents.updated_at',date('Y-m-d'))->groupBy('client_id')->paginate($paginate);
             } else{
                 $data=Document::join('md_client','md_client.id','=','md_documents.client_id')
                     ->select('md_documents.*','md_client.client_name as client_name','md_client.client_code as client_code')

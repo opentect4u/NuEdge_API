@@ -21,6 +21,7 @@ class ClientController extends Controller
             $client_type=$request->client_type;
             $pan=$request->pan;
             $id=$request->id;
+            $paginate=$request->paginate;
             if ($search!='') {
                 $data=Client::orWhere('client_name','like', '%' . $search . '%')
                     ->orWhere('client_code','like', '%' . $search . '%')
@@ -35,11 +36,13 @@ class ClientController extends Controller
                     ->get();      
             }else if ($client_type!='') {
                 $data=Client::with('ClientDoc')->where('client_type',$client_type)
-                    ->orderBy('updated_at','DESC')->get();
+                    ->orderBy('updated_at','DESC')->paginate($paginate);
             }else if ($pan!='') {
                 $data=Client::with('ClientDoc')->where('pan',$pan)->get();
             }else if ($id!='') {
                 $data=Client::with('ClientDoc')->where('id',$id)->get();
+            // }else if ($paginate!='') {
+            //     $data=Client::with('ClientDoc')->paginate($paginate);    
             } else{
                 $data=Client::with('ClientDoc')->
                 // whereDate('updated_at',date('Y-m-d'))->
@@ -128,8 +131,11 @@ class ClientController extends Controller
                     $data=Client::with('ClientDoc')->where('id',$datas->id)->first();    
                 }else {
                     if ($request->client_type=='P') {
+
                     }elseif ($request->client_type=='N') {
+
                     }elseif ($request->client_type=='M') {
+                        
                     }
                     $data='';
                 }
