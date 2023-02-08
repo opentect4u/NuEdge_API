@@ -11,7 +11,9 @@ class Employee extends Model
     protected $table="md_employee";
     // protected $primaryKey="emp_code";
     protected $fillable = [
-        'emp_code',
+        'arn_no',
+        'brn_cd',
+        'euin_no',
         'emp_name',
         'created_by',
         'updated_by',

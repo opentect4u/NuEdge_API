@@ -20,15 +20,25 @@ class SchemeController extends Controller
             $category_id=$request->category_id;
             $subcategory_id=$request->subcategory_id;
             $id=$request->id;
+            $scheme_id=$request->scheme_id;
             $scheme_type=$request->scheme_type;
             $paginate=$request->paginate;
             if ($search!='') {
-                $data=Scheme::where('scheme_name','like', '%' . $search . '%')->get();      
+                $data=Scheme::where('scheme_name','like', '%' . $search . '%')->paginate($paginate);      
             }else if ($product_id!='' && $category_id!='' && $subcategory_id!='') {
                 $data=Scheme::where('product_id',$product_id)
                     ->where('category_id',$category_id)
                     ->where('subcategory_id',$subcategory_id)
                     ->get();      
+            }elseif ($scheme_id!='') {
+                $data=Scheme::join('md_amc','md_amc.id','=','md_scheme.amc_id')
+                    ->join('md_category','md_category.id','=','md_scheme.category_id')
+                    ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
+                    ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                    ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
+                    ->where('md_scheme.id',$scheme_id)
+                    ->get();      
+                // $data=Scheme::where('id',$scheme_id)->get();      
             }elseif ($id!='') {
                 $data=Scheme::where('id',$id)->get();      
             }elseif ($scheme_type!='') {

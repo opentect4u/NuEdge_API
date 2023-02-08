@@ -15,7 +15,9 @@ class EmployeeController extends Controller
         try {  
             $search=$request->search;
             if ($search!='') {
-                $data=Employee::where('emp_name','like', '%' . $search . '%')->get();      
+                $data=Employee::where('euin_no','like', '%' . $search . '%')
+                    ->orWhere('emp_name','like', '%' . $search . '%')
+                    ->get();      
             }else {
                 $data=Employee::get();      
             }
@@ -29,7 +31,7 @@ class EmployeeController extends Controller
     public function create(Request $request)
     {
         $validator = Validator::make(request()->all(),[
-            'emp_code' =>'required',
+            'euin_no' =>'required',
             'emp_name' =>'required',
         ]);
     
@@ -39,12 +41,12 @@ class EmployeeController extends Controller
         }
         try {
            
-                $is_has=Employee::where('emp_code',$request->emp_code)->get();
+                $is_has=Employee::where('euin_no',$request->euin_no)->get();
                 if (count($is_has) > 0) {
                     return Helper::ErrorResponse(parent::ALREADY_EXIST);
                 }
                 $data=Employee::create(array(
-                    'emp_code'=>$request->emp_code,
+                    'euin_no'=>$request->euin_no,
                     'emp_name'=>$request->emp_name,
                     // 'created_by'=>'',
                 ));      
@@ -59,7 +61,7 @@ class EmployeeController extends Controller
     public function update(Request $request)
     {
         $validator = Validator::make(request()->all(),[
-            'emp_code' =>'required',
+            'euin_no' =>'required',
             'emp_name' =>'required',
         ]);
     
