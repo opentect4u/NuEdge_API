@@ -21,6 +21,7 @@ class ClientController extends Controller
             $client_type=$request->client_type;
             $pan=$request->pan;
             $id=$request->id;
+            $client_id=$request->client_id;
             $paginate=$request->paginate;
             if ($search!='') {
                 $data=Client::with('ClientDoc')->orWhere('client_name','like', '%' . $search . '%')
@@ -41,6 +42,14 @@ class ClientController extends Controller
                 $data=Client::with('ClientDoc')->where('pan',$pan)->get();
             }else if ($id!='') {
                 $data=Client::with('ClientDoc')->where('id',$id)->get();
+            }else if ($client_id!='') {
+                $data=Client::with('ClientDoc')
+                    ->join('md_city','md_city.id','=','md_client.city')
+                    ->join('md_district','md_district.id','=','md_client.dist')
+                    ->join('md_states','md_states.id','=','md_client.state')
+                    ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name')
+                    ->where('md_client.id',$client_id)
+                    ->get();
             // }else if ($paginate!='') {
             //     $data=Client::with('ClientDoc')->paginate($paginate);    
             } else{

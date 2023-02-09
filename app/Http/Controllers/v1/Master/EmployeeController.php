@@ -14,11 +14,17 @@ class EmployeeController extends Controller
     {
         try {  
             $search=$request->search;
-            if ($search!='') {
-                $data=Employee::where('euin_no','like', '%' . $search . '%')
+            $sub_arn_no=$request->sub_arn_no;
+            if ($search!='' && $sub_arn_no!='') {
+                $data=Employee::where('arn_no',$sub_arn_no)
+                    ->orWhere('euin_no','like', '%' . $search . '%')
                     ->orWhere('emp_name','like', '%' . $search . '%')
                     ->get();      
-            }else {
+            }elseif ($search!='') {
+                $data=Employee::where('euin_no','like', '%' . $search . '%')
+                    ->orWhere('emp_name','like', '%' . $search . '%')
+                    ->get();
+            } else {
                 $data=Employee::get();      
             }
         } catch (\Throwable $th) {

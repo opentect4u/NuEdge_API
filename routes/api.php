@@ -106,6 +106,8 @@ Route::prefix('v1')->group(function () {
         Route::get('formreceived',[App\Http\Controllers\v1\Operation\FormReceivedController::class,'index']);
         Route::get('formreceivedshow',[App\Http\Controllers\v1\Operation\FormReceivedController::class,'createShow']);
         Route::post('formreceivedAdd',[App\Http\Controllers\v1\Operation\FormReceivedController::class,'create']);
+        Route::post('formreceivedEdit',[App\Http\Controllers\v1\Operation\FormReceivedController::class,'update']);
+        Route::post('formreceivedDelete',[App\Http\Controllers\v1\Operation\FormReceivedController::class,'delete']);
 
         Route::get('formtypeUsingPro',[App\Http\Controllers\v1\Operation\CommonController::class,'showFormType']);
         Route::get('showsubbroker',[App\Http\Controllers\v1\Operation\CommonController::class,'ShowSubBroker']);

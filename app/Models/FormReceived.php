@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\{Document,Client};
 
 class FormReceived extends Model
 {
@@ -26,7 +27,14 @@ class FormReceived extends Model
         'application_no',
         'kyc_status',
         'branch_code',
+        'deleted_at',
+        'deleted_by',
+        'deleted_flag',
         'created_by',
         'updated_by',
     ];
+
+    public function ClientDoc(){
+        return $this->hasMany(Document::class,'client_id','client_id');  
+    }
 }
