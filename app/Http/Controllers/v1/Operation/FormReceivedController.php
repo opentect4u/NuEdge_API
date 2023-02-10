@@ -25,22 +25,26 @@ class FormReceivedController extends Controller
                 $data=FormReceived::join('md_products','md_products.id','=','td_form_received.product_id')
                     ->join('md_trans','md_trans.id','=','td_form_received.trans_id')
                     ->join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
+                    // ->join('md_client','md_client.id','=','td_form_received.client_id')
                     ->select('td_form_received.*','md_products.product_name as product_name','md_trans.trns_name as trans_name','md_trns_type.trns_type as trans_type')
                     ->where('td_form_received.deleted_flag','N')
                     ->orWhere('td_form_received.temp_tin_no','like', '%' . $search . '%')
-                    ->orWhere('td_form_received.pan_no','like', '%' . $search . '%')
-                    ->orWhere('td_form_received.mobile','like', '%' . $search . '%')
-                    ->orWhere('td_form_received.email','like', '%' . $search . '%')
+                    // ->orWhere('md_client.pan','like', '%' . $search . '%')
+                    // ->orWhere('md_client.mobile','like', '%' . $search . '%')
+                    // ->orWhere('md_client.email','like', '%' . $search . '%')
                     ->orWhere('td_form_received.application_no','like', '%' . $search . '%')
                     ->get();      
             }else if ($temp_tin_no!='' && $trans_type_id!='' && $flag=='C') {
                 // return $temp_tin_no;
-                $data=FormReceived::join('md_products','md_products.id','=','td_form_received.product_id')
-                    ->join('md_employee','md_employee.emp_code','=','td_form_received.euin_from')
-                    ->join('md_employee as md_employee1','md_employee1.emp_code','=','td_form_received.euin_to')
-                    ->join('md_trans','md_trans.id','=','td_form_received.trans_id')
-                    ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_form_received.sub_brk_cd')
-                    ->select('td_form_received.*','md_products.product_name as product_name','md_employee.emp_name as euin_from_name','md_employee1.emp_name as euin_to_name','md_sub_broker.bro_name as sub_bro_name')
+                $data=FormReceived::join('md_trans','md_trans.id','=','td_form_received.trans_id')
+                    // leftJoin('md_products','md_products.id','=','td_form_received.product_id')
+                    ->join('md_scheme','md_scheme.id','=','td_form_received.scheme_id')
+                    ->join('md_client','md_client.id','=','td_form_received.client_id')
+                    ->join('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
+                    // ->join('md_employee as md_employee1','md_employee1.emp_code','=','td_form_received.euin_to')
+                    // ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_form_received.sub_brk_cd')
+                    ->select('td_form_received.*','md_scheme.scheme_name as scheme_name','md_scheme.pip_fresh_min_amt as pip_fresh_min_amt','md_scheme.sip_fresh_min_amt as sip_fresh_min_amt','md_scheme.pip_add_min_amt as pip_add_min_amt','md_scheme.pip_add_min_amt as pip_add_min_amt','md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type','md_trans.trns_name as trans_name','md_employee.emp_name as emp_name')
+                    // ->select('td_form_received.*','md_products.product_name as product_name','md_employee.emp_name as euin_from_name','md_employee1.emp_name as euin_to_name','md_sub_broker.bro_name as sub_bro_name')
                     ->where('td_form_received.deleted_flag','N')
                     ->where('td_form_received.temp_tin_no', $temp_tin_no)
                     ->where('md_trans.trans_type_id',$trans_type_id)
@@ -262,7 +266,7 @@ class FormReceivedController extends Controller
         }
         try {
             // return $request;
-            $data=MutualFund::where('temp_tin_id',$request->temp_tin_no)->get();
+            $data=MutualFund::where('temp_tin_no',$request->temp_tin_no)->get();
             if (count($data)>0) {
                 $msg='Not delete';
                 return Helper::ErrorResponse($msg);

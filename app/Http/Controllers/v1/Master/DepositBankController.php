@@ -19,7 +19,10 @@ class DepositBankController extends Controller
             $id=$request->id;
             $paginate=$request->paginate;
             if ($search!='') {
-                $data=DepositBank::where('bank_name','like', '%' . $search . '%')->get();      
+                $data=DepositBank::where('bank_name','like', '%' . $search . '%')
+                    ->orWhere('ifs_code','like', '%' . $search . '%')
+                    ->orWhere('branch_name','like', '%' . $search . '%')
+                    ->get();      
             }elseif ($id!='') {
                 $data=DepositBank::where('id',$id)->get();      
             }elseif ($paginate!='') {
