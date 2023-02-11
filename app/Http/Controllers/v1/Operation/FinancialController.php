@@ -5,7 +5,7 @@ namespace App\Http\Controllers\v1\Operation;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Helpers\Helper;
-use App\Models\MutualFund;
+use App\Models\{MutualFund,Client};
 use Validator;
 use Illuminate\Support\Carbon;
 
@@ -36,6 +36,8 @@ class FinancialController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
+
+    
 
     public function create(Request $request)
     {
@@ -106,6 +108,32 @@ class FinancialController extends Controller
                     $error='Temporary TIN no already exist.';
                     return Helper::ErrorResponse($error);
                 }else {
+                    $second_client_id=$request->second_client_id;
+                    $second_client_name=$request->second_client_name;
+                    $second_client_pan=$request->second_client_pan;
+                    if ($second_client_id=='' && $second_client_name!='' && $second_client_pan!='') {
+                        $s_c_data=Client::create(array(
+                            'client_name'=>$second_client_name,
+                            'pan'=>$second_client_pan,
+                            'client_type'=>'E',
+                            // 'created_by'=>'',
+                        ));  
+                        $second_client_id=$s_c_data->id;
+                    }
+
+                    $third_client_id=$request->third_client_id;
+                    $third_client_name=$request->third_client_name;
+                    $third_client_pan=$request->third_client_pan;
+                    if ($second_client_id=='' && $third_client_name!='' && $third_client_pan!='') {
+                        $t_c_data=Client::create(array(
+                            'client_name'=>$third_client_name,
+                            'pan'=>$third_client_pan,
+                            'client_type'=>'E',
+                            // 'created_by'=>'',
+                        ));  
+                        $third_client_id=$t_c_data->id;
+                    }
+
                     $app_form_scan=$request->app_form_scan;
                     $doc_name='';
                     if ($app_form_scan) {
