@@ -45,11 +45,11 @@ class FinancialController extends Controller
 
     public function createShow(Request $request)
     {
-        // try {
+        try {
             $datas=MutualFund::join('md_products','md_products.id','=','td_mutual_fund.product_id')
                     ->join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
                     ->select('td_mutual_fund.*','md_products.product_name as product_name','md_trans.trns_name as trans_name')
-                    ->where('td_mutual_fund.deleted_flag','N')
+                    ->where('td_mutual_fund.delete_flag','N')
                     ->where('md_trans.trans_type_id',$request->trans_type_id)
                     ->get(); 
             
@@ -79,9 +79,9 @@ class FinancialController extends Controller
             $trans_data_3['count']=$trans_id_3_count;
             array_push($data,$trans_data_3);
             // return $data;
-        // } catch (\Throwable $th) {
-        //     return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
-        // }
+        } catch (\Throwable $th) {
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
         return Helper::SuccessResponse($data);
     }
 
