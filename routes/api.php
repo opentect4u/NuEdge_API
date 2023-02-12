@@ -136,6 +136,7 @@ Route::prefix('v1')->group(function () {
 
 
         Route::get('mfTraxShow',[App\Http\Controllers\v1\Operation\FinancialController::class,'index']);
+        Route::get('mfTraxCreateShow',[App\Http\Controllers\v1\Operation\FinancialController::class,'createShow']);
         Route::post('mfTraxCreate',[App\Http\Controllers\v1\Operation\FinancialController::class,'create']);
         Route::post('mfTraxUpdate',[App\Http\Controllers\v1\Operation\FinancialController::class,'update']);
 

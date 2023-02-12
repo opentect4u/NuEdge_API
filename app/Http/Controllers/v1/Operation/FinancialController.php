@@ -43,7 +43,47 @@ class FinancialController extends Controller
         return Helper::SuccessResponse($data);
     }
 
-    
+    public function createShow(Request $request)
+    {
+        try {
+            $datas=MutualFund::join('md_products','md_products.id','=','td_mutual_fund.product_id')
+                    ->join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
+                    ->select('td_mutual_fund.*','md_products.product_name as product_name','md_trans.trns_name as trans_name')
+                    ->where('td_mutual_fund.deleted_flag','N')
+                    ->where('md_trans.trans_type_id',$request->trans_type_id)
+                    ->get(); 
+            
+            $data=[];
+            $trans_id_1_count=0;
+            $trans_id_2_count=0;
+            $trans_id_3_count=0;
+            foreach($datas as $dd){
+                if($dd->trans_id==1){
+                    $trans_id_1_count=$trans_id_1_count+1; 
+                }elseif ($dd->trans_id==2) {
+                    $trans_id_2_count=$trans_id_2_count+1; 
+                }elseif ($dd->trans_id==3) {
+                    $trans_id_3_count=$trans_id_3_count+1; 
+                }
+            }
+            $trans_data_1['id']=1;
+            $trans_data_1['name']='PIP';
+            $trans_data_1['count']=$trans_id_1_count;
+            array_push($data,$trans_data_1);
+            $trans_data_2['id']=2;
+            $trans_data_2['name']='SIP';
+            $trans_data_2['count']=$trans_id_2_count;
+            array_push($data,$trans_data_2);
+            $trans_data_3['id']=3;
+            $trans_data_3['name']='Switch';
+            $trans_data_3['count']=$trans_id_3_count;
+            array_push($data,$trans_data_3);
+            // return $data;
+        } catch (\Throwable $th) {
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($data);
+    }
 
     public function create(Request $request)
     {
