@@ -13,7 +13,7 @@ class FinancialController extends Controller
 {
     public function index(Request $request)
     {
-        try {  
+        // try {  
             $search=$request->search;
             $trans_type_id=$request->trans_type_id;
             $paginate=$request->paginate;
@@ -37,10 +37,9 @@ class FinancialController extends Controller
                 ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
                 ->get();      
             }
-        } catch (\Throwable $th) {
-            //throw $th;
-            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
-        }
+        // } catch (\Throwable $th) {
+        //     return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        // }
         return Helper::SuccessResponse($data);
     }
 
