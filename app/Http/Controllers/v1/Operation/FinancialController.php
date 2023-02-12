@@ -18,20 +18,20 @@ class FinancialController extends Controller
             $trans_type_id=$request->trans_type_id;
             $paginate=$request->paginate;
             if ($search!='') {
-                $data=MutualFund::join('md_trans','md_trans.id','=','td_mutual_fund.trans_type')
+                $data=MutualFund::join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
                     ->select('td_mutual_fund.*','md_trans.trans_type_id as trans_type_id')
                     ->where('md_trans.trans_type_id',$trans_type_id)
                     ->where('td_mutual_fund.tin_no',$search)
                     // ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
                     ->get();     
             }elseif ($paginate!='') {
-                $data=MutualFund::join('md_trans','md_trans.id','=','td_mutual_fund.trans_type')
+                $data=MutualFund::join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
                     ->select('td_mutual_fund.*','md_trans.trans_type_id as trans_type_id')
                     ->where('md_trans.trans_type_id',$trans_type_id)
                     ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
                     ->paginate($paginate);   
             } else{
-                $data=MutualFund::join('md_trans','md_trans.id','=','td_mutual_fund.trans_type')
+                $data=MutualFund::join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
                 ->select('td_mutual_fund.*','md_trans.trans_type_id as trans_type_id')
                 ->where('md_trans.trans_type_id',$trans_type_id)
                 ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
