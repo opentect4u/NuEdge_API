@@ -22,6 +22,7 @@ class FormReceived extends Model
         'product_id',
         'trans_id',
         'scheme_id',
+        'scheme_id_to',
         'recv_from',
         'inv_type',
         'application_no',

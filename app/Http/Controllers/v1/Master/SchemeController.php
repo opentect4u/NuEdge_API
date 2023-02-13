@@ -23,7 +23,12 @@ class SchemeController extends Controller
             $scheme_id=$request->scheme_id;
             $scheme_type=$request->scheme_type;
             $paginate=$request->paginate;
-            if ($search!='') {
+            $amc_id=$request->amc_id;
+            if ($search!='' && $amc_id!='') {
+                $data=Scheme::where('amc_id',$amc_id)
+                    ->orWhere('scheme_name','like', '%' . $search . '%')
+                    ->get();      
+            }else if ($search!='') {
                 $data=Scheme::where('scheme_name','like', '%' . $search . '%')->paginate($paginate);      
             }else if ($product_id!='' && $category_id!='' && $subcategory_id!='') {
                 $data=Scheme::where('product_id',$product_id)
