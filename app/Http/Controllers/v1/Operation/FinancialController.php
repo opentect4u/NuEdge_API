@@ -292,7 +292,7 @@ class FinancialController extends Controller
                         'tin_no'=> $tin_no,
                         'entry_date'=> date('Y-m-d'),
                         'first_client_id'=>$request->first_client_id,
-                        'first_kyc'=>$request->first_kyc,
+                        'first_kyc'=>isset($request->first_kyc)?$request->first_kyc:NULL,
                         'second_client_id'=>isset($second_client_id)?$second_client_id:NULL,
                         'second_kyc'=>isset($request->second_kyc)?$request->second_kyc:NULL,
                         'third_client_id'=>isset($third_client_id)?$third_client_id:NULL,

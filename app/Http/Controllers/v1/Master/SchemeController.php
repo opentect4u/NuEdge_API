@@ -29,7 +29,7 @@ class SchemeController extends Controller
                     ->orWhere('scheme_name','like', '%' . $search . '%')
                     ->get();      
             }else if ($search!='') {
-                $data=Scheme::where('scheme_name','like', '%' . $search . '%')->paginate($paginate);      
+                $data=Scheme::where('scheme_name','like', '%' . $search . '%')->get();      
             }else if ($product_id!='' && $category_id!='' && $subcategory_id!='') {
                 $data=Scheme::where('product_id',$product_id)
                     ->where('category_id',$category_id)
