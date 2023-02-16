@@ -18,6 +18,9 @@ class PlanController extends Controller
             $search=$request->search;
             $id=$request->id;
             $paginate=$request->paginate;
+            if ($paginate=='A') {
+                $paginate=999999999;
+            }
             if ($search!='') {
                 $data=Plan::where('plan_name','like', '%' . $search . '%')->get();      
             }else if ($id!='') {

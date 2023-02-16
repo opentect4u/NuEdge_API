@@ -24,6 +24,9 @@ class SchemeController extends Controller
             $scheme_type=$request->scheme_type;
             $paginate=$request->paginate;
             $amc_id=$request->amc_id;
+            if ($paginate=='A') {
+                $paginate=999999999;
+            }
             if ($search!='' && $amc_id!='') {
                 $data=Scheme::where('amc_id',$amc_id)
                     ->orWhere('scheme_name','like', '%' . $search . '%')
@@ -49,7 +52,7 @@ class SchemeController extends Controller
             }elseif ($scheme_type!='') {
                 $data=Scheme::where('scheme_type',$scheme_type)->whereDate('updated_at',date('Y-m-d'))->get();      
             } elseif ($paginate!='') {
-                $data=Scheme::whereDate('updated_at',date('Y-m-d'))->paginate($paginate);      
+                $data=Scheme::paginate($paginate);      
             } else {
                 $data=Scheme::whereDate('updated_at',date('Y-m-d'))->get();      
             }
@@ -88,7 +91,7 @@ class SchemeController extends Controller
                 $data->category_id=$request->category_id;
                 $data->subcategory_id=$request->subcategory_id;
                 $data->scheme_name=$request->scheme_name;
-                $data->isin_no=$request->isin_no;
+                $data->gstin_no=$request->gstin_no;
                 $data->pip_fresh_min_amt=$request->pip_fresh_min_amt;
                 $data->sip_fresh_min_amt=$request->sip_fresh_min_amt;
                 $data->pip_add_min_amt=$request->pip_add_min_amt;
@@ -102,7 +105,7 @@ class SchemeController extends Controller
                         'category_id'=>$request->category_id,
                         'subcategory_id'=>$request->subcategory_id,
                         'scheme_name'=>$request->scheme_name,
-                        'isin_no'=>$request->isin_no,
+                        'gstin_no'=>$request->gstin_no,
                         'scheme_type'=>$request->scheme_type,
                         // 'nfo_start_dt'=>$request->nfo_start_dt,
                         // 'nfo_end_dt'=>$request->nfo_end_dt,
@@ -120,7 +123,7 @@ class SchemeController extends Controller
                         'category_id'=>$request->category_id,
                         'subcategory_id'=>$request->subcategory_id,
                         'scheme_name'=>$request->scheme_name,
-                        'isin_no'=>$request->isin_no,
+                        'gstin_no'=>$request->gstin_no,
                         'scheme_type'=>$request->scheme_type,
                         'nfo_start_dt'=>date('Y-m-d',strtotime($request->nfo_start_dt)),
                         'nfo_end_dt'=>date('Y-m-d',strtotime($request->nfo_end_dt)),

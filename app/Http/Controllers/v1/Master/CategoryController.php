@@ -19,6 +19,9 @@ class CategoryController extends Controller
             $product_id=$request->product_id;
             $id=$request->id;
             $paginate=$request->paginate;
+            if ($paginate=='A') {
+                $paginate=999999999;
+            }
             if ($search!='') {
                 $data=Category::where('cat_name','like', '%' . $search . '%')->get();      
             }else if ($product_id!='') {

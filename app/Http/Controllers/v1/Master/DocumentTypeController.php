@@ -18,6 +18,9 @@ class DocumentTypeController extends Controller
             $search=$request->search;
             $id=$request->id;
             $paginate=$request->paginate;
+            if ($paginate=='A') {
+                $paginate=999999999;
+            }
             if ($search!='') {
                 $data=DocumentType::where('doc_type','like', '%' . $search . '%')->get();      
             }elseif ($id!='') {

@@ -18,6 +18,9 @@ class DocumentController extends Controller
             $search=$request->search;
             $client_id=$request->client_id;
             $paginate=$request->paginate;
+            if ($paginate=='A') {
+                $paginate=999999999;
+            }
             if ($search!='') {
                 $data=Client::with('ClientDoc')->orWhere('client_name','like', '%' . $search . '%')
                     ->orWhere('client_code','like', '%' . $search . '%')

@@ -12,6 +12,30 @@ use App\Imports\AMCImport;
 
 class AMCController extends Controller
 {
+    public function searchDetails(Request $request)
+    {
+        try {  
+            $rnt_id=$request->rnt_id;
+            $amc_id=$request->amc_id;
+            $contact_per=$request->contact_per;
+            $contact_per_mobile=$request->contact_per_mobile;
+            $contact_per_email=$request->contact_per_email;
+            $contact_per=$request->contact_per;
+            $contact_per_mobile=$request->contact_per_mobile;
+            $contact_per_email=$request->contact_per_email;
+            $paginate=$request->paginate;
+                $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                    ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+                    ->where('md_amc.id',$amc_id)
+                    ->orWhere('md_amc.rnt_id',$rnt_id)
+                    ->orderBy('md_amc.updated_at','DESC')
+                    ->paginate($paginate);      
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($data);
+    }
     public function index(Request $request)
     {
         try {  
@@ -20,6 +44,9 @@ class AMCController extends Controller
             $rnt_id=$request->rnt_id;
             $id=$request->id;
             $paginate=$request->paginate;
+            if ($paginate=='A') {
+                $paginate=999999999;
+            }
             if ($search!='') {
                 $data=AMC::where('amc_name','like', '%' . $search . '%')->get();      
             } elseif ($product_id!='') {
@@ -29,7 +56,11 @@ class AMCController extends Controller
             } elseif ($id!='') {
                 $data=AMC::where('id',$id)->get();  
             } elseif ($paginate!='') {
-                $data=AMC::orderBy('updated_at','DESC')->paginate($paginate);      
+                $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                    ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+                    ->orderBy('md_amc.updated_at','DESC')
+                    ->paginate($paginate);      
+                // $data=AMC::orderBy('updated_at','DESC')->paginate($paginate);      
             } else {
                 $data=AMC::orderBy('updated_at','DESC')->get();      
             }
@@ -59,7 +90,14 @@ class AMCController extends Controller
                 $data->product_id=$request->product_id;
                 $data->amc_name=$request->amc_name;
                 $data->website=$request->website;
-                $data->ofc_addr=$request->ofc_addr;
+                $data->head_ofc_addr=$request->head_ofc_addr;
+                $data->head_ofc_contact_per=$request->head_ofc_contact_per;
+                $data->head_contact_per_mob=$request->head_contact_per_mob;
+                $data->head_contact_per_email=$request->head_contact_per_email;
+                $data->local_ofc_addr=$request->local_ofc_addr;
+                $data->local_ofc_contact_per=$request->local_ofc_contact_per;
+                $data->local_contact_per_mob=$request->local_contact_per_mob;
+                $data->local_contact_per_email=$request->local_contact_per_email;
                 $data->cus_care_no=$request->cus_care_no;
                 $data->cus_care_email=$request->cus_care_email;
                 $data->l1_name=$request->l1_name;
@@ -83,8 +121,6 @@ class AMCController extends Controller
                 $data->l7_name=$request->l7_name;
                 $data->l7_contact_no=$request->l7_contact_no;
                 $data->l7_email=$request->l7_email;
-                $data->sip_start_date=date('Y-m-d',strtotime($request->sip_start_date));
-                $data->sip_end_date=date('Y-m-d',strtotime($request->sip_end_date));
                 $data->save();
             }else{
                 $data=AMC::create(array(
@@ -92,7 +128,14 @@ class AMCController extends Controller
                     'product_id'=>$request->product_id,
                     'amc_name'=>$request->amc_name,
                     'website'=>$request->website,
-                    'ofc_addr'=>$request->ofc_addr,
+                    'head_ofc_addr'=>$request->head_ofc_addr,
+                    'head_ofc_contact_per'=>$request->head_ofc_contact_per,
+                    'head_contact_per_mob'=>$request->head_contact_per_mob,
+                    'head_contact_per_email'=>$request->head_contact_per_email,
+                    'local_ofc_addr'=>$request->local_ofc_addr,
+                    'local_ofc_contact_per'=>$request->local_ofc_contact_per,
+                    'local_contact_per_mob'=>$request->local_contact_per_mob,
+                    'local_contact_per_email'=>$request->local_contact_per_email,
                     'cus_care_no'=>$request->cus_care_no,
                     'cus_care_email'=>$request->cus_care_email,
                     'l1_name'=>$request->l1_name,
@@ -116,8 +159,6 @@ class AMCController extends Controller
                     'l7_name'=>$request->l7_name,
                     'l7_contact_no'=>$request->l7_contact_no,
                     'l7_email'=>$request->l7_email,
-                    'sip_start_date'=>date('Y-m-d',strtotime($request->sip_start_date)),
-                    'sip_end_date'=>date('Y-m-d',strtotime($request->sip_end_date)),
                     // 'created_by'=>'',
                 ));      
             }    

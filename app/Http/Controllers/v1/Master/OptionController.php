@@ -18,6 +18,9 @@ class OptionController extends Controller
             $search=$request->search;
             $id=$request->id;
             $paginate=$request->paginate;
+            if ($paginate=='A') {
+                $paginate=999999999;
+            }
             if ($search!='') {
                 $data=Option::where('opt_name','like', '%' . $search . '%')->get();      
             }else if ($id!='') {

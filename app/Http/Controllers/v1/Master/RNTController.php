@@ -18,6 +18,9 @@ class RNTController extends Controller
             $search=$request->search;
             $id=$request->id;
             $paginate=$request->paginate;
+            if ($paginate=='A') {
+                $paginate=999999999;
+            }
             if ($search!='') {
                 $data=RNT::where('rnt_name','like', '%' . $search . '%')->get();      
             }else if ($id!='') {

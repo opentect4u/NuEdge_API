@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Helpers\Helper;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use App\Models\AMC;
 
 class TestController extends Controller
 {
@@ -20,6 +21,14 @@ class TestController extends Controller
     public function index1()
     {
         // return "hii";
+
+
+        $paginate=10;
+        $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+            ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+            ->orderBy('md_amc.updated_at','DESC')
+            ->paginate($paginate);   
+        return $data;
         $start="2022-01-04";
         $end=date('Y-m-d');
         // $months=[];

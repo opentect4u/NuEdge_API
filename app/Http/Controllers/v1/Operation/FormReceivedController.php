@@ -19,6 +19,9 @@ class FormReceivedController extends Controller
             $trans_id=$request->trans_id;
             $flag=$request->flag;
             $paginate=$request->paginate;
+            if ($paginate=='A') {
+                $paginate=999999999;
+            }
             // $flag=$request->flag;
 
             if ($search!='') {

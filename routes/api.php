@@ -36,6 +36,7 @@ Route::prefix('v1')->group(function () {
         Route::post('productAddEdit',[App\Http\Controllers\v1\Master\ProductController::class,'createUpdate']);
 
         Route::get('amc',[App\Http\Controllers\v1\Master\AMCController::class,'index']);
+        Route::post('amcDetailSearch',[App\Http\Controllers\v1\Master\AMCController::class,'searchDetails']);
         Route::post('amcAddEdit',[App\Http\Controllers\v1\Master\AMCController::class,'createUpdate']);
         Route::post('amcimport', [App\Http\Controllers\v1\Master\AMCController::class,'import']);
 

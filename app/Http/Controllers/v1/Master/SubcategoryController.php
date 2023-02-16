@@ -19,6 +19,9 @@ class SubcategoryController extends Controller
             $category_id=$request->category_id;
             $id=$request->id;
             $paginate=$request->paginate;
+            if ($paginate=='A') {
+                $paginate=999999999;
+            }
             if ($search!='') {
                 $data=SubCategory::where('subcategory_name','like', '%' . $search . '%')->get();      
             }else if ($category_id!='') {
