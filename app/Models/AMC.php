@@ -13,6 +13,7 @@ class AMC extends Model
         'rnt_id',
         'product_id',
         'amc_name',
+        'gstin',
         'website',
         'head_ofc_addr',
         'head_ofc_contact_per',

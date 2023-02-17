@@ -12,6 +12,29 @@ use App\Imports\OptionImport;
 
 class OptionController extends Controller
 {
+    public function searchDetails(Request $request)
+    {
+        try {
+            $paginate=$request->paginate;
+            $opt_name=$request->opt_name;
+            $data=Option::where('opt_name','like', '%' . $opt_name . '%')
+                ->orderBy('updated_at','DESC')->paginate($paginate);      
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($data);
+    }
+    public function export(Request $request)
+    {
+        try {
+            $data=Option::orderBy('updated_at','DESC')->get();      
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($data);
+    }
     public function index(Request $request)
     {
         try {  

@@ -12,6 +12,29 @@ use App\Imports\DocumentTypeImport;
 
 class DocumentTypeController extends Controller
 {
+    public function searchDetails(Request $request)
+    {
+        try {
+            $paginate=$request->paginate;
+            $doc_type=$request->doc_type;
+            $data=DocumentType::where('doc_type','like', '%' . $doc_type . '%')
+                ->orderBy('updated_at','DESC')->paginate($paginate);      
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($data);
+    }
+    public function export(Request $request)
+    {
+        try {
+            $data=DocumentType::orderBy('updated_at','DESC')->get();      
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($data);
+    }
     public function index(Request $request)
     {
         try {  

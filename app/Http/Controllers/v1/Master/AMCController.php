@@ -17,6 +17,7 @@ class AMCController extends Controller
         try {  
             $rnt_id=$request->rnt_id;
             $amc_id=$request->amc_id;
+            $gstin=$request->gstin;
             $contact_per=$request->contact_per;
             $contact_per_mobile=$request->contact_per_mobile;
             $contact_per_email=$request->contact_per_email;
@@ -24,18 +25,139 @@ class AMCController extends Controller
             $contact_per_mobile=$request->contact_per_mobile;
             $contact_per_email=$request->contact_per_email;
             $paginate=$request->paginate;
+            if ($amc_id!='' && $rnt_id!='' && $gstin!='') {
                 $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
                     ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
                     ->where('md_amc.id',$amc_id)
-                    ->orWhere('md_amc.rnt_id',$rnt_id)
+                    ->where('md_amc.rnt_id',$rnt_id)
+                    ->where('md_amc.gstin','like', '%' . $gstin . '%')
                     ->orderBy('md_amc.updated_at','DESC')
                     ->paginate($paginate);      
+            }elseif ($rnt_id!='' && $gstin!='') {
+                $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                    ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+                    ->where('md_amc.gstin','like', '%' . $gstin . '%')
+                    ->where('md_amc.rnt_id',$rnt_id)
+                    ->orderBy('md_amc.updated_at','DESC')
+                    ->paginate($paginate);      
+            }elseif ($amc_id!='' && $rnt_id!='') {
+                $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                    ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+                    ->where('md_amc.amc_id',$amc_id)
+                    ->where('md_amc.rnt_id',$rnt_id)
+                    ->orderBy('md_amc.updated_at','DESC')
+                    ->paginate($paginate);      
+            }elseif ($amc_id!='' && $gstin!='') {
+                $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                    ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+                    ->where('md_amc.amc_id',$amc_id)
+                    ->where('md_amc.gstin','like', '%' . $gstin . '%')
+                    ->orderBy('md_amc.updated_at','DESC')
+                    ->paginate($paginate);    
+            } elseif ($amc_id!='') {
+                $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                    ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+                    // ->where('md_amc.id',$amc_id)
+                    ->where('md_amc.rnt_id',$rnt_id)
+                    ->orderBy('md_amc.updated_at','DESC')
+                    ->paginate($paginate);      
+            }elseif ($gstin!='') {
+                $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+                ->where('md_amc.gstin','like', '%' . $gstin . '%')
+                ->orderBy('md_amc.updated_at','DESC')
+                ->paginate($paginate);    
+            } elseif ($rnt_id!='') {
+                $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+                ->where('md_amc.id',$amc_id)
+                // ->where('md_amc.rnt_id',$rnt_id)
+                ->orderBy('md_amc.updated_at','DESC')
+                ->paginate($paginate);      
+            }else {
+                $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                    ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+                    // ->where('md_amc.id',$amc_id)
+                    // ->orWhere('md_amc.rnt_id',$rnt_id)
+                    ->orderBy('md_amc.updated_at','DESC')
+                    ->paginate($paginate);    
+            }  
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
         return Helper::SuccessResponse($data);
     }
+
+    public function export(Request $request)
+    {
+        try {
+            $rnt_id=$request->rnt_id;
+            $amc_id=$request->amc_id;
+            $gstin=$request->gstin;
+            if ($amc_id!='' && $rnt_id!='' && $gstin!='') {
+                $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                    ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+                    ->where('md_amc.id',$amc_id)
+                    ->where('md_amc.rnt_id',$rnt_id)
+                    ->where('md_amc.gstin','like', '%' . $gstin . '%')
+                    ->orderBy('md_amc.updated_at','DESC')
+                    ->get();      
+            }elseif ($rnt_id!='' && $gstin!='') {
+                $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                    ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+                    ->where('md_amc.gstin','like', '%' . $gstin . '%')
+                    ->where('md_amc.rnt_id',$rnt_id)
+                    ->orderBy('md_amc.updated_at','DESC')
+                    ->get();      
+            }elseif ($amc_id!='' && $rnt_id!='') {
+                $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                    ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+                    ->where('md_amc.amc_id',$amc_id)
+                    ->where('md_amc.rnt_id',$rnt_id)
+                    ->orderBy('md_amc.updated_at','DESC')
+                    ->get();      
+            }elseif ($amc_id!='' && $gstin!='') {
+                $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                    ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+                    ->where('md_amc.amc_id',$amc_id)
+                    ->where('md_amc.gstin','like', '%' . $gstin . '%')
+                    ->orderBy('md_amc.updated_at','DESC')
+                    ->get();    
+            } elseif ($amc_id!='') {
+                $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                    ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+                    // ->where('md_amc.id',$amc_id)
+                    ->where('md_amc.rnt_id',$rnt_id)
+                    ->orderBy('md_amc.updated_at','DESC')
+                    ->get();      
+            }elseif ($gstin!='') {
+                $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+                ->where('md_amc.gstin','like', '%' . $gstin . '%')
+                ->orderBy('md_amc.updated_at','DESC')
+                ->get();    
+            } elseif ($rnt_id!='') {
+                $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+                ->where('md_amc.id',$amc_id)
+                ->orderBy('md_amc.updated_at','DESC')
+                ->get();      
+            }else {
+                $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                    ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+                    // ->where('md_amc.id',$amc_id)
+                    // ->orWhere('md_amc.rnt_id',$rnt_id)
+                    ->orderBy('md_amc.updated_at','DESC')
+                    ->get();    
+            }  
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($data);
+    }
+
     public function index(Request $request)
     {
         try {  
@@ -89,6 +211,7 @@ class AMCController extends Controller
                 $data->rnt_id=$request->rnt_id;
                 $data->product_id=$request->product_id;
                 $data->amc_name=$request->amc_name;
+                $data->gstin=$request->gstin;
                 $data->website=$request->website;
                 $data->head_ofc_addr=$request->head_ofc_addr;
                 $data->head_ofc_contact_per=$request->head_ofc_contact_per;
@@ -127,6 +250,7 @@ class AMCController extends Controller
                     'rnt_id'=>$request->rnt_id,
                     'product_id'=>$request->product_id,
                     'amc_name'=>$request->amc_name,
+                    'gstin'=>$request->gstin,
                     'website'=>$request->website,
                     'head_ofc_addr'=>$request->head_ofc_addr,
                     'head_ofc_contact_per'=>$request->head_ofc_contact_per,

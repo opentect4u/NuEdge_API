@@ -12,6 +12,28 @@ use App\Imports\RNTImport;
 
 class RNTController extends Controller
 {
+    public function searchDetails(Request $request)
+    {
+        try {
+            $paginate=$request->paginate;
+            $id=$request->rnt_id;
+            $data=RNT::where('id',$id)->orderBy('updated_at','DESC')->paginate($paginate);      
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($data);
+    }
+    public function export(Request $request)
+    {
+        try {
+            $data=RNT::orderBy('updated_at','DESC')->get();      
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($data);
+    }
     public function index(Request $request)
     {
         try {
@@ -52,7 +74,14 @@ class RNTController extends Controller
                 $data=RNT::find($request->id);
                 $data->rnt_name=$request->rnt_name;
                 $data->website=$request->website;
-                $data->ofc_addr=$request->ofc_addr;
+                $data->head_ofc_addr=$request->head_ofc_addr;
+                $data->head_ofc_contact_per=$request->head_ofc_contact_per;
+                $data->head_contact_per_mob=$request->head_contact_per_mob;
+                $data->head_contact_per_email=$request->head_contact_per_email;
+                $data->local_ofc_addr=$request->local_ofc_addr;
+                $data->local_ofc_contact_per=$request->local_ofc_contact_per;
+                $data->local_contact_per_mob=$request->local_contact_per_mob;
+                $data->local_contact_per_email=$request->local_contact_per_email;
                 $data->cus_care_no=$request->cus_care_no;
                 $data->cus_care_email=$request->cus_care_email;
                 $data->save();
@@ -60,7 +89,14 @@ class RNTController extends Controller
                 $data=RNT::create(array(
                     'rnt_name'=>$request->rnt_name,
                     'website'=>$request->website,
-                    'ofc_addr'=>$request->ofc_addr,
+                    'head_ofc_addr'=>$request->head_ofc_addr,
+                    'head_ofc_contact_per'=>$request->head_ofc_contact_per,
+                    'head_contact_per_mob'=>$request->head_contact_per_mob,
+                    'head_contact_per_email'=>$request->head_contact_per_email,
+                    'local_ofc_addr'=>$request->local_ofc_addr,
+                    'local_ofc_contact_per'=>$request->local_ofc_contact_per,
+                    'local_contact_per_mob'=>$request->local_contact_per_mob,
+                    'local_contact_per_email'=>$request->local_contact_per_email,
                     'cus_care_no'=>$request->cus_care_no,
                     'cus_care_email'=>$request->cus_care_email,
                     // 'created_by'=>'',

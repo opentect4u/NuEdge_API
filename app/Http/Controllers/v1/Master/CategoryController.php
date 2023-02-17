@@ -12,6 +12,30 @@ use App\Imports\CategoryImport;
 
 class CategoryController extends Controller
 {
+    public function searchDetails(Request $request)
+    {
+        try {
+            $paginate=$request->paginate;
+            $cat_name=$request->cat_name;
+            $data=Category::where('cat_name','like', '%' . $cat_name . '%')
+                ->orderBy('updated_at','DESC')->paginate($paginate);      
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($data);
+    }
+    public function export(Request $request)
+    {
+        try {
+            $data=Category::orderBy('updated_at','DESC')->get();      
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($data);
+    }
+
     public function index(Request $request)
     {
         try {  

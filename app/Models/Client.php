@@ -14,6 +14,8 @@ class Client extends Model
         'client_code',
         'client_name',
         'dob',
+        'dob_actual',
+        'anniversary_date',
         'add_line_1',
         'add_line_2',
         'city',

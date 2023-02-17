@@ -12,6 +12,29 @@ use App\Imports\DepositBankImport;
 
 class DepositBankController extends Controller
 {
+    public function searchDetails(Request $request)
+    {
+        try {
+            $paginate=$request->paginate;
+            $ifs_code=$request->ifs_code;
+            $data=DepositBank::where('ifs_code','like', '%' . $ifs_code . '%')
+                ->orderBy('updated_at','DESC')->paginate($paginate);      
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($data);
+    }
+    public function export(Request $request)
+    {
+        try {
+            $data=DepositBank::orderBy('updated_at','DESC')->get();      
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($data);
+    }
     public function index(Request $request)
     {
         try {  
