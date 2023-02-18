@@ -14,13 +14,9 @@ class SIPTypeController extends Controller
     {
         try {
             $paginate=$request->paginate;
-            $trns_type=$request->trns_type;
-            $data=SIPType::join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
-                ->select('md_trans.*','md_trns_type.trns_type as trns_type')
-                ->where('md_trns_type.product_id',$product_id)
-                // ->orWhere()
-                ->orderBy('updated_at','DESC')
-                ->paginate($paginate);      
+            $sip_type_name=$request->sip_type_name;
+            $data=SIPType::orWhere('sip_type_name','like', '%' . $sip_type_name . '%')
+                ->paginate($paginate); 
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
@@ -30,11 +26,8 @@ class SIPTypeController extends Controller
     public function export(Request $request)
     {
         try {
-            $data=SIPType::join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
-                ->select('md_trans.*','md_trns_type.trns_type as trns_type')
-                ->where('md_trns_type.product_id',$product_id)
-                ->orderBy('updated_at','DESC')
-                ->get();          
+                
+            $data=SIPType::get();      
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
