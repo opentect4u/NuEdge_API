@@ -17,8 +17,8 @@ class EmployeeController extends Controller
             $sub_arn_no=$request->sub_arn_no;
             if ($search!='' && $sub_arn_no!='') {
                 $data=Employee::where('arn_no',$sub_arn_no)
-                    ->orWhere('euin_no','like', '%' . $search . '%')
-                    ->orWhere('emp_name','like', '%' . $search . '%')
+                    ->where('euin_no','like', '%' . $search . '%')
+                    ->where('emp_name','like', '%' . $search . '%')
                     ->get();      
             }elseif ($search!='') {
                 $data=Employee::where('euin_no','like', '%' . $search . '%')

@@ -15,7 +15,10 @@ class SubBrokerController extends Controller
         try {  
             $search=$request->search;
             if ($search!='') {
-                $data=SubBroker::where('bro_name','like', '%' . $search . '%')->get();      
+                $data=SubBroker::where('arn_no','like', '%' . $search . '%')
+                    ->orWhere('code','like', '%' . $search . '%')
+                    ->orWhere('bro_name','like', '%' . $search . '%')
+                    ->get();      
             }else{
                 $data=SubBroker::whereDate('updated_at',date('Y-m-d'))->get();   
             }   
