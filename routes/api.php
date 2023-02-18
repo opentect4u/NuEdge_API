@@ -74,6 +74,8 @@ Route::prefix('v1')->group(function () {
         Route::post('formtypeAddEdit',[App\Http\Controllers\v1\Master\FormTypeController::class,'createUpdate']);
 
         Route::get('transctiontype',[App\Http\Controllers\v1\Master\TransctionTypeController::class,'index']);
+        Route::post('transctiontypeSearch',[App\Http\Controllers\v1\Master\TransctionTypeController::class,'searchDetails']);
+        Route::post('transctiontypeExport',[App\Http\Controllers\v1\Master\TransctionTypeController::class,'export']);
         Route::post('transctiontypeAddEdit',[App\Http\Controllers\v1\Master\TransctionTypeController::class,'createUpdate']);
 
         Route::get('transction',[App\Http\Controllers\v1\Master\TransctionController::class,'index']);
