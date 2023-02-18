@@ -30,6 +30,7 @@ class TransctionController extends Controller
     public function export(Request $request)
     {
         try {
+            $product_id=$request->product_id;
             $data=Transction::join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
                 ->select('md_trans.*','md_trns_type.trns_type as trns_type')
                 ->where('md_trns_type.product_id',$product_id)
