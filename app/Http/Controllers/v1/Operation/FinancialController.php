@@ -11,6 +11,38 @@ use Illuminate\Support\Carbon;
 
 class FinancialController extends Controller
 {
+    public function searchDetails(Request $request)
+    {
+        try {
+            $paginate=$request->paginate;
+            $trans_type_id=$request->trans_type_id;
+            $cat_name=$request->cat_name;
+            $data=MutualFund::join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
+                    ->select('td_mutual_fund.*','md_trans.trans_type_id as trans_type_id')
+                    ->where('md_trans.trans_type_id',$trans_type_id)
+                    // ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
+                    ->paginate($paginate);   
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($data);
+    }
+    public function export(Request $request)
+    {
+        try {
+            $trans_type_id=$request->trans_type_id;
+            $data=MutualFund::join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
+                    ->select('td_mutual_fund.*','md_trans.trans_type_id as trans_type_id')
+                    ->where('md_trans.trans_type_id',$trans_type_id)
+                    // ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
+                    ->get();  
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($data);
+    }
     public function index(Request $request)
     {
         // try {  

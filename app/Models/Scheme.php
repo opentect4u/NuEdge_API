@@ -24,6 +24,7 @@ class Scheme extends Model
         'sip_fresh_min_amt',
         'pip_add_min_amt',
         'sip_add_min_amt',
+        'sip_date',
         'created_by',
         'updated_by',
     ];
