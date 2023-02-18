@@ -14,7 +14,7 @@ class SchemeController extends Controller
 {
     public function index(Request $request)
     {
-        try {  
+        // try {  
             $search=$request->search;
             $product_id=$request->product_id;
             $category_id=$request->category_id;
@@ -57,10 +57,10 @@ class SchemeController extends Controller
                 $data=Scheme::whereDate('updated_at',date('Y-m-d'))->get();      
             }
             // $data=Scheme::whereDate('updated_at',date('Y-m-d'))->get();      
-        } catch (\Throwable $th) {
-            //throw $th;
-            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
-        }
+        // } catch (\Throwable $th) {
+        //     //throw $th;
+        //     return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        // }
         return Helper::SuccessResponse($data);
     }
 

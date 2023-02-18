@@ -26,7 +26,6 @@ class SIPTypeController extends Controller
     public function export(Request $request)
     {
         try {
-                
             $data=SIPType::get();      
         } catch (\Throwable $th) {
             //throw $th;

@@ -205,6 +205,7 @@ class FormReceivedController extends Controller
                     'recv_from'=>$request->recv_from,
                     'inv_type'=>$request->inv_type,
                     'application_no'=>isset($request->application_no)?$request->application_no:NULL,
+                    'folio_no'=>isset($request->folio_no)?$request->folio_no:NULL,
                     'kyc_status'=>$request->kyc_status,
                     'branch_code'=>$branch_code,
                     // 'created_by'=>'',

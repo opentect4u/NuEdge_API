@@ -26,6 +26,7 @@ class FormReceived extends Model
         'recv_from',
         'inv_type',
         'application_no',
+        'folio_no',
         'kyc_status',
         'branch_code',
         'deleted_at',
