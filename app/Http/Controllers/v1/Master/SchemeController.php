@@ -114,8 +114,8 @@ class SchemeController extends Controller
             return Helper::ErrorResponse(parent::VALIDATION_ERROR);
         }
         // try {
-            return $request->sip_date;
-            return json_decode($request->sip_date);
+            // return $request->sip_date;
+            // return json_decode($request->sip_date);
             if ($request->id > 0) {
                 $data=Scheme::find($request->id);
                 if ($request->scheme_type=='N') {
@@ -133,7 +133,7 @@ class SchemeController extends Controller
                 $data->sip_fresh_min_amt=$request->sip_fresh_min_amt;
                 $data->pip_add_min_amt=$request->pip_add_min_amt;
                 $data->sip_add_min_amt=$request->sip_add_min_amt;
-                $data->sip_date=$request->sip_date;
+                $data->sip_date=json_encode($request->sip_date);
                 $data->save();
             }else{
                 if ($request->scheme_type=='O') {
@@ -152,7 +152,7 @@ class SchemeController extends Controller
                         'sip_fresh_min_amt'=>$request->sip_fresh_min_amt,
                         'pip_add_min_amt'=>$request->pip_add_min_amt,
                         'sip_add_min_amt'=>$request->sip_add_min_amt,
-                        'sip_date'=>$request->sip_date,
+                        'sip_date'=>json_encode($request->sip_date),
                         // 'created_by'=>'',
                     ));    
                 }elseif ($request->scheme_type=='N') {
@@ -171,7 +171,7 @@ class SchemeController extends Controller
                         'sip_fresh_min_amt'=>$request->sip_fresh_min_amt,
                         'pip_add_min_amt'=>$request->pip_add_min_amt,
                         'sip_add_min_amt'=>$request->sip_add_min_amt,
-                        'sip_date'=>$request->sip_date,
+                        'sip_date'=>json_encode($request->sip_date),
                         // 'created_by'=>'',
                     ));  
                 }  
