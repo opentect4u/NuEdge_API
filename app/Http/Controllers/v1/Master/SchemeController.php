@@ -114,7 +114,7 @@ class SchemeController extends Controller
             return Helper::ErrorResponse(parent::VALIDATION_ERROR);
         }
         // try {
-            return $request->sip_date;
+            return json_decode($request->sip_date);
             if ($request->id > 0) {
                 $data=Scheme::find($request->id);
                 if ($request->scheme_type=='N') {
