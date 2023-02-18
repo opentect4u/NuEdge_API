@@ -116,6 +116,7 @@ class SchemeController extends Controller
         // try {
             // return $request->sip_date;
             // return json_decode($request->sip_date);
+            // 'sip_date'=>json_encode($request->sip_date),
             if ($request->id > 0) {
                 $data=Scheme::find($request->id);
                 if ($request->scheme_type=='N') {
@@ -128,12 +129,11 @@ class SchemeController extends Controller
                 $data->category_id=$request->category_id;
                 $data->subcategory_id=$request->subcategory_id;
                 $data->scheme_name=$request->scheme_name;
-                $data->gstin_no=$request->gstin_no;
                 $data->pip_fresh_min_amt=$request->pip_fresh_min_amt;
                 $data->sip_fresh_min_amt=$request->sip_fresh_min_amt;
                 $data->pip_add_min_amt=$request->pip_add_min_amt;
                 $data->sip_add_min_amt=$request->sip_add_min_amt;
-                $data->sip_date=json_encode($request->sip_date);
+                $data->sip_date=$request->sip_date;
                 $data->save();
             }else{
                 if ($request->scheme_type=='O') {
@@ -143,7 +143,6 @@ class SchemeController extends Controller
                         'category_id'=>$request->category_id,
                         'subcategory_id'=>$request->subcategory_id,
                         'scheme_name'=>$request->scheme_name,
-                        'gstin_no'=>$request->gstin_no,
                         'scheme_type'=>$request->scheme_type,
                         // 'nfo_start_dt'=>$request->nfo_start_dt,
                         // 'nfo_end_dt'=>$request->nfo_end_dt,
@@ -152,7 +151,7 @@ class SchemeController extends Controller
                         'sip_fresh_min_amt'=>$request->sip_fresh_min_amt,
                         'pip_add_min_amt'=>$request->pip_add_min_amt,
                         'sip_add_min_amt'=>$request->sip_add_min_amt,
-                        'sip_date'=>json_encode($request->sip_date),
+                        'sip_date'=>$request->sip_date,
                         // 'created_by'=>'',
                     ));    
                 }elseif ($request->scheme_type=='N') {
@@ -162,7 +161,6 @@ class SchemeController extends Controller
                         'category_id'=>$request->category_id,
                         'subcategory_id'=>$request->subcategory_id,
                         'scheme_name'=>$request->scheme_name,
-                        'gstin_no'=>$request->gstin_no,
                         'scheme_type'=>$request->scheme_type,
                         'nfo_start_dt'=>date('Y-m-d',strtotime($request->nfo_start_dt)),
                         'nfo_end_dt'=>date('Y-m-d',strtotime($request->nfo_end_dt)),
@@ -171,7 +169,7 @@ class SchemeController extends Controller
                         'sip_fresh_min_amt'=>$request->sip_fresh_min_amt,
                         'pip_add_min_amt'=>$request->pip_add_min_amt,
                         'sip_add_min_amt'=>$request->sip_add_min_amt,
-                        'sip_date'=>json_encode($request->sip_date),
+                        'sip_date'=>$request->sip_date,
                         // 'created_by'=>'',
                     ));  
                 }  

@@ -15,7 +15,6 @@ class Scheme extends Model
         'category_id',
         'subcategory_id',
         'scheme_name',
-        'gstin_no',
         'scheme_type',
         'nfo_start_dt',
         'nfo_end_dt',
