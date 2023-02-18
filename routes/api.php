@@ -79,7 +79,14 @@ Route::prefix('v1')->group(function () {
         Route::post('transctiontypeAddEdit',[App\Http\Controllers\v1\Master\TransctionTypeController::class,'createUpdate']);
 
         Route::get('transction',[App\Http\Controllers\v1\Master\TransctionController::class,'index']);
+        Route::post('transctionSearch',[App\Http\Controllers\v1\Master\TransctionController::class,'searchDetails']);
+        Route::post('transctionExport',[App\Http\Controllers\v1\Master\TransctionController::class,'export']);
         Route::post('transctionAddEdit',[App\Http\Controllers\v1\Master\TransctionController::class,'createUpdate']);
+
+        Route::get('sipType',[App\Http\Controllers\v1\Master\SIPTypeController::class,'index']);
+        Route::post('sipTypeSearch',[App\Http\Controllers\v1\Master\SIPTypeController::class,'searchDetails']);
+        Route::post('sipTypeExport',[App\Http\Controllers\v1\Master\SIPTypeController::class,'export']);
+        Route::post('sipTypeAddEdit',[App\Http\Controllers\v1\Master\SIPTypeController::class,'createUpdate']);
 
         Route::get('scheme',[App\Http\Controllers\v1\Master\SchemeController::class,'index']);
         Route::post('schemeAddEdit',[App\Http\Controllers\v1\Master\SchemeController::class,'createUpdate']);

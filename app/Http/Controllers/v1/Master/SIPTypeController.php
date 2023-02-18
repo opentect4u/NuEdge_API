@@ -5,17 +5,17 @@ namespace App\Http\Controllers\v1\Master;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Helpers\Helper;
-use App\Models\Transction;
+use App\Models\SIPType;
 use Validator;
 
-class TransctionController extends Controller
+class SIPTypeController extends Controller
 {
     public function searchDetails(Request $request)
     {
         try {
             $paginate=$request->paginate;
             $trns_type=$request->trns_type;
-            $data=Transction::join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
+            $data=SIPType::join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
                 ->select('md_trans.*','md_trns_type.trns_type as trns_type')
                 ->where('md_trns_type.product_id',$product_id)
                 // ->orWhere()
@@ -30,7 +30,7 @@ class TransctionController extends Controller
     public function export(Request $request)
     {
         try {
-            $data=Transction::join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
+            $data=SIPType::join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
                 ->select('md_trans.*','md_trns_type.trns_type as trns_type')
                 ->where('md_trns_type.product_id',$product_id)
                 ->orderBy('updated_at','DESC')
@@ -46,26 +46,15 @@ class TransctionController extends Controller
     {
         try {  
             $search=$request->search;
-            $product_id=$request->product_id;
             $paginate=$request->paginate;
+            $product_id=$request->product_id;
             if ($search!='') {
-                $data=Transction::join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
-                ->select('md_trans.*','md_trns_type.trns_type as trns_type')
-                ->where('md_trns_type.product_id',$product_id)
-                ->orWhere('md_trans.trns_name','like', '%' . $search . '%')
+                $data=SIPType::orWhere('sip_type_name','like', '%' . $search . '%')
                 ->get();      
             }elseif ($paginate!='') {
-                $data=Transction::join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
-                    ->select('md_trans.*','md_trns_type.trns_type as trns_type')
-                    ->where('md_trns_type.product_id',$product_id)
-                    ->orderBy('updated_at','DESC')
-                    ->paginate($paginate);  
+                $data=SIPType::paginate($paginate);      
             } else {
-                $data=Transction::join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
-                    ->select('md_trans.*','md_trns_type.trns_type as trns_type')
-                    ->where('md_trns_type.product_id',$product_id)
-                    ->orderBy('updated_at','DESC')
-                    ->get();      
+                $data=SIPType::get();      
             }
         } catch (\Throwable $th) {
             //throw $th;
@@ -76,25 +65,23 @@ class TransctionController extends Controller
 
     public function createUpdate(Request $request)
     {
-        $validator = Validator::make(request()->all(),[
-            'trans_type_id' =>'required',
-            'trns_name' =>'required',
-        ]);
+        // $validator = Validator::make(request()->all(),[
+        //     'trans_type_id' =>'required',
+        //     'trns_name' =>'required',
+        // ]);
     
-        if($validator->fails()) {
-            $errors = $validator->errors();
-            return Helper::ErrorResponse(parent::VALIDATION_ERROR);
-        }
+        // if($validator->fails()) {
+        //     $errors = $validator->errors();
+        //     return Helper::ErrorResponse(parent::VALIDATION_ERROR);
+        // }
         try {
             if ($request->id > 0) {
-                $data=Transction::find($request->id);
-                $data->trans_type_id=$request->trans_type_id;
-                $data->trns_name=$request->trns_name;
+                $data=SIPType::find($request->id);
+                $data->sip_type_name=$request->sip_type_name;
                 $data->save();
             }else{
-                $data=Transction::create(array(
-                    'trans_type_id'=>$request->trans_type_id,
-                    'trns_name'=>$request->trns_name,
+                $data=SIPType::create(array(
+                    'sip_type_name'=>$request->sip_type_name,
                     // 'created_by'=>'',
                 ));      
             }    

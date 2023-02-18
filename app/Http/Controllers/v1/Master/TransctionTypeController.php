@@ -28,6 +28,7 @@ class TransctionTypeController extends Controller
     public function export(Request $request)
     {
         try {
+            $product_id=$request->product_id;
             $data=TransctionType::where('product_id',$product_id)
                 ->orderBy('updated_at','DESC')
                 ->get();      
