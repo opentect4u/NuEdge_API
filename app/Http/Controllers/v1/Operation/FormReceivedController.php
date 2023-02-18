@@ -10,6 +10,40 @@ use Validator;
 
 class FormReceivedController extends Controller
 {
+    public function searchDetails(Request $request)
+    {
+        try {
+            $paginate=$request->paginate;
+            $cat_name=$request->cat_name;
+            $data=FormReceived::join('md_trans','md_trans.id','=','td_form_received.trans_id')
+                    ->join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
+                    ->select('td_form_received.*','md_trans.trns_name as trans_name','md_trns_type.trns_type as trans_type')
+                    ->whereDate('td_form_received.updated_at',date('Y-m-d'))
+                    ->where('td_form_received.deleted_flag','N')
+                    ->orderBy('td_form_received.updated_at','DESC')
+                    ->paginate($paginate);      
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($data);
+    }
+    public function export(Request $request)
+    {
+        try {
+            $data=FormReceived::join('md_trans','md_trans.id','=','td_form_received.trans_id')
+                    ->join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
+                    ->select('td_form_received.*','md_trans.trns_name as trans_name','md_trns_type.trns_type as trans_type')
+                    ->whereDate('td_form_received.updated_at',date('Y-m-d'))
+                    ->where('td_form_received.deleted_flag','N')
+                    ->orderBy('td_form_received.updated_at','DESC')
+                    ->get();      
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($data);
+    }
     public function index(Request $request)
     {
         try {  

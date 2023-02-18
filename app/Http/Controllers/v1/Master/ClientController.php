@@ -13,6 +13,41 @@ use App\Imports\ClientImport;
 
 class ClientController extends Controller
 {
+    public function searchDetails(Request $request)
+    {
+        try {
+            $paginate=$request->paginate;
+            $cat_name=$request->cat_name;
+            $data=Client::with('ClientDoc')
+                ->join('md_city','md_city.id','=','md_client.city')
+                ->join('md_district','md_district.id','=','md_client.dist')
+                ->join('md_states','md_states.id','=','md_client.state')
+                ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name')
+                // ->where('md_client.id',$client_id)
+                // ->get();
+                ->paginate($paginate);      
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($data);
+    }
+    public function export(Request $request)
+    {
+        try {
+            $data=Client::with('ClientDoc')
+                    ->join('md_city','md_city.id','=','md_client.city')
+                    ->join('md_district','md_district.id','=','md_client.dist')
+                    ->join('md_states','md_states.id','=','md_client.state')
+                    ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name')
+                    // ->where('md_client.id',$client_id)
+                    ->get();
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($data);
+    }
     public function index(Request $request)
     {
         try {  

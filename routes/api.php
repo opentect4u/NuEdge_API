@@ -89,6 +89,8 @@ Route::prefix('v1')->group(function () {
         Route::post('sipTypeAddEdit',[App\Http\Controllers\v1\Master\SIPTypeController::class,'createUpdate']);
 
         Route::get('scheme',[App\Http\Controllers\v1\Master\SchemeController::class,'index']);
+        Route::post('schemeDetailSearch',[App\Http\Controllers\v1\Master\SchemeController::class,'searchDetails']);
+        Route::post('schemeExport',[App\Http\Controllers\v1\Master\SchemeController::class,'export']);
         Route::post('schemeAddEdit',[App\Http\Controllers\v1\Master\SchemeController::class,'createUpdate']);
         Route::post('schemeimport', [App\Http\Controllers\v1\Master\SchemeController::class,'import']);
 
@@ -133,6 +135,8 @@ Route::prefix('v1')->group(function () {
         Route::post('formreceivedAdd',[App\Http\Controllers\v1\Operation\FormReceivedController::class,'create']);
         Route::post('formreceivedEdit',[App\Http\Controllers\v1\Operation\FormReceivedController::class,'update']);
         Route::post('formreceivedDelete',[App\Http\Controllers\v1\Operation\FormReceivedController::class,'delete']);
+        Route::post('formreceivedDetailSearch',[App\Http\Controllers\v1\Master\FormReceivedController::class,'searchDetails']);
+        Route::post('formreceivedExport',[App\Http\Controllers\v1\Operation\FormReceivedController::class,'export']);
 
         Route::get('formtypeUsingPro',[App\Http\Controllers\v1\Operation\CommonController::class,'showFormType']);
         Route::get('showsubbroker',[App\Http\Controllers\v1\Operation\CommonController::class,'ShowSubBroker']);
@@ -142,7 +146,9 @@ Route::prefix('v1')->group(function () {
         Route::get('client',[App\Http\Controllers\v1\Master\ClientController::class,'index']);
         Route::post('clientAddEdit',[App\Http\Controllers\v1\Master\ClientController::class,'createUpdate']);
         Route::post('clientimport',[App\Http\Controllers\v1\Master\ClientController::class,'import']);
-
+        Route::post('clientDetailSearch',[App\Http\Controllers\v1\Master\ClientController::class,'searchDetails']);
+        Route::post('clientExport',[App\Http\Controllers\v1\Master\ClientController::class,'export']);
+        
         Route::get('documentsearch',[App\Http\Controllers\v1\Master\DocumentController::class,'search']);
         Route::get('document',[App\Http\Controllers\v1\Master\DocumentController::class,'index']);
         Route::get('documentshowEdit',[App\Http\Controllers\v1\Master\DocumentController::class,'Edit']);
