@@ -113,8 +113,8 @@ class SchemeController extends Controller
             $errors = $validator->errors();
             return Helper::ErrorResponse(parent::VALIDATION_ERROR);
         }
-        // try {
-            return json_decode($request->sip_date);
+        try {
+            // return json_decode($request->sip_date);
             if ($request->id > 0) {
                 $data=Scheme::find($request->id);
                 if ($request->scheme_type=='N') {
@@ -175,10 +175,10 @@ class SchemeController extends Controller
                     ));  
                 }  
             }    
-        // } catch (\Throwable $th) {
-        //     //throw $th;
-        //     return Helper::ErrorResponse(parent::DATA_SAVE_ERROR);
-        // }
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::DATA_SAVE_ERROR);
+        }
         return Helper::SuccessResponse($data);
     }
 
