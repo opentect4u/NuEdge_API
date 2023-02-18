@@ -21,7 +21,7 @@ class SchemeController extends Controller
                     ->join('md_category','md_category.id','=','md_scheme.category_id')
                     ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
                     ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
-                    ->select('md_scheme.*','md_amc.amc_name as amc_name','md_amc.sip_start_date as sip_start_date','md_amc.sip_end_date as sip_end_date','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
+                    ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
                     // ->where('md_scheme.id',$scheme_id)
                     ->paginate($paginate);      
         } catch (\Throwable $th) {
@@ -37,7 +37,7 @@ class SchemeController extends Controller
                     ->join('md_category','md_category.id','=','md_scheme.category_id')
                     ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
                     ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
-                    ->select('md_scheme.*','md_amc.amc_name as amc_name','md_amc.sip_start_date as sip_start_date','md_amc.sip_end_date as sip_end_date','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
+                    ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
                     // ->where('md_scheme.id',$scheme_id)
                     ->get();         
         } catch (\Throwable $th) {
@@ -46,7 +46,7 @@ class SchemeController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
-    
+
     public function index(Request $request)
     {
         // try {  
@@ -78,7 +78,7 @@ class SchemeController extends Controller
                     ->join('md_category','md_category.id','=','md_scheme.category_id')
                     ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
                     ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
-                    ->select('md_scheme.*','md_amc.amc_name as amc_name','md_amc.sip_start_date as sip_start_date','md_amc.sip_end_date as sip_end_date','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
+                    ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
                     ->where('md_scheme.id',$scheme_id)
                     ->get();      
                 // $data=Scheme::where('id',$scheme_id)->get();      
