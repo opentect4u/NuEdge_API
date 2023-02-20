@@ -72,10 +72,16 @@ class SIPTypeController extends Controller
                 $data->sip_type_name=$request->sip_type_name;
                 $data->save();
             }else{
-                $data=SIPType::create(array(
-                    'sip_type_name'=>$request->sip_type_name,
-                    // 'created_by'=>'',
-                ));      
+                $is_has=SIPType::where('sip_type_name',$request->sip_type_name)->count();
+                if ($is_has>0) {
+                    $msg='Already exist';
+                    return Helper::ErrorResponse($msg);
+                }else {
+                    $data=SIPType::create(array(
+                        'sip_type_name'=>$request->sip_type_name,
+                        // 'created_by'=>'',
+                    ));      
+                }
             }    
         } catch (\Throwable $th) {
             //throw $th;

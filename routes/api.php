@@ -135,7 +135,7 @@ Route::prefix('v1')->group(function () {
         Route::post('formreceivedAdd',[App\Http\Controllers\v1\Operation\FormReceivedController::class,'create']);
         Route::post('formreceivedEdit',[App\Http\Controllers\v1\Operation\FormReceivedController::class,'update']);
         Route::post('formreceivedDelete',[App\Http\Controllers\v1\Operation\FormReceivedController::class,'delete']);
-        Route::post('formreceivedDetailSearch',[App\Http\Controllers\v1\Master\FormReceivedController::class,'searchDetails']);
+        Route::post('formreceivedDetailSearch',[App\Http\Controllers\v1\Operation\FormReceivedController::class,'searchDetails']);
         Route::post('formreceivedExport',[App\Http\Controllers\v1\Operation\FormReceivedController::class,'export']);
 
         Route::get('formtypeUsingPro',[App\Http\Controllers\v1\Operation\CommonController::class,'showFormType']);
@@ -170,7 +170,7 @@ Route::prefix('v1')->group(function () {
         Route::get('mfTraxCreateShow',[App\Http\Controllers\v1\Operation\FinancialController::class,'createShow']);
         Route::post('mfTraxCreate',[App\Http\Controllers\v1\Operation\FinancialController::class,'create']);
         Route::post('mfTraxUpdate',[App\Http\Controllers\v1\Operation\FinancialController::class,'update']);
-        Route::post('mfTraxDetailSearch',[App\Http\Controllers\v1\Master\FinancialController::class,'searchDetails']);
+        Route::post('mfTraxDetailSearch',[App\Http\Controllers\v1\Operation\FinancialController::class,'searchDetails']);
         Route::post('mfTraxExport',[App\Http\Controllers\v1\Operation\FinancialController::class,'export']);
 
         Route::get('daysheetReport',[App\Http\Controllers\v1\Operation\ReportController::class,'index']);

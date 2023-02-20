@@ -48,6 +48,7 @@ class DepositBankController extends Controller
                 $data=DepositBank::where('bank_name','like', '%' . $search . '%')
                     ->orWhere('ifs_code','like', '%' . $search . '%')
                     ->orWhere('branch_name','like', '%' . $search . '%')
+                    ->orWhere('micr_code','like', '%' . $search . '%')
                     ->get();      
             }elseif ($id!='') {
                 $data=DepositBank::where('id',$id)->get();      
