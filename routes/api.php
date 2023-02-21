@@ -178,5 +178,9 @@ Route::prefix('v1')->group(function () {
         // =========================== operations routes end =======================================
 
         // Route::post('index1',[App\Http\Controllers\v1\Master\TestController::class,'index1']);
+
+
+        // ==========================================Cron routes===========================================
+        Route::get('nfoTOongoing',[App\Http\Controllers\v1\Cron\SchemeController::class,'nfoTOongoing']);
     // });
 });

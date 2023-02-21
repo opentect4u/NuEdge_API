@@ -62,9 +62,19 @@ class SchemeController extends Controller
             if ($paginate=='A') {
                 $paginate=999999999;
             }
-            if ($search!='' && $amc_id!='') {
+            if ($search!='' && $amc_id!='' && $scheme_type!='') {
+                $data=Scheme::where('scheme_type',$scheme_type)
+                    ->where('amc_id',$amc_id)
+                    ->where('scheme_name','like', '%' . $search . '%')
+                    ->get();      
+            } else if ($search!='' && $amc_id!='') {
                 $data=Scheme::where('amc_id',$amc_id)
                     ->orWhere('scheme_name','like', '%' . $search . '%')
+                    ->get();      
+            }else if ($search!='' && $scheme_type!='') {
+                // return "hii";
+                $data=Scheme::where('scheme_type',$scheme_type)
+                    ->where('scheme_name','like', '%' . $search . '%')
                     ->get();      
             }else if ($search!='') {
                 $data=Scheme::where('scheme_name','like', '%' . $search . '%')->get();      
@@ -123,6 +133,7 @@ class SchemeController extends Controller
                     $data->nfo_start_dt=date('Y-m-d',strtotime($request->nfo_start_dt));
                     $data->nfo_end_dt=date('Y-m-d',strtotime($request->nfo_end_dt));
                     $data->nfo_reopen_dt=date('Y-m-d',strtotime($request->nfo_reopen_dt));
+                    $data->nfo_entry_date=date('Y-m-d',strtotime($request->nfo_entry_date));
                 }  
                 $data->product_id=$request->product_id;
                 $data->amc_id=$request->amc_id;
@@ -165,6 +176,7 @@ class SchemeController extends Controller
                         'nfo_start_dt'=>date('Y-m-d',strtotime($request->nfo_start_dt)),
                         'nfo_end_dt'=>date('Y-m-d',strtotime($request->nfo_end_dt)),
                         'nfo_reopen_dt'=>date('Y-m-d',strtotime($request->nfo_reopen_dt)),
+                        'nfo_entry_date'=>date('Y-m-d',strtotime($request->nfo_entry_date)),
                         'pip_fresh_min_amt'=>$request->pip_fresh_min_amt,
                         'sip_fresh_min_amt'=>$request->sip_fresh_min_amt,
                         'pip_add_min_amt'=>$request->pip_add_min_amt,
