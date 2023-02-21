@@ -15,8 +15,17 @@ class FormReceivedController extends Controller
         try {
             $paginate=$request->paginate;
             $trans_type_id=$request->trans_type_id;
+
             $temp_tin_no=$request->temp_tin_no;
-            $cat_name=$request->cat_name;
+            $client_code=$request->client_code;
+            $recv_from=$request->recv_from;
+            $sub_brk_cd=$request->sub_brk_cd;
+            $euin_no=$request->euin_no;
+            $inv_type=$request->inv_type;
+            $trans_type=$request->trans_type;
+            $bu_type=$request->bu_type;
+            $kyc_status=$request->kyc_status;
+
             if ($temp_tin_no!='') {
                 $data=FormReceived::join('md_trans','md_trans.id','=','td_form_received.trans_id')
                     ->join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
@@ -29,7 +38,21 @@ class FormReceivedController extends Controller
                     ->where('md_trans.trans_type_id',$trans_type_id)
                     ->orderBy('td_form_received.updated_at','DESC')
                     ->paginate($paginate);      
-            }else {
+            }elseif (!empty($client_code)) {
+                $data=FormReceived::join('md_trans','md_trans.id','=','td_form_received.trans_id')
+                    ->join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
+                    ->join('md_scheme','md_scheme.id','=','td_form_received.scheme_id')
+                    ->leftJoin('md_scheme as md_scheme_2','md_scheme_2.id','=','td_form_received.scheme_id_to')
+                    ->join('md_client','md_client.id','=','td_form_received.client_id')
+                    ->select('td_form_received.*','md_trans.trns_name as trans_name','md_trns_type.trns_type as trans_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to','md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type')
+                    ->where('td_form_received.deleted_flag','N')
+                    ->where('md_trans.trans_type_id',$trans_type_id)
+                    ->where('md_client.client_code','like', '%' . $client_code . '%')
+                    ->orWhere('md_client.client_name','like', '%' . $client_code . '%')
+                    ->orWhere('md_client.pan','like', '%' . $client_code . '%')
+                    ->orderBy('td_form_received.updated_at','DESC')
+                    ->paginate($paginate);      
+            } else {
                 $data=FormReceived::join('md_trans','md_trans.id','=','td_form_received.trans_id')
                     ->join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
                     ->join('md_scheme','md_scheme.id','=','td_form_received.scheme_id')
@@ -150,7 +173,7 @@ class FormReceivedController extends Controller
                     ->leftJoin('md_scheme as md_scheme_2','md_scheme_2.id','=','td_form_received.scheme_id_to')
                     ->join('md_client','md_client.id','=','td_form_received.client_id')
                     ->select('td_form_received.*','md_trans.trns_name as trans_name','md_trns_type.trns_type as trans_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to','md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type')
-                    ->whereDate('td_form_received.updated_at',date('Y-m-d'))
+                    // ->whereDate('td_form_received.updated_at',date('Y-m-d'))
                     ->where('td_form_received.deleted_flag','N')
                     ->where('md_trans.trans_type_id',$trans_type_id)
                     ->orderBy('td_form_received.updated_at','DESC')

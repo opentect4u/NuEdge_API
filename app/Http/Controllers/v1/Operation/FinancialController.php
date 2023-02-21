@@ -121,7 +121,7 @@ class FinancialController extends Controller
                     'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to'
                     )
                     ->where('md_trans.trans_type_id',$trans_type_id)
-                    ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
+                    // ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
                     ->paginate($paginate);   
             } else{
                 $data=MutualFund::join('td_form_received','td_form_received.temp_tin_no','=','td_mutual_fund.temp_tin_no')
