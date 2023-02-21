@@ -23,9 +23,9 @@ class FormReceivedController extends Controller
             $euin_no=$request->euin_no;
             $inv_type=$request->inv_type;
             $trans_type=$request->trans_type;
-            $bu_type=$request->bu_type;
+            $bu_type=json_decode($request->bu_type);
             $kyc_status=$request->kyc_status;
-            // return $bu_type;
+            return $bu_type;
 
             if ($paginate=='A' || $paginate=='undefined') {
                 $paginate=999999999;
