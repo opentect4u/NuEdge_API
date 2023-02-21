@@ -25,7 +25,7 @@ class FormReceivedController extends Controller
             $trans_type=$request->trans_type;
             $bu_type=$request->bu_type;
             $kyc_status=$request->kyc_status;
-            // return $bu_type;
+            return $bu_type;
 
             if ($paginate=='A' || $paginate=='undefined') {
                 $paginate=999999999;
