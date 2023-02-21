@@ -17,8 +17,10 @@ class SubcategoryController extends Controller
         try {
             $paginate=$request->paginate;
             $cat_name=$request->cat_name;
-            $data=SubCategory::where('cat_name','like', '%' . $cat_name . '%')
-                ->orderBy('updated_at','DESC')->paginate($paginate);      
+            $data=SubCategory::join('md_category','md_category.id','=','md_subcategory.category_id')
+                ->select('md_subcategory.*','md_category.cat_name as cat_name')
+                ->orderBy('updated_at','DESC')
+                ->paginate($paginate);      
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
@@ -28,7 +30,10 @@ class SubcategoryController extends Controller
     public function export(Request $request)
     {
         try {
-            $data=SubCategory::orderBy('updated_at','DESC')->get();      
+            $data=SubCategory::join('md_category','md_category.id','=','md_subcategory.category_id')
+                ->select('md_subcategory.*','md_category.cat_name as cat_name')
+                ->orderBy('updated_at','DESC')
+                ->get();      
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
@@ -52,7 +57,10 @@ class SubcategoryController extends Controller
             }else if ($id!='') {
                 $data=SubCategory::where('id',$id)->get();      
             }else if ($paginate!='') {
-                $data=SubCategory::paginate($paginate);   
+                $data=SubCategory::join('md_category','md_category.id','=','md_subcategory.category_id')
+                    ->select('md_subcategory.*','md_category.cat_name as cat_name')
+                    ->orderBy('updated_at','DESC')
+                    ->paginate($paginate);   
             }else{
                 $data=SubCategory::get();   
             }   

@@ -25,7 +25,9 @@ class FormReceivedController extends Controller
             $trans_type=$request->trans_type;
             $bu_type=$request->bu_type;
             $kyc_status=$request->kyc_status;
-
+            if ($paginate=='A') {
+                $paginate=999999999;
+            }
             if ($temp_tin_no!='') {
                 $data=FormReceived::join('md_trans','md_trans.id','=','td_form_received.trans_id')
                     ->join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
@@ -39,6 +41,7 @@ class FormReceivedController extends Controller
                     ->orderBy('td_form_received.updated_at','DESC')
                     ->paginate($paginate);      
             }elseif (!empty($client_code)) {
+                return $client_code;
                 $data=FormReceived::join('md_trans','md_trans.id','=','td_form_received.trans_id')
                     ->join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
                     ->join('md_scheme','md_scheme.id','=','td_form_received.scheme_id')
