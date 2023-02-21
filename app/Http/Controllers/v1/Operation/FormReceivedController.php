@@ -25,7 +25,7 @@ class FormReceivedController extends Controller
             $trans_type=$request->trans_type;
             $bu_type=$request->bu_type;
             $kyc_status=$request->kyc_status;
-            return $bu_type;
+            // return $bu_type;
 
             if ($paginate=='A' || $paginate=='undefined') {
                 $paginate=999999999;
@@ -56,7 +56,7 @@ class FormReceivedController extends Controller
                     ->orWhere('md_client.pan','like', '%' . $client_code . '%')
                     ->orderBy('td_form_received.updated_at','DESC')
                     ->paginate($paginate);      
-            }elseif (isset($bu_type) && count($bu_type)>0) {
+            }elseif (!empty($bu_type) && count($bu_type)>0) {
                 // return $bu_type;
                 $data=FormReceived::join('md_trans','md_trans.id','=','td_form_received.trans_id')
                     ->join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
