@@ -12,7 +12,7 @@ class FormReceivedController extends Controller
 {
     public function searchDetails(Request $request)
     {
-        try {
+        // try {
             $paginate=$request->paginate;
             $trans_type_id=$request->trans_type_id;
 
@@ -83,10 +83,10 @@ class FormReceivedController extends Controller
                     ->paginate($paginate); 
             }
                  
-        } catch (\Throwable $th) {
-            //throw $th;
-            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
-        }
+        // } catch (\Throwable $th) {
+        //     //throw $th;
+        //     return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        // }
         return Helper::SuccessResponse($data);
     }
     public function export(Request $request)
