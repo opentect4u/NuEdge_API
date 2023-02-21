@@ -27,7 +27,7 @@ class FormReceivedController extends Controller
             $kyc_status=$request->kyc_status;
             // return $bu_type;
 
-            if ($paginate=='A') {
+            if ($paginate=='A' || $paginate=='undefined') {
                 $paginate=999999999;
             }
             if ($temp_tin_no!='') {
