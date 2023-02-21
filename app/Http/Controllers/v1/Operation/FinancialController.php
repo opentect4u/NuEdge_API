@@ -18,6 +18,9 @@ class FinancialController extends Controller
             $trans_type_id=$request->trans_type_id;
             $tin_no=$request->tin_no;
             $cat_name=$request->cat_name;
+            if ($paginate=='A') {
+                $paginate=999999999;
+            }
             if ($tin_no!='') {
                 $data=MutualFund::join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
                     ->join('md_scheme','md_scheme.id','=','td_mutual_fund.trans_scheme_from')
