@@ -41,7 +41,6 @@ class FormReceivedController extends Controller
                     ->orderBy('td_form_received.updated_at','DESC')
                     ->paginate($paginate);      
             }elseif (!empty($client_code)) {
-                return $client_code;
                 $data=FormReceived::join('md_trans','md_trans.id','=','td_form_received.trans_id')
                     ->join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
                     ->join('md_scheme','md_scheme.id','=','td_form_received.scheme_id')
@@ -55,6 +54,9 @@ class FormReceivedController extends Controller
                     ->orWhere('md_client.pan','like', '%' . $client_code . '%')
                     ->orderBy('td_form_received.updated_at','DESC')
                     ->paginate($paginate);      
+            }elseif (!empty($bu_type)) {
+                return $bu_type;
+                # code...
             } else {
                 $data=FormReceived::join('md_trans','md_trans.id','=','td_form_received.trans_id')
                     ->join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
