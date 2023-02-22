@@ -160,6 +160,8 @@ Route::prefix('v1')->group(function () {
         Route::get('kyc',[App\Http\Controllers\v1\Operation\KYCController::class,'index']);
         Route::get('kycshowadd',[App\Http\Controllers\v1\Operation\KYCController::class,'showAdd']);
         Route::post('kycAddEdit',[App\Http\Controllers\v1\Operation\KYCController::class,'createUpdate']);
+        Route::post('kycDetailSearch',[App\Http\Controllers\v1\Operation\KYCController::class,'searchDetails']);
+        Route::post('kycExport',[App\Http\Controllers\v1\Operation\KYCController::class,'export']);
 
 
         Route::get('showTrans',[App\Http\Controllers\v1\Operation\CommonController::class,'showTrans']);
@@ -174,6 +176,11 @@ Route::prefix('v1')->group(function () {
         Route::post('mfTraxExport',[App\Http\Controllers\v1\Operation\FinancialController::class,'export']);
 
         Route::get('daysheetReport',[App\Http\Controllers\v1\Operation\ReportController::class,'index']);
+
+
+        Route::post('ackDetailSearch',[App\Http\Controllers\v1\Operation\AcknowledgementController::class,'searchDetails']);
+        Route::post('ackUpload',[App\Http\Controllers\v1\Operation\AcknowledgementController::class,'update']);
+        Route::post('ackFinalSubmit',[App\Http\Controllers\v1\Operation\AcknowledgementController::class,'finalSubmit']);
 
         // =========================== operations routes end =======================================
 
