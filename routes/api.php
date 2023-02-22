@@ -179,6 +179,7 @@ Route::prefix('v1')->group(function () {
 
 
         Route::post('ackDetailSearch',[App\Http\Controllers\v1\Operation\AcknowledgementController::class,'searchDetails']);
+        Route::post('ackExport',[App\Http\Controllers\v1\Operation\AcknowledgementController::class,'export']);
         Route::post('ackUpload',[App\Http\Controllers\v1\Operation\AcknowledgementController::class,'update']);
         Route::post('ackFinalSubmit',[App\Http\Controllers\v1\Operation\AcknowledgementController::class,'finalSubmit']);
 
