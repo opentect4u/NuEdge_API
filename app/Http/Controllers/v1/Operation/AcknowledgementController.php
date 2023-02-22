@@ -180,7 +180,7 @@ class AcknowledgementController extends Controller
             }
             // ack_copy_scan
                 MutualFund::where('tin_no',$request->tin_no)->update(array(
-                    'rnt_login_dt'=>date('Y-m-d H:i:s',strtotime($request->rnt_login_date)),
+                    'rnt_login_dt'=>Carbon::parse($request->rnt_login_date)->format('Y-m-d H:i:s'),
                     'rnt_login_cutt_off'=>Carbon::parse($request->rnt_login_cutt_off)->format('Y-m-d H:i:s'),
                     'ack_copy_scan'=>$ack_copy_scan_name,
                     'form_status'=>'A',
