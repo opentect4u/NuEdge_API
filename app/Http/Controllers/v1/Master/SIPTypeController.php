@@ -15,8 +15,15 @@ class SIPTypeController extends Controller
         try {
             $paginate=$request->paginate;
             $sip_type_name=$request->sip_type_name;
-            $data=SIPType::orWhere('sip_type_name','like', '%' . $sip_type_name . '%')
-                ->paginate($paginate); 
+            if ($paginate=='A') {
+                $paginate=999999999;
+            }
+            if ($sip_type_name) {
+                $data=SIPType::where('sip_type_name','like', '%' . $sip_type_name . '%')
+                    ->paginate($paginate); 
+            }else {
+                $data=SIPType::paginate($paginate); 
+            }
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
@@ -26,7 +33,13 @@ class SIPTypeController extends Controller
     public function export(Request $request)
     {
         try {
-            $data=SIPType::get();      
+            $paginate=$request->paginate;
+            $sip_type_name=$request->sip_type_name;
+            if ($sip_type_name) {
+                $data=SIPType::where('sip_type_name','like', '%' . $sip_type_name . '%')->get(); 
+            } else {
+                $data=SIPType::get(); 
+            }      
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);

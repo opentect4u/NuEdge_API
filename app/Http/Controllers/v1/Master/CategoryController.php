@@ -17,8 +17,15 @@ class CategoryController extends Controller
         try {
             $paginate=$request->paginate;
             $cat_name=$request->cat_name;
-            $data=Category::where('cat_name','like', '%' . $cat_name . '%')
-                ->orderBy('updated_at','DESC')->paginate($paginate);      
+            if ($paginate=='A') {
+                $paginate=999999999;
+            }
+            if ($cat_name) {
+                $data=Category::where('cat_name','like', '%' . $cat_name . '%')
+                ->orderBy('updated_at','DESC')->paginate($paginate);  
+            } else {
+                $data=Category::orderBy('updated_at','DESC')->paginate($paginate);  
+            }
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
@@ -28,7 +35,13 @@ class CategoryController extends Controller
     public function export(Request $request)
     {
         try {
-            $data=Category::orderBy('updated_at','DESC')->get();      
+            $cat_name=$request->cat_name;
+            if ($cat_name) {
+                $data=Category::where('cat_name','like', '%' . $cat_name . '%')
+                    ->orderBy('updated_at','DESC')->get();  
+            } else {
+                $data=Category::orderBy('updated_at','DESC')->get();  
+            } 
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);

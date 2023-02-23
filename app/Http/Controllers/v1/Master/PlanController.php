@@ -17,8 +17,16 @@ class PlanController extends Controller
         try {
             $paginate=$request->paginate;
             $plan_name=$request->plan_name;
-            $data=Plan::where('plan_name','like', '%' . $plan_name . '%')
-                ->orderBy('updated_at','DESC')->paginate($paginate);      
+            if ($paginate=='A') {
+                $paginate=999999999;
+            }
+            if ($plan_name) {
+                $data=Plan::where('plan_name','like', '%' . $plan_name . '%')
+                    ->orderBy('updated_at','DESC')
+                    ->paginate($paginate);  
+            } else {
+                $data=Plan::orderBy('updated_at','DESC')->paginate($paginate);  
+            }
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
@@ -28,7 +36,14 @@ class PlanController extends Controller
     public function export(Request $request)
     {
         try {
-            $data=Plan::orderBy('updated_at','DESC')->get();      
+            $plan_name=$request->plan_name;
+            if ($plan_name) {
+                $data=Plan::where('plan_name','like', '%' . $plan_name . '%')
+                    ->orderBy('updated_at','DESC')
+                    ->get();  
+            } else {
+                $data=Plan::orderBy('updated_at','DESC')->get();  
+            }      
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);

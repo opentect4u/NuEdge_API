@@ -17,8 +17,17 @@ class OptionController extends Controller
         try {
             $paginate=$request->paginate;
             $opt_name=$request->opt_name;
-            $data=Option::where('opt_name','like', '%' . $opt_name . '%')
-                ->orderBy('updated_at','DESC')->paginate($paginate);      
+            if ($paginate=='A') {
+                $paginate=999999999;
+            }
+            if ($opt_name) {
+                $data=Option::where('opt_name','like', '%' . $opt_name . '%')
+                    ->orderBy('updated_at','DESC')
+                    ->paginate($paginate); 
+            } else {
+                $data=Option::orderBy('updated_at','DESC')
+                    ->paginate($paginate); 
+            }
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
@@ -28,7 +37,15 @@ class OptionController extends Controller
     public function export(Request $request)
     {
         try {
-            $data=Option::orderBy('updated_at','DESC')->get();      
+            $opt_name=$request->opt_name;
+            if ($opt_name) {
+                $data=Option::where('opt_name','like', '%' . $opt_name . '%')
+                    ->orderBy('updated_at','DESC')
+                    ->get(); 
+            } else {
+                $data=Option::orderBy('updated_at','DESC')
+                    ->get(); 
+            }    
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);

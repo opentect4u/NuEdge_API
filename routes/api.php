@@ -29,6 +29,7 @@ Route::prefix('v1')->group(function () {
 
 
         Route::get('rnt',[App\Http\Controllers\v1\Master\RNTController::class,'index']);
+        Route::get('rntDetailSearch',[App\Http\Controllers\v1\Master\RNTController::class,'searchDetails']);
         Route::post('rntDetailSearch',[App\Http\Controllers\v1\Master\RNTController::class,'searchDetails']);
         Route::post('rntExport',[App\Http\Controllers\v1\Master\RNTController::class,'export']);
         Route::post('rntAddEdit',[App\Http\Controllers\v1\Master\RNTController::class,'createUpdate']);
@@ -38,6 +39,7 @@ Route::prefix('v1')->group(function () {
         Route::post('productAddEdit',[App\Http\Controllers\v1\Master\ProductController::class,'createUpdate']);
 
         Route::get('amc',[App\Http\Controllers\v1\Master\AMCController::class,'index']);
+        Route::get('amcDetailSearch',[App\Http\Controllers\v1\Master\AMCController::class,'searchDetails']);
         Route::post('amcDetailSearch',[App\Http\Controllers\v1\Master\AMCController::class,'searchDetails']);
         Route::post('amcExport',[App\Http\Controllers\v1\Master\AMCController::class,'export']);
         Route::post('amcAddEdit',[App\Http\Controllers\v1\Master\AMCController::class,'createUpdate']);
@@ -47,24 +49,28 @@ Route::prefix('v1')->group(function () {
         Route::post('branchAddEdit',[App\Http\Controllers\v1\Master\BranchController::class,'createUpdate']);
 
         Route::get('plan',[App\Http\Controllers\v1\Master\PlanController::class,'index']);
+        Route::get('planDetailSearch',[App\Http\Controllers\v1\Master\PlanController::class,'searchDetails']);
         Route::post('planDetailSearch',[App\Http\Controllers\v1\Master\PlanController::class,'searchDetails']);
         Route::post('planExport',[App\Http\Controllers\v1\Master\PlanController::class,'export']);
         Route::post('planAddEdit',[App\Http\Controllers\v1\Master\PlanController::class,'createUpdate']);
         Route::post('planimport', [App\Http\Controllers\v1\Master\PlanController::class,'import']);
 
         Route::get('option',[App\Http\Controllers\v1\Master\OptionController::class,'index']);
+        Route::get('optionDetailSearch',[App\Http\Controllers\v1\Master\OptionController::class,'searchDetails']);
         Route::post('optionDetailSearch',[App\Http\Controllers\v1\Master\OptionController::class,'searchDetails']);
         Route::post('optionExport',[App\Http\Controllers\v1\Master\OptionController::class,'export']);
         Route::post('optionAddEdit',[App\Http\Controllers\v1\Master\OptionController::class,'createUpdate']);
         Route::post('optionimport', [App\Http\Controllers\v1\Master\OptionController::class,'import']);
 
         Route::get('category',[App\Http\Controllers\v1\Master\CategoryController::class,'index']);
+        Route::get('categoryDetailSearch',[App\Http\Controllers\v1\Master\CategoryController::class,'searchDetails']);
         Route::post('categoryDetailSearch',[App\Http\Controllers\v1\Master\CategoryController::class,'searchDetails']);
         Route::post('categoryExport',[App\Http\Controllers\v1\Master\CategoryController::class,'export']);
         Route::post('categoryAddEdit',[App\Http\Controllers\v1\Master\CategoryController::class,'createUpdate']);
         Route::post('categoryimport', [App\Http\Controllers\v1\Master\CategoryController::class,'import']);
 
         Route::get('subcategory',[App\Http\Controllers\v1\Master\SubcategoryController::class,'index']);
+        Route::get('subcategoryDetailSearch',[App\Http\Controllers\v1\Master\SubcategoryController::class,'searchDetails']);
         Route::post('subcategoryDetailSearch',[App\Http\Controllers\v1\Master\SubcategoryController::class,'searchDetails']);
         Route::post('subcategoryExport',[App\Http\Controllers\v1\Master\SubcategoryController::class,'export']);
         Route::post('subcategoryAddEdit',[App\Http\Controllers\v1\Master\SubcategoryController::class,'createUpdate']);
@@ -74,33 +80,39 @@ Route::prefix('v1')->group(function () {
         Route::post('formtypeAddEdit',[App\Http\Controllers\v1\Master\FormTypeController::class,'createUpdate']);
 
         Route::get('transctiontype',[App\Http\Controllers\v1\Master\TransctionTypeController::class,'index']);
+        Route::get('transctiontypeSearch',[App\Http\Controllers\v1\Master\TransctionTypeController::class,'searchDetails']);
         Route::post('transctiontypeSearch',[App\Http\Controllers\v1\Master\TransctionTypeController::class,'searchDetails']);
         Route::post('transctiontypeExport',[App\Http\Controllers\v1\Master\TransctionTypeController::class,'export']);
         Route::post('transctiontypeAddEdit',[App\Http\Controllers\v1\Master\TransctionTypeController::class,'createUpdate']);
 
         Route::get('transction',[App\Http\Controllers\v1\Master\TransctionController::class,'index']);
+        Route::get('transctionSearch',[App\Http\Controllers\v1\Master\TransctionController::class,'searchDetails']);
         Route::post('transctionSearch',[App\Http\Controllers\v1\Master\TransctionController::class,'searchDetails']);
         Route::post('transctionExport',[App\Http\Controllers\v1\Master\TransctionController::class,'export']);
         Route::post('transctionAddEdit',[App\Http\Controllers\v1\Master\TransctionController::class,'createUpdate']);
 
         Route::get('sipType',[App\Http\Controllers\v1\Master\SIPTypeController::class,'index']);
+        Route::get('sipTypeSearch',[App\Http\Controllers\v1\Master\SIPTypeController::class,'searchDetails']);
         Route::post('sipTypeSearch',[App\Http\Controllers\v1\Master\SIPTypeController::class,'searchDetails']);
         Route::post('sipTypeExport',[App\Http\Controllers\v1\Master\SIPTypeController::class,'export']);
         Route::post('sipTypeAddEdit',[App\Http\Controllers\v1\Master\SIPTypeController::class,'createUpdate']);
 
         Route::get('scheme',[App\Http\Controllers\v1\Master\SchemeController::class,'index']);
+        Route::get('schemeDetailSearch',[App\Http\Controllers\v1\Master\SchemeController::class,'searchDetails']);
         Route::post('schemeDetailSearch',[App\Http\Controllers\v1\Master\SchemeController::class,'searchDetails']);
         Route::post('schemeExport',[App\Http\Controllers\v1\Master\SchemeController::class,'export']);
         Route::post('schemeAddEdit',[App\Http\Controllers\v1\Master\SchemeController::class,'createUpdate']);
         Route::post('schemeimport', [App\Http\Controllers\v1\Master\SchemeController::class,'import']);
 
         Route::get('depositbank',[App\Http\Controllers\v1\Master\DepositBankController::class,'index']);
+        Route::get('depositbankDetailSearch',[App\Http\Controllers\v1\Master\DepositBankController::class,'searchDetails']);
         Route::post('depositbankDetailSearch',[App\Http\Controllers\v1\Master\DepositBankController::class,'searchDetails']);
         Route::post('depositbankExport',[App\Http\Controllers\v1\Master\DepositBankController::class,'export']);
         Route::post('depositbankAddEdit',[App\Http\Controllers\v1\Master\DepositBankController::class,'createUpdate']);
         Route::post('depositbankimport', [App\Http\Controllers\v1\Master\DepositBankController::class,'import']);
 
         Route::get('documenttype',[App\Http\Controllers\v1\Master\DocumentTypeController::class,'index']);
+        Route::get('documenttypeDetailSearch',[App\Http\Controllers\v1\Master\DocumentTypeController::class,'searchDetails']);
         Route::post('documenttypeDetailSearch',[App\Http\Controllers\v1\Master\DocumentTypeController::class,'searchDetails']);
         Route::post('documenttypeExport',[App\Http\Controllers\v1\Master\DocumentTypeController::class,'export']);
         Route::post('documenttypeAddEdit',[App\Http\Controllers\v1\Master\DocumentTypeController::class,'createUpdate']);
@@ -135,6 +147,7 @@ Route::prefix('v1')->group(function () {
         Route::post('formreceivedAdd',[App\Http\Controllers\v1\Operation\FormReceivedController::class,'create']);
         Route::post('formreceivedEdit',[App\Http\Controllers\v1\Operation\FormReceivedController::class,'update']);
         Route::post('formreceivedDelete',[App\Http\Controllers\v1\Operation\FormReceivedController::class,'delete']);
+        Route::get('formreceivedDetailSearch',[App\Http\Controllers\v1\Operation\FormReceivedController::class,'searchDetails']);
         Route::post('formreceivedDetailSearch',[App\Http\Controllers\v1\Operation\FormReceivedController::class,'searchDetails']);
         Route::post('formreceivedExport',[App\Http\Controllers\v1\Operation\FormReceivedController::class,'export']);
 
@@ -146,6 +159,7 @@ Route::prefix('v1')->group(function () {
         Route::get('client',[App\Http\Controllers\v1\Master\ClientController::class,'index']);
         Route::post('clientAddEdit',[App\Http\Controllers\v1\Master\ClientController::class,'createUpdate']);
         Route::post('clientimport',[App\Http\Controllers\v1\Master\ClientController::class,'import']);
+        Route::get('clientDetailSearch',[App\Http\Controllers\v1\Master\ClientController::class,'searchDetails']);
         Route::post('clientDetailSearch',[App\Http\Controllers\v1\Master\ClientController::class,'searchDetails']);
         Route::post('clientExport',[App\Http\Controllers\v1\Master\ClientController::class,'export']);
         
@@ -160,6 +174,7 @@ Route::prefix('v1')->group(function () {
         Route::get('kyc',[App\Http\Controllers\v1\Operation\KYCController::class,'index']);
         Route::get('kycshowadd',[App\Http\Controllers\v1\Operation\KYCController::class,'showAdd']);
         Route::post('kycAddEdit',[App\Http\Controllers\v1\Operation\KYCController::class,'createUpdate']);
+        Route::get('kycDetailSearch',[App\Http\Controllers\v1\Operation\KYCController::class,'searchDetails']);
         Route::post('kycDetailSearch',[App\Http\Controllers\v1\Operation\KYCController::class,'searchDetails']);
         Route::post('kycExport',[App\Http\Controllers\v1\Operation\KYCController::class,'export']);
 
@@ -172,12 +187,14 @@ Route::prefix('v1')->group(function () {
         Route::get('mfTraxCreateShow',[App\Http\Controllers\v1\Operation\FinancialController::class,'createShow']);
         Route::post('mfTraxCreate',[App\Http\Controllers\v1\Operation\FinancialController::class,'create']);
         Route::post('mfTraxUpdate',[App\Http\Controllers\v1\Operation\FinancialController::class,'update']);
+        Route::get('mfTraxDetailSearch',[App\Http\Controllers\v1\Operation\FinancialController::class,'searchDetails']);
         Route::post('mfTraxDetailSearch',[App\Http\Controllers\v1\Operation\FinancialController::class,'searchDetails']);
         Route::post('mfTraxExport',[App\Http\Controllers\v1\Operation\FinancialController::class,'export']);
 
         Route::get('daysheetReport',[App\Http\Controllers\v1\Operation\ReportController::class,'index']);
 
 
+        Route::get('ackDetailSearch',[App\Http\Controllers\v1\Operation\AcknowledgementController::class,'searchDetails']);
         Route::post('ackDetailSearch',[App\Http\Controllers\v1\Operation\AcknowledgementController::class,'searchDetails']);
         Route::post('ackExport',[App\Http\Controllers\v1\Operation\AcknowledgementController::class,'export']);
         Route::post('ackUpload',[App\Http\Controllers\v1\Operation\AcknowledgementController::class,'update']);

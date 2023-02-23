@@ -25,6 +25,9 @@ class AMCController extends Controller
             $contact_per_mobile=$request->contact_per_mobile;
             $contact_per_email=$request->contact_per_email;
             $paginate=$request->paginate;
+            if ($paginate=='A') {
+                $paginate=999999999;
+            }
             if ($amc_id!='' && $rnt_id!='' && $gstin!='') {
                 $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
                     ->select('md_amc.*','md_rnt.rnt_name as rnt_name')

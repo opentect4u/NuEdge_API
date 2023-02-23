@@ -15,10 +15,20 @@ class TransctionTypeController extends Controller
         try {
             $paginate=$request->paginate;
             $trns_type=$request->trns_type;
-            $data=TransctionType::where('product_id',$product_id)
-                ->orWhere('trns_type','like', '%' . $trns_type . '%')
-                ->orderBy('updated_at','DESC')
-                ->paginate($paginate);      
+            $product_id=$request->product_id;
+            if ($paginate=='A') {
+                $paginate=999999999;
+            }
+            if ($trns_type) {
+                $data=TransctionType::where('product_id',$product_id)
+                    ->where('trns_type','like', '%' . $trns_type . '%')
+                    ->orderBy('updated_at','DESC')
+                    ->paginate($paginate); 
+            } else {
+                $data=TransctionType::where('product_id',$product_id)
+                    ->orderBy('updated_at','DESC')
+                    ->paginate($paginate); 
+            }
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
@@ -28,10 +38,18 @@ class TransctionTypeController extends Controller
     public function export(Request $request)
     {
         try {
+            $paginate=$request->paginate;
+            $trns_type=$request->trns_type;
             $product_id=$request->product_id;
-            $data=TransctionType::where('product_id',$product_id)
-                ->orderBy('updated_at','DESC')
-                ->get();      
+            if ($trns_type) {
+                $data=TransctionType::where('product_id',$product_id)
+                    ->where('trns_type','like', '%' . $trns_type . '%')
+                    ->orderBy('updated_at','DESC')
+                    ->get(); 
+            } else {
+                $data=TransctionType::where('product_id',$product_id)
+                    ->get(); 
+            }   
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);

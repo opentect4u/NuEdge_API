@@ -16,8 +16,28 @@ class RNTController extends Controller
     {
         try {
             $paginate=$request->paginate;
-            $id=$request->rnt_id;
-            $data=RNT::where('id',$id)->orderBy('updated_at','DESC')->paginate($paginate);      
+            $rnt_id=$request->rnt_id;
+            $contact_person=$request->contact_person;
+            if ($paginate=='A') {
+                $paginate=999999999;
+            }
+            if ($rnt_id && $contact_person) {
+                $data=RNT::where('id',$rnt_id)
+                    ->where('head_ofc_contact_per','like', '%' . $contact_person . '%')
+                    ->orWhere('local_ofc_contact_per','like', '%' . $contact_person . '%')
+                    ->orderBy('updated_at','DESC')->paginate($paginate);      
+            } elseif ($rnt_id) {
+                $data=RNT::where('id',$rnt_id)->orderBy('updated_at','DESC')->paginate($paginate);      
+            } elseif ($contact_person) {
+                // return $contact_person;
+                $data=RNT::where('head_ofc_contact_per','like', '%' . $contact_person . '%')
+                    ->orWhere('local_ofc_contact_per','like', '%' . $contact_person . '%')
+                    ->orderBy('updated_at','DESC')
+                    ->paginate($paginate);      
+            } else {
+                $data=RNT::orderBy('updated_at','DESC')->paginate($paginate);      
+            }
+            
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
@@ -27,7 +47,25 @@ class RNTController extends Controller
     public function export(Request $request)
     {
         try {
-            $data=RNT::orderBy('updated_at','DESC')->get();      
+            $paginate=$request->paginate;
+            $rnt_id=$request->rnt_id;
+            $contact_person=$request->contact_person;
+            if ($rnt_id && $contact_person) {
+                $data=RNT::where('id',$rnt_id)
+                    ->where('head_ofc_contact_per','like', '%' . $contact_person . '%')
+                    ->orWhere('local_ofc_contact_per','like', '%' . $contact_person . '%')
+                    ->orderBy('updated_at','DESC')->paginate($paginate);      
+            } elseif ($rnt_id) {
+                $data=RNT::where('id',$rnt_id)->orderBy('updated_at','DESC')->paginate($paginate);      
+            } elseif ($contact_person) {
+                // return $contact_person;
+                $data=RNT::where('head_ofc_contact_per','like', '%' . $contact_person . '%')
+                    ->orWhere('local_ofc_contact_per','like', '%' . $contact_person . '%')
+                    ->orderBy('updated_at','DESC')
+                    ->paginate($paginate);      
+            } else {
+                $data=RNT::orderBy('updated_at','DESC')->paginate($paginate);      
+            }    
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);

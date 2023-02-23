@@ -16,11 +16,36 @@ class SubcategoryController extends Controller
     {
         try {
             $paginate=$request->paginate;
-            $cat_name=$request->cat_name;
-            $data=SubCategory::join('md_category','md_category.id','=','md_subcategory.category_id')
-                ->select('md_subcategory.*','md_category.cat_name as cat_name')
-                ->orderBy('updated_at','DESC')
-                ->paginate($paginate);      
+            $cat_id=$request->cat_id;
+            $subcat_id=$request->subcat_id;
+            if ($paginate=='A') {
+                $paginate=999999999;
+            }
+            if ($subcat_id && $cat_id) {
+                $data=SubCategory::join('md_category','md_category.id','=','md_subcategory.category_id')
+                    ->select('md_subcategory.*','md_category.cat_name as cat_name')
+                    ->where('md_subcategory.id',$subcat_id)
+                    ->where('md_subcategory.category_id',$cat_id)
+                    ->orderBy('updated_at','DESC')
+                    ->paginate($paginate);    
+            }elseif ($subcat_id) {
+                $data=SubCategory::join('md_category','md_category.id','=','md_subcategory.category_id')
+                    ->select('md_subcategory.*','md_category.cat_name as cat_name')
+                    ->where('md_subcategory.id',$subcat_id)
+                    ->orderBy('updated_at','DESC')
+                    ->paginate($paginate);     
+            }elseif ($cat_id) {
+                $data=SubCategory::join('md_category','md_category.id','=','md_subcategory.category_id')
+                    ->select('md_subcategory.*','md_category.cat_name as cat_name')
+                    ->where('md_subcategory.category_id',$cat_id)
+                    ->orderBy('updated_at','DESC')
+                    ->paginate($paginate);   
+            } else {
+                $data=SubCategory::join('md_category','md_category.id','=','md_subcategory.category_id')
+                    ->select('md_subcategory.*','md_category.cat_name as cat_name')
+                    ->orderBy('updated_at','DESC')
+                    ->paginate($paginate);     
+            }
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
@@ -30,10 +55,34 @@ class SubcategoryController extends Controller
     public function export(Request $request)
     {
         try {
-            $data=SubCategory::join('md_category','md_category.id','=','md_subcategory.category_id')
-                ->select('md_subcategory.*','md_category.cat_name as cat_name')
-                ->orderBy('updated_at','DESC')
-                ->get();      
+            $paginate=$request->paginate;
+            $cat_id=$request->cat_id;
+            $subcat_id=$request->subcat_id;
+            if ($subcat_id && $cat_id) {
+                $data=SubCategory::join('md_category','md_category.id','=','md_subcategory.category_id')
+                    ->select('md_subcategory.*','md_category.cat_name as cat_name')
+                    ->where('md_subcategory.id',$subcat_id)
+                    ->where('md_subcategory.category_id',$cat_id)
+                    ->orderBy('updated_at','DESC')
+                    ->get();    
+            }elseif ($subcat_id) {
+                $data=SubCategory::join('md_category','md_category.id','=','md_subcategory.category_id')
+                    ->select('md_subcategory.*','md_category.cat_name as cat_name')
+                    ->where('md_subcategory.id',$subcat_id)
+                    ->orderBy('updated_at','DESC')
+                    ->get();     
+            }elseif ($cat_id) {
+                $data=SubCategory::join('md_category','md_category.id','=','md_subcategory.category_id')
+                    ->select('md_subcategory.*','md_category.cat_name as cat_name')
+                    ->where('md_subcategory.category_id',$cat_id)
+                    ->orderBy('updated_at','DESC')
+                    ->get();   
+            } else {
+                $data=SubCategory::join('md_category','md_category.id','=','md_subcategory.category_id')
+                    ->select('md_subcategory.*','md_category.cat_name as cat_name')
+                    ->orderBy('updated_at','DESC')
+                    ->get();     
+            }
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
@@ -94,7 +143,12 @@ class SubcategoryController extends Controller
                     'subcategory_name'=>$request->subcategory_name,
                     'created_by'=>'',
                 ));      
-            }    
+            }
+            $data=SubCategory::join('md_category','md_category.id','=','md_subcategory.category_id')
+                ->select('md_subcategory.*','md_category.cat_name as cat_name')
+                ->where('md_subcategory.id',$data->id)
+                ->orderBy('updated_at','DESC')
+                ->first();       
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_SAVE_ERROR);
