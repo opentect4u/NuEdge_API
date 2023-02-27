@@ -254,10 +254,22 @@ class AcknowledgementController extends Controller
                 // return $doc_name;
             }
             // ack_copy_scan
+                // rnt_login_time
+
+                if (Carbon::parse($request->rnt_login_time)->format('H') < 15) {
+                    $rnt_login_cutt_off = Carbon::parse($request->rnt_login_date)->format('Y-m-d');
+                }else {
+                    $rnt_login_cutt_off = Carbon::parse($request->rnt_login_date);
+                    $rnt_login_cutt_off->addDays(1);
+                    $rnt_login_cutt_off->format("Y-m-d");
+                }
+                // return $rnt_login_cutt_off;
                 MutualFund::where('tin_no',$request->tin_no)->update(array(
-                    'rnt_login_dt'=>Carbon::parse($request->rnt_login_date)->format('Y-m-d H:i:s'),
-                    'rnt_login_cutt_off'=>Carbon::parse($request->rnt_login_cutt_off)->format('Y-m-d H:i:s'),
+                    'rnt_login_dt'=>Carbon::parse($request->rnt_login_date)->format('Y-m-d').' '.Carbon::parse($request->rnt_login_time)->format('H:i:s'),
+                    'rnt_login_cutt_off'=>Carbon::parse($rnt_login_cutt_off)->format('Y-m-d'),
+                    // 'rnt_login_cutt_off'=>$rnt_login_cutt_off,
                     'ack_copy_scan'=>$ack_copy_scan_name,
+                    'ack_remarks'=>$request->ack_remarks,
                     'form_status'=>'A',
                     // 'updated_at'
                 ));   

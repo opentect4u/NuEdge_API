@@ -181,9 +181,10 @@ class SchemeController extends Controller
                 $data->subcategory_id=$request->subcategory_id;
                 $data->scheme_name=$request->scheme_name;
                 $data->pip_fresh_min_amt=$request->pip_fresh_min_amt;
-                $data->sip_fresh_min_amt=$request->sip_fresh_min_amt;
+                // $data->sip_fresh_min_amt=$request->sip_fresh_min_amt;
                 $data->pip_add_min_amt=$request->pip_add_min_amt;
-                $data->sip_add_min_amt=$request->sip_add_min_amt;
+                // $data->sip_add_min_amt=$request->sip_add_min_amt;
+                $data->sip_freq_wise_amt=$request->frequency;
                 $data->sip_date=$request->sip_date;
                 $data->save();
             }else{
@@ -199,9 +200,10 @@ class SchemeController extends Controller
                         // 'nfo_end_dt'=>$request->nfo_end_dt,
                         // 'nfo_reopen_dt'=>$request->nfo_end_dt,
                         'pip_fresh_min_amt'=>$request->pip_fresh_min_amt,
-                        'sip_fresh_min_amt'=>$request->sip_fresh_min_amt,
+                        // 'sip_fresh_min_amt'=>$request->sip_fresh_min_amt,
                         'pip_add_min_amt'=>$request->pip_add_min_amt,
-                        'sip_add_min_amt'=>$request->sip_add_min_amt,
+                        // 'sip_add_min_amt'=>$request->sip_add_min_amt,
+                        'sip_freq_wise_amt'=>$request->frequency,
                         'sip_date'=>$request->sip_date,
                         // 'created_by'=>'',
                     ));    
@@ -218,9 +220,8 @@ class SchemeController extends Controller
                         'nfo_reopen_dt'=>date('Y-m-d',strtotime($request->nfo_reopen_dt)),
                         'nfo_entry_date'=>date('Y-m-d',strtotime($request->nfo_entry_date)),
                         'pip_fresh_min_amt'=>$request->pip_fresh_min_amt,
-                        'sip_fresh_min_amt'=>$request->sip_fresh_min_amt,
                         'pip_add_min_amt'=>$request->pip_add_min_amt,
-                        'sip_add_min_amt'=>$request->sip_add_min_amt,
+                        'sip_freq_wise_amt'=>$request->frequency,
                         'sip_date'=>$request->sip_date,
                         // 'created_by'=>'',
                     ));  
@@ -235,7 +236,7 @@ class SchemeController extends Controller
 
     public function import(Request $request)
     {
-        // try {
+        try {
             // return $request;
             $path = $request->file('file')->getRealPath();
             $data = array_map('str_getcsv', file($path));
@@ -251,10 +252,10 @@ class SchemeController extends Controller
             //     return "else";
             //     return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
             // }
-        // } catch (\Throwable $th) {
-        //     //throw $th;
-        //     return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
-        // }
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
+        }
         return Helper::SuccessResponse($data1);
     }
 }

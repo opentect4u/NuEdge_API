@@ -55,6 +55,7 @@ class MutualFund extends Model
         'sip_status',
         'report_send',
         'remarks',
+        'ack_remarks',
         'form_status',
         'delete_flag',
         'deleted_date',

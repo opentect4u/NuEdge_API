@@ -44,24 +44,22 @@ class KYCController extends Controller
                 }
                 // return $login_status;
                 if ($date_status=='T') {
-                    $data=KYC::join('md_rnt','md_rnt.id','=','td_kyc.kyc_login_at')
-                        ->join('md_client','md_client.id','=','td_kyc.client_id')
-                        ->leftJoin('md_amc','md_amc.id','=','td_kyc.amc_id')
-                        ->select('td_kyc.*','md_rnt.rnt_name as rnt_name','md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type','md_client.pan as pan',
-                        'md_amc.amc_name as amc_name'
+                    $data=KYC::join('md_client','md_client.id','=','td_kyc.client_id')
+                        ->leftJoin('md_rnt','md_rnt.id','=','td_kyc.kyc_login_at')
+                        ->leftJoin('md_amc','md_amc.id','=','td_kyc.kyc_login_at')
+                        ->select('td_kyc.*','md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type','md_client.pan as pan',
+                        'md_rnt.rnt_name as rnt_name','md_amc.amc_name as amc_name'
                         )
                         ->where('td_kyc.deleted_flag','N')
                         ->whereDate('td_kyc.entry_dt',date('Y-m-d'))
                         ->orderBy('td_kyc.entry_dt','DESC')
                         ->paginate($paginate);   
                 }else{
-                    $data=KYC::join('md_rnt','md_rnt.id','=','td_kyc.kyc_login_at')
-                        ->join('md_client','md_client.id','=','td_kyc.client_id')
-                        // ->join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
-                        // ->join('md_scheme','md_scheme.id','=','td_form_received.scheme_id')
-                        ->leftJoin('md_amc','md_amc.id','=','td_kyc.amc_id')
-                        ->select('td_kyc.*','md_rnt.rnt_name as rnt_name','md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type','md_client.pan as pan',
-                        'md_amc.amc_name as amc_name'
+                    $data=KYC::join('md_client','md_client.id','=','td_kyc.client_id')
+                        ->leftJoin('md_rnt','md_rnt.id','=','td_kyc.kyc_login_at')
+                        ->leftJoin('md_amc','md_amc.id','=','td_kyc.kyc_login_at')
+                        ->select('td_kyc.*','md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type','md_client.pan as pan',
+                        'md_rnt.rnt_name as rnt_name','md_amc.amc_name as amc_name'
                         )
                         ->where('td_kyc.deleted_flag','N')
                         ->whereDate('td_kyc.entry_dt','>=',date('Y-m-d',strtotime($start_date)))
@@ -86,11 +84,11 @@ class KYCController extends Controller
                 //         ->paginate($paginate);      
                 // }else
                 if ($tin_no!='') {
-                    $data=KYC::join('md_rnt','md_rnt.id','=','td_kyc.kyc_login_at')
-                        ->join('md_client','md_client.id','=','td_kyc.client_id')
-                        ->leftJoin('md_amc','md_amc.id','=','td_kyc.amc_id')
-                        ->select('td_kyc.*','md_rnt.rnt_name as rnt_name','md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type','md_client.pan as pan',
-                        'md_amc.amc_name as amc_name'
+                    $data=KYC::join('md_client','md_client.id','=','td_kyc.client_id')
+                        ->leftJoin('md_rnt','md_rnt.id','=','td_kyc.kyc_login_at')
+                        ->leftJoin('md_amc','md_amc.id','=','td_kyc.kyc_login_at')
+                        ->select('td_kyc.*','md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type','md_client.pan as pan',
+                        'md_rnt.rnt_name as rnt_name','md_amc.amc_name as amc_name'
                         )
                         ->whereDate('td_kyc.entry_dt',date('Y-m-d'))
                         ->where('td_kyc.deleted_flag','N')
@@ -98,23 +96,18 @@ class KYCController extends Controller
                         ->orderBy('td_kyc.entry_dt','DESC')
                         ->paginate($paginate); 
                 } else {
-                    $data=KYC::join('md_rnt','md_rnt.id','=','td_kyc.kyc_login_at')
-                        ->join('md_client','md_client.id','=','td_kyc.client_id')
-                        // ->join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
-                        // ->join('md_scheme','md_scheme.id','=','td_form_received.scheme_id')
-                        ->leftJoin('md_amc','md_amc.id','=','td_kyc.amc_id')
-                        ->select('td_kyc.*','md_rnt.rnt_name as rnt_name','md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type','md_client.pan as pan',
-                        'md_amc.amc_name as amc_name'
+                    $data=KYC::join('md_client','md_client.id','=','td_kyc.client_id')
+                        ->leftJoin('md_rnt','md_rnt.id','=','td_kyc.kyc_login_at')
+                        ->leftJoin('md_amc','md_amc.id','=','td_kyc.kyc_login_at')
+                        ->select('td_kyc.*','md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type','md_client.pan as pan',
+                        'md_rnt.rnt_name as rnt_name','md_amc.amc_name as amc_name'
                         )
                         ->whereDate('td_kyc.entry_dt',date('Y-m-d'))
                         ->where('td_kyc.deleted_flag','N')
-                        // ->where('md_trans.trans_type_id',$trans_type_id)
                         ->orderBy('td_kyc.entry_dt','DESC')
                         ->paginate($paginate); 
                 }
             }
-            
-                 
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
@@ -155,24 +148,22 @@ class KYCController extends Controller
                 }
                 // return $login_status;
                 if ($date_status=='T') {
-                    $data=KYC::join('md_rnt','md_rnt.id','=','td_kyc.kyc_login_at')
-                        ->join('md_client','md_client.id','=','td_kyc.client_id')
-                        ->leftJoin('md_amc','md_amc.id','=','td_kyc.amc_id')
-                        ->select('td_kyc.*','md_rnt.rnt_name as rnt_name','md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type','md_client.pan as pan',
-                        'md_amc.amc_name as amc_name'
+                    $data=KYC::join('md_client','md_client.id','=','td_kyc.client_id')
+                        ->leftJoin('md_rnt','md_rnt.id','=','td_kyc.kyc_login_at')
+                        ->leftJoin('md_amc','md_amc.id','=','td_kyc.kyc_login_at')
+                        ->select('td_kyc.*','md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type','md_client.pan as pan',
+                        'md_rnt.rnt_name as rnt_name','md_amc.amc_name as amc_name'
                         )
                         ->where('td_kyc.deleted_flag','N')
                         ->whereDate('td_kyc.entry_dt',date('Y-m-d'))
                         ->orderBy('td_kyc.entry_dt','DESC')
                         ->get();   
                 }else{
-                    $data=KYC::join('md_rnt','md_rnt.id','=','td_kyc.kyc_login_at')
-                        ->join('md_client','md_client.id','=','td_kyc.client_id')
-                        // ->join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
-                        // ->join('md_scheme','md_scheme.id','=','td_form_received.scheme_id')
-                        ->leftJoin('md_amc','md_amc.id','=','td_kyc.amc_id')
-                        ->select('td_kyc.*','md_rnt.rnt_name as rnt_name','md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type','md_client.pan as pan',
-                        'md_amc.amc_name as amc_name'
+                    $data=KYC::join('md_client','md_client.id','=','td_kyc.client_id')
+                        ->leftJoin('md_rnt','md_rnt.id','=','td_kyc.kyc_login_at')
+                        ->leftJoin('md_amc','md_amc.id','=','td_kyc.kyc_login_at')
+                        ->select('td_kyc.*','md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type','md_client.pan as pan',
+                        'md_rnt.rnt_name as rnt_name','md_amc.amc_name as amc_name'
                         )
                         ->where('td_kyc.deleted_flag','N')
                         ->whereDate('td_kyc.entry_dt','>=',date('Y-m-d',strtotime($start_date)))
@@ -197,29 +188,25 @@ class KYCController extends Controller
                 //         ->get();      
                 // }else
                 if ($tin_no!='') {
-                    $data=KYC::join('md_rnt','md_rnt.id','=','td_kyc.kyc_login_at')
-                        ->join('md_client','md_client.id','=','td_kyc.client_id')
-                        ->leftJoin('md_amc','md_amc.id','=','td_kyc.amc_id')
-                        ->select('td_kyc.*','md_rnt.rnt_name as rnt_name','md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type','md_client.pan as pan',
-                        'md_amc.amc_name as amc_name'
+                    $data=KYC::join('md_client','md_client.id','=','td_kyc.client_id')
+                        ->leftJoin('md_rnt','md_rnt.id','=','td_kyc.kyc_login_at')
+                        ->leftJoin('md_amc','md_amc.id','=','td_kyc.kyc_login_at')
+                        ->select('td_kyc.*','md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type','md_client.pan as pan',
+                        'md_rnt.rnt_name as rnt_name','md_amc.amc_name as amc_name'
                         )
-                        ->whereDate('td_kyc.entry_dt',date('Y-m-d'))
                         ->where('td_kyc.deleted_flag','N')
                         ->where('td_kyc.tin_no',$tin_no)
                         ->orderBy('td_kyc.entry_dt','DESC')
                         ->get(); 
                 } else {
-                    $data=KYC::join('md_rnt','md_rnt.id','=','td_kyc.kyc_login_at')
-                        ->join('md_client','md_client.id','=','td_kyc.client_id')
-                        // ->join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
-                        // ->join('md_scheme','md_scheme.id','=','td_form_received.scheme_id')
-                        ->leftJoin('md_amc','md_amc.id','=','td_kyc.amc_id')
-                        ->select('td_kyc.*','md_rnt.rnt_name as rnt_name','md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type','md_client.pan as pan',
-                        'md_amc.amc_name as amc_name'
+                    $data=KYC::join('md_client','md_client.id','=','td_kyc.client_id')
+                        ->leftJoin('md_rnt','md_rnt.id','=','td_kyc.kyc_login_at')
+                        ->leftJoin('md_amc','md_amc.id','=','td_kyc.kyc_login_at')
+                        ->select('td_kyc.*','md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type','md_client.pan as pan',
+                        'md_rnt.rnt_name as rnt_name','md_amc.amc_name as amc_name'
                         )
                         ->whereDate('td_kyc.entry_dt',date('Y-m-d'))
                         ->where('td_kyc.deleted_flag','N')
-                        // ->where('md_trans.trans_type_id',$trans_type_id)
                         ->orderBy('td_kyc.entry_dt','DESC')
                         ->get(); 
                 }
@@ -294,6 +281,14 @@ class KYCController extends Controller
                 }
                 $arn_no=Helper::CommonParamValue(1);
 
+                $scaned_form=$request->scaned_form;
+                    $doc_name='';
+                    if ($scaned_form) {
+                        $cv_path_extension=$scaned_form->getClientOriginalExtension();
+                        $doc_name=microtime().".".$cv_path_extension;
+                        $scaned_form->move(public_path('kyc-form/'),$doc_name);
+                    }
+
                 $data=KYC::create(array(
                     'tin_no'=>$tin_no,
                     'entry_dt'=>date('Y-m-d'),
@@ -305,9 +300,9 @@ class KYCController extends Controller
                     'client_id'=>$request->client_id,
                     'present_kyc_status'=>'D',
                     'kyc_type'=>$request->kyc_type,
-                    // 'kyc_login_type'=>$request->kyc_login_type,
+                    'kyc_login_type'=>$request->kyc_login_type,
                     'kyc_login_at'=>$request->kyc_login_at,
-                    'amc_id'=>isset($request->amc_id)?$request->amc_id:NULL,
+                    'scaned_form'=>$doc_name,
                     'form_scan_status'=>'A',
                     'final_kyc_status'=>'U',
                     'branch_code'=>1,
