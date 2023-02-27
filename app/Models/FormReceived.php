@@ -28,6 +28,8 @@ class FormReceived extends Model
         'application_no',
         'folio_no',
         'kyc_status',
+        'kyc_modification',
+        'existing_kyc_status',
         'branch_code',
         'deleted_at',
         'deleted_by',

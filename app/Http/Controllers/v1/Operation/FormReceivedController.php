@@ -330,13 +330,15 @@ class FormReceivedController extends Controller
                     'client_id'=>$request->client_id,
                     'product_id'=>$request->product_id,
                     'trans_id'=>$request->trans_id,
-                    'scheme_id'=>$request->scheme_id,
+                    'scheme_id'=>isset($request->scheme_id)?$request->scheme_id:NULL, //
                     'scheme_id_to'=>isset($request->scheme_id_to)?$request->scheme_id_to:NULL,
                     'recv_from'=>$request->recv_from,
-                    'inv_type'=>$request->inv_type,
+                    'inv_type'=>isset($request->inv_type)?$request->scheme_id_to:'N',  //
                     'application_no'=>isset($request->application_no)?$request->application_no:NULL,
                     'folio_no'=>isset($request->folio_no)?$request->folio_no:NULL,
-                    'kyc_status'=>$request->kyc_status,
+                    'kyc_status'=>isset($request->kyc_status)?$request->kyc_status:'A',   //
+                    'kyc_modification'=>isset($request->kyc_modification)?$request->kyc_modification:NULL,
+                    'existing_kyc_status'=>isset($request->existing_kyc_status)?$request->existing_kyc_status:NULL,   //
                     'branch_code'=>$branch_code,
                     // 'created_by'=>'',
                 ));      
