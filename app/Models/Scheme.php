@@ -24,6 +24,10 @@ class Scheme extends Model
         'sip_fresh_min_amt',
         'sip_freq_wise_amt',
         'sip_date',
+        'swp_freq_wise_amt',
+        'swp_date',
+        'stp_freq_wise_amt',
+        'stp_date',
         'created_by',
         'updated_by',
     ];

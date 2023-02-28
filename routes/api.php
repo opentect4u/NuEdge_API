@@ -27,6 +27,8 @@ Route::prefix('v1')->group(function () {
 
         Route::post('login',[App\Http\Controllers\v1\TestController::class,'login']);
 
+        Route::get('mdparams',[App\Http\Controllers\v1\CommonController::class,'CommonParamValue']);
+
 
         Route::get('rnt',[App\Http\Controllers\v1\Master\RNTController::class,'index']);
         Route::get('rntDetailSearch',[App\Http\Controllers\v1\Master\RNTController::class,'searchDetails']);
@@ -129,6 +131,23 @@ Route::prefix('v1')->group(function () {
         Route::get('districts',[App\Http\Controllers\v1\Master\DistrictController::class,'index']);
         Route::get('city',[App\Http\Controllers\v1\Master\CityController::class,'index']);
 
+        Route::get('swpType',[App\Http\Controllers\v1\Master\SWPTypeController::class,'index']);
+        Route::get('swpTypeSearch',[App\Http\Controllers\v1\Master\SWPTypeController::class,'searchDetails']);
+        Route::post('swpTypeSearch',[App\Http\Controllers\v1\Master\SWPTypeController::class,'searchDetails']);
+        Route::post('swpTypeExport',[App\Http\Controllers\v1\Master\SWPTypeController::class,'export']);
+        Route::post('swpTypeAddEdit',[App\Http\Controllers\v1\Master\SWPTypeController::class,'createUpdate']);
+
+        Route::get('stpType',[App\Http\Controllers\v1\Master\STPTypeController::class,'index']);
+        Route::get('stpTypeSearch',[App\Http\Controllers\v1\Master\STPTypeController::class,'searchDetails']);
+        Route::post('stpTypeSearch',[App\Http\Controllers\v1\Master\STPTypeController::class,'searchDetails']);
+        Route::post('stpTypeExport',[App\Http\Controllers\v1\Master\STPTypeController::class,'export']);
+        Route::post('stpTypeAddEdit',[App\Http\Controllers\v1\Master\STPTypeController::class,'createUpdate']);
+
+        Route::get('clientType',[App\Http\Controllers\v1\Master\ClientTypeController::class,'index']);
+        Route::get('clientTypeSearch',[App\Http\Controllers\v1\Master\ClientTypeController::class,'searchDetails']);
+        Route::post('clientTypeSearch',[App\Http\Controllers\v1\Master\ClientTypeController::class,'searchDetails']);
+        Route::post('clientTypeExport',[App\Http\Controllers\v1\Master\ClientTypeController::class,'export']);
+        Route::post('clientTypeAddEdit',[App\Http\Controllers\v1\Master\ClientTypeController::class,'createUpdate']);
 
 
         // dropdown onchange routes start

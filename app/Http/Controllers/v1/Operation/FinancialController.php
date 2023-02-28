@@ -522,7 +522,7 @@ class FinancialController extends Controller
                         'trans_id'=>$request->trans_id,
                         'scheme_id'=>$request->scheme_id,
                         'scheme_id_to'=>isset($request->scheme_id_to)?$request->scheme_id_to:NULL,
-                        'inv_type'=>$request->inv_type,
+                        'inv_type'=>isset($request->inv_type)?$request->inv_type:'N',
                         'application_no'=>isset($request->application_no)?$request->application_no:NULL,
                         'folio_no'=>isset($request->folio_no)?$request->folio_no:NULL,
                     ));      
@@ -546,8 +546,8 @@ class FinancialController extends Controller
                         'option_id_to'=>isset($request->option_to)?$request->option_to:NULL,
                         'plan_id_to'=>isset($request->plan_to)?$request->plan_to:NULL,
                         'folio_no'=>isset($request->folio_no)?$request->folio_no:NULL,
-                        'amount'=>isset($request->amount)?$request->amount:'',
-                        'unit'=>isset($request->unit)?$request->unit:'',
+                        'amount'=>isset($request->amount)?$request->amount:isset($request->redemp_amount)?$request->redemp_amount:'',
+                        'unit'=>isset($request->unit)?$request->unit:isset($request->redemp_unit)?$request->redemp_unit:'',
                         'switch_by'=>isset($request->switch_by)?$request->switch_by:NULL,
                         'trans_id'=>$request->trans_id,
                         'first_inv_amount'=>isset($request->first_inv_amount)?$request->first_inv_amount:NULL,
@@ -562,10 +562,86 @@ class FinancialController extends Controller
                         'remarks'=>$request->remarks,
                         'form_status'=>'P',
                         'rnt_login_at'=>$request->rnt_login_at,
+                        'cancel_eff_dt'=>isset($request->cancel_eff_dt)?date('Y-m-d',strtotime($request->cancel_eff_dt)):NULL,
+                        'change_contact_type'=>isset($request->change_contact_type)?$request->change_contact_type:NULL,
+                        'reason_for_change'=>isset($request->reason_for_change)?$request->reason_for_change:NULL,
+                        'nominee_opt_out'=>isset($request->nominee_opt_out)?$request->nominee_opt_out:NULL,
+                        'redemp_type'=>isset($request->redemp_type)?$request->redemp_type:NULL,
+                        'redemp_unit_type'=>isset($request->redemp_unit_type)?$request->redemp_unit_type:NULL,
                         // 'created_by'=>'',
                     ));    
+
+                    // START only for non financial changes
+                    if ($request->change_contact_type!='') {  // client update
+                        $first_client_id=$data->first_client_id;
+                        $up_data=Client::find($first_client_id);
+                        if ($request->email) {
+                            $up_data->email=$request->email;
+                            $up_data->save();
+                        }
+                        if ($request->mobile) {
+                            $up_data->mobile=$request->mobile;
+                            $up_data->save();
+                        }
+                    }
+
+                    if ($data->trans_id==22) {  // address change
+                        $first_client_id=$data->first_client_id;
+                        $up_data=Client::find($first_client_id);
+                        $up_data->add_line_1=$request->add_line_1;
+                        $up_data->add_line_2=$request->add_line_2;
+                        $up_data->city=$request->city;
+                        $up_data->dist=$request->dist;
+                        $up_data->state=$request->state;
+                        $up_data->pincode=$request->pincode;
+                        $up_data->save();
+                    }
+
+                    if ($data->trans_id==23) {  // name change
+                        $first_client_id=$data->first_client_id;
+                        $up_data=Client::find($first_client_id);
+
+                        $client_name=ucwords($request->new_name);
+                        $words = explode(" ",$client_name);
+                        $client_code="";
+                        $client_code_1 = mb_substr($words[0], 0, 1).mb_substr($words[(count($words)-1)], 0, 1);;
+                        
+                        $is_has=Client::where('client_code',$client_code_1)->get();
+                        if (count($is_has)>0) {
+                            $client_code=$client_code_1.date('dmy',strtotime($up_data->dob)).count($is_has);
+                        }else {
+                            $client_code=$client_code_1.date('dmy',strtotime($up_data->dob));
+                        }
+                        $up_data->client_code=$client_code;
+                        $up_data->client_name=$client_name;
+                        $up_data->save();
+                    }
+
+                    if ($data->trans_id==24) {  // change status not done
+                        # code...
+                    }
+
+                    if ($data->trans_id==25) {  // Nominee Opt-Out  
+
+                        # code...
+                    }
+
+                    if ($data->trans_id==28) {  // Folio PAN Updation  
+                        $first_client_id=$data->first_client_id;
+                        $up_data=Client::find($first_client_id);
+                        $up_data->pan=$request->folio_pan;
+                        $up_data->client_type='P';
+                        $up_data->save();
+                    }
+
+                    if ($data->trans_id==29) {  // Redemption 
+
+                        # code...
+                    }
+
+                    // END only for non financial changes
                 }
-            } else {
+            } else {  // Without TTIN not exist
                 // return $request; // if temp tin not exist
                 // return $tin_no;
                 // craete TTIN no
@@ -665,6 +741,7 @@ class FinancialController extends Controller
                         'form_scan_status'=>$request->form_scan_status,
                         'remarks'=>$request->remarks,
                         'form_status'=>'P',
+                        'cancel_eff_dt'=>isset($request->cancel_eff_dt)?date('Y-m-d',strtotime($request->cancel_eff_dt)):NULL,
                         'rnt_login_at'=>$request->rnt_login_at,
                         // 'created_by'=>'',
                     )); 

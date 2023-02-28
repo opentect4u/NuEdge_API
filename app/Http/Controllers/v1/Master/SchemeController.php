@@ -205,6 +205,10 @@ class SchemeController extends Controller
                         // 'sip_add_min_amt'=>$request->sip_add_min_amt,
                         'sip_freq_wise_amt'=>$request->frequency,
                         'sip_date'=>$request->sip_date,
+                        // 'swp_freq_wise_amt'=>$request->swp_freq_wise_amt,
+                        // 'swp_date'=>$request->swp_date,
+                        // 'stp_freq_wise_amt'=>$request->stp_freq_wise_amt,
+                        // 'stp_date'=>$request->stp_date,
                         // 'created_by'=>'',
                     ));    
                 }elseif ($request->scheme_type=='N') {

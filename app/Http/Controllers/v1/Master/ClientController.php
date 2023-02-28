@@ -237,6 +237,7 @@ class ClientController extends Controller
                                 'email'=>$request->email,
                                 'sec_email'=>$request->sec_email,
                                 'client_type'=>$request->client_type,
+                                'client_type_mode'=>$request->client_type_mode,
                             )); 
                             $doc_name='';
                             $files=$request->file;

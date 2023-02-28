@@ -31,6 +31,7 @@ class Client extends Model
         'guardians_pan',
         'guardians_name',
         'relation',
+        'client_type_mode',
         'created_by',
         'updated_by',
     ];

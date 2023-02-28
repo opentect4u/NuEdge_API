@@ -141,13 +141,14 @@ class FormReceivedController extends Controller
                 // return $temp_tin_no;
                 $data=FormReceived::join('md_trans','md_trans.id','=','td_form_received.trans_id')
                     // leftJoin('md_products','md_products.id','=','td_form_received.product_id')
-                    ->join('md_scheme','md_scheme.id','=','td_form_received.scheme_id')
+                    ->leftJoin('md_scheme','md_scheme.id','=','td_form_received.scheme_id')
                     ->leftJoin('md_scheme as md_scheme_2','md_scheme_2.id','=','td_form_received.scheme_id_to')
                     ->join('md_client','md_client.id','=','td_form_received.client_id')
                     ->join('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
                     // ->join('md_employee as md_employee1','md_employee1.emp_code','=','td_form_received.euin_to')
                     // ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_form_received.sub_brk_cd')
-                    ->select('td_form_received.*','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to','md_scheme.amc_id as amc_id','md_scheme.pip_fresh_min_amt as pip_fresh_min_amt','md_scheme.sip_fresh_min_amt as sip_fresh_min_amt','md_scheme.pip_add_min_amt as pip_add_min_amt','md_scheme.pip_add_min_amt as pip_add_min_amt','md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type','md_trans.trns_name as trans_name','md_employee.emp_name as emp_name')
+                    ->select('td_form_received.*','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to','md_scheme.amc_id as amc_id','md_scheme.pip_fresh_min_amt as pip_fresh_min_amt',
+                    'md_scheme.pip_add_min_amt as pip_add_min_amt','md_scheme.sip_freq_wise_amt as sip_freq_wise_amt','md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type','md_trans.trns_name as trans_name','md_employee.emp_name as emp_name')
                     // ->select('td_form_received.*','md_products.product_name as product_name','md_employee.emp_name as euin_from_name','md_employee1.emp_name as euin_to_name','md_sub_broker.bro_name as sub_bro_name')
                     ->where('td_form_received.deleted_flag','N')
                     ->where('td_form_received.temp_tin_no', $temp_tin_no)
