@@ -209,6 +209,8 @@ Route::prefix('v1')->group(function () {
         Route::get('mfTraxDetailSearch',[App\Http\Controllers\v1\Operation\FinancialController::class,'searchDetails']);
         Route::post('mfTraxDetailSearch',[App\Http\Controllers\v1\Operation\FinancialController::class,'searchDetails']);
         Route::post('mfTraxExport',[App\Http\Controllers\v1\Operation\FinancialController::class,'export']);
+        
+        Route::get('mfTraxFolioDetails',[App\Http\Controllers\v1\Operation\FinancialController::class,'getFolioDetails']);
 
         Route::get('daysheetReport',[App\Http\Controllers\v1\Operation\ReportController::class,'index']);
 

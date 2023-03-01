@@ -334,7 +334,7 @@ class FormReceivedController extends Controller
                     'scheme_id'=>isset($request->scheme_id)?$request->scheme_id:NULL, //
                     'scheme_id_to'=>isset($request->scheme_id_to)?$request->scheme_id_to:NULL,
                     'recv_from'=>$request->recv_from,
-                    'inv_type'=>isset($request->inv_type)?$request->scheme_id_to:'N',  //
+                    'inv_type'=>isset($request->inv_type)?$request->inv_type:'N',  //
                     'application_no'=>isset($request->application_no)?$request->application_no:NULL,
                     'folio_no'=>isset($request->folio_no)?$request->folio_no:NULL,
                     'kyc_status'=>isset($request->kyc_status)?$request->kyc_status:'A',   //

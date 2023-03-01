@@ -21,7 +21,7 @@ class Scheme extends Model
         'nfo_reopen_dt',
         'nfo_entry_date',
         'pip_fresh_min_amt',
-        'sip_fresh_min_amt',
+        'pip_add_min_amt',
         'sip_freq_wise_amt',
         'sip_date',
         'swp_freq_wise_amt',

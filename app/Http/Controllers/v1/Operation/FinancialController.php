@@ -533,8 +533,7 @@ class FinancialController extends Controller
                         'first_client_id'=>$request->first_client_id,
                         'first_kyc'=>$request->first_kyc,
                         'mode_of_holding'=>isset($request->mode_of_holding)?$request->mode_of_holding:NULL,
-                        'sip_duration'=>isset($request->sip_duration)?$request->sip_duration:NULL,
-                        'sip_frequency'=>isset($request->sip_frequency)?$request->sip_frequency:NULL,
+                        
                         'second_client_id'=>isset($second_client_id)?$second_client_id:NULL,
                         'second_kyc'=>isset($request->second_kyc)?$request->second_kyc:NULL,
                         'third_client_id'=>isset($third_client_id)?$third_client_id:NULL,
@@ -546,14 +545,19 @@ class FinancialController extends Controller
                         'option_id_to'=>isset($request->option_to)?$request->option_to:NULL,
                         'plan_id_to'=>isset($request->plan_to)?$request->plan_to:NULL,
                         'folio_no'=>isset($request->folio_no)?$request->folio_no:NULL,
-                        'amount'=>isset($request->amount)?$request->amount:isset($request->redemp_amount)?$request->redemp_amount:'',
+                        'amount'=>isset($request->amount)?$request->amount:isset($request->redemp_amount)?$request->redemp_amount:isset($request->swp_stp_amount)?$request->swp_stp_amount:'',
                         'unit'=>isset($request->unit)?$request->unit:isset($request->redemp_unit)?$request->redemp_unit:'',
                         'switch_by'=>isset($request->switch_by)?$request->switch_by:NULL,
                         'trans_id'=>$request->trans_id,
                         'first_inv_amount'=>isset($request->first_inv_amount)?$request->first_inv_amount:NULL,
                         'sip_type'=>isset($request->sip_type)?$request->sip_type:NULL,
-                        'sip_start_date'=>isset($request->sip_start_date)?date('Y-m-d',strtotime($request->sip_start_date)):NULL,
-                        'sip_end_date'=>isset($request->sip_end_date)?date('Y-m-d',strtotime($request->sip_end_date)):NULL,
+
+                        'sip_swp_stp_duration_type'=>isset($request->sip_duration_type)?$request->sip_duration_type:isset($request->swp_stp_duration_type)?$request->swp_stp_duration_type:NULL,
+                        'sip_swp_stp_duration'=>isset($request->sip_duration)?$request->sip_duration:isset($request->swp_stp_duration)?$request->swp_stp_duration:NULL,
+                        'sip_swp_stp_frequency'=>isset($request->sip_frequency)?$request->sip_frequency:isset($request->swp_stp_frequency)?$request->swp_stp_frequency:NULL,
+                        'sip_swp_stp_start_date'=>isset($request->sip_start_date)?date('Y-m-d',strtotime($request->sip_start_date)):isset($request->swp_stp_start_date)?date('Y-m-d',strtotime($request->swp_stp_start_date)):NULL,
+                        'sip_swp_stp_end_date'=>isset($request->sip_end_date)?date('Y-m-d',strtotime($request->sip_end_date)):isset($request->swp_stp_end_date)?date('Y-m-d',strtotime($request->swp_stp_end_date)):NULL,
+
                         'chq_no'=>$request->chq_no,
                         'chq_bank'=>$request->chq_bank,
                         // 'rnt_login_at'=>$request->rnt_login_at,
@@ -568,6 +572,12 @@ class FinancialController extends Controller
                         'nominee_opt_out'=>isset($request->nominee_opt_out)?$request->nominee_opt_out:NULL,
                         'redemp_type'=>isset($request->redemp_type)?$request->redemp_type:NULL,
                         'redemp_unit_type'=>isset($request->redemp_unit_type)?$request->redemp_unit_type:NULL,
+                        'acc_no'=>isset($request->acc_no)?$request->acc_no:NULL,
+                        'acc_bank_id'=>isset($request->acc_bank_id)?$request->acc_bank_id:NULL,
+                        'swp_type'=>isset($request->swp_type)?$request->swp_type:NULL,
+                        'stp_type'=>isset($request->stp_type)?$request->stp_type:NULL,
+                        'kyc_status'=>isset($request->kyc_status)?$request->kyc_status:NULL,
+                        'transmission_type'=>isset($request->transmission_type)?$request->transmission_type:NULL,
                         // 'created_by'=>'',
                     ));    
 
@@ -633,9 +643,25 @@ class FinancialController extends Controller
                         $up_data->client_type='P';
                         $up_data->save();
                     }
-
                     if ($data->trans_id==29) {  // Redemption 
 
+                        # code...
+                    }
+                    if ($data->trans_id==20) {  // minor to major 
+                        $first_client_id=$data->first_client_id;
+                        $up_data=Client::find($first_client_id);
+                        $up_data->pan=$request->minor_to_major_pan;
+                        $up_data->client_type='P';
+                    }
+
+                    if ($request->transmission_type!='' && $data->trans_id==19) {
+                        $fetch_data=MutualFund::where('folio_no',$data->folio_no)
+                        ->where('created_at','ASC')->get();   
+                        // return $fetch_data;
+                        if ($request->transmission_type==1) {
+                            # code...
+                            // $data=MutualFund::
+                        }
                         # code...
                     }
 
@@ -752,6 +778,41 @@ class FinancialController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
+
+    public function getFolioDetails(Request $request)
+    {
+        try {
+            $folio_no=$request->folio_no;
+            $data=MutualFund::join('td_form_received','td_form_received.temp_tin_no','=','td_mutual_fund.temp_tin_no')
+                        ->join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
+                        ->join('md_scheme','md_scheme.id','=','td_mutual_fund.trans_scheme_from')
+                        ->leftJoin('md_scheme as md_scheme_2','md_scheme_2.id','=','td_mutual_fund.trans_scheme_to')
+                        ->join('md_client','md_client.id','=','td_mutual_fund.first_client_id')
+                        ->leftJoin('md_client as md_client_2','md_client_2.id','=','td_mutual_fund.second_client_id')
+                        ->leftJoin('md_client as md_client_3','md_client_3.id','=','td_mutual_fund.third_client_id')
+                        ->join('md_plan','md_plan.id','=','td_mutual_fund.plan_id')
+                        ->join('md_option','md_option.id','=','td_mutual_fund.option_id')
+                        ->leftJoin('md_plan as md_plan_2','md_plan_2.id','=','td_mutual_fund.plan_id_to')
+                        ->leftJoin('md_option as md_option_2','md_option_2.id','=','td_mutual_fund.option_id_to')
+                        ->leftJoin('md_rnt','md_rnt.id','=','td_mutual_fund.rnt_login_at')
+                        ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','md_scheme.scheme_name as scheme_name',
+                        'td_form_received.bu_type as bu_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to',
+                        'md_client.client_code as first_client_code','md_client.client_name as first_client_name','md_client.pan as first_client_pan','md_client.client_type as first_client_type',
+                        'md_client_2.client_code as second_client_code','md_client_2.client_name as second_client_name','md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
+                        'md_client_3.client_code as third_client_code','md_client_3.client_name as third_client_name','md_client_3.pan as third_client_pan','md_client_3.client_type as third_client_type',
+                        'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to',
+                        'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no'
+                        )
+                        ->where('td_mutual_fund.folio_no',$folio_no)
+                        // ->where('td_mutual_fund.created_at','DESC')
+                        ->get();   
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::DATA_SAVE_ERROR);
+        }
+        return Helper::SuccessResponse($data);
+    }
+
 
     public function update(Request $request)
     {

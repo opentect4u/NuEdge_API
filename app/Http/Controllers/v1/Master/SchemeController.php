@@ -163,7 +163,25 @@ class SchemeController extends Controller
             $errors = $validator->errors();
             return Helper::ErrorResponse(parent::VALIDATION_ERROR);
         }
-        // try {
+        try {
+            // $request->sip_date
+            // $request->swp_date
+            // $request->stp_date
+            if ($request->sip_date!='') {
+                $sip_date=json_decode($request->sip_date);
+                sort($sip_date);
+                $sip_date=json_encode($sip_date);
+            }
+            if ($request->swp_date!='') {
+                $swp_date=json_decode($request->swp_date);
+                sort($swp_date);
+                $swp_date=json_encode($swp_date);
+            }
+            if ($request->stp_date!='') {
+                $stp_date=json_decode($request->stp_date);
+                sort($stp_date);
+                $stp_date=json_encode($stp_date);
+            }
             // return $request->sip_date;
             // return json_decode($request->sip_date);
             // 'sip_date'=>json_encode($request->sip_date),
@@ -185,7 +203,11 @@ class SchemeController extends Controller
                 $data->pip_add_min_amt=$request->pip_add_min_amt;
                 // $data->sip_add_min_amt=$request->sip_add_min_amt;
                 $data->sip_freq_wise_amt=$request->frequency;
-                $data->sip_date=$request->sip_date;
+                $data->sip_date=$sip_date;
+                $data->swp_freq_wise_amt=$request->swp_freq_wise_amt;
+                $data->swp_date=$swp_date;
+                $data->stp_freq_wise_amt=$request->stp_freq_wise_amt;
+                $data->stp_date=$stp_date;
                 $data->save();
             }else{
                 if ($request->scheme_type=='O') {
@@ -200,15 +222,13 @@ class SchemeController extends Controller
                         // 'nfo_end_dt'=>$request->nfo_end_dt,
                         // 'nfo_reopen_dt'=>$request->nfo_end_dt,
                         'pip_fresh_min_amt'=>$request->pip_fresh_min_amt,
-                        // 'sip_fresh_min_amt'=>$request->sip_fresh_min_amt,
                         'pip_add_min_amt'=>$request->pip_add_min_amt,
-                        // 'sip_add_min_amt'=>$request->sip_add_min_amt,
                         'sip_freq_wise_amt'=>$request->frequency,
-                        'sip_date'=>$request->sip_date,
-                        // 'swp_freq_wise_amt'=>$request->swp_freq_wise_amt,
-                        // 'swp_date'=>$request->swp_date,
-                        // 'stp_freq_wise_amt'=>$request->stp_freq_wise_amt,
-                        // 'stp_date'=>$request->stp_date,
+                        'sip_date'=>$sip_date,
+                        'swp_freq_wise_amt'=>$request->swp_freq_wise_amt,
+                        'swp_date'=>$swp_date,
+                        'stp_freq_wise_amt'=>$request->stp_freq_wise_amt,
+                        'stp_date'=>$stp_date,
                         // 'created_by'=>'',
                     ));    
                 }elseif ($request->scheme_type=='N') {
@@ -226,15 +246,19 @@ class SchemeController extends Controller
                         'pip_fresh_min_amt'=>$request->pip_fresh_min_amt,
                         'pip_add_min_amt'=>$request->pip_add_min_amt,
                         'sip_freq_wise_amt'=>$request->frequency,
-                        'sip_date'=>$request->sip_date,
+                        'sip_date'=>$sip_date,
+                        'swp_freq_wise_amt'=>$request->swp_freq_wise_amt,
+                        'swp_date'=>$swp_date,
+                        'stp_freq_wise_amt'=>$request->stp_freq_wise_amt,
+                        'stp_date'=>$stp_date,
                         // 'created_by'=>'',
                     ));  
                 }  
             }    
-        // } catch (\Throwable $th) {
-        //     //throw $th;
-        //     return Helper::ErrorResponse(parent::DATA_SAVE_ERROR);
-        // }
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::DATA_SAVE_ERROR);
+        }
         return Helper::SuccessResponse($data);
     }
 
