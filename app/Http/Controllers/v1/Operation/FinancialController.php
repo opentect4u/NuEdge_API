@@ -656,7 +656,8 @@ class FinancialController extends Controller
 
                     if ($request->transmission_type!='' && $data->trans_id==19) {
                         $fetch_data=MutualFund::where('folio_no',$data->folio_no)
-                        ->where('created_at','ASC')->get();   
+                        ->orderBy('td_mutual_fund.created_at','ASC')
+                        ->get();   
                         // return $fetch_data;
                         if ($request->transmission_type==1) {
                             # code...
@@ -804,7 +805,7 @@ class FinancialController extends Controller
                         'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no'
                         )
                         ->where('td_mutual_fund.folio_no',$folio_no)
-                        // ->where('td_mutual_fund.created_at','DESC')
+                        // ->orderBy('td_mutual_fund.created_at','ASC')
                         ->get();   
         } catch (\Throwable $th) {
             //throw $th;
