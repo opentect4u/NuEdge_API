@@ -29,7 +29,14 @@ class RNTImport implements ToModel, WithHeadingRow
         return new RNT([
             'rnt_name'=> $row['rnt_name'],
             'website'=> $row['website'],
-            'ofc_addr'=>$row['ofc_addr'],
+            'head_ofc_addr'=> $row['head_ofc_addr'],
+            'head_ofc_contact_per'=> $row['head_ofc_contact_per'],
+            'head_contact_per_mob'=> $row['head_contact_per_mob'],
+            'head_contact_per_email'=> $row['head_contact_per_email'],
+            'local_ofc_addr'=> $row['local_ofc_addr'],
+            'local_ofc_contact_per'=> $row['local_ofc_contact_per'],
+            'local_contact_per_mob'=> $row['local_contact_per_mob'],
+            'local_contact_per_email'=> $row['local_contact_per_email'],
             'cus_care_no'=>$row['cus_care_no'],
             'cus_care_email'=>$row['cus_care_email'],
         ]);

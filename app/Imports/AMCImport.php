@@ -43,7 +43,15 @@ class AMCImport implements ToModel, WithHeadingRow
             'product_id'=>$row['product_id'],
             'amc_name'=>$row['amc_name'],
             'website'=>$row['website'],
-            'ofc_addr'=>$row['ofc_addr'],
+            'gstin'=>$row['gstin'],
+            'head_ofc_addr'=>$row['head_ofc_addr'],
+            'head_ofc_contact_per'=>$row['head_ofc_contact_per'],
+            'head_contact_per_mob'=>$row['head_contact_per_mob'],
+            'head_contact_per_email'=>$row['head_contact_per_email'],
+            'local_ofc_addr'=>$row['local_ofc_addr'],
+            'local_ofc_contact_per'=>$row['local_ofc_contact_per'],
+            'local_contact_per_mob'=>$row['local_contact_per_mob'],
+            'local_contact_per_email'=>$row['local_contact_per_email'],
             'cus_care_no'=>$row['cus_care_no'],
             'cus_care_email'=>$row['cus_care_email'],
             'l1_name'=>$row['l1_name'],
@@ -64,8 +72,6 @@ class AMCImport implements ToModel, WithHeadingRow
             'l6_name'=>$row['l6_name'],
             'l6_contact_no'=>$row['l6_contact_no'],
             'l6_email'=>$row['l6_email'],
-            'sip_start_date'=>date('Y-m-d',strtotime($row['sip_start_date'])),
-            'sip_end_date'=>date('Y-m-d',strtotime($row['sip_end_date'])),
         ]);
     }
 }
