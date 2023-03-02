@@ -662,8 +662,10 @@ class FinancialController extends Controller
                         if ($request->transmission_type==1) {
                             # code...
                             // $data=MutualFund::
+                        }elseif ($request->transmission_type==2) {
+                            # code...
                         }
-                        # code...
+
                     }
 
                     // END only for non financial changes
