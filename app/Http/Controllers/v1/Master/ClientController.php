@@ -10,6 +10,9 @@ use App\Models\Document;
 use Validator;
 use Excel;
 use App\Imports\ClientImport;
+use Mail;
+use App\Mail\Master\CreatClientEmail;
+use App\Models\Email;
 
 class ClientController extends Controller
 {
@@ -258,6 +261,10 @@ class ClientController extends Controller
                                     ));      
                                 }
                             }
+
+                            $email=Email::find(1);
+                            // Mail::to($request->email)->send(new CreatClientEmail($client_name,$email->subject,$email->body));
+
                             $data=Client::with('ClientDoc')->where('id',$u_data->id)->first();  
                         }  
                     }else {
@@ -304,6 +311,9 @@ class ClientController extends Controller
                                 ));      
                             }
                         }
+                        $email=Email::find(1);
+                        // Mail::to($request->email)->send(new CreatClientEmail($client_name,$email->subject,$email->body));
+
                         $data=Client::with('ClientDoc')->where('id',$u_data->id)->first();    
                     }
                 }
@@ -339,5 +349,7 @@ class ClientController extends Controller
         }
         return Helper::SuccessResponse($data1);
     }
+
+    
     
 }

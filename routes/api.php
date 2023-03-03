@@ -149,6 +149,13 @@ Route::prefix('v1')->group(function () {
         Route::post('clientTypeExport',[App\Http\Controllers\v1\Master\ClientTypeController::class,'export']);
         Route::post('clientTypeAddEdit',[App\Http\Controllers\v1\Master\ClientTypeController::class,'createUpdate']);
 
+        Route::get('email',[App\Http\Controllers\v1\Master\EmailController::class,'index']);
+        Route::get('emailSearch',[App\Http\Controllers\v1\Master\EmailController::class,'searchDetails']);
+        Route::post('emailSearch',[App\Http\Controllers\v1\Master\EmailController::class,'searchDetails']);
+        Route::post('emailAddEdit',[App\Http\Controllers\v1\Master\EmailController::class,'createUpdate']);
+        Route::post('emailExport',[App\Http\Controllers\v1\Master\EmailController::class,'export']);
+        Route::post('emailAddEdit',[App\Http\Controllers\v1\Master\EmailController::class,'createUpdate']);
+
 
         // dropdown onchange routes start
         Route::get('amcUsingPro',[App\Http\Controllers\v1\Master\CommonController::class,'showAMC']);

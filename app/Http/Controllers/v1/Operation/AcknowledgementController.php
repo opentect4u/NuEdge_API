@@ -9,6 +9,8 @@ use App\Models\{MutualFund,Client,FormReceived};
 use Validator;
 use Illuminate\Support\Carbon;
 use Mail;
+use App\Mail\Master\SendAckEmail;
+use App\Models\Email;
 
 class AcknowledgementController extends Controller
 {
@@ -289,26 +291,64 @@ class AcknowledgementController extends Controller
         try {
             $trans_type_id=$request->trans_type_id;
             // return $request;
-            $data='';
+            $data=MutualFund::join('td_form_received','td_form_received.temp_tin_no','=','td_mutual_fund.temp_tin_no')
+                ->join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
+                ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id',
+                'td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no')
+                ->where('md_trans.trans_type_id',$trans_type_id)
+                ->whereDate('td_mutual_fund.updated_at',date('Y-m-d'))
+                ->where('td_mutual_fund.form_status','=','A')
+                ->get();   
+
+            // return $data;
+            $sort_arr=[];
+            foreach ($data as $key => $item) {
+                $sort_arr[$item['first_client_id']][$key] = $item;
+            }
+            ksort($sort_arr, SORT_NUMERIC);
+            // return $sort_arr;
 
             $data1["email"] = "cmaity905@gmail.com";
             $data1["title"] = "From NuEdge Testing";
             $data1["body"] = "This is Demo";
      
-            $files = [
-                public_path('acknowledgement-copy/0.19759700 1677067846.pdf'),
-                public_path('acknowledgement-copy/0.19759700 1677067846.pdf'),
-            ];
-      
-            // Mail::send('emails.myTestMail', $data1, function($message)use($data1, $files) {
-            //     $message->to($data1["email"], $data1["email"])
-            //             ->subject($data1["title"]);
-     
-            //     foreach ($files as $file){
-            //         $message->attach($file);
-            //     }
-                
-            // });
+            foreach ($sort_arr as $key => $value) {
+                // return $value;
+                $files = [];
+                foreach ($value as $key => $value1) {
+                    // return $value1;
+                    $filePath=public_path('acknowledgement-copy/'.$value1->ack_copy_scan);
+                    // $filePath = public_path('test1.pdf');
+                    $filePath1 = public_path($value1->first_client_id.'_'.$key.'_'.'encrypt_documented.pdf');
+                    // return $filePath1;
+                    $password='1234';
+                    Helper::encrypt($filePath, $filePath1, $password);
+                    // return $filePath1;
+                    array_push($files,$filePath1);
+                }
+                // return $files;
+                // ================= start mail send code =================
+                // $email=Email::find(2);
+                // Mail::to($request->email)->send(new SendAckEmail($client_name,$email->subject,$email->body));
+
+                // Mail::send('emails.operation.ack-copy', $data1, function($message)use($data1, $files) {
+                //     $message->to($data1["email"], $data1["email"])
+                //             ->subject($data1["title"]);
+                //     foreach ($files as $file){
+                //         $message->attach($file);
+                //     }
+                    
+                // });
+                // ==========end mail send code ==========================
+                // start remove file
+                foreach ($files as $file){
+                    if (file_exists($file) != null) {
+                        unlink($file);
+                    }
+                }
+                // end remove file
+            }
+            
         } catch (\Throwable $th) {
             //throw $th;
            $msg="Email Sending Error.";
@@ -316,4 +356,6 @@ class AcknowledgementController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
+
+
 }
