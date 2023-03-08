@@ -247,6 +247,12 @@ class AMCController extends Controller
                 $data->l7_name=$request->l7_name;
                 $data->l7_contact_no=$request->l7_contact_no;
                 $data->l7_email=$request->l7_email;
+                $data->amc_short_name=$request->amc_short_name;
+                $data->login_url=$request->login_url;
+                $data->login_id=$request->login_id;
+                $data->login_pass=$request->login_pass;
+                $data->security_qus_ans=$request->security_qus_ans;
+                $data->cus_care_whatsapp_no=$request->cus_care_whatsapp_no;
                 $data->save();
             }else{
                 $data=AMC::create(array(
@@ -286,11 +292,18 @@ class AMCController extends Controller
                     'l7_name'=>$request->l7_name,
                     'l7_contact_no'=>$request->l7_contact_no,
                     'l7_email'=>$request->l7_email,
+                    'amc_short_name'=>$request->amc_short_name,
+                    'login_url'=>$request->login_url,
+                    'login_id'=>$request->login_id,
+                    'login_pass'=>$request->login_pass,
+                    'security_qus_ans'=>$request->security_qus_ans,
+                    'cus_care_whatsapp_no'=>$request->cus_care_whatsapp_no,
+                    'delete_flag'=>'N',
                     // 'created_by'=>'',
                 ));      
             }    
         } catch (\Throwable $th) {
-            //throw $th;
+            // throw $th;
             return Helper::ErrorResponse(parent::DATA_SAVE_ERROR);
         }
         return Helper::SuccessResponse($data);
@@ -302,6 +315,7 @@ class AMCController extends Controller
             // return $request;
             $path = $request->file('file')->getRealPath();
             $data = array_map('str_getcsv', file($path));
+            return $data ;
             // return $data[0][0];
             // return gettype($data[0][0]) ;
             // if (in_array("rnt_id", $data)) {

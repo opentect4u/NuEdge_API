@@ -27,6 +27,7 @@ Route::prefix('v1')->group(function () {
 
         Route::post('login',[App\Http\Controllers\v1\TestController::class,'login']);
 
+
         Route::get('mdparams',[App\Http\Controllers\v1\CommonController::class,'CommonParamValue']);
 
 
@@ -36,6 +37,7 @@ Route::prefix('v1')->group(function () {
         Route::post('rntExport',[App\Http\Controllers\v1\Master\RNTController::class,'export']);
         Route::post('rntAddEdit',[App\Http\Controllers\v1\Master\RNTController::class,'createUpdate']);
         Route::post('rntimport', [App\Http\Controllers\v1\Master\RNTController::class,'import']);
+        Route::post('rntDelete', [App\Http\Controllers\v1\Master\RNTController::class,'delete']);
 
         Route::get('product',[App\Http\Controllers\v1\Master\ProductController::class,'index']);
         Route::post('productAddEdit',[App\Http\Controllers\v1\Master\ProductController::class,'createUpdate']);

@@ -22,6 +22,14 @@ class Helper{
             'data'=>[]
         ],400);
     }
+    public function WarningResponse($msg)
+    {
+        return response()->json([
+            'suc'=>0,
+            'msg'=>$msg,
+            'data'=>[]
+        ],201);
+    }
     public function ipWhitelist($ip)
     {
         return response()->json([

@@ -28,6 +28,7 @@ class RNTImport implements ToModel, WithHeadingRow
         }
         return new RNT([
             'rnt_name'=> $row['rnt_name'],
+            'rnt_full_name'=> $row['R&T Full Name'],
             'website'=> $row['website'],
             'head_ofc_addr'=> $row['head_ofc_addr'],
             'head_ofc_contact_per'=> $row['head_ofc_contact_per'],
