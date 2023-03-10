@@ -17,6 +17,8 @@ class TransctionController extends Controller
             $product_id=$request->product_id;
             $trns_type_id=$request->trns_type_id;
             $trns_name=$request->trns_name;
+            $sort_by=$request->sort_by;
+            $column_name=$request->column_name;
             if ($paginate=='A') {
                 $paginate=999999999;
             }

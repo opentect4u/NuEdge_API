@@ -21,6 +21,8 @@ class ClientController extends Controller
         try {
             $paginate=$request->paginate;
             $cat_name=$request->cat_name;
+            $sort_by=$request->sort_by;
+            $column_name=$request->column_name;
             $data=Client::with('ClientDoc')
                 ->join('md_city','md_city.id','=','md_client.city')
                 ->join('md_district','md_district.id','=','md_client.dist')

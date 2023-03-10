@@ -15,6 +15,8 @@ class CityController extends Controller
         try {  
             $search=$request->search;
             $district_id=$request->district_id;
+            $sort_by=$request->sort_by;
+            $column_name=$request->column_name;
             if ($search!='') {
                 $data=City::where('name','like', '%' . $search . '%')->get();      
             }elseif ($district_id!='') {

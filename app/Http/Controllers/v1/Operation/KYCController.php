@@ -32,6 +32,8 @@ class KYCController extends Controller
             $start_date=$request->start_date;
             $end_date=$request->end_date;
             // return $bu_type;
+            $sort_by=$request->sort_by;
+            $column_name=$request->column_name;
 
             if ($paginate=='A' || $paginate=='undefined') {
                 $paginate=999999999;

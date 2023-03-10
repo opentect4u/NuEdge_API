@@ -23,6 +23,8 @@ class FinancialController extends Controller
             $date_status=$request->date_status;
             $start_date=$request->start_date;
             $end_date=$request->end_date;
+            $sort_by=$request->sort_by;
+            $column_name=$request->column_name;
 
             if ($paginate=='A') {
                 $paginate=999999999;
@@ -532,7 +534,7 @@ class FinancialController extends Controller
                         'entry_date'=> date('Y-m-d'),
                         'first_client_id'=>$request->first_client_id,
                         'first_kyc'=>$request->first_kyc,
-                        'mode_of_holding'=>isset($request->mode_of_holding)?$request->mode_of_holding:NULL,
+                        'mode_of_holding'=>(($request->mode_of_holding)?$request->mode_of_holding:(($request->change_existing_mode_of_holding)?$request->change_existing_mode_of_holding:NULL)),
                         
                         'second_client_id'=>isset($second_client_id)?$second_client_id:NULL,
                         'second_kyc'=>isset($request->second_kyc)?$request->second_kyc:NULL,
@@ -545,18 +547,22 @@ class FinancialController extends Controller
                         'option_id_to'=>isset($request->option_to)?$request->option_to:NULL,
                         'plan_id_to'=>isset($request->plan_to)?$request->plan_to:NULL,
                         'folio_no'=>isset($request->folio_no)?$request->folio_no:NULL,
-                        'amount'=>isset($request->amount)?$request->amount:isset($request->redemp_amount)?$request->redemp_amount:isset($request->swp_stp_amount)?$request->swp_stp_amount:'',
-                        'unit'=>isset($request->unit)?$request->unit:isset($request->redemp_unit)?$request->redemp_unit:'',
+                        'amount'=>(($request->amount)?$request->amount:(($request->redemp_amount)?$request->redemp_amount:(($request->swp_stp_amount)?$request->swp_stp_amount:''))),
+                        'unit'=>(($request->unit)?$request->unit:(($request->redemp_unit)?$request->redemp_unit:'')),
                         'switch_by'=>isset($request->switch_by)?$request->switch_by:NULL,
                         'trans_id'=>$request->trans_id,
                         'first_inv_amount'=>isset($request->first_inv_amount)?$request->first_inv_amount:NULL,
                         'sip_type'=>isset($request->sip_type)?$request->sip_type:NULL,
 
-                        'sip_swp_stp_duration_type'=>isset($request->sip_duration_type)?$request->sip_duration_type:isset($request->swp_stp_duration_type)?$request->swp_stp_duration_type:NULL,
-                        'sip_swp_stp_duration'=>isset($request->sip_duration)?$request->sip_duration:isset($request->swp_stp_duration)?$request->swp_stp_duration:NULL,
-                        'sip_swp_stp_frequency'=>isset($request->sip_frequency)?$request->sip_frequency:isset($request->swp_stp_frequency)?$request->swp_stp_frequency:NULL,
-                        'sip_swp_stp_start_date'=>isset($request->sip_start_date)?date('Y-m-d',strtotime($request->sip_start_date)):isset($request->swp_stp_start_date)?date('Y-m-d',strtotime($request->swp_stp_start_date)):NULL,
-                        'sip_swp_stp_end_date'=>isset($request->sip_end_date)?date('Y-m-d',strtotime($request->sip_end_date)):isset($request->swp_stp_end_date)?date('Y-m-d',strtotime($request->swp_stp_end_date)):NULL,
+                        // 'sip_swp_stp_duration_type'=>isset($request->sip_duration_type)?$request->sip_duration_type:isset($request->swp_stp_duration_type)?$request->swp_stp_duration_type:NULL,
+                        'sip_swp_stp_duration'=>(($request->sip_duration)?$request->sip_duration:(($request->swp_stp_duration)?$request->swp_stp_duration:NULL)),
+                        'sip_swp_stp_frequency'=>(($request->sip_frequency)?$request->sip_frequency:(($request->swp_stp_frequency)?$request->swp_stp_frequency:NULL)),
+                        
+                        'sip_swp_stp_inst_date'=>(($request->sip_date)?$request->sip_date:(($request->installment_dt)?$request->installment_dt:NULL)),
+                        
+                        // 'sip_swp_stp_start_date'=>isset($request->sip_start_date)?date('Y-m-d',strtotime($request->sip_start_date)):isset($request->swp_stp_start_date)?date('Y-m-d',strtotime($request->swp_stp_start_date)):NULL,
+                        'sip_swp_stp_start_date'=>(($request->sip_start_date) ? date('Y-m-d',strtotime($request->sip_start_date)):(($request->swp_stp_start_date)? date('Y-m-d',strtotime($request->swp_stp_start_date)):NULL)),
+                        'sip_swp_stp_end_date'=>(($request->sip_end_date)?date('Y-m-d',strtotime($request->sip_end_date)):(($request->swp_stp_end_date)?date('Y-m-d',strtotime($request->swp_stp_end_date)):NULL)),
 
                         'chq_no'=>$request->chq_no,
                         'chq_bank'=>$request->chq_bank,
@@ -578,6 +584,23 @@ class FinancialController extends Controller
                         'stp_type'=>isset($request->stp_type)?$request->stp_type:NULL,
                         'kyc_status'=>isset($request->kyc_status)?$request->kyc_status:NULL,
                         'transmission_type'=>isset($request->transmission_type)?$request->transmission_type:NULL,
+                        
+                        'change_new_mode_of_holding'=>isset($request->change_new_mode_of_holding)?$request->change_new_mode_of_holding:NULL,
+                        'mob_declaration_flag'=>isset($request->mob_dec)?$request->mob_dec:NULL,
+                        'email_declaration_flag'=>isset($request->email_dec)?$request->email_dec:NULL,
+                        'merge_folio'=>isset($request->merge_folio)?$request->merge_folio:NULL,
+                        'new_nominee'=>isset($request->new_nominee)?$request->new_nominee:NULL,
+
+                        // for special sip
+                        'swp_frequency'=>isset($request->swp_frequency)?$request->swp_frequency:NULL,
+                        'swp_start_date'=>isset($request->swp_start_date)?date('Y-m-d',strtotime($request->swp_start_date)):NULL,
+                        'swp_duration'=>isset($request->swp_duration)?$request->swp_duration:NULL,
+                        'swp_end_date'=>isset($request->swp_end_date)?date('Y-m-d',strtotime($request->swp_end_date)):NULL,
+                        'swp_inst_amount'=>isset($request->swp_inst_amount)?$request->swp_inst_amount:NULL,
+                        // for step up sip
+                        'step_up_by'=>isset($request->step_up_by)?$request->step_up_by:'N',
+                        'step_up_amount'=>isset($request->step_up_amount)?$request->step_up_amount:NULL,
+                        'step_up_percentage'=>isset($request->step_up_percentage)?$request->step_up_percentage:NULL,
                         // 'created_by'=>'',
                     ));    
 
@@ -627,8 +650,11 @@ class FinancialController extends Controller
                         $up_data->save();
                     }
 
-                    if ($data->trans_id==24) {  // change status not done
-                        # code...
+                    if ($data->trans_id==24) {  // change status 
+                        $first_client_id=$data->first_client_id;
+                        $up_data=Client::find($first_client_id);
+                        $up_data->client_type_mode=$request->change_status;
+                        $up_data->save();
                     }
 
                     if ($data->trans_id==25) {  // Nominee Opt-Out  
@@ -668,10 +694,24 @@ class FinancialController extends Controller
 
                     }
 
+                    if ($data->trans_id==32) {  // change mode of holding
+                        $fetch_folio_data=MutualFund::where('folio_no',$data->folio_no)
+                            ->orderBy('td_mutual_fund.created_at','ASC')
+                            ->get(); 
+
+                    }
+
+                    if ($data->trans_id==11 || $data->trans_id==21) {  // nominee 11 change & 21 addition
+                        $fetch_folio_data=MutualFund::where('folio_no',$data->folio_no)
+                            ->orderBy('td_mutual_fund.created_at','ASC')
+                            ->get();
+                    }
+
                     // END only for non financial changes
                 }
             } else {  // Without TTIN not exist
                 // return $request; // if temp tin not exist
+                // return $request->sip_start_date;
                 // return $tin_no;
                 // craete TTIN no
                 $is_has=FormReceived::orderBy('created_at','desc')->get();
@@ -698,7 +738,7 @@ class FinancialController extends Controller
                     'recv_from'=>$request->recv_from,
                     'inv_type'=>isset($request->inv_type)?$request->inv_type:'N',
                     'application_no'=>isset($request->application_no)?$request->application_no:NULL,
-                    'kyc_status'=>$request->kyc_status,
+                    'kyc_status'=>isset($request->kyc_status)?$request->kyc_status:'A',
                     'branch_code'=>$branch_code,
                     // 'created_by'=>'',
                 ));   
@@ -744,6 +784,8 @@ class FinancialController extends Controller
                         'entry_date'=> date('Y-m-d'),
                         'first_client_id'=>$request->first_client_id,
                         'first_kyc'=>isset($request->first_kyc)?$request->first_kyc:NULL,
+                        'mode_of_holding'=>(($request->mode_of_holding)?$request->mode_of_holding:(($request->change_existing_mode_of_holding)?$request->change_existing_mode_of_holding:NULL)),
+                        
                         'second_client_id'=>isset($second_client_id)?$second_client_id:NULL,
                         'second_kyc'=>isset($request->second_kyc)?$request->second_kyc:NULL,
                         'third_client_id'=>isset($third_client_id)?$third_client_id:NULL,
@@ -755,14 +797,23 @@ class FinancialController extends Controller
                         'option_id_to'=>isset($request->option_to)?$request->option_to:NULL,
                         'plan_id_to'=>isset($request->plan_to)?$request->plan_to:NULL,
                         'folio_no'=>isset($request->folio_no)?$request->folio_no:NULL,
-                        'amount'=>isset($request->amount)?$request->amount:'',
-                        'unit'=>isset($request->unit)?$request->unit:'',
+                        'amount'=>(($request->amount)?$request->amount:(($request->redemp_amount)?$request->redemp_amount:(($request->swp_stp_amount)?$request->swp_stp_amount:''))),
+                        'unit'=>(($request->unit)?$request->unit:(($request->redemp_unit)?$request->redemp_unit:'')),
                         'switch_by'=>isset($request->switch_by)?$request->switch_by:NULL,
                         'trans_id'=>$request->trans_id,
                         'first_inv_amount'=>isset($request->first_inv_amount)?$request->first_inv_amount:NULL,
                         'sip_type'=>isset($request->sip_type)?$request->sip_type:NULL,
-                        'sip_start_date'=>isset($request->sip_start_date)?date('Y-m-d',strtotime($request->sip_start_date)):NULL,
-                        'sip_end_date'=>isset($request->sip_end_date)?date('Y-m-d',strtotime($request->sip_end_date)):NULL,
+
+                        // 'sip_swp_stp_duration_type'=>isset($request->sip_duration_type)?$request->sip_duration_type:isset($request->swp_stp_duration_type)?$request->swp_stp_duration_type:NULL,
+                        'sip_swp_stp_duration'=>(($request->sip_duration)?$request->sip_duration:(($request->swp_stp_duration)?$request->swp_stp_duration:NULL)),
+                        'sip_swp_stp_frequency'=>(($request->sip_frequency)?$request->sip_frequency:(($request->swp_stp_frequency)?$request->swp_stp_frequency:NULL)),
+                        
+                        'sip_swp_stp_inst_date'=>(($request->sip_date)?$request->sip_date:(($request->installment_dt)?$request->installment_dt:NULL)),
+                        
+                        // 'sip_swp_stp_start_date'=>isset($request->sip_start_date)?date('Y-m-d',strtotime($request->sip_start_date)):isset($request->swp_stp_start_date)?date('Y-m-d',strtotime($request->swp_stp_start_date)):NULL,
+                        'sip_swp_stp_start_date'=>(($request->sip_start_date) ? date('Y-m-d',strtotime($request->sip_start_date)):(($request->swp_stp_start_date)? date('Y-m-d',strtotime($request->swp_stp_start_date)):NULL)),
+                        'sip_swp_stp_end_date'=>(($request->sip_end_date)?date('Y-m-d',strtotime($request->sip_end_date)):(($request->swp_stp_end_date)?date('Y-m-d',strtotime($request->swp_stp_end_date)):NULL)),
+
                         'chq_no'=>$request->chq_no,
                         'chq_bank'=>$request->chq_bank,
                         // 'rnt_login_at'=>$request->rnt_login_at,
@@ -770,13 +821,148 @@ class FinancialController extends Controller
                         'form_scan_status'=>$request->form_scan_status,
                         'remarks'=>$request->remarks,
                         'form_status'=>'P',
-                        'cancel_eff_dt'=>isset($request->cancel_eff_dt)?date('Y-m-d',strtotime($request->cancel_eff_dt)):NULL,
                         'rnt_login_at'=>$request->rnt_login_at,
-                        // 'created_by'=>'',
+                        'cancel_eff_dt'=>isset($request->cancel_eff_dt)?date('Y-m-d',strtotime($request->cancel_eff_dt)):NULL,
+                        'change_contact_type'=>isset($request->change_contact_type)?$request->change_contact_type:NULL,
+                        'reason_for_change'=>isset($request->reason_for_change)?$request->reason_for_change:NULL,
+                        'nominee_opt_out'=>isset($request->nominee_opt_out)?$request->nominee_opt_out:NULL,
+                        'redemp_type'=>isset($request->redemp_type)?$request->redemp_type:NULL,
+                        'redemp_unit_type'=>isset($request->redemp_unit_type)?$request->redemp_unit_type:NULL,
+                        'acc_no'=>isset($request->acc_no)?$request->acc_no:NULL,
+                        'acc_bank_id'=>isset($request->acc_bank_id)?$request->acc_bank_id:NULL,
+                        'swp_type'=>isset($request->swp_type)?$request->swp_type:NULL,
+                        'stp_type'=>isset($request->stp_type)?$request->stp_type:NULL,
+                        'kyc_status'=>isset($request->kyc_status)?$request->kyc_status:NULL,
+                        'transmission_type'=>isset($request->transmission_type)?$request->transmission_type:NULL,
+                        
+                        'change_new_mode_of_holding'=>isset($request->change_new_mode_of_holding)?$request->change_new_mode_of_holding:NULL,
+                        'mob_declaration_flag'=>isset($request->mob_dec)?$request->mob_dec:NULL,
+                        'email_declaration_flag'=>isset($request->email_dec)?$request->email_dec:NULL,
+                        'merge_folio'=>isset($request->merge_folio)?$request->merge_folio:NULL,
+                        'new_nominee'=>isset($request->new_nominee)?$request->new_nominee:NULL,
+
+                        // for special sip
+                        'swp_frequency'=>isset($request->swp_frequency)?$request->swp_frequency:NULL,
+                        'swp_start_date'=>isset($request->swp_start_date)?date('Y-m-d',strtotime($request->swp_start_date)):NULL,
+                        'swp_duration'=>isset($request->swp_duration)?$request->swp_duration:NULL,
+                        'swp_end_date'=>isset($request->swp_end_date)?date('Y-m-d',strtotime($request->swp_end_date)):NULL,
+                        'swp_inst_amount'=>isset($request->swp_inst_amount)?$request->swp_inst_amount:NULL,
+                        // for step up sip
+                        'step_up_by'=>isset($request->step_up_by)?$request->step_up_by:'N',
+                        'step_up_amount'=>isset($request->step_up_amount)?$request->step_up_amount:NULL,
+                        'step_up_percentage'=>isset($request->step_up_percentage)?$request->step_up_percentage:NULL,
+                        
                     )); 
+
+                // START only for non financial changes
+                if ($request->change_contact_type!='') {  // client update
+                    $first_client_id=$data->first_client_id;
+                    $up_data=Client::find($first_client_id);
+                    if ($request->email) {
+                        $up_data->email=$request->email;
+                        $up_data->save();
+                    }
+                    if ($request->mobile) {
+                        $up_data->mobile=$request->mobile;
+                        $up_data->save();
+                    }
+                }
+
+                if ($data->trans_id==22) {  // address change
+                    $first_client_id=$data->first_client_id;
+                    $up_data=Client::find($first_client_id);
+                    $up_data->add_line_1=$request->add_line_1;
+                    $up_data->add_line_2=$request->add_line_2;
+                    $up_data->city=$request->city;
+                    $up_data->dist=$request->dist;
+                    $up_data->state=$request->state;
+                    $up_data->pincode=$request->pincode;
+                    $up_data->save();
+                }
+
+                if ($data->trans_id==23) {  // name change
+                    $first_client_id=$data->first_client_id;
+                    $up_data=Client::find($first_client_id);
+
+                    $client_name=ucwords($request->new_name);
+                    $words = explode(" ",$client_name);
+                    $client_code="";
+                    $client_code_1 = mb_substr($words[0], 0, 1).mb_substr($words[(count($words)-1)], 0, 1);;
+                    
+                    $is_has=Client::where('client_code',$client_code_1)->get();
+                    if (count($is_has)>0) {
+                        $client_code=$client_code_1.date('dmy',strtotime($up_data->dob)).count($is_has);
+                    }else {
+                        $client_code=$client_code_1.date('dmy',strtotime($up_data->dob));
+                    }
+                    $up_data->client_code=$client_code;
+                    $up_data->client_name=$client_name;
+                    $up_data->save();
+                }
+
+                if ($data->trans_id==24) {  // change status 
+                    $first_client_id=$data->first_client_id;
+                    $up_data=Client::find($first_client_id);
+                    $up_data->client_type_mode=$request->change_status;
+                    $up_data->save();
+                }
+
+                if ($data->trans_id==25) {  // Nominee Opt-Out  
+
+                    # code...
+                }
+
+                if ($data->trans_id==28) {  // Folio PAN Updation  
+                    $first_client_id=$data->first_client_id;
+                    $up_data=Client::find($first_client_id);
+                    $up_data->pan=$request->folio_pan;
+                    $up_data->client_type='P';
+                    $up_data->save();
+                }
+                if ($data->trans_id==29) {  // Redemption 
+
+                    # code...
+                }
+                if ($data->trans_id==20) {  // minor to major 
+                    $first_client_id=$data->first_client_id;
+                    $up_data=Client::find($first_client_id);
+                    $up_data->pan=$request->minor_to_major_pan;
+                    $up_data->client_type='P';
+                }
+
+                if ($request->transmission_type!='' && $data->trans_id==19) {
+                    $fetch_data=MutualFund::where('folio_no',$data->folio_no)
+                    ->orderBy('td_mutual_fund.created_at','ASC')
+                    ->get();   
+                    // return $fetch_data;
+                    if ($request->transmission_type==1) {
+                        # code...
+                        // $data=MutualFund::
+                    }elseif ($request->transmission_type==2) {
+                        # code...
+                    }
+
+                }
+
+                if ($data->trans_id==32) {  // change mode of holding
+                    $fetch_folio_data=MutualFund::where('folio_no',$data->folio_no)
+                        ->orderBy('td_mutual_fund.created_at','ASC')
+                        ->get(); 
+
+                }
+
+                if ($data->trans_id==11 || $data->trans_id==21) {  // nominee 11 change & 21 addition
+                    $fetch_folio_data=MutualFund::where('folio_no',$data->folio_no)
+                        ->orderBy('td_mutual_fund.created_at','ASC')
+                        ->get();
+                }
+
+
+
+                // END only for non financial changes
             }
         } catch (\Throwable $th) {
-            //throw $th;
+            throw $th;
             return Helper::ErrorResponse(parent::DATA_SAVE_ERROR);
         }
         return Helper::SuccessResponse($data);

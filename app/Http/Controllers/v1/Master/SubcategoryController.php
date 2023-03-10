@@ -18,6 +18,8 @@ class SubcategoryController extends Controller
             $paginate=$request->paginate;
             $cat_id=$request->cat_id;
             $subcat_id=$request->subcat_id;
+            $sort_by=$request->sort_by;
+            $column_name=$request->column_name;
             if ($paginate=='A') {
                 $paginate=999999999;
             }

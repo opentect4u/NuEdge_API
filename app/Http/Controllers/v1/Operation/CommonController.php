@@ -45,7 +45,9 @@ class CommonController extends Controller
     public function showTrans(Request $request)
     {
         try {  
-            $data=Transction::where('trans_type_id',$request->trans_type_id)->get();      
+            $data=Transction::where('trans_type_id',$request->trans_type_id)
+                ->orderBy('trns_name','asc')
+                ->get();      
         } catch (\Throwable $th) {
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }

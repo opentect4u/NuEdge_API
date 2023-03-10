@@ -25,10 +25,30 @@ class AMCController extends Controller
             $contact_per_mobile=$request->contact_per_mobile;
             $contact_per_email=$request->contact_per_email;
             $paginate=$request->paginate;
+            $sort_by=$request->sort_by;
+            $column_name=$request->column_name;
             if ($paginate=='A') {
                 $paginate=999999999;
             }
-            if ($amc_id!='' && $rnt_id!='' && $gstin!='') {
+            if ($sort_by && $column_name) {
+                if ($column_name=='rnt_name') {
+                    $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                        ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+                        ->orWhere('md_amc.id',$amc_id)
+                        ->orWhere('md_amc.rnt_id',$rnt_id)
+                        ->orWhere('md_amc.gstin','like', '%' . $gstin . '%')
+                        ->orderBy('md_rnt.'.$column_name,$sort_by)
+                        ->paginate($paginate);  
+                }else{
+                    $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                        ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+                        ->orWhere('md_amc.id',$amc_id)
+                        ->orWhere('md_amc.rnt_id',$rnt_id)
+                        ->orWhere('md_amc.gstin','like', '%' . $gstin . '%')
+                        ->orderBy('md_amc.'.$column_name,$sort_by)
+                        ->paginate($paginate);  
+                }    
+            }elseif ($amc_id!='' && $rnt_id!='' && $gstin!='') {
                 $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
                     ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
                     ->where('md_amc.id',$amc_id)

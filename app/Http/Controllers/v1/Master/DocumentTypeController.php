@@ -17,6 +17,8 @@ class DocumentTypeController extends Controller
         try {
             $paginate=$request->paginate;
             $doc_type=$request->doc_type;
+            $sort_by=$request->sort_by;
+            $column_name=$request->column_name;
             $data=DocumentType::where('doc_type','like', '%' . $doc_type . '%')
                 ->orderBy('updated_at','DESC')->paginate($paginate);      
         } catch (\Throwable $th) {

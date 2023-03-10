@@ -26,6 +26,8 @@ class AcknowledgementController extends Controller
             $option=$request->option;
             $login_status=$request->login_status;
             $date_status=$request->date_status;
+            $sort_by=$request->sort_by;
+            $column_name=$request->column_name;
             
             if ($paginate=='A') {
                 $paginate=999999999;

@@ -15,6 +15,8 @@ class EmployeeController extends Controller
         try {  
             $search=$request->search;
             $sub_arn_no=$request->sub_arn_no;
+            $sort_by=$request->sort_by;
+            $column_name=$request->column_name;
             if ($search!='' && $sub_arn_no!='') {
                 $data=Employee::where('arn_no',$sub_arn_no)
                     ->where('euin_no','like', '%' . $search . '%')

@@ -15,6 +15,8 @@ class EmailController extends Controller
         try {
             $paginate=$request->paginate;
             $event=$request->event;
+            $sort_by=$request->sort_by;
+            $column_name=$request->column_name;
             if ($paginate=='A') {
                 $paginate=999999999;
             }

@@ -18,6 +18,8 @@ class DocumentController extends Controller
             $search=$request->search;
             $client_id=$request->client_id;
             $paginate=$request->paginate;
+            $sort_by=$request->sort_by;
+            $column_name=$request->column_name;
             if ($paginate=='A') {
                 $paginate=999999999;
             }

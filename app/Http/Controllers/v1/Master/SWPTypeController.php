@@ -15,6 +15,8 @@ class SWPTypeController extends Controller
         try {
             $paginate=$request->paginate;
             $swp_type_name=$request->swp_type_name;
+            $sort_by=$request->sort_by;
+            $column_name=$request->column_name;
             if ($paginate=='A') {
                 $paginate=999999999;
             }

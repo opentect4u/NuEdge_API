@@ -15,6 +15,8 @@ class ClientTypeController extends Controller
         try {
             $paginate=$request->paginate;
             $type_name=$request->type_name;
+            $sort_by=$request->sort_by;
+            $column_name=$request->column_name;
             if ($paginate=='A') {
                 $paginate=999999999;
             }

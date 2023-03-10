@@ -14,6 +14,8 @@ class StateController extends Controller
     {
         try {  
             $search=$request->search;
+            $sort_by=$request->sort_by;
+            $column_name=$request->column_name;
             if ($search!='') {
                 $data=State::where('name','like', '%' . $search . '%')->get();      
             }else{

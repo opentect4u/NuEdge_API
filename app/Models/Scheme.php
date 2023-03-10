@@ -28,6 +28,11 @@ class Scheme extends Model
         'swp_date',
         'stp_freq_wise_amt',
         'stp_date',
+        'ava_special_sip',
+        'special_sip_name',
+        'delete_flag',
+        'deleted_date',
+        'deleted_by',
         'created_by',
         'updated_by',
     ];

@@ -20,6 +20,8 @@ class SchemeController extends Controller
             $amc_name=$request->amc_name;
             $cat_id=$request->cat_id;
             $subcat_id=$request->subcat_id;
+            $sort_by=$request->sort_by;
+            $column_name=$request->column_name;
             if ($paginate=='A') {
                 $paginate=999999999;
             }
@@ -208,6 +210,8 @@ class SchemeController extends Controller
                 $data->swp_date=$swp_date;
                 $data->stp_freq_wise_amt=$request->stp_freq_wise_amt;
                 $data->stp_date=$stp_date;
+                $data->ava_special_sip=$request->ava_special_sip;
+                $data->special_sip_name=$request->special_sip_name;
                 $data->save();
             }else{
                 if ($request->scheme_type=='O') {
@@ -229,6 +233,8 @@ class SchemeController extends Controller
                         'swp_date'=>$swp_date,
                         'stp_freq_wise_amt'=>$request->stp_freq_wise_amt,
                         'stp_date'=>$stp_date,
+                        'ava_special_sip'=>$request->ava_special_sip,
+                        'special_sip_name'=>$request->special_sip_name,
                         // 'created_by'=>'',
                     ));    
                 }elseif ($request->scheme_type=='N') {
@@ -251,6 +257,8 @@ class SchemeController extends Controller
                         'swp_date'=>$swp_date,
                         'stp_freq_wise_amt'=>$request->stp_freq_wise_amt,
                         'stp_date'=>$stp_date,
+                        'ava_special_sip'=>$request->ava_special_sip,
+                        'special_sip_name'=>$request->special_sip_name,
                         // 'created_by'=>'',
                     ));  
                 }  

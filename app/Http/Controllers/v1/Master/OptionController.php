@@ -17,6 +17,8 @@ class OptionController extends Controller
         try {
             $paginate=$request->paginate;
             $opt_name=$request->opt_name;
+            $sort_by=$request->sort_by;
+            $column_name=$request->column_name;
             if ($paginate=='A') {
                 $paginate=999999999;
             }

@@ -17,6 +17,8 @@ class CategoryController extends Controller
         try {
             $paginate=$request->paginate;
             $cat_name=$request->cat_name;
+            $sort_by=$request->sort_by;
+            $column_name=$request->column_name;
             if ($paginate=='A') {
                 $paginate=999999999;
             }

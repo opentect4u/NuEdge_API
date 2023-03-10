@@ -14,6 +14,8 @@ class SubBrokerController extends Controller
     {
         try {  
             $search=$request->search;
+            $sort_by=$request->sort_by;
+            $column_name=$request->column_name;
             if ($search!='') {
                 $data=SubBroker::where('arn_no','like', '%' . $search . '%')
                     ->orWhere('code','like', '%' . $search . '%')

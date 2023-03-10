@@ -17,6 +17,8 @@ class PlanController extends Controller
         try {
             $paginate=$request->paginate;
             $plan_name=$request->plan_name;
+            $sort_by=$request->sort_by;
+            $column_name=$request->column_name;
             if ($paginate=='A') {
                 $paginate=999999999;
             }

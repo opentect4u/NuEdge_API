@@ -14,6 +14,8 @@ class BranchController extends Controller
     {
         try {  
             $search=$request->search;
+            $sort_by=$request->sort_by;
+            $column_name=$request->column_name;
             if ($search!='') {
                 $data=Branch::where('brn_name','like', '%' . $search . '%')->get();      
             }else {
