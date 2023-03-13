@@ -22,7 +22,11 @@ class OptionController extends Controller
             if ($paginate=='A') {
                 $paginate=999999999;
             }
-            if ($opt_name) {
+            if ($sort_by && $column_name) {
+                $data=Option::where('opt_name','like', '%' . $opt_name . '%')
+                    ->orderBy($column_name,$sort_by)
+                    ->paginate($paginate); 
+            }elseif ($opt_name) {
                 $data=Option::where('opt_name','like', '%' . $opt_name . '%')
                     ->orderBy('updated_at','DESC')
                     ->paginate($paginate); 
@@ -114,11 +118,29 @@ class OptionController extends Controller
             $path = $request->file('file')->getRealPath();
             $data = array_map('str_getcsv', file($path));
             // return $data[0][0];
+
+
+            foreach ($data as $key => $value) {
+                if ($key==0) {
+                    if ($value[0]=="Option") {
+                        return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
+                    }
+                    // return $value;
+                }else {
+                    // return $value;
+                    // return $value[0];
+                    Option::create(array(
+                        'opt_name'=>$value[0],
+                        // 'created_by'=>'',
+                    ));       
+                }
+               
+            }
             // return gettype($data[0][0]) ;
             // if (in_array("rnt_id", $data)) {
             // if ($data[0][0] == "opt_name") {
             //     return "hii";
-                Excel::import(new OptionImport,$request->file);
+                // Excel::import(new OptionImport,$request->file);
                 // Excel::import(new OptionImport,request()->file('file'));
                 $data1=[];
             // }else {

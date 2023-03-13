@@ -164,12 +164,28 @@ class SubcategoryController extends Controller
             // return $request;
             $path = $request->file('file')->getRealPath();
             $data = array_map('str_getcsv', file($path));
-            // return $data[0][0];
+            // return $data;
+
+            foreach ($data as $key => $value) {
+                if ($key==0) {
+                    if (str_replace(" ","_",$value[0]) == "Sub_Category") {
+                        // return $value[0] ;
+                        return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
+                    }
+                } else {
+                    // return $value;
+                    // return base64_decode($request->product_id);
+                    SubCategory::create(array(
+                        'category_id'=>$request->cat_id,
+                        'subcategory_name'=>$value[0],
+                    ));      
+                }
+            }
             // return gettype($data[0][0]) ;
             // if (in_array("rnt_id", $data)) {
             // if ($data[0][0] == "rnt_id" && $data[0][1] == "product_id" && $data[0][2] == "amc_name" && $data[0][3] == "website" && $data[0][4] == "ofc_addr") {
             //     return "hii";
-                Excel::import(new SubCategoryImport,$request->file);
+                // Excel::import(new SubCategoryImport,$request->file);
                 // Excel::import(new SubCategoryImport,request()->file('file'));
                 $data1=[];
             // }else {

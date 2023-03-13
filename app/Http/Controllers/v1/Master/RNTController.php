@@ -201,11 +201,62 @@ class RNTController extends Controller
 
             foreach ($data as $key => $value) {
                 if ($key==0) {
-                    if (str_replace(" ","_",$value[0])=="R&T_Full_Name" && $value[2]=="Website") {
+                    if (str_replace(" ","_",$value[0])!="R&T_Full_Name" && $value[2]!="Website") {
                         return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
                     }
                     // return $value;
                 }else {
+                    // return $value;
+                    $totarray=array();
+                    if ($value[18]!='' && $value[19]!='') {
+                        $setdata['id']=0;
+                        $setdata['sec_qus']=$value[18];
+                        $setdata['sec_ans']=$value[19];
+                        array_push($totarray,$setdata);
+                    }
+                    if ($value[20]!='' && $value[21]!='') {
+                        $setdata['id']=1;
+                        $setdata['sec_qus']=$value[20];
+                        $setdata['sec_ans']=$value[21];
+                        array_push($totarray,$setdata);
+                    }
+
+                    if ($value[22]!='' && $value[23]!='') {
+                        $setdata['id']=2;
+                        $setdata['sec_qus']=$value[22];
+                        $setdata['sec_ans']=$value[23];
+                        array_push($totarray,$setdata);
+                    }
+
+                    if ($value[24]!='' && $value[25]!='') {
+                        $setdata['id']=3;
+                        $setdata['sec_qus']=$value[24];
+                        $setdata['sec_ans']=$value[25];
+                        array_push($totarray,$setdata);
+                    }
+
+                    if ($value[26]!='' && $value[27]!='') {
+                        $setdata['id']=4;
+                        $setdata['sec_qus']=$value[26];
+                        $setdata['sec_ans']=$value[27];
+                        array_push($totarray,$setdata);
+                    }
+
+                    if ($value[28]!='' && $value[29]!='') {
+                        $setdata['id']=5;
+                        $setdata['sec_qus']=$value[28];
+                        $setdata['sec_ans']=$value[29];
+                        array_push($totarray,$setdata);
+                    }
+
+                    if ($value[30]!='' && $value[31]!='') {
+                        $setdata['id']=6;
+                        $setdata['sec_qus']=$value[30];
+                        $setdata['sec_ans']=$value[31];
+                        array_push($totarray,$setdata);
+                    }
+
+                    // return $totarray;
                     // return $value[0];
                     RNT::create(array(
                         'rnt_full_name'=>$value[0],
@@ -224,7 +275,7 @@ class RNTController extends Controller
                         'login_url'=>$value[13],
                         'login_id'=>$value[14],
                         'login_pass'=>$value[15],
-                        'security_qus_ans'=>$value[18],
+                        'security_qus_ans'=>json_encode($totarray),
                         'gstin'=>$value[17],
                         'cus_care_whatsapp_no'=>$value[16],
                         'delete_flag'=>'N',

@@ -335,13 +335,114 @@ class AMCController extends Controller
             // return $request;
             $path = $request->file('file')->getRealPath();
             $data = array_map('str_getcsv', file($path));
-            return $data ;
+            // return $data ;
+
+            foreach ($data as $key => $value) {
+                if ($key==0) {
+                    if (str_replace(" ","_",$value[0])!="AMC_Full_Name" && str_replace(" ","_",$value[1])!="AMC_Short_Name" && str_replace(" ","_",$value[2])!="R&T_Id") {
+                        return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
+                    }
+                    // return $value;
+                }else {
+                    // return $value[0];
+                    $totarray=array();
+                    if ($value[18]!='' && $value[19]!='') {
+                        $setdata['id']=0;
+                        $setdata['sec_qus']=$value[18];
+                        $setdata['sec_ans']=$value[19];
+                        array_push($totarray,$setdata);
+                    }
+                    if ($value[20]!='' && $value[21]!='') {
+                        $setdata['id']=1;
+                        $setdata['sec_qus']=$value[20];
+                        $setdata['sec_ans']=$value[21];
+                        array_push($totarray,$setdata);
+                    }
+                    if ($value[22]!='' && $value[23]!='') {
+                        $setdata['id']=2;
+                        $setdata['sec_qus']=$value[22];
+                        $setdata['sec_ans']=$value[23];
+                        array_push($totarray,$setdata);
+                    }
+                    if ($value[24]!='' && $value[25]!='') {
+                        $setdata['id']=3;
+                        $setdata['sec_qus']=$value[24];
+                        $setdata['sec_ans']=$value[25];
+                        array_push($totarray,$setdata);
+                    }
+                    if ($value[26]!='' && $value[27]!='') {
+                        $setdata['id']=4;
+                        $setdata['sec_qus']=$value[26];
+                        $setdata['sec_ans']=$value[27];
+                        array_push($totarray,$setdata);
+                    }
+                    if ($value[28]!='' && $value[29]!='') {
+                        $setdata['id']=5;
+                        $setdata['sec_qus']=$value[28];
+                        $setdata['sec_ans']=$value[29];
+                        array_push($totarray,$setdata);
+                    }
+                    if ($value[30]!='' && $value[31]!='') {
+                        $setdata['id']=6;
+                        $setdata['sec_qus']=$value[30];
+                        $setdata['sec_ans']=$value[31];
+                        array_push($totarray,$setdata);
+                    }
+
+                    AMC::create(array(
+                        'product_id'=>base64_decode($request->product_id),
+                        'rnt_id'=>$request->rnt_id,
+                        'amc_name'=>$value[0],
+                        'amc_short_name'=>$value[1],
+                        'gstin'=>$value[2],
+                        'website'=>$value[3],
+                        'cus_care_whatsapp_no'=>$value[4],
+                        'cus_care_no'=>$value[5],
+                        'cus_care_email'=>$value[6],
+                        'head_ofc_contact_per'=>$value[7],
+                        'head_contact_per_mob'=>$value[8],
+                        'head_contact_per_email'=>$value[9],
+                        'head_ofc_addr'=>$value[10],
+                        'local_ofc_contact_per'=>$value[11],
+                        'local_contact_per_mob'=>$value[12],
+                        'local_contact_per_email'=>$value[13],
+                        'local_ofc_addr'=>$value[14],
+                        'login_url'=>$value[15],
+                        'login_id'=>$value[16],
+                        'login_pass'=>$value[17],
+                        'security_qus_ans'=>json_encode($totarray),
+                        'l1_name'=>$value[32],
+                        'l1_contact_no'=>$value[33],
+                        'l1_email'=>$value[34],
+                        'l2_name'=>$value[35],
+                        'l2_contact_no'=>$value[36],
+                        'l2_email'=>$value[37],
+                        'l3_name'=>$value[38],
+                        'l3_contact_no'=>$value[39],
+                        'l3_email'=>$value[40],
+                        'l4_name'=>$value[41],
+                        'l4_contact_no'=>$value[42],
+                        'l4_email'=>$value[43],
+                        'l5_name'=>$value[44],
+                        'l5_contact_no'=>$value[45],
+                        'l5_email'=>$value[46],
+                        'l6_name'=>$value[47],
+                        'l6_contact_no'=>$value[48],
+                        'l6_email'=>$value[49],
+                        'delete_flag'=>'N',
+                    ));
+                }
+               
+            }
+
+
+
             // return $data[0][0];
             // return gettype($data[0][0]) ;
             // if (in_array("rnt_id", $data)) {
             // if ($data[0][0] == "rnt_id" && $data[0][1] == "product_id" && $data[0][2] == "amc_name" && $data[0][3] == "website" && $data[0][4] == "ofc_addr") {
             //     return "hii";
-                Excel::import(new AMCImport,$request->file);
+                // Excel::import(new AMCImport,$request->file);
                 // Excel::import(new AMCImport,request()->file('file'));
                 $data1=[];
             // }else {

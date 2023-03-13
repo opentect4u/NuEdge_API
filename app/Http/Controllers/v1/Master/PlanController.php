@@ -22,7 +22,11 @@ class PlanController extends Controller
             if ($paginate=='A') {
                 $paginate=999999999;
             }
-            if ($plan_name) {
+            if ($sort_by && $column_name) {
+                $data=Plan::where('plan_name','like', '%' . $plan_name . '%')
+                    ->orderBy($column_name,$sort_by)
+                    ->paginate($paginate); 
+            }elseif ($plan_name) {
                 $data=Plan::where('plan_name','like', '%' . $plan_name . '%')
                     ->orderBy('updated_at','DESC')
                     ->paginate($paginate);  
@@ -112,11 +116,29 @@ class PlanController extends Controller
             $path = $request->file('file')->getRealPath();
             $data = array_map('str_getcsv', file($path));
             // return $data[0][0];
+
+            foreach ($data as $key => $value) {
+                if ($key==0) {
+                    if ($value[0]=="Plan") {
+                        return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
+                    }
+                    // return $value;
+                }else {
+                    // return $value;
+                    // return $value[0];
+                    Plan::create(array(
+                        'plan_name'=>$value[0],
+                        // 'created_by'=>'',
+                    ));    
+                }
+               
+            }
+
             // return gettype($data[0][0]) ;
             // if (in_array("rnt_id", $data)) {
             // if ($data[0][0] == "plan_name") {
             //     return "hii";
-                Excel::import(new PlanImport,$request->file);
+                // Excel::import(new PlanImport,$request->file);
                 // Excel::import(new PlanImport,request()->file('file'));
                 $data1=[];
             // }else {

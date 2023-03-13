@@ -116,12 +116,30 @@ class CategoryController extends Controller
             // return $request;
             $path = $request->file('file')->getRealPath();
             $data = array_map('str_getcsv', file($path));
+            // return $data ;
+
+            foreach ($data as $key => $value) {
+                if ($key==0) {
+                    if ($value[0] == "Category") {
+                        // return $value[0] ;
+                        return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
+                    }
+                } else {
+                    // return $value[0];
+                    // return $request->product_id;
+                    // return base64_decode($request->product_id);
+                    Category::create(array(
+                        'product_id'=>base64_decode($request->product_id),
+                        'cat_name'=>$value[0],
+                    ));      
+                }
+            }
             // return $data[0][0];
             // return gettype($data[0][0]) ;
             // if (in_array("rnt_id", $data)) {
             // if ($data[0][0] == "rnt_id" && $data[0][1] == "product_id" && $data[0][2] == "amc_name" && $data[0][3] == "website" && $data[0][4] == "ofc_addr") {
             //     return "hii";
-                Excel::import(new CategoryImport,$request->file);
+                // Excel::import(new CategoryImport,$request->file);
                 // Excel::import(new CategoryImport,request()->file('file'));
                 $data1=[];
             // }else {
@@ -129,7 +147,7 @@ class CategoryController extends Controller
             //     return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
             // }
         } catch (\Throwable $th) {
-            //throw $th;
+            // throw $th;
             return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
         }
         return Helper::SuccessResponse($data1);
