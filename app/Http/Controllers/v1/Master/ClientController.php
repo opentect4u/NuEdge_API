@@ -333,12 +333,12 @@ class ClientController extends Controller
             // return $request;
             $path = $request->file('file')->getRealPath();
             $data = array_map('str_getcsv', file($path));
-            // return $data[0][0];
+            return $data;
             // return gettype($data[0][0]) ;
             // if (in_array("rnt_id", $data)) {
             // if ($data[0][0] == "opt_name") {
             //     return "hii";
-                Excel::import(new ClientImport,$request->file);
+                // Excel::import(new ClientImport,$request->file);
                 // Excel::import(new ClientImport,request()->file('file'));
                 $data1=[];
             // }else {

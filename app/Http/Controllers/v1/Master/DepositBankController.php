@@ -113,12 +113,34 @@ class DepositBankController extends Controller
             // return $request;
             $path = $request->file('file')->getRealPath();
             $data = array_map('str_getcsv', file($path));
-            // return $data[0][0];
+            // return $data;
+
+            foreach ($data as $key => $value) {
+                if ($key==0) {
+                    if ($value[0]=="IFSC" && $value[1]=="Bank" && $value[2]=="Branch") {
+                        return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
+                    }
+                    // return $value;
+                }else {
+                    // return $value;
+                    // return $value[0];
+                    DepositBank::create(array(
+                        'ifs_code'=>$value[0],
+                        'bank_name'=>$value[1],
+                        'branch_name'=>$value[2],
+                        'micr_code'=>$value[3],
+                        'branch_addr'=>$value[4],
+                        'deleted_flag'=>'N',
+                        // 'created_by'=>'',
+                    ));          
+                }
+               
+            }
             // return gettype($data[0][0]) ;
             // if (in_array("rnt_id", $data)) {
             // if ($data[0][0] == "rnt_id" && $data[0][1] == "product_id" && $data[0][2] == "amc_name" && $data[0][3] == "website" && $data[0][4] == "ofc_addr") {
             //     return "hii";
-                Excel::import(new DepositBankImport,$request->file);
+                // Excel::import(new DepositBankImport,$request->file);
                 // Excel::import(new DepositBankImport,request()->file('file'));
                 $data1=[];
             // }else {

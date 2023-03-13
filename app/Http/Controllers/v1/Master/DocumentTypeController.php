@@ -97,11 +97,28 @@ class DocumentTypeController extends Controller
             $path = $request->file('file')->getRealPath();
             $data = array_map('str_getcsv', file($path));
             // return $data[0][0];
+
+            foreach ($data as $key => $value) {
+                if ($key==0) {
+                    if (str_replace(" ","_",$value[0])!="Document_Type") {
+                        return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
+                    }
+                    // return $value;
+                }else {
+                    // return $value;
+                    // return $value[0];
+                    DocumentType::create(array(
+                        'doc_type'=>$value[0],
+                        // 'created_by'=>'',
+                    ));       
+                }
+               
+            }
             // return gettype($data[0][0]) ;
             // if (in_array("rnt_id", $data)) {
             // if ($data[0][0] == "opt_name") {
             //     return "hii";
-                Excel::import(new DocumentTypeImport,$request->file);
+                // Excel::import(new DocumentTypeImport,$request->file);
                 // Excel::import(new DocumentTypeImport,request()->file('file'));
                 $data1=[];
             // }else {
