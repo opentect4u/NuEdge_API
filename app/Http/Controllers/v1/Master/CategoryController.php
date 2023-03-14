@@ -97,11 +97,16 @@ class CategoryController extends Controller
                 $data->cat_name=$request->cat_name;
                 $data->save();
             }else{
-                $data=Category::create(array(
-                    'product_id'=>$request->product_id,
-                    'cat_name'=>$request->cat_name,
-                    // 'created_by'=>'',
-                ));      
+                $is_has=Category::where('cat_name',$request->cat_name)->get();
+                if (count($is_has) > 0) {
+                    return Helper::WarningResponse(parent::ALREADY_EXIST);
+                }else {
+                    $data=Category::create(array(
+                        'product_id'=>$request->product_id,
+                        'cat_name'=>$request->cat_name,
+                        // 'created_by'=>'',
+                    ));    
+                }  
             }    
         } catch (\Throwable $th) {
             //throw $th;
@@ -128,10 +133,13 @@ class CategoryController extends Controller
                     // return $value[0];
                     // return $request->product_id;
                     // return base64_decode($request->product_id);
-                    Category::create(array(
-                        'product_id'=>base64_decode($request->product_id),
-                        'cat_name'=>$value[0],
-                    ));      
+                    $is_has=Category::where('cat_name',$value[0])->get();
+                    if (count($is_has) < 0) {
+                        Category::create(array(
+                            'product_id'=>base64_decode($request->product_id),
+                            'cat_name'=>$value[0],
+                        ));    
+                    }  
                 }
             }
             // return $data[0][0];

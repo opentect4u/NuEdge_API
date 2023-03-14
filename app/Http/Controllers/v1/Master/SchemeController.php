@@ -259,54 +259,59 @@ class SchemeController extends Controller
                 $data->special_sip_name=$request->special_sip_name;
                 $data->save();
             }else{
-                if ($request->scheme_type=='O') {
-                    $data=Scheme::create(array(
-                        'product_id'=>$request->product_id,
-                        'amc_id'=>$request->amc_id,
-                        'category_id'=>$request->category_id,
-                        'subcategory_id'=>$request->subcategory_id,
-                        'scheme_name'=>$request->scheme_name,
-                        'scheme_type'=>$request->scheme_type,
-                        // 'nfo_start_dt'=>$request->nfo_start_dt,
-                        // 'nfo_end_dt'=>$request->nfo_end_dt,
-                        // 'nfo_reopen_dt'=>$request->nfo_end_dt,
-                        'pip_fresh_min_amt'=>$request->pip_fresh_min_amt,
-                        'pip_add_min_amt'=>$request->pip_add_min_amt,
-                        'sip_freq_wise_amt'=>$request->frequency,
-                        'sip_date'=>$sip_date,
-                        'swp_freq_wise_amt'=>$request->swp_freq_wise_amt,
-                        'swp_date'=>$swp_date,
-                        'stp_freq_wise_amt'=>$request->stp_freq_wise_amt,
-                        'stp_date'=>$stp_date,
-                        'ava_special_sip'=>$request->ava_special_sip,
-                        'special_sip_name'=>$request->special_sip_name,
-                        // 'created_by'=>'',
-                    ));    
-                }elseif ($request->scheme_type=='N') {
-                    $data=Scheme::create(array(
-                        'product_id'=>$request->product_id,
-                        'amc_id'=>$request->amc_id,
-                        'category_id'=>$request->category_id,
-                        'subcategory_id'=>$request->subcategory_id,
-                        'scheme_name'=>$request->scheme_name,
-                        'scheme_type'=>$request->scheme_type,
-                        'nfo_start_dt'=>date('Y-m-d',strtotime($request->nfo_start_dt)),
-                        'nfo_end_dt'=>date('Y-m-d',strtotime($request->nfo_end_dt)),
-                        'nfo_reopen_dt'=>date('Y-m-d',strtotime($request->nfo_reopen_dt)),
-                        'nfo_entry_date'=>date('Y-m-d',strtotime($request->nfo_entry_date)),
-                        'pip_fresh_min_amt'=>$request->pip_fresh_min_amt,
-                        'pip_add_min_amt'=>$request->pip_add_min_amt,
-                        'sip_freq_wise_amt'=>$request->frequency,
-                        'sip_date'=>$sip_date,
-                        'swp_freq_wise_amt'=>$request->swp_freq_wise_amt,
-                        'swp_date'=>$swp_date,
-                        'stp_freq_wise_amt'=>$request->stp_freq_wise_amt,
-                        'stp_date'=>$stp_date,
-                        'ava_special_sip'=>$request->ava_special_sip,
-                        'special_sip_name'=>$request->special_sip_name,
-                        // 'created_by'=>'',
-                    ));  
-                }  
+                $is_has=Scheme::where('scheme_name',$request->scheme_name)->get();
+                if (count($is_has) > 0) {
+                    return Helper::WarningResponse(parent::ALREADY_EXIST);
+                }else {
+                    if ($request->scheme_type=='O') {
+                        $data=Scheme::create(array(
+                            'product_id'=>$request->product_id,
+                            'amc_id'=>$request->amc_id,
+                            'category_id'=>$request->category_id,
+                            'subcategory_id'=>$request->subcategory_id,
+                            'scheme_name'=>$request->scheme_name,
+                            'scheme_type'=>$request->scheme_type,
+                            // 'nfo_start_dt'=>$request->nfo_start_dt,
+                            // 'nfo_end_dt'=>$request->nfo_end_dt,
+                            // 'nfo_reopen_dt'=>$request->nfo_end_dt,
+                            'pip_fresh_min_amt'=>$request->pip_fresh_min_amt,
+                            'pip_add_min_amt'=>$request->pip_add_min_amt,
+                            'sip_freq_wise_amt'=>$request->frequency,
+                            'sip_date'=>$sip_date,
+                            'swp_freq_wise_amt'=>$request->swp_freq_wise_amt,
+                            'swp_date'=>$swp_date,
+                            'stp_freq_wise_amt'=>$request->stp_freq_wise_amt,
+                            'stp_date'=>$stp_date,
+                            'ava_special_sip'=>$request->ava_special_sip,
+                            'special_sip_name'=>$request->special_sip_name,
+                            // 'created_by'=>'',
+                        ));    
+                    }elseif ($request->scheme_type=='N') {
+                        $data=Scheme::create(array(
+                            'product_id'=>$request->product_id,
+                            'amc_id'=>$request->amc_id,
+                            'category_id'=>$request->category_id,
+                            'subcategory_id'=>$request->subcategory_id,
+                            'scheme_name'=>$request->scheme_name,
+                            'scheme_type'=>$request->scheme_type,
+                            'nfo_start_dt'=>date('Y-m-d',strtotime($request->nfo_start_dt)),
+                            'nfo_end_dt'=>date('Y-m-d',strtotime($request->nfo_end_dt)),
+                            'nfo_reopen_dt'=>date('Y-m-d',strtotime($request->nfo_reopen_dt)),
+                            'nfo_entry_date'=>date('Y-m-d',strtotime($request->nfo_entry_date)),
+                            'pip_fresh_min_amt'=>$request->pip_fresh_min_amt,
+                            'pip_add_min_amt'=>$request->pip_add_min_amt,
+                            'sip_freq_wise_amt'=>$request->frequency,
+                            'sip_date'=>$sip_date,
+                            'swp_freq_wise_amt'=>$request->swp_freq_wise_amt,
+                            'swp_date'=>$swp_date,
+                            'stp_freq_wise_amt'=>$request->stp_freq_wise_amt,
+                            'stp_date'=>$stp_date,
+                            'ava_special_sip'=>$request->ava_special_sip,
+                            'special_sip_name'=>$request->special_sip_name,
+                            // 'created_by'=>'',
+                        ));  
+                    }  
+                }
             }    
         } catch (\Throwable $th) {
             //throw $th;
@@ -493,7 +498,8 @@ class SchemeController extends Controller
                         $stp_aa['sip_add_min_amt']=isset($value[34])?$value[34]:"";
                         array_push($stp_freq_wise_amt,$stp_aa);
                         // return $stp_freq_wise_amt;
-
+                        $is_has=Scheme::where('scheme_name',$value[0])->get();
+                        if (count($is_has) < 0) {
                             Scheme::create(array(
                                 'product_id'=>base64_decode($product_id),
                                 'amc_id'=>$amc_id,
@@ -513,6 +519,7 @@ class SchemeController extends Controller
                                 'stp_freq_wise_amt'=>json_encode($stp_freq_wise_amt),
                                 'delete_flag'=>'N',
                             ));
+                        }
                         
                     }
                 }

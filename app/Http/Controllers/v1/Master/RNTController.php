@@ -258,28 +258,31 @@ class RNTController extends Controller
 
                     // return $totarray;
                     // return $value[0];
-                    RNT::create(array(
-                        'rnt_full_name'=>$value[0],
-                        'rnt_name'=>$value[1],
-                        'website'=>$value[2],
-                        'head_ofc_contact_per'=>$value[5],
-                        'head_contact_per_mob'=>$value[6],
-                        'head_contact_per_email'=>$value[7],
-                        'head_ofc_addr'=>$value[8],
-                        'local_ofc_contact_per'=>$value[9],
-                        'local_contact_per_mob'=>$value[10],
-                        'local_contact_per_email'=>$value[11],
-                        'local_ofc_addr'=>$value[12],
-                        'cus_care_no'=>$value[3],
-                        'cus_care_email'=>$value[4],
-                        'login_url'=>$value[13],
-                        'login_id'=>$value[14],
-                        'login_pass'=>$value[15],
-                        'security_qus_ans'=>json_encode($totarray),
-                        'gstin'=>$value[17],
-                        'cus_care_whatsapp_no'=>$value[16],
-                        'delete_flag'=>'N',
-                    ));
+                    $is_has=RNT::where('rnt_name',$value[1])->get();
+                    if (count($is_has) < 0) {
+                        RNT::create(array(
+                            'rnt_full_name'=>$value[0],
+                            'rnt_name'=>$value[1],
+                            'website'=>$value[2],
+                            'head_ofc_contact_per'=>$value[5],
+                            'head_contact_per_mob'=>$value[6],
+                            'head_contact_per_email'=>$value[7],
+                            'head_ofc_addr'=>$value[8],
+                            'local_ofc_contact_per'=>$value[9],
+                            'local_contact_per_mob'=>$value[10],
+                            'local_contact_per_email'=>$value[11],
+                            'local_ofc_addr'=>$value[12],
+                            'cus_care_no'=>$value[3],
+                            'cus_care_email'=>$value[4],
+                            'login_url'=>$value[13],
+                            'login_id'=>$value[14],
+                            'login_pass'=>$value[15],
+                            'security_qus_ans'=>json_encode($totarray),
+                            'gstin'=>$value[17],
+                            'cus_care_whatsapp_no'=>$value[16],
+                            'delete_flag'=>'N',
+                        ));
+                    }
                 }
                
             }

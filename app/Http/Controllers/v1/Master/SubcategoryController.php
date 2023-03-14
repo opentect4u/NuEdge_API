@@ -140,11 +140,16 @@ class SubcategoryController extends Controller
                 $data->subcategory_name=$request->subcategory_name;
                 $data->save();
             }else{
-                $data=SubCategory::create(array(
-                    'category_id'=>$request->category_id,
-                    'subcategory_name'=>$request->subcategory_name,
-                    'created_by'=>'',
-                ));      
+                $is_has=SubCategory::where('subcategory_name',$request->subcategory_name)->get();
+                if (count($is_has) > 0) {
+                    return Helper::WarningResponse(parent::ALREADY_EXIST);
+                }else {
+                    $data=SubCategory::create(array(
+                        'category_id'=>$request->category_id,
+                        'subcategory_name'=>$request->subcategory_name,
+                        'created_by'=>'',
+                    ));   
+                }   
             }
             $data=SubCategory::join('md_category','md_category.id','=','md_subcategory.category_id')
                 ->select('md_subcategory.*','md_category.cat_name as cat_name')
@@ -175,10 +180,13 @@ class SubcategoryController extends Controller
                 } else {
                     // return $value;
                     // return base64_decode($request->product_id);
-                    SubCategory::create(array(
-                        'category_id'=>$request->cat_id,
-                        'subcategory_name'=>$value[0],
-                    ));      
+                    $is_has=SubCategory::where('subcategory_name',$value[0])->get();
+                    if (count($is_has) < 0) {
+                        SubCategory::create(array(
+                            'category_id'=>$request->cat_id,
+                            'subcategory_name'=>$value[0],
+                        ));   
+                    }   
                 }
             }
             // return gettype($data[0][0]) ;
