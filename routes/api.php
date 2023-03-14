@@ -190,6 +190,7 @@ Route::prefix('v1')->group(function () {
         Route::get('clientDetailSearch',[App\Http\Controllers\v1\Master\ClientController::class,'searchDetails']);
         Route::post('clientDetailSearch',[App\Http\Controllers\v1\Master\ClientController::class,'searchDetails']);
         Route::post('clientExport',[App\Http\Controllers\v1\Master\ClientController::class,'export']);
+        Route::post('clientDelete', [App\Http\Controllers\v1\Master\ClientController::class,'delete']);
         
         Route::get('documentsearch',[App\Http\Controllers\v1\Master\DocumentController::class,'search']);
         Route::get('document',[App\Http\Controllers\v1\Master\DocumentController::class,'index']);

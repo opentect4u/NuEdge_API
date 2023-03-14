@@ -23,16 +23,31 @@ class ClientController extends Controller
             $cat_name=$request->cat_name;
             $sort_by=$request->sort_by;
             $column_name=$request->column_name;
-            $data=Client::with('ClientDoc')
-                ->join('md_city','md_city.id','=','md_client.city')
-                ->join('md_district','md_district.id','=','md_client.dist')
-                ->join('md_states','md_states.id','=','md_client.state')
-                ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name')
-                // ->where('md_client.id',$client_id)
-                // ->get();
-                ->paginate($paginate);      
+            $client_type=$request->client_type;
+
+            if ($sort_by && $column_name) {
+                $data=Client::with('ClientDoc')
+                    ->leftJoin('md_city','md_city.id','=','md_client.city')
+                    ->leftJoin('md_district','md_district.id','=','md_client.dist')
+                    ->leftJoin('md_states','md_states.id','=','md_client.state')
+                    ->leftJoin('md_client_type','md_client_type.id','=','md_client.client_type_mode')
+                    ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name')
+                    ->where('md_client.client_type',$client_type)
+                    ->orderBy('md_client.'.$column_name,$sort_by)
+                    ->paginate($paginate);    
+            }else {
+                $data=Client::with('ClientDoc')
+                    ->leftJoin('md_city','md_city.id','=','md_client.city')
+                    ->leftJoin('md_district','md_district.id','=','md_client.dist')
+                    ->leftJoin('md_states','md_states.id','=','md_client.state')
+                    ->leftJoin('md_client_type','md_client_type.id','=','md_client.client_type_mode')
+                    ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name')
+                    ->where('md_client.client_type',$client_type)
+                    // ->get();
+                    ->paginate($paginate);    
+            }  
         } catch (\Throwable $th) {
-            //throw $th;
+            throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
         return Helper::SuccessResponse($data);
@@ -40,13 +55,31 @@ class ClientController extends Controller
     public function export(Request $request)
     {
         try {
-            $data=Client::with('ClientDoc')
-                    ->join('md_city','md_city.id','=','md_client.city')
-                    ->join('md_district','md_district.id','=','md_client.dist')
-                    ->join('md_states','md_states.id','=','md_client.state')
-                    ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name')
-                    // ->where('md_client.id',$client_id)
-                    ->get();
+            $cat_name=$request->cat_name;
+            $sort_by=$request->sort_by;
+            $column_name=$request->column_name;
+            $client_type=$request->client_type;
+            if ($sort_by && $column_name) {
+                $data=Client::with('ClientDoc')
+                    ->leftJoin('md_city','md_city.id','=','md_client.city')
+                    ->leftJoin('md_district','md_district.id','=','md_client.dist')
+                    ->leftJoin('md_states','md_states.id','=','md_client.state')
+                    ->leftJoin('md_client_type','md_client_type.id','=','md_client.client_type_mode')
+                    ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name')
+                    ->where('md_client.client_type',$client_type)
+                    ->orderBy('md_client.'.$column_name,$sort_by)
+                    ->get();    
+            }else {
+                $data=Client::with('ClientDoc')
+                    ->leftJoin('md_city','md_city.id','=','md_client.city')
+                    ->leftJoin('md_district','md_district.id','=','md_client.dist')
+                    ->leftJoin('md_states','md_states.id','=','md_client.state')
+                    ->leftJoin('md_client_type','md_client_type.id','=','md_client.client_type_mode')
+                    ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name')
+                    ->where('md_client.client_type',$client_type)
+                    // ->get();
+                    ->get();    
+            }  
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
@@ -333,7 +366,24 @@ class ClientController extends Controller
             // return $request;
             $path = $request->file('file')->getRealPath();
             $data = array_map('str_getcsv', file($path));
-            return $data;
+            // return $data;
+
+            foreach ($data as $key => $value) {
+                if ($key==0) {
+                    if (str_replace(" ","_",$value[0])!="Client_Name" && $value[1]!="PAN") {
+                        return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
+                    }
+                    // return $value;
+                }else {
+                    // return $value;
+                    Client::create(array(
+                            'client_name'=>$value[0],
+                            'pan'=>$value[1],
+                            'client_type'=>'E',
+                            // 'created_by'=>'',
+                        ));  
+                }
+            }
             // return gettype($data[0][0]) ;
             // if (in_array("rnt_id", $data)) {
             // if ($data[0][0] == "opt_name") {
@@ -352,6 +402,25 @@ class ClientController extends Controller
         return Helper::SuccessResponse($data1);
     }
 
-    
+    public function delete(Request $request)
+    {
+        try {
+            $id=$request->id;
+            // $is_has=AMC::where('rnt_id',$id)->get();
+            // if (count($is_has)>0) {
+                return Helper::WarningResponse(parent::DELETE_NOT_ALLOW_ERROR);
+            // }else {
+            //     $data=Client::find($id);
+            //     $data->delete_flag='Y';
+            //     $data->deleted_date=date('Y-m-d H:i:s');
+            //     $data->deleted_by=1;
+            //     $data->save();
+            // }
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::DELETE_FAIL_ERROR);
+        }
+        return Helper::SuccessResponse($data);
+    }
     
 }
