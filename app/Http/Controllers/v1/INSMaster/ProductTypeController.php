@@ -205,21 +205,25 @@ class ProductTypeController extends Controller
             // return $request;
             $path = $request->file('file')->getRealPath();
             $data = array_map('str_getcsv', file($path));
-            // return $data[0][0];
+            // return $data;
 
             foreach ($data as $key => $value) {
                 if ($key==0) {
-                    if ($value[0]=="Plan") {
+                    if (str_replace(" ","_",$value[0])!="Product_Type") {
                         return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
                     }
                     // return $value;
                 }else {
                     // return $value;
                     // return $value[0];
-                    InsProductType::create(array(
-                        'type'=>$value[0],
-                        // 'created_by'=>'',
-                    ));    
+                    $is_has=InsProductType::where('product_type',$value[0])->get();
+                    if (count($is_has) < 0) {
+                        InsProductType::create(array(
+                            'ins_type_id'=>$request->ins_type_id,
+                            'product_type'=>$value[0],
+                            // 'created_by'=>'',
+                        ));  
+                    }  
                 }
                
             }

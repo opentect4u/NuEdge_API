@@ -257,21 +257,94 @@ class CompanyController extends Controller
             // return $request;
             $path = $request->file('file')->getRealPath();
             $data = array_map('str_getcsv', file($path));
-            return $data;
+            // return $data;
 
             foreach ($data as $key => $value) {
                 if ($key==0) {
-                    if ($value[0]=="Plan") {
+                    if (str_replace(" ","_",$value[0])!="Company_Full_Name" && str_replace(" ","_",$value[1])!="Company_Short_Name" && $value[0]!="Website") {
                         return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
                     }
                     // return $value;
                 }else {
                     // return $value;
                     // return $value[0];
-                    InsCompany::create(array(
-                        'type'=>$value[0],
-                        // 'created_by'=>'',
-                    ));    
+                    $totarray=array();
+                    if ($value[18]!='' && $value[19]!='') {
+                        $setdata['id']=0;
+                        $setdata['sec_qus']=$value[18];
+                        $setdata['sec_ans']=$value[19];
+                        array_push($totarray,$setdata);
+                    }
+                    if ($value[20]!='' && $value[21]!='') {
+                        $setdata['id']=1;
+                        $setdata['sec_qus']=$value[20];
+                        $setdata['sec_ans']=$value[21];
+                        array_push($totarray,$setdata);
+                    }
+
+                    if ($value[22]!='' && $value[23]!='') {
+                        $setdata['id']=2;
+                        $setdata['sec_qus']=$value[22];
+                        $setdata['sec_ans']=$value[23];
+                        array_push($totarray,$setdata);
+                    }
+
+                    if ($value[24]!='' && $value[25]!='') {
+                        $setdata['id']=3;
+                        $setdata['sec_qus']=$value[24];
+                        $setdata['sec_ans']=$value[25];
+                        array_push($totarray,$setdata);
+                    }
+
+                    if ($value[26]!='' && $value[27]!='') {
+                        $setdata['id']=4;
+                        $setdata['sec_qus']=$value[26];
+                        $setdata['sec_ans']=$value[27];
+                        array_push($totarray,$setdata);
+                    }
+
+                    if ($value[28]!='' && $value[29]!='') {
+                        $setdata['id']=5;
+                        $setdata['sec_qus']=$value[28];
+                        $setdata['sec_ans']=$value[29];
+                        array_push($totarray,$setdata);
+                    }
+
+                    if ($value[30]!='' && $value[31]!='') {
+                        $setdata['id']=6;
+                        $setdata['sec_qus']=$value[30];
+                        $setdata['sec_ans']=$value[31];
+                        array_push($totarray,$setdata);
+                    }
+
+                    $is_has=InsCompany::where('comp_short_name',$value[1])->get();
+                    if (count($is_has) < 0) {
+                        InsCompany::create(array(
+                            'ins_type_id'=>$request->ins_type_id,
+                            'comp_full_name'=>$value[0],
+                            'comp_short_name'=>$value[1],
+                            'website'=>$value[2],
+                            'gstin'=>$value[3],
+                            'cus_care_whatsapp_no'=>$value[4],
+                            'cus_care_no'=>$value[5],
+                            'cus_care_email'=>$value[6],
+                            'head_ofc_contact_per'=>$value[7],
+                            'head_contact_per_mob'=>$value[8],
+                            'head_contact_per_email'=>$value[9],
+                            'head_ofc_addr'=>$value[10],
+                            'local_ofc_contact_per'=>$value[11],
+                            'local_contact_per_mob'=>$value[12],
+                            'local_contact_per_email'=>$value[13],
+                            'local_ofc_addr'=>$value[14],
+                            'login_url'=>$value[15],
+                            'login_id'=>$value[16],
+                            'login_pass'=>$value[17],
+                            'security_qus_ans'=>json_encode($totarray),
+                            'delete_flag'=>'N',
+                            // 'created_by'=>'',
+                        ));    
+                    }
+
                 }
                
             }
