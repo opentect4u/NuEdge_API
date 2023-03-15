@@ -18,6 +18,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+// ========================For Mutual Fund================================
 Route::prefix('v1')->group(function () {
     // Route::middleware(['ipcheck'])->group(function () {
         Route::get('getip',[App\Http\Controllers\v1\TestController::class,'ShowIp']);
@@ -48,6 +49,7 @@ Route::prefix('v1')->group(function () {
         Route::post('amcExport',[App\Http\Controllers\v1\Master\AMCController::class,'export']);
         Route::post('amcAddEdit',[App\Http\Controllers\v1\Master\AMCController::class,'createUpdate']);
         Route::post('amcimport', [App\Http\Controllers\v1\Master\AMCController::class,'import']);
+        Route::post('amcDelete', [App\Http\Controllers\v1\Master\AMCController::class,'delete']);
 
         Route::get('branch',[App\Http\Controllers\v1\Master\BranchController::class,'index']);
         Route::post('branchAddEdit',[App\Http\Controllers\v1\Master\BranchController::class,'createUpdate']);
@@ -58,6 +60,7 @@ Route::prefix('v1')->group(function () {
         Route::post('planExport',[App\Http\Controllers\v1\Master\PlanController::class,'export']);
         Route::post('planAddEdit',[App\Http\Controllers\v1\Master\PlanController::class,'createUpdate']);
         Route::post('planimport', [App\Http\Controllers\v1\Master\PlanController::class,'import']);
+        Route::post('planDelete', [App\Http\Controllers\v1\Master\PlanController::class,'delete']);
 
         Route::get('option',[App\Http\Controllers\v1\Master\OptionController::class,'index']);
         Route::get('optionDetailSearch',[App\Http\Controllers\v1\Master\OptionController::class,'searchDetails']);
@@ -65,6 +68,7 @@ Route::prefix('v1')->group(function () {
         Route::post('optionExport',[App\Http\Controllers\v1\Master\OptionController::class,'export']);
         Route::post('optionAddEdit',[App\Http\Controllers\v1\Master\OptionController::class,'createUpdate']);
         Route::post('optionimport', [App\Http\Controllers\v1\Master\OptionController::class,'import']);
+        Route::post('optionDelete', [App\Http\Controllers\v1\Master\OptionController::class,'delete']);
 
         Route::get('category',[App\Http\Controllers\v1\Master\CategoryController::class,'index']);
         Route::get('categoryDetailSearch',[App\Http\Controllers\v1\Master\CategoryController::class,'searchDetails']);
@@ -72,6 +76,7 @@ Route::prefix('v1')->group(function () {
         Route::post('categoryExport',[App\Http\Controllers\v1\Master\CategoryController::class,'export']);
         Route::post('categoryAddEdit',[App\Http\Controllers\v1\Master\CategoryController::class,'createUpdate']);
         Route::post('categoryimport', [App\Http\Controllers\v1\Master\CategoryController::class,'import']);
+        Route::post('catDelete', [App\Http\Controllers\v1\Master\CategoryController::class,'delete']);
 
         Route::get('subcategory',[App\Http\Controllers\v1\Master\SubcategoryController::class,'index']);
         Route::get('subcategoryDetailSearch',[App\Http\Controllers\v1\Master\SubcategoryController::class,'searchDetails']);
@@ -79,6 +84,7 @@ Route::prefix('v1')->group(function () {
         Route::post('subcategoryExport',[App\Http\Controllers\v1\Master\SubcategoryController::class,'export']);
         Route::post('subcategoryAddEdit',[App\Http\Controllers\v1\Master\SubcategoryController::class,'createUpdate']);
         Route::post('subcategoryimport', [App\Http\Controllers\v1\Master\SubcategoryController::class,'import']);
+        Route::post('subcatDelete', [App\Http\Controllers\v1\Master\SubcategoryController::class,'delete']);
 
         Route::get('formtype',[App\Http\Controllers\v1\Master\FormTypeController::class,'index']);
         Route::post('formtypeAddEdit',[App\Http\Controllers\v1\Master\FormTypeController::class,'createUpdate']);
@@ -107,6 +113,7 @@ Route::prefix('v1')->group(function () {
         Route::post('schemeExport',[App\Http\Controllers\v1\Master\SchemeController::class,'export']);
         Route::post('schemeAddEdit',[App\Http\Controllers\v1\Master\SchemeController::class,'createUpdate']);
         Route::post('schemeimport', [App\Http\Controllers\v1\Master\SchemeController::class,'import']);
+        Route::post('schemeDelete', [App\Http\Controllers\v1\Master\SchemeController::class,'delete']);
 
         Route::get('depositbank',[App\Http\Controllers\v1\Master\DepositBankController::class,'index']);
         Route::get('depositbankDetailSearch',[App\Http\Controllers\v1\Master\DepositBankController::class,'searchDetails']);
@@ -238,5 +245,7 @@ Route::prefix('v1')->group(function () {
 
         // ==========================================Cron routes===========================================
         Route::get('nfoTOongoing',[App\Http\Controllers\v1\Cron\SchemeController::class,'nfoTOongoing']);
+
+        
     // });
 });

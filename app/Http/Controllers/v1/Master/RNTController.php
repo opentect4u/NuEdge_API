@@ -309,7 +309,7 @@ class RNTController extends Controller
         try {
             $id=$request->id;
             $is_has=AMC::where('rnt_id',$id)->get();
-            if (count($is_has)>0) {
+            if (count($is_has) > 0) {
                 return Helper::WarningResponse(parent::DELETE_NOT_ALLOW_ERROR);
             }else {
                 $data=RNT::find($id);

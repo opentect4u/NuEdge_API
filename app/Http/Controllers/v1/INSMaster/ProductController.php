@@ -1,37 +1,37 @@
 <?php
 
-namespace App\Http\Controllers\v1\Master;
+namespace App\Http\Controllers\v1\INSMaster;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Helpers\Helper;
-use App\Models\{Plan,MutualFund};
+use App\Models\InsProduct;
 use Validator;
-use Excel;
-use App\Imports\PlanImport;
 
-class PlanController extends Controller
+class ProductController extends Controller
 {
     public function searchDetails(Request $request)
     {
         try {
             $paginate=$request->paginate;
-            $plan_name=$request->plan_name;
+            $type=$request->type;
             $sort_by=$request->sort_by;
             $column_name=$request->column_name;
             if ($paginate=='A') {
                 $paginate=999999999;
             }
             if ($sort_by && $column_name) {
-                $data=Plan::where('plan_name','like', '%' . $plan_name . '%')
+                $data=InsProduct::where('type','like', '%' . $type . '%')
+                    ->where('delete_flag','N')
                     ->orderBy($column_name,$sort_by)
                     ->paginate($paginate); 
-            }elseif ($plan_name) {
-                $data=Plan::where('plan_name','like', '%' . $plan_name . '%')
+            }elseif ($type) {
+                $data=InsProduct::where('type','like', '%' . $type . '%')
+                    ->where('delete_flag','N')
                     ->orderBy('updated_at','DESC')
                     ->paginate($paginate);  
             } else {
-                $data=Plan::orderBy('updated_at','DESC')->paginate($paginate);  
+                $data=InsProduct::where('delete_flag','N')->orderBy('updated_at','DESC')->paginate($paginate);  
             }
         } catch (\Throwable $th) {
             //throw $th;
@@ -42,13 +42,14 @@ class PlanController extends Controller
     public function export(Request $request)
     {
         try {
-            $plan_name=$request->plan_name;
-            if ($plan_name) {
-                $data=Plan::where('plan_name','like', '%' . $plan_name . '%')
+            $type=$request->type;
+            if ($type) {
+                $data=InsProduct::where('type','like', '%' . $type . '%')
+                    ->where('delete_flag','N')
                     ->orderBy('updated_at','DESC')
                     ->get();  
             } else {
-                $data=Plan::orderBy('updated_at','DESC')->get();  
+                $data=InsProduct::where('delete_flag','N')->orderBy('updated_at','DESC')->get();  
             }      
         } catch (\Throwable $th) {
             //throw $th;
@@ -66,13 +67,13 @@ class PlanController extends Controller
                 $paginate=999999999;
             }
             if ($search!='') {
-                $data=Plan::where('plan_name','like', '%' . $search . '%')->get();      
+                $data=InsProduct::where('delete_flag','N')->where('type','like', '%' . $search . '%')->get();      
             }else if ($id!='') {
-                $data=Plan::where('id',$id)->get();      
+                $data=InsProduct::where('delete_flag','N')->where('id',$id)->get();      
             }elseif ($paginate!='') {
-                $data=Plan::paginate($paginate);      
+                $data=InsProduct::where('delete_flag','N')->paginate($paginate);      
             } else {
-                $data=Plan::get();      
+                $data=InsProduct::where('delete_flag','N')->get();      
             }
         } catch (\Throwable $th) {
             //throw $th;
@@ -84,7 +85,7 @@ class PlanController extends Controller
     public function createUpdate(Request $request)
     {
         $validator = Validator::make(request()->all(),[
-            'plan_name' =>'required',
+            'type' =>'required',
         ]);
     
         if($validator->fails()) {
@@ -93,12 +94,12 @@ class PlanController extends Controller
         }
         try {
             if ($request->id > 0) {
-                $data=Plan::find($request->id);
-                $data->plan_name=$request->plan_name;
+                $data=InsProduct::find($request->id);
+                $data->type=$request->type;
                 $data->save();
             }else{
-                $data=Plan::create(array(
-                    'plan_name'=>$request->plan_name,
+                $data=InsProduct::create(array(
+                    'type'=>$request->type,
                     // 'created_by'=>'',
                 ));    
             }  
@@ -113,11 +114,11 @@ class PlanController extends Controller
     {
         try {
             $id=$request->id;
-            $is_has=MutualFund::where('plan_id',$id)->orWhere('plan_id_to',$id)->get();
+            $is_has=InsCompany::where('ins_type_id',$id)->get();
             if (count($is_has)>0) {
                 return Helper::WarningResponse(parent::DELETE_NOT_ALLOW_ERROR);
             }else {
-                $data=Plan::find($id);
+                $data=InsProduct::find($id);
                 $data->delete_flag='Y';
                 $data->deleted_date=date('Y-m-d H:i:s');
                 $data->deleted_by=1;
@@ -147,25 +148,14 @@ class PlanController extends Controller
                 }else {
                     // return $value;
                     // return $value[0];
-                    Plan::create(array(
-                        'plan_name'=>$value[0],
+                    InsProduct::create(array(
+                        'type'=>$value[0],
                         // 'created_by'=>'',
                     ));    
                 }
                
             }
-
-            // return gettype($data[0][0]) ;
-            // if (in_array("rnt_id", $data)) {
-            // if ($data[0][0] == "plan_name") {
-            //     return "hii";
-                // Excel::import(new PlanImport,$request->file);
-                // Excel::import(new PlanImport,request()->file('file'));
-                $data1=[];
-            // }else {
-            //     return "else";
-            //     return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
-            // }
+            $data1=[];
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
@@ -173,3 +163,4 @@ class PlanController extends Controller
         return Helper::SuccessResponse($data1);
     }
 }
+
