@@ -26,6 +26,7 @@ class SubcategoryController extends Controller
             if ($subcat_id && $cat_id) {
                 $data=SubCategory::join('md_category','md_category.id','=','md_subcategory.category_id')
                     ->select('md_subcategory.*','md_category.cat_name as cat_name')
+                    ->where('md_subcategory.delete_flag','N')
                     ->where('md_subcategory.id',$subcat_id)
                     ->where('md_subcategory.category_id',$cat_id)
                     ->orderBy('updated_at','DESC')
@@ -33,6 +34,7 @@ class SubcategoryController extends Controller
             }elseif ($subcat_id) {
                 $data=SubCategory::join('md_category','md_category.id','=','md_subcategory.category_id')
                     ->select('md_subcategory.*','md_category.cat_name as cat_name')
+                    ->where('md_subcategory.delete_flag','N')
                     ->where('md_subcategory.id',$subcat_id)
                     ->orderBy('updated_at','DESC')
                     ->paginate($paginate);     
@@ -40,11 +42,13 @@ class SubcategoryController extends Controller
                 $data=SubCategory::join('md_category','md_category.id','=','md_subcategory.category_id')
                     ->select('md_subcategory.*','md_category.cat_name as cat_name')
                     ->where('md_subcategory.category_id',$cat_id)
+                    ->where('md_subcategory.delete_flag','N')
                     ->orderBy('updated_at','DESC')
                     ->paginate($paginate);   
             } else {
                 $data=SubCategory::join('md_category','md_category.id','=','md_subcategory.category_id')
                     ->select('md_subcategory.*','md_category.cat_name as cat_name')
+                    ->where('md_subcategory.delete_flag','N')
                     ->orderBy('updated_at','DESC')
                     ->paginate($paginate);     
             }
@@ -63,6 +67,7 @@ class SubcategoryController extends Controller
             if ($subcat_id && $cat_id) {
                 $data=SubCategory::join('md_category','md_category.id','=','md_subcategory.category_id')
                     ->select('md_subcategory.*','md_category.cat_name as cat_name')
+                    ->where('md_subcategory.delete_flag','N')
                     ->where('md_subcategory.id',$subcat_id)
                     ->where('md_subcategory.category_id',$cat_id)
                     ->orderBy('updated_at','DESC')
@@ -71,17 +76,20 @@ class SubcategoryController extends Controller
                 $data=SubCategory::join('md_category','md_category.id','=','md_subcategory.category_id')
                     ->select('md_subcategory.*','md_category.cat_name as cat_name')
                     ->where('md_subcategory.id',$subcat_id)
+                    ->where('md_subcategory.delete_flag','N')
                     ->orderBy('updated_at','DESC')
                     ->get();     
             }elseif ($cat_id) {
                 $data=SubCategory::join('md_category','md_category.id','=','md_subcategory.category_id')
                     ->select('md_subcategory.*','md_category.cat_name as cat_name')
                     ->where('md_subcategory.category_id',$cat_id)
+                    ->where('md_subcategory.delete_flag','N')
                     ->orderBy('updated_at','DESC')
                     ->get();   
             } else {
                 $data=SubCategory::join('md_category','md_category.id','=','md_subcategory.category_id')
                     ->select('md_subcategory.*','md_category.cat_name as cat_name')
+                    ->where('md_subcategory.delete_flag','N')
                     ->orderBy('updated_at','DESC')
                     ->get();     
             }
@@ -102,15 +110,16 @@ class SubcategoryController extends Controller
                 $paginate=999999999;
             }
             if ($search!='') {
-                $data=SubCategory::where('subcategory_name','like', '%' . $search . '%')->get();      
+                $data=SubCategory::where('delete_flag','N')->where('subcategory_name','like', '%' . $search . '%')->get();      
             }else if ($category_id!='') {
-                $data=SubCategory::where('category_id',$category_id)->paginate($paginate);      
+                $data=SubCategory::where('delete_flag','N')->where('category_id',$category_id)->paginate($paginate);      
             }else if ($id!='') {
-                $data=SubCategory::where('id',$id)->get();      
+                $data=SubCategory::where('delete_flag','N')->where('id',$id)->get();      
             }else if ($paginate!='') {
                 $data=SubCategory::join('md_category','md_category.id','=','md_subcategory.category_id')
                     ->select('md_subcategory.*','md_category.cat_name as cat_name')
-                    ->orderBy('updated_at','DESC')
+                    ->where('md_subcategory.delete_flag','N')
+                    ->orderBy('md_subcategory.updated_at','DESC')
                     ->paginate($paginate);   
             }else{
                 $data=SubCategory::get();   

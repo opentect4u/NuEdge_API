@@ -23,10 +23,10 @@ class CategoryController extends Controller
                 $paginate=999999999;
             }
             if ($cat_name) {
-                $data=Category::where('cat_name','like', '%' . $cat_name . '%')
+                $data=Category::where('delete_flag','N')->where('cat_name','like', '%' . $cat_name . '%')
                 ->orderBy('updated_at','DESC')->paginate($paginate);  
             } else {
-                $data=Category::orderBy('updated_at','DESC')->paginate($paginate);  
+                $data=Category::where('delete_flag','N')->orderBy('updated_at','DESC')->paginate($paginate);  
             }
         } catch (\Throwable $th) {
             //throw $th;
@@ -39,10 +39,10 @@ class CategoryController extends Controller
         try {
             $cat_name=$request->cat_name;
             if ($cat_name) {
-                $data=Category::where('cat_name','like', '%' . $cat_name . '%')
+                $data=Category::where('delete_flag','N')->where('cat_name','like', '%' . $cat_name . '%')
                     ->orderBy('updated_at','DESC')->get();  
             } else {
-                $data=Category::orderBy('updated_at','DESC')->get();  
+                $data=Category::where('delete_flag','N')->orderBy('updated_at','DESC')->get();  
             } 
         } catch (\Throwable $th) {
             //throw $th;
@@ -62,15 +62,15 @@ class CategoryController extends Controller
                 $paginate=999999999;
             }
             if ($search!='') {
-                $data=Category::where('cat_name','like', '%' . $search . '%')->get();      
+                $data=Category::where('delete_flag','N')->where('cat_name','like', '%' . $search . '%')->get();      
             }else if ($product_id!='') {
-                $data=Category::where('product_id',$product_id)->get();      
+                $data=Category::where('delete_flag','N')->where('product_id',$product_id)->get();      
             }else if ($id!='') {
-                $data=Category::where('id',$id)->get();      
+                $data=Category::where('delete_flag','N')->where('id',$id)->get();      
             }else if ($paginate!='') {
-                $data=Category::paginate($paginate);      
+                $data=Category::where('delete_flag','N')->paginate($paginate);      
             }else {
-                $data=Category::get();      
+                $data=Category::where('delete_flag','N')->get();      
             }
         } catch (\Throwable $th) {
             //throw $th;

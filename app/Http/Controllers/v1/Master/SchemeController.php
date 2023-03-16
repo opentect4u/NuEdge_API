@@ -34,8 +34,9 @@ class SchemeController extends Controller
                     ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
                     ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
                     ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
-                    ->orWhere('md_scheme.scheme_name','like', '%' . $scheme_name . '%')
-                    ->orWhere('md_amc.amc_name','like', '%' . $amc_name . '%')
+                    ->where('md_scheme.delete_flag','N')
+                    // ->orWhere('md_scheme.scheme_name','like', '%' . $scheme_name . '%')
+                    // ->orWhere('md_amc.amc_name','like', '%' . $amc_name . '%')
                     ->orderBy('md_scheme.'.$column_name,$sort_by)
                     ->paginate($paginate);
                 }elseif ($column_name=='cat_name') {
@@ -44,8 +45,9 @@ class SchemeController extends Controller
                     ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
                     ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
                     ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
-                    ->orWhere('md_scheme.scheme_name','like', '%' . $scheme_name . '%')
-                    ->orWhere('md_amc.amc_name','like', '%' . $amc_name . '%')
+                    ->where('md_scheme.delete_flag','N')
+                    // ->orWhere('md_scheme.scheme_name','like', '%' . $scheme_name . '%')
+                    // ->orWhere('md_amc.amc_name','like', '%' . $amc_name . '%')
                     ->orderBy('md_category.'.$column_name,$sort_by)
                     ->paginate($paginate);
                 }elseif ($column_name=='subcate_name') {
@@ -54,8 +56,9 @@ class SchemeController extends Controller
                     ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
                     ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
                     ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
-                    ->orWhere('md_scheme.scheme_name','like', '%' . $scheme_name . '%')
-                    ->orWhere('md_amc.amc_name','like', '%' . $amc_name . '%')
+                    ->where('md_scheme.delete_flag','N')
+                    // ->orWhere('md_scheme.scheme_name','like', '%' . $scheme_name . '%')
+                    // ->orWhere('md_amc.amc_name','like', '%' . $amc_name . '%')
                     ->orderBy('md_subcategory.'.$column_name,$sort_by)
                     ->paginate($paginate);
                 }elseif ($column_name=='amc_name') {
@@ -64,8 +67,9 @@ class SchemeController extends Controller
                     ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
                     ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
                     ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
-                    ->orWhere('md_scheme.scheme_name','like', '%' . $scheme_name . '%')
-                    ->orWhere('md_amc.amc_name','like', '%' . $amc_name . '%')
+                    ->where('md_scheme.delete_flag','N')
+                    // ->orWhere('md_scheme.scheme_name','like', '%' . $scheme_name . '%')
+                    // ->orWhere('md_amc.amc_name','like', '%' . $amc_name . '%')
                     ->orderBy('md_amc.'.$column_name,$sort_by)
                     ->paginate($paginate);
                 }
@@ -76,6 +80,7 @@ class SchemeController extends Controller
                     ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
                     ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
                     ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
+                    ->where('md_scheme.delete_flag','N')
                     ->where('md_scheme.scheme_name','like', '%' . $scheme_name . '%')
                     ->where('md_amc.amc_name','like', '%' . $amc_name . '%')
                     ->paginate($paginate);
@@ -85,6 +90,7 @@ class SchemeController extends Controller
                     ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
                     ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
                     ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
+                    ->where('md_scheme.delete_flag','N')
                     ->where('md_scheme.scheme_name','like', '%' . $scheme_name . '%')
                     ->paginate($paginate);  
             }elseif ($amc_name) {
@@ -93,6 +99,7 @@ class SchemeController extends Controller
                     ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
                     ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
                     ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
+                    ->where('md_scheme.delete_flag','N')
                     ->where('md_amc.amc_name','like', '%' . $amc_name . '%')
                     ->paginate($paginate);  
             } else {
@@ -101,16 +108,11 @@ class SchemeController extends Controller
                     ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
                     ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
                     ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
+                    ->where('md_scheme.delete_flag','N')
                     ->paginate($paginate);  
             }
             
-            $data=Scheme::join('md_amc','md_amc.id','=','md_scheme.amc_id')
-                    ->join('md_category','md_category.id','=','md_scheme.category_id')
-                    ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
-                    ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
-                    ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
-                    // ->where('md_scheme.id',$scheme_id)
-                    ->paginate($paginate);      
+            
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
@@ -120,13 +122,100 @@ class SchemeController extends Controller
     public function export(Request $request)
     {
         try {
-            $data=Scheme::join('md_amc','md_amc.id','=','md_scheme.amc_id')
+            $paginate=$request->paginate;
+            $scheme_name=$request->scheme_name;
+            $amc_name=$request->amc_name;
+            $cat_id=$request->cat_id;
+            $subcat_id=$request->subcat_id;
+            $sort_by=$request->sort_by;
+            $column_name=$request->column_name;
+            // return $request;
+            
+            if ($sort_by && $column_name) {
+                // return $request;
+                if ($column_name=='scheme_name' || $column_name=='scheme_type') {
+                    $data=Scheme::join('md_amc','md_amc.id','=','md_scheme.amc_id')
                     ->join('md_category','md_category.id','=','md_scheme.category_id')
                     ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
                     ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
                     ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
-                    // ->where('md_scheme.id',$scheme_id)
-                    ->get();         
+                    ->where('md_scheme.delete_flag','N')
+                    // ->orWhere('md_scheme.scheme_name','like', '%' . $scheme_name . '%')
+                    // ->orWhere('md_amc.amc_name','like', '%' . $amc_name . '%')
+                    ->orderBy('md_scheme.'.$column_name,$sort_by)
+                    ->get();
+                }elseif ($column_name=='cat_name') {
+                    $data=Scheme::join('md_amc','md_amc.id','=','md_scheme.amc_id')
+                    ->join('md_category','md_category.id','=','md_scheme.category_id')
+                    ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
+                    ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                    ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
+                    ->where('md_scheme.delete_flag','N')
+                    // ->orWhere('md_scheme.scheme_name','like', '%' . $scheme_name . '%')
+                    // ->orWhere('md_amc.amc_name','like', '%' . $amc_name . '%')
+                    ->orderBy('md_category.'.$column_name,$sort_by)
+                    ->get();
+                }elseif ($column_name=='subcate_name') {
+                    $data=Scheme::join('md_amc','md_amc.id','=','md_scheme.amc_id')
+                    ->join('md_category','md_category.id','=','md_scheme.category_id')
+                    ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
+                    ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                    ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
+                    ->where('md_scheme.delete_flag','N')
+                    // ->orWhere('md_scheme.scheme_name','like', '%' . $scheme_name . '%')
+                    // ->orWhere('md_amc.amc_name','like', '%' . $amc_name . '%')
+                    ->orderBy('md_subcategory.'.$column_name,$sort_by)
+                    ->get();
+                }elseif ($column_name=='amc_name') {
+                    $data=Scheme::join('md_amc','md_amc.id','=','md_scheme.amc_id')
+                    ->join('md_category','md_category.id','=','md_scheme.category_id')
+                    ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
+                    ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                    ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
+                    ->where('md_scheme.delete_flag','N')
+                    // ->orWhere('md_scheme.scheme_name','like', '%' . $scheme_name . '%')
+                    // ->orWhere('md_amc.amc_name','like', '%' . $amc_name . '%')
+                    ->orderBy('md_amc.'.$column_name,$sort_by)
+                    ->get();
+                }
+                
+            }elseif($scheme_name && $amc_name){
+                $data=Scheme::join('md_amc','md_amc.id','=','md_scheme.amc_id')
+                    ->join('md_category','md_category.id','=','md_scheme.category_id')
+                    ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
+                    ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                    ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
+                    ->where('md_scheme.delete_flag','N')
+                    ->where('md_scheme.scheme_name','like', '%' . $scheme_name . '%')
+                    ->where('md_amc.amc_name','like', '%' . $amc_name . '%')
+                    ->get();
+            }elseif ($scheme_name) {
+                $data=Scheme::join('md_amc','md_amc.id','=','md_scheme.amc_id')
+                    ->join('md_category','md_category.id','=','md_scheme.category_id')
+                    ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
+                    ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                    ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
+                    ->where('md_scheme.delete_flag','N')
+                    ->where('md_scheme.scheme_name','like', '%' . $scheme_name . '%')
+                    ->get();  
+            }elseif ($amc_name) {
+                $data=Scheme::join('md_amc','md_amc.id','=','md_scheme.amc_id')
+                    ->join('md_category','md_category.id','=','md_scheme.category_id')
+                    ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
+                    ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                    ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
+                    ->where('md_scheme.delete_flag','N')
+                    ->where('md_amc.amc_name','like', '%' . $amc_name . '%')
+                    ->get();  
+            } else {
+                $data=Scheme::join('md_amc','md_amc.id','=','md_scheme.amc_id')
+                    ->join('md_category','md_category.id','=','md_scheme.category_id')
+                    ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
+                    ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                    ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
+                    ->where('md_scheme.delete_flag','N')
+                    ->get();  
+            }
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
@@ -151,22 +240,27 @@ class SchemeController extends Controller
             }
             if ($search!='' && $amc_id!='' && $scheme_type!='') {
                 $data=Scheme::where('scheme_type',$scheme_type)
+                    ->where('delete_flag','N')
                     ->where('amc_id',$amc_id)
                     ->where('scheme_name','like', '%' . $search . '%')
                     ->get();      
             } else if ($search!='' && $amc_id!='') {
                 $data=Scheme::where('amc_id',$amc_id)
+                    ->where('delete_flag','N')
                     ->orWhere('scheme_name','like', '%' . $search . '%')
                     ->get();      
             }else if ($search!='' && $scheme_type!='') {
                 // return "hii";
                 $data=Scheme::where('scheme_type',$scheme_type)
+                    ->where('delete_flag','N')
                     ->where('scheme_name','like', '%' . $search . '%')
                     ->get();      
             }else if ($search!='') {
-                $data=Scheme::where('scheme_name','like', '%' . $search . '%')->get();      
+                    $data=Scheme::where('delete_flag','N')
+                        ->where('scheme_name','like', '%' . $search . '%')->get();      
             }else if ($product_id!='' && $category_id!='' && $subcategory_id!='') {
                 $data=Scheme::where('product_id',$product_id)
+                    ->where('delete_flag','N')
                     ->where('category_id',$category_id)
                     ->where('subcategory_id',$subcategory_id)
                     ->get();      
@@ -176,17 +270,18 @@ class SchemeController extends Controller
                     ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
                     ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
                     ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
+                    ->where('md_scheme.delete_flag','N')
                     ->where('md_scheme.id',$scheme_id)
                     ->get();      
                 // $data=Scheme::where('id',$scheme_id)->get();      
             }elseif ($id!='') {
-                $data=Scheme::where('id',$id)->get();      
+                $data=Scheme::where('delete_flag','N')->where('id',$id)->get();      
             }elseif ($scheme_type!='') {
-                $data=Scheme::where('scheme_type',$scheme_type)->whereDate('updated_at',date('Y-m-d'))->get();      
+                $data=Scheme::where('delete_flag','N')->where('scheme_type',$scheme_type)->whereDate('updated_at',date('Y-m-d'))->get();      
             } elseif ($paginate!='') {
-                $data=Scheme::paginate($paginate);      
+                $data=Scheme::where('delete_flag','N')->paginate($paginate);      
             } else {
-                $data=Scheme::whereDate('updated_at',date('Y-m-d'))->get();      
+                $data=Scheme::where('delete_flag','N')->get();      
             }
             // $data=Scheme::whereDate('updated_at',date('Y-m-d'))->get();      
         } catch (\Throwable $th) {
