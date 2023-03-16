@@ -311,9 +311,9 @@ class FormReceivedController extends Controller
             // return $request;
             $is_has=FormReceived::orderBy('created_at','desc')->get();
             if (count($is_has)>0) {
-                $temp_tin_no=Helper::TempTINGen((count($is_has)+1)); // generate temp tin no
+                $temp_tin_no=Helper::TempTINGen((count($is_has)+1),1); // generate temp tin no
             }else{
-                $temp_tin_no=Helper::TempTINGen(1); // generate temp tin no
+                $temp_tin_no=Helper::TempTINGen(1,1); // generate temp tin no
             }
             
                 // $bu_type='D';

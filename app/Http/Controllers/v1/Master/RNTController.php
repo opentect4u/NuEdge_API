@@ -25,9 +25,6 @@ class RNTController extends Controller
             }
             if ($sort_by && $column_name) {
                 $data=RNT::where('delete_flag','N')
-                    ->orWhere('id',$rnt_id)
-                    ->orWhere('head_ofc_contact_per','like', '%' . $contact_person . '%')
-                    ->orWhere('local_ofc_contact_per','like', '%' . $contact_person . '%')
                     ->orderBy($column_name,$sort_by)
                     ->paginate($paginate);   
             }elseif ($rnt_id && $contact_person) {
@@ -106,13 +103,13 @@ class RNTController extends Controller
                 $paginate=999999999;
             }
             if ($search!='') {
-                $data=RNT::where('rnt_name','like', '%' . $search . '%')->get();      
+                $data=RNT::where('delete_flag','N')->where('rnt_name','like', '%' . $search . '%')->get();      
             }else if ($id!='') {
-                $data=RNT::where('id',$id)->get();      
+                $data=RNT::where('delete_flag','N')->where('id',$id)->get();      
             }else if ($paginate!='') {
-                $data=RNT::orderBy('updated_at','DESC')->paginate($paginate);      
+                $data=RNT::where('delete_flag','N')->orderBy('updated_at','DESC')->paginate($paginate);      
             } else {
-                $data=RNT::orderBy('updated_at','DESC')->get();      
+                $data=RNT::where('delete_flag','N')->orderBy('updated_at','DESC')->get();      
             }
         } catch (\Throwable $th) {
             //throw $th;

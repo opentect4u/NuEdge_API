@@ -44,9 +44,13 @@ class Helper{
         return DB::table('md_parameters')->where('sl_no',$id)->value('param_value');
     }
 
-    public function TempTINGen($val)
+    public function TempTINGen($val,$product_id)
     {
-        $tin='T00'.$val;
+        if ($product_id==1) {  // MUTUAL FUND
+            $tin='MFT00'.$val;
+        }elseif ($product_id==3) { // Insurance 
+            $tin='INST00'.$val;
+        }
         return $tin;
     }
 
@@ -62,6 +66,8 @@ class Helper{
             }else if ($trans_type_id==4) {  // NFO
                 $tin='NFO00'.$val;
             }
+        }elseif ($product_id==3) {  // Insurance
+            $tin='INS00'.$val;
         }
         return $tin;
     }

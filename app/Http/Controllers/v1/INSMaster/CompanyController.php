@@ -138,6 +138,7 @@ class CompanyController extends Controller
         try {  
             $search=$request->search;
             $id=$request->id;
+            $ins_type_id=$request->ins_type_id;
             $paginate=$request->paginate;
             if ($paginate=='A') {
                 $paginate=999999999;
@@ -146,6 +147,8 @@ class CompanyController extends Controller
                 $data=InsCompany::where('type','like', '%' . $search . '%')->get();      
             }else if ($id!='') {
                 $data=InsCompany::where('id',$id)->get();      
+            }else if ($ins_type_id!='') {
+                $data=InsCompany::where('ins_type_id',$ins_type_id)->get();      
             }elseif ($paginate!='') {
                 $data=InsCompany::paginate($paginate);      
             } else {

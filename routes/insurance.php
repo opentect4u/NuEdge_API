@@ -32,7 +32,15 @@ Route::prefix('v1')->group(function () {
             Route::post('productExport',[App\Http\Controllers\v1\INSMaster\ProductController::class,'export']);
             Route::post('productAddEdit',[App\Http\Controllers\v1\INSMaster\ProductController::class,'createUpdate']);
             Route::post('productimport', [App\Http\Controllers\v1\INSMaster\ProductController::class,'import']);
-            Route::post('productDelete', [App\Http\Controllers\v1\INSMaster\ProductController::class,'delete']);
+            // Route::post('productDelete', [App\Http\Controllers\v1\INSMaster\ProductController::class,'delete']);
+
+            // start form received
+            Route::post('formreceivedAdd',[App\Http\Controllers\v1\INSOperation\FormReceivedController::class,'create']);
+            Route::post('formreceivedEdit',[App\Http\Controllers\v1\INSOperation\FormReceivedController::class,'update']);
+            Route::post('formreceivedDelete',[App\Http\Controllers\v1\INSOperation\FormReceivedController::class,'delete']);
+            Route::any('formreceivedDetailSearch',[App\Http\Controllers\v1\INSOperation\FormReceivedController::class,'searchDetails']);
+            Route::post('formreceivedExport',[App\Http\Controllers\v1\INSOperation\FormReceivedController::class,'export']);
+
         });
     // });
 });

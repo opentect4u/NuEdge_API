@@ -5,7 +5,7 @@ namespace App\Http\Controllers\v1\Master;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Helpers\Helper;
-use App\Models\{Scheme,MutualFund};
+use App\Models\{Scheme,MutualFund,FormReceived};
 use Validator;
 use Excel;
 use App\Imports\SchemeImport;
@@ -324,7 +324,7 @@ class SchemeController extends Controller
     {
         try {
             $id=$request->id;
-            $is_has=MutualFund::where('trans_scheme_from',$id)->orWhere('trans_scheme_to',$id)->get();
+            $is_has=FormReceived::where('scheme_id',$id)->orWhere('scheme_id_to',$id)->get();
             if (count($is_has)>0) {
                 return Helper::WarningResponse(parent::DELETE_NOT_ALLOW_ERROR);
             }else {
