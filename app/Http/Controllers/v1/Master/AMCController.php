@@ -52,60 +52,59 @@ class AMCController extends Controller
                 }    
             }elseif ($amc_id!='' && $rnt_id!='' && $gstin!='') {
                 $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
-                    ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+                        ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
                         ->where('md_amc.delete_flag','N')
                         ->where('md_amc.id',$amc_id)
-                    ->where('md_amc.rnt_id',$rnt_id)
-                    ->where('md_amc.gstin','like', '%' . $gstin . '%')
-                    ->orderBy('md_amc.updated_at','DESC')
-                    ->paginate($paginate);      
+                        ->where('md_amc.rnt_id',$rnt_id)
+                        ->where('md_amc.gstin','like', '%' . $gstin . '%')
+                        ->orderBy('md_amc.updated_at','DESC')
+                        ->paginate($paginate);      
             }elseif ($rnt_id!='' && $gstin!='') {
                 $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
-                    ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+                        ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
                         ->where('md_amc.delete_flag','N')
                         ->where('md_amc.gstin','like', '%' . $gstin . '%')
-                    ->where('md_amc.rnt_id',$rnt_id)
-                    ->orderBy('md_amc.updated_at','DESC')
-                    ->paginate($paginate);      
+                        ->where('md_amc.rnt_id',$rnt_id)
+                        ->orderBy('md_amc.updated_at','DESC')
+                        ->paginate($paginate);      
             }elseif ($amc_id!='' && $rnt_id!='') {
                 $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
-                    ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+                        ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
                         ->where('md_amc.delete_flag','N')
                         ->where('md_amc.amc_id',$amc_id)
-                    ->where('md_amc.rnt_id',$rnt_id)
-                    ->orderBy('md_amc.updated_at','DESC')
-                    ->paginate($paginate);      
+                        ->where('md_amc.rnt_id',$rnt_id)
+                        ->orderBy('md_amc.updated_at','DESC')
+                        ->paginate($paginate);      
             }elseif ($amc_id!='' && $gstin!='') {
                 $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
-                    ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+                        ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
                         ->where('md_amc.delete_flag','N')
                         ->where('md_amc.amc_id',$amc_id)
-                    ->where('md_amc.gstin','like', '%' . $gstin . '%')
-                    ->orderBy('md_amc.updated_at','DESC')
-                    ->paginate($paginate);    
+                        ->where('md_amc.gstin','like', '%' . $gstin . '%')
+                        ->orderBy('md_amc.updated_at','DESC')
+                        ->paginate($paginate);    
             } elseif ($amc_id!='') {
                 $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
-                    ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
-                        ->where('md_amc.delete_flag','N')
-                        // ->where('md_amc.id',$amc_id)
-                    ->where('md_amc.rnt_id',$rnt_id)
-                    ->orderBy('md_amc.updated_at','DESC')
-                    ->paginate($paginate);      
-            }elseif ($gstin!='') {
-                $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
-                ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
-                        ->where('md_amc.delete_flag','N')
-                        ->where('md_amc.gstin','like', '%' . $gstin . '%')
-                ->orderBy('md_amc.updated_at','DESC')
-                ->paginate($paginate);    
-            } elseif ($rnt_id!='') {
-                $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
-                ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+                        ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
                         ->where('md_amc.delete_flag','N')
                         ->where('md_amc.id',$amc_id)
-                // ->where('md_amc.rnt_id',$rnt_id)
-                ->orderBy('md_amc.updated_at','DESC')
-                ->paginate($paginate);      
+                        // ->where('md_amc.rnt_id',$rnt_id)
+                        ->orderBy('md_amc.updated_at','DESC')
+                        ->paginate($paginate);      
+            }elseif ($gstin!='') {
+                $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                        ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+                        ->where('md_amc.delete_flag','N')
+                        ->where('md_amc.gstin','like', '%' . $gstin . '%')
+                        ->orderBy('md_amc.updated_at','DESC')
+                        ->paginate($paginate);    
+            } elseif ($rnt_id!='') {
+                $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                        ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+                        ->where('md_amc.delete_flag','N')
+                        ->where('md_amc.rnt_id',$rnt_id)
+                        ->orderBy('md_amc.updated_at','DESC')
+                        ->paginate($paginate);      
             }else {
                 $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
                     ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
@@ -292,9 +291,11 @@ class AMCController extends Controller
                 $data->login_pass=$request->login_pass;
                 $data->security_qus_ans=$request->security_qus_ans;
                 $data->cus_care_whatsapp_no=$request->cus_care_whatsapp_no;
+                $data->distributor_care_no=$request->distributor_care_no;
+                $data->distributor_care_email=$request->distributor_care_email;
                 $data->save();
             }else{
-                $is_has=AMC::where('amc_name',$request->amc_name)->get();
+                $is_has=AMC::where('amc_name',$request->amc_name)->where('delete_flag','N')->get();
                 if (count($is_has) > 0) {
                     return Helper::WarningResponse(parent::ALREADY_EXIST);
                 }else {
@@ -341,6 +342,8 @@ class AMCController extends Controller
                         'login_pass'=>$request->login_pass,
                         'security_qus_ans'=>$request->security_qus_ans,
                         'cus_care_whatsapp_no'=>$request->cus_care_whatsapp_no,
+                        'distributor_care_no'=>$request->distributor_care_no,
+                        'distributor_care_email'=>$request->distributor_care_email,
                         'delete_flag'=>'N',
                         // 'created_by'=>'',
                     ));  

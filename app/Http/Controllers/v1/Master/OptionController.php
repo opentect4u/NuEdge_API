@@ -99,10 +99,15 @@ class OptionController extends Controller
                 $data->opt_name=$request->opt_name;
                 $data->save();
             }else{
-                $data=Option::create(array(
-                    'opt_name'=>$request->opt_name,
-                    // 'created_by'=>'',
-                ));    
+                $is_has=Option::where('opt_name',$request->opt_name)->where('delete_flag','N')->get();
+                if (count($is_has) > 0) {
+                    return Helper::WarningResponse(parent::ALREADY_EXIST);
+                }else {
+                    $data=Option::create(array(
+                        'opt_name'=>$request->opt_name,
+                        // 'created_by'=>'',
+                    ));   
+                } 
             }  
         } catch (\Throwable $th) {
             //throw $th;

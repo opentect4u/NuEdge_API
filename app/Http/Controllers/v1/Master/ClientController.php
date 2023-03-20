@@ -97,7 +97,9 @@ class ClientController extends Controller
             $client_id=$request->client_id;
             $paginate=$request->paginate;
             if ($search!='') {
-                $data=Client::with('ClientDoc')->orWhere('client_name','like', '%' . $search . '%')
+                $data=Client::with('ClientDoc')
+                    ->where('client_type','!=','E')
+                    ->orWhere('client_name','like', '%' . $search . '%')
                     ->orWhere('client_code','like', '%' . $search . '%')
                     ->orWhere('pan','like', '%' . $search . '%')
                     ->orWhere('mobile','like', '%' . $search . '%')

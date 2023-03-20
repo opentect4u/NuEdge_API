@@ -178,10 +178,18 @@ class ProductController extends Controller
             $search=$request->search;
             $id=$request->id;
             $paginate=$request->paginate;
+            $ins_type_id=$request->ins_type_id;
+            $company_id=$request->company_id;
+            $paginate=$request->paginate;
             if ($paginate=='A') {
                 $paginate=999999999;
             }
-            if ($search!='') {
+            if ($company_id && $ins_type_id) {
+                $data=InsProduct::where('delete_flag','N')
+                    ->where('company_id',$company_id)
+                    ->where('ins_type_id',$ins_type_id)
+                    ->get();      
+            }else if ($search!='') {
                 $data=InsProduct::where('delete_flag','N')
                 ->where('product_name','like', '%' . $search . '%')
                 ->get();      

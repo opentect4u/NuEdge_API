@@ -149,7 +149,7 @@ class SubcategoryController extends Controller
                 $data->subcategory_name=$request->subcategory_name;
                 $data->save();
             }else{
-                $is_has=SubCategory::where('subcategory_name',$request->subcategory_name)->get();
+                $is_has=SubCategory::where('subcategory_name',$request->subcategory_name)->where('delete_flag','N')->get();
                 if (count($is_has) > 0) {
                     return Helper::WarningResponse(parent::ALREADY_EXIST);
                 }else {

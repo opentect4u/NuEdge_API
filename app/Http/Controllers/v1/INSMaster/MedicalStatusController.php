@@ -1,37 +1,37 @@
 <?php
 
-namespace App\Http\Controllers\v1\Master;
+namespace App\Http\Controllers\v1\INSMaster;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Helpers\Helper;
-use App\Models\{Plan,MutualFund};
+use App\Models\{InsMedicalStatus,Insurance};
 use Validator;
-use Excel;
-use App\Imports\PlanImport;
 
-class PlanController extends Controller
+class MedicalStatusController extends Controller
 {
     public function searchDetails(Request $request)
     {
         try {
             $paginate=$request->paginate;
-            $plan_name=$request->plan_name;
+            $status_name=$request->status_name;
             $sort_by=$request->sort_by;
             $column_name=$request->column_name;
             if ($paginate=='A') {
                 $paginate=999999999;
             }
             if ($sort_by && $column_name) {
-                $data=Plan::where('plan_name','like', '%' . $plan_name . '%')
+                $data=InsMedicalStatus::where('status_name','like', '%' . $status_name . '%')
+                    ->where('delete_flag','N')
                     ->orderBy($column_name,$sort_by)
                     ->paginate($paginate); 
-            }elseif ($plan_name) {
-                $data=Plan::where('plan_name','like', '%' . $plan_name . '%')
+            }elseif ($status_name) {
+                $data=InsMedicalStatus::where('status_name','like', '%' . $status_name . '%')
+                    ->where('delete_flag','N')
                     ->orderBy('updated_at','DESC')
                     ->paginate($paginate);  
             } else {
-                $data=Plan::orderBy('updated_at','DESC')->paginate($paginate);  
+                $data=InsMedicalStatus::where('delete_flag','N')->orderBy('updated_at','DESC')->paginate($paginate);  
             }
         } catch (\Throwable $th) {
             //throw $th;
@@ -42,13 +42,14 @@ class PlanController extends Controller
     public function export(Request $request)
     {
         try {
-            $plan_name=$request->plan_name;
-            if ($plan_name) {
-                $data=Plan::where('plan_name','like', '%' . $plan_name . '%')
+            $status_name=$request->status_name;
+            if ($status_name) {
+                $data=InsMedicalStatus::where('status_name','like', '%' . $status_name . '%')
+                    ->where('delete_flag','N')
                     ->orderBy('updated_at','DESC')
                     ->get();  
             } else {
-                $data=Plan::orderBy('updated_at','DESC')->get();  
+                $data=InsMedicalStatus::where('delete_flag','N')->orderBy('updated_at','DESC')->get();  
             }      
         } catch (\Throwable $th) {
             //throw $th;
@@ -66,13 +67,13 @@ class PlanController extends Controller
                 $paginate=999999999;
             }
             if ($search!='') {
-                $data=Plan::where('plan_name','like', '%' . $search . '%')->get();      
+                $data=InsMedicalStatus::where('delete_flag','N')->where('status_name','like', '%' . $search . '%')->get();      
             }else if ($id!='') {
-                $data=Plan::where('id',$id)->get();      
+                $data=InsMedicalStatus::where('delete_flag','N')->where('id',$id)->get();      
             }elseif ($paginate!='') {
-                $data=Plan::paginate($paginate);      
+                $data=InsMedicalStatus::where('delete_flag','N')->paginate($paginate);      
             } else {
-                $data=Plan::get();      
+                $data=InsMedicalStatus::where('delete_flag','N')->get();      
             }
         } catch (\Throwable $th) {
             //throw $th;
@@ -84,7 +85,7 @@ class PlanController extends Controller
     public function createUpdate(Request $request)
     {
         $validator = Validator::make(request()->all(),[
-            'plan_name' =>'required',
+            'status_name' =>'required',
         ]);
     
         if($validator->fails()) {
@@ -93,19 +94,14 @@ class PlanController extends Controller
         }
         try {
             if ($request->id > 0) {
-                $data=Plan::find($request->id);
-                $data->plan_name=$request->plan_name;
+                $data=InsMedicalStatus::find($request->id);
+                $data->status_name=$request->status_name;
                 $data->save();
             }else{
-                $is_has=Plan::where('plan_name',$request->plan_name)->where('delete_flag','N')->get();
-                if (count($is_has) > 0) {
-                    return Helper::WarningResponse(parent::ALREADY_EXIST);
-                }else {
-                    $data=Plan::create(array(
-                        'plan_name'=>$request->plan_name,
-                        // 'created_by'=>'',
-                    ));    
-                }
+                $data=InsMedicalStatus::create(array(
+                    'status_name'=>$request->status_name,
+                    // 'created_by'=>'',
+                ));    
             }  
         } catch (\Throwable $th) {
             //throw $th;
@@ -118,11 +114,11 @@ class PlanController extends Controller
     {
         try {
             $id=$request->id;
-            $is_has=MutualFund::where('plan_id',$id)->orWhere('plan_id_to',$id)->get();
+            $is_has=Insurance::where('medical_status',$id)->get();
             if (count($is_has)>0) {
                 return Helper::WarningResponse(parent::DELETE_NOT_ALLOW_ERROR);
             }else {
-                $data=Plan::find($id);
+                $data=InsMedicalStatus::find($id);
                 $data->delete_flag='Y';
                 $data->deleted_date=date('Y-m-d H:i:s');
                 $data->deleted_by=1;
@@ -152,25 +148,14 @@ class PlanController extends Controller
                 }else {
                     // return $value;
                     // return $value[0];
-                    Plan::create(array(
-                        'plan_name'=>$value[0],
+                    InsMedicalStatus::create(array(
+                        'status_name'=>$value[0],
                         // 'created_by'=>'',
                     ));    
                 }
                
             }
-
-            // return gettype($data[0][0]) ;
-            // if (in_array("rnt_id", $data)) {
-            // if ($data[0][0] == "plan_name") {
-            //     return "hii";
-                // Excel::import(new PlanImport,$request->file);
-                // Excel::import(new PlanImport,request()->file('file'));
-                $data1=[];
-            // }else {
-            //     return "else";
-            //     return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
-            // }
+            $data1=[];
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);

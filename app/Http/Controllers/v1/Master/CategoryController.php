@@ -97,7 +97,7 @@ class CategoryController extends Controller
                 $data->cat_name=$request->cat_name;
                 $data->save();
             }else{
-                $is_has=Category::where('cat_name',$request->cat_name)->get();
+                $is_has=Category::where('cat_name',$request->cat_name)->where('delete_flag','N')->get();
                 if (count($is_has) > 0) {
                     return Helper::WarningResponse(parent::ALREADY_EXIST);
                 }else {

@@ -354,7 +354,7 @@ class SchemeController extends Controller
                 $data->special_sip_name=$request->special_sip_name;
                 $data->save();
             }else{
-                $is_has=Scheme::where('scheme_name',$request->scheme_name)->get();
+                $is_has=Scheme::where('scheme_name',$request->scheme_name)->where('delete_flag','N')->get();
                 if (count($is_has) > 0) {
                     return Helper::WarningResponse(parent::ALREADY_EXIST);
                 }else {

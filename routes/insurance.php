@@ -34,13 +34,48 @@ Route::prefix('v1')->group(function () {
             Route::post('productimport', [App\Http\Controllers\v1\INSMaster\ProductController::class,'import']);
             // Route::post('productDelete', [App\Http\Controllers\v1\INSMaster\ProductController::class,'delete']);
 
-            // start form received
+
+            Route::get('medicalStatus',[App\Http\Controllers\v1\INSMaster\MedicalStatusController::class,'index']);
+            Route::any('medicalStatusDetailSearch',[App\Http\Controllers\v1\INSMaster\MedicalStatusController::class,'searchDetails']);
+            Route::post('medicalStatusExport',[App\Http\Controllers\v1\INSMaster\MedicalStatusController::class,'export']);
+            Route::post('medicalStatusAddEdit',[App\Http\Controllers\v1\INSMaster\MedicalStatusController::class,'createUpdate']);
+            Route::post('medicalStatusimport', [App\Http\Controllers\v1\INSMaster\MedicalStatusController::class,'import']);
+            Route::post('medicalStatusDelete', [App\Http\Controllers\v1\INSMaster\MedicalStatusController::class,'delete']);
+
+            // =======================================Start Form Received=============================
+            Route::get('formreceived',[App\Http\Controllers\v1\INSOperation\FormReceivedController::class,'show']);
             Route::post('formreceivedAdd',[App\Http\Controllers\v1\INSOperation\FormReceivedController::class,'create']);
             Route::post('formreceivedEdit',[App\Http\Controllers\v1\INSOperation\FormReceivedController::class,'update']);
             Route::post('formreceivedDelete',[App\Http\Controllers\v1\INSOperation\FormReceivedController::class,'delete']);
             Route::any('formreceivedDetailSearch',[App\Http\Controllers\v1\INSOperation\FormReceivedController::class,'searchDetails']);
             Route::post('formreceivedExport',[App\Http\Controllers\v1\INSOperation\FormReceivedController::class,'export']);
 
+            // =======================================End Form Reeceived==================================
+
+            // ==========================================Start Operation =============================
+            // Route::get('insTraxShow',[App\Http\Controllers\v1\INSOperation\FormEntryController::class,'index']);
+            // Route::get('insTraxCreateShow',[App\Http\Controllers\v1\INSOperation\FormEntryController::class,'createShow']);
+
+            Route::post('insTraxCreate',[App\Http\Controllers\v1\INSOperation\FormEntryController::class,'create']);
+            // Route::post('insTraxUpdate',[App\Http\Controllers\v1\INSOperation\FormEntryController::class,'update']);
+            Route::any('insTraxDetailSearch',[App\Http\Controllers\v1\INSOperation\FormEntryController::class,'searchDetails']);
+            Route::post('insTraxExport',[App\Http\Controllers\v1\INSOperation\FormEntryController::class,'export']);
+            
+            Route::get('insTraxFolioDetails',[App\Http\Controllers\v1\INSOperation\FormEntryController::class,'getFolioDetails']);
+    
+            Route::get('daysheetReport',[App\Http\Controllers\v1\INSOperation\ReportController::class,'index']);
+    
+    
+            Route::any('ackDetailSearch',[App\Http\Controllers\v1\INSOperation\AcknowledgementController::class,'searchDetails']);
+            Route::post('ackExport',[App\Http\Controllers\v1\INSOperation\AcknowledgementController::class,'export']);
+            Route::post('ackUpload',[App\Http\Controllers\v1\INSOperation\AcknowledgementController::class,'update']);
+            Route::post('ackFinalSubmit',[App\Http\Controllers\v1\INSOperation\AcknowledgementController::class,'finalSubmit']);
+            
+            Route::any('manualUpdateDetailSearch',[App\Http\Controllers\v1\INSOperation\ManualUpdateController::class,'searchDetails']);
+            Route::post('manualUpdate',[App\Http\Controllers\v1\INSOperation\ManualUpdateController::class,'update']);
+
+            // ==========================================End Operation=============================
+    
         });
     // });
 });

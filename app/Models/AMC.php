@@ -52,6 +52,8 @@ class AMC extends Model
         'login_pass',
         'security_qus_ans',
         'cus_care_whatsapp_no',
+        'distributor_care_no',
+        'distributor_care_email',
         'delete_flag',
         'deleted_date',
         'deleted_by',
