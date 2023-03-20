@@ -24,9 +24,29 @@ class RNTController extends Controller
                 $paginate=999999999;
             }
             if ($sort_by && $column_name) {
-                $data=RNT::where('delete_flag','N')
-                    ->orderBy($column_name,$sort_by)
-                    ->paginate($paginate);   
+                if ($rnt_id && $contact_person) {
+                    $data=RNT::where('delete_flag','N')
+                        ->where('id',$rnt_id)
+                        ->where('head_ofc_contact_per','like', '%' . $contact_person . '%')
+                        ->orWhere('local_ofc_contact_per','like', '%' . $contact_person . '%')
+                        ->orderBy($column_name,$sort_by)
+                        ->paginate($paginate);      
+                }elseif ($rnt_id) {
+                    $data=RNT::where('delete_flag','N')
+                        ->where('id',$rnt_id)
+                        ->orderBy($column_name,$sort_by)
+                        ->paginate($paginate);  
+                }elseif ($contact_person) {
+                    $data=RNT::where('delete_flag','N')
+                        ->where('head_ofc_contact_per','like', '%' . $contact_person . '%')
+                        ->orWhere('local_ofc_contact_per','like', '%' . $contact_person . '%')
+                        ->orderBy($column_name,$sort_by)
+                        ->paginate($paginate);   
+                } else {
+                    $data=RNT::where('delete_flag','N')
+                        ->orderBy($column_name,$sort_by)
+                        ->paginate($paginate);  
+                }
             }elseif ($rnt_id && $contact_person) {
                 $data=RNT::where('delete_flag','N')
                     ->where('id',$rnt_id)
