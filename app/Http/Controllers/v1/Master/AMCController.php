@@ -31,25 +31,143 @@ class AMCController extends Controller
                 $paginate=999999999;
             }
             if ($sort_by && $column_name) {
-                if ($column_name=='rnt_name') {
-                    $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
-                        ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
-                        ->where('md_amc.delete_flag','N')
-                        // ->orWhere('md_amc.id',$amc_id)
-                        // ->orWhere('md_amc.rnt_id',$rnt_id)
-                        // ->orWhere('md_amc.gstin','like', '%' . $gstin . '%')
-                        ->orderBy('md_rnt.'.$column_name,$sort_by)
-                        ->paginate($paginate);  
-                }else{
-                    $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
-                        ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
-                        ->where('md_amc.delete_flag','N')
-                        // ->orWhere('md_amc.id',$amc_id)
-                        // ->orWhere('md_amc.rnt_id',$rnt_id)
-                        // ->orWhere('md_amc.gstin','like', '%' . $gstin . '%')
-                        ->orderBy('md_amc.'.$column_name,$sort_by)
-                        ->paginate($paginate);  
-                }    
+                if ($amc_id!='' && $rnt_id!='' && $gstin!='') {
+                    if ($column_name=='rnt_name') {
+                        $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                            ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+                            ->where('md_amc.delete_flag','N')
+                            ->where('md_amc.id',$amc_id)
+                            ->where('md_amc.rnt_id',$rnt_id)
+                            ->where('md_amc.gstin','like', '%' . $gstin . '%')
+                            ->orderBy('md_rnt.'.$column_name,$sort_by)
+                            ->paginate($paginate);      
+                    }else{
+                        $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                            ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+                            ->where('md_amc.delete_flag','N')
+                            ->where('md_amc.id',$amc_id)
+                            ->where('md_amc.rnt_id',$rnt_id)
+                            ->where('md_amc.gstin','like', '%' . $gstin . '%')
+                            ->orderBy('md_amc.'.$column_name,$sort_by)
+                            ->paginate($paginate); 
+                    }
+                }elseif ($rnt_id!='' && $gstin!='') {
+                    if ($column_name=='rnt_name') {
+                        $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                            ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+                            ->where('md_amc.delete_flag','N')
+                            ->where('md_amc.gstin','like', '%' . $gstin . '%')
+                            ->where('md_amc.rnt_id',$rnt_id)
+                            ->orderBy('md_rnt.'.$column_name,$sort_by)
+                            ->paginate($paginate);     
+                    }else{
+                        $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                            ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+                            ->where('md_amc.delete_flag','N')
+                            ->where('md_amc.gstin','like', '%' . $gstin . '%')
+                            ->where('md_amc.rnt_id',$rnt_id)
+                            ->orderBy('md_amc.'.$column_name,$sort_by)
+                            ->paginate($paginate); 
+                    }
+                }elseif ($amc_id!='' && $rnt_id!='') {
+                    if ($column_name=='rnt_name') {
+                        $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                            ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+                            ->where('md_amc.delete_flag','N')
+                            ->where('md_amc.amc_id',$amc_id)
+                            ->where('md_amc.rnt_id',$rnt_id)
+                            ->orderBy('md_rnt.'.$column_name,$sort_by)
+                            ->paginate($paginate);      
+                    }else{
+                        $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                            ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+                            ->where('md_amc.delete_flag','N')
+                            ->where('md_amc.amc_id',$amc_id)
+                            ->where('md_amc.rnt_id',$rnt_id)
+                            ->orderBy('md_amc.'.$column_name,$sort_by)
+                            ->paginate($paginate);     
+                    }
+                }elseif ($amc_id!='' && $gstin!='') {
+                    if ($column_name=='rnt_name') {
+                        $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                            ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+                            ->where('md_amc.delete_flag','N')
+                            ->where('md_amc.amc_id',$amc_id)
+                            ->where('md_amc.gstin','like', '%' . $gstin . '%')
+                            ->orderBy('md_rnt.'.$column_name,$sort_by)
+                            ->paginate($paginate);    
+                    }else{
+                        $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                            ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+                            ->where('md_amc.delete_flag','N')
+                            ->where('md_amc.amc_id',$amc_id)
+                            ->where('md_amc.gstin','like', '%' . $gstin . '%')
+                            ->orderBy('md_amc.'.$column_name,$sort_by)
+                            ->paginate($paginate);    
+                    }
+                } elseif ($amc_id!='') {
+                    if ($column_name=='rnt_name') {
+                        $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                            ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+                            ->where('md_amc.delete_flag','N')
+                            ->where('md_amc.id',$amc_id)
+                            ->orderBy('md_rnt.'.$column_name,$sort_by)
+                            ->paginate($paginate);      
+                    }else{
+                        $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                            ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+                            ->where('md_amc.delete_flag','N')
+                            ->where('md_amc.id',$amc_id)
+                            ->orderBy('md_amc.'.$column_name,$sort_by)
+                            ->paginate($paginate);
+                    }
+                }elseif ($gstin!='') {
+                    if ($column_name=='rnt_name') {
+                        $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                            ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+                            ->where('md_amc.delete_flag','N')
+                            ->where('md_amc.gstin','like', '%' . $gstin . '%')
+                            ->orderBy('md_rnt.'.$column_name,$sort_by)
+                            ->paginate($paginate);    
+                    }else{
+                        $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                            ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+                            ->where('md_amc.delete_flag','N')
+                            ->where('md_amc.gstin','like', '%' . $gstin . '%')
+                            ->orderBy('md_amc.'.$column_name,$sort_by)
+                            ->paginate($paginate);  
+                    }
+                } elseif ($rnt_id!='') {
+                    if ($column_name=='rnt_name') {
+                        $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                            ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+                            ->where('md_amc.delete_flag','N')
+                            ->where('md_amc.rnt_id',$rnt_id)
+                            ->orderBy('md_rnt.'.$column_name,$sort_by)
+                            ->paginate($paginate);    
+                    }else{
+                        $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                            ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+                            ->where('md_amc.delete_flag','N')
+                            ->where('md_amc.rnt_id',$rnt_id)
+                            ->orderBy('md_amc.'.$column_name,$sort_by)
+                            ->paginate($paginate); 
+                    }
+                }else {
+                    if ($column_name=='rnt_name') {
+                        $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                            ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+                            ->where('md_amc.delete_flag','N')
+                            ->orderBy('md_rnt.'.$column_name,$sort_by)
+                            ->paginate($paginate);  
+                    }else{
+                        $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                            ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+                            ->where('md_amc.delete_flag','N')
+                            ->orderBy('md_amc.'.$column_name,$sort_by)
+                            ->paginate($paginate);  
+                    } 
+                }  
             }elseif ($amc_id!='' && $rnt_id!='' && $gstin!='') {
                 $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
                         ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
@@ -107,12 +225,10 @@ class AMCController extends Controller
                         ->paginate($paginate);      
             }else {
                 $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
-                    ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+                        ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
                         ->where('md_amc.delete_flag','N')
-                        // ->where('md_amc.id',$amc_id)
-                    // ->orWhere('md_amc.rnt_id',$rnt_id)
-                    ->orderBy('md_amc.updated_at','DESC')
-                    ->paginate($paginate);    
+                        ->orderBy('md_amc.updated_at','DESC')
+                        ->paginate($paginate);    
             }  
         } catch (\Throwable $th) {
             //throw $th;
