@@ -47,6 +47,7 @@ class Insurance extends Model
         'next_renewal_dt',
         'policy_no',
         'policy_copy_scan',
+        'reject_remarks',
         'delete_flag',
         'deleted_date',
         'deleted_by',

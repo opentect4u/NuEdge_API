@@ -63,7 +63,7 @@ Route::prefix('v1')->group(function () {
             
             Route::get('insTraxFolioDetails',[App\Http\Controllers\v1\INSOperation\FormEntryController::class,'getFolioDetails']);
     
-            Route::get('daysheetReport',[App\Http\Controllers\v1\INSOperation\ReportController::class,'index']);
+            // Route::get('daysheetReport',[App\Http\Controllers\v1\INSOperation\ReportController::class,'index']);
     
     
             Route::any('ackDetailSearch',[App\Http\Controllers\v1\INSOperation\AcknowledgementController::class,'searchDetails']);
@@ -72,7 +72,9 @@ Route::prefix('v1')->group(function () {
             Route::post('ackFinalSubmit',[App\Http\Controllers\v1\INSOperation\AcknowledgementController::class,'finalSubmit']);
             
             Route::any('manualUpdateDetailSearch',[App\Http\Controllers\v1\INSOperation\ManualUpdateController::class,'searchDetails']);
+            Route::post('manualUpdateExport',[App\Http\Controllers\v1\INSOperation\ManualUpdateController::class,'export']);
             Route::post('manualUpdate',[App\Http\Controllers\v1\INSOperation\ManualUpdateController::class,'update']);
+            Route::post('manualUpdateFinalSubmit',[App\Http\Controllers\v1\INSOperation\ManualUpdateController::class,'finalSubmit']);
 
             // ==========================================End Operation=============================
     
