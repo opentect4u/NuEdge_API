@@ -36,7 +36,9 @@ class FormReceivedController extends Controller
                     ->join('md_scheme','md_scheme.id','=','td_form_received.scheme_id')
                     ->leftJoin('md_scheme as md_scheme_2','md_scheme_2.id','=','td_form_received.scheme_id_to')
                     ->join('md_client','md_client.id','=','td_form_received.client_id')
-                    ->select('td_form_received.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','md_trns_type.trns_type as trans_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to','md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type')
+                        ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
+                    ->select('td_form_received.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','md_trns_type.trns_type as trans_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to','md_employee.emp_name as emp_name',
+                    'md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type')
                     ->where('td_form_received.temp_tin_no',$temp_tin_no)
                     ->where('td_form_received.deleted_flag','N')
                     ->where('md_trans.trans_type_id',$trans_type_id)
@@ -48,7 +50,9 @@ class FormReceivedController extends Controller
                     ->join('md_scheme','md_scheme.id','=','td_form_received.scheme_id')
                     ->leftJoin('md_scheme as md_scheme_2','md_scheme_2.id','=','td_form_received.scheme_id_to')
                     ->join('md_client','md_client.id','=','td_form_received.client_id')
-                    ->select('td_form_received.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','md_trns_type.trns_type as trans_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to','md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type')
+                        ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
+                    ->select('td_form_received.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','md_trns_type.trns_type as trans_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to','md_employee.emp_name as emp_name',
+                    'md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type')
                     ->where('td_form_received.deleted_flag','N')
                     ->where('md_trans.trans_type_id',$trans_type_id)
                     ->where('md_client.client_code','like', '%' . $client_code . '%')
@@ -63,7 +67,9 @@ class FormReceivedController extends Controller
                     ->join('md_scheme','md_scheme.id','=','td_form_received.scheme_id')
                     ->leftJoin('md_scheme as md_scheme_2','md_scheme_2.id','=','td_form_received.scheme_id_to')
                     ->join('md_client','md_client.id','=','td_form_received.client_id')
-                    ->select('td_form_received.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','md_trns_type.trns_type as trans_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to','md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type')
+                        ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
+                    ->select('td_form_received.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','md_trns_type.trns_type as trans_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to','md_employee.emp_name as emp_name',
+                    'md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type')
                     ->where('td_form_received.deleted_flag','N')
                     ->where('md_trans.trans_type_id',$trans_type_id)
                     ->whereIn('td_form_received.bu_type',$bu_type)
@@ -75,7 +81,9 @@ class FormReceivedController extends Controller
                     ->join('md_scheme','md_scheme.id','=','td_form_received.scheme_id')
                     ->leftJoin('md_scheme as md_scheme_2','md_scheme_2.id','=','td_form_received.scheme_id_to')
                     ->join('md_client','md_client.id','=','td_form_received.client_id')
-                    ->select('td_form_received.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','md_trns_type.trns_type as trans_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to','md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type')
+                        ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
+                        ->select('td_form_received.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','md_trns_type.trns_type as trans_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to','md_employee.emp_name as emp_name',
+                        'md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type')
                     // ->whereDate('td_form_received.updated_at',date('Y-m-d'))
                     ->where('td_form_received.deleted_flag','N')
                     ->where('md_trans.trans_type_id',$trans_type_id)
@@ -98,7 +106,9 @@ class FormReceivedController extends Controller
                     ->join('md_scheme','md_scheme.id','=','td_form_received.scheme_id')
                     ->leftJoin('md_scheme as md_scheme_2','md_scheme_2.id','=','td_form_received.scheme_id_to')
                     ->join('md_client','md_client.id','=','td_form_received.client_id')
-                    ->select('td_form_received.*','md_trans.trns_name as trans_name','md_trns_type.trns_type as trans_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to','md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type')
+                        ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
+                    ->select('td_form_received.*','md_trans.trns_name as trans_name','md_trns_type.trns_type as trans_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to','md_employee.emp_name as emp_name',
+                    'md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type')
                     ->whereDate('td_form_received.updated_at',date('Y-m-d'))
                     ->where('td_form_received.deleted_flag','N')
                     ->where('md_trans.trans_type_id',$trans_type_id)
@@ -129,6 +139,7 @@ class FormReceivedController extends Controller
                     ->join('md_trans','md_trans.id','=','td_form_received.trans_id')
                     ->join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
                     // ->join('md_client','md_client.id','=','td_form_received.client_id')
+                        ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
                     ->select('td_form_received.*','md_products.product_name as product_name','md_trans.trns_name as trans_name','md_trns_type.trns_type as trans_type')
                     ->where('td_form_received.deleted_flag','N')
                     ->orWhere('td_form_received.temp_tin_no','like', '%' . $search . '%')
@@ -147,8 +158,11 @@ class FormReceivedController extends Controller
                     ->join('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
                     // ->join('md_employee as md_employee1','md_employee1.emp_code','=','td_form_received.euin_to')
                     // ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_form_received.sub_brk_cd')
-                    ->select('td_form_received.*','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to','md_scheme.amc_id as amc_id','md_scheme.pip_fresh_min_amt as pip_fresh_min_amt',
+                        ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
+                    ->select('td_form_received.*','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to','md_employee.emp_name as emp_name',
+                    'md_scheme.amc_id as amc_id','md_scheme.pip_fresh_min_amt as pip_fresh_min_amt',
                     'md_scheme.pip_add_min_amt as pip_add_min_amt','md_scheme.sip_freq_wise_amt as sip_freq_wise_amt','md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type','md_trans.trns_name as trans_name','md_employee.emp_name as emp_name')
+                        ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
                     // ->select('td_form_received.*','md_products.product_name as product_name','md_employee.emp_name as euin_from_name','md_employee1.emp_name as euin_to_name','md_sub_broker.bro_name as sub_bro_name')
                     ->where('td_form_received.deleted_flag','N')
                     ->where('td_form_received.temp_tin_no', $temp_tin_no)
@@ -170,6 +184,7 @@ class FormReceivedController extends Controller
                     ->join('md_employee as md_employee1','md_employee1.emp_code','=','td_form_received.euin_to')
                     ->join('md_trans','md_trans.id','=','td_form_received.trans_id')
                     ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_form_received.sub_brk_cd')
+                        ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
                     ->select('td_form_received.*','md_products.product_name as product_name','md_employee.emp_name as euin_from_name','md_employee1.emp_name as euin_to_name','md_sub_broker.bro_name as sub_bro_name')
                     ->where('td_form_received.deleted_flag','N')
                     ->where('td_form_received.temp_tin_no', $temp_tin_no)
@@ -179,6 +194,7 @@ class FormReceivedController extends Controller
                 $data=FormReceived::join('md_trans','md_trans.id','=','td_form_received.trans_id')
                     ->join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
                     ->join('md_scheme','md_scheme.id','=','td_form_received.scheme_id')
+                        ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
                     ->select('td_form_received.*','md_trans.trns_name as trans_name','md_trns_type.trns_type as trans_type','md_scheme.scheme_name as scheme_name')
                     ->where('td_form_received.trans_id',$trans_id)
                     ->where('td_form_received.deleted_flag','N')
@@ -190,7 +206,9 @@ class FormReceivedController extends Controller
                     ->join('md_scheme','md_scheme.id','=','td_form_received.scheme_id')
                     ->leftJoin('md_scheme as md_scheme_2','md_scheme_2.id','=','td_form_received.scheme_id_to')
                     ->join('md_client','md_client.id','=','td_form_received.client_id')
-                    ->select('td_form_received.*','md_trans.trns_name as trans_name','md_trns_type.trns_type as trans_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to','md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type')
+                    ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
+                    ->select('td_form_received.*','md_trans.trns_name as trans_name','md_trns_type.trns_type as trans_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to','md_employee.emp_name as emp_name',
+                    'md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type')
                     // ->whereDate('td_form_received.updated_at',date('Y-m-d'))
                     ->where('td_form_received.deleted_flag','N')
                     ->where('md_trans.trans_type_id',$trans_type_id)
@@ -204,7 +222,11 @@ class FormReceivedController extends Controller
                     ->leftJoin('md_scheme as md_scheme_2','md_scheme_2.id','=','td_form_received.scheme_id_to')
                     ->join('md_client','md_client.id','=','td_form_received.client_id')
                     ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
-                    ->select('td_form_received.*','md_trans.trns_name as trans_name','md_trns_type.trns_type as trans_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to','md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type',
+                    ->select('td_form_received.*','md_trans.trns_name as trans_name','md_trns_type.trns_type as trans_type',
+                    'md_scheme.scheme_name as scheme_name','md_scheme.nfo_start_dt as nfo_start_dt','md_scheme.nfo_end_dt as nfo_end_dt','md_scheme.nfo_reopen_dt as nfo_reopen_dt','md_scheme.nfo_entry_date as nfo_entry_date',
+                    'md_scheme_2.scheme_name as scheme_name_to','md_scheme_2.nfo_start_dt as nfo_start_dt_to','md_scheme_2.nfo_end_dt as nfo_end_dt_to','md_scheme_2.nfo_reopen_dt as nfo_reopen_dt_to','md_scheme_2.nfo_entry_date as nfo_entry_date_to',
+                    'md_employee.emp_name as emp_name',
+                    'md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type',
                     'md_employee.emp_name as emp_name')
                     ->where('td_form_received.deleted_flag','N')
                     ->where('td_form_received.temp_tin_no',$temp_tin_no)
@@ -214,6 +236,7 @@ class FormReceivedController extends Controller
                 $data=FormReceived::join('md_trans','md_trans.id','=','td_form_received.trans_id')
                     ->join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
                     ->join('md_scheme','md_scheme.id','=','md_trans.scheme_id')
+                        ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
                     ->select('td_form_received.*','md_trans.trns_name as trans_name','md_trns_type.trns_type as trans_type')
                     ->whereDate('td_form_received.updated_at',date('Y-m-d'))
                     ->where('td_form_received.deleted_flag','N')
@@ -222,7 +245,7 @@ class FormReceivedController extends Controller
                 // $data=FormReceived::get();      
             }
         } catch (\Throwable $th) {
-            //throw $th;
+            // throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
         return Helper::SuccessResponse($data);
@@ -233,6 +256,7 @@ class FormReceivedController extends Controller
         try {
             $datas=FormReceived::join('md_products','md_products.id','=','td_form_received.product_id')
                     ->join('md_trans','md_trans.id','=','td_form_received.trans_id')
+                        ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
                     ->select('td_form_received.*','md_products.product_name as product_name','md_trans.trns_name as trans_name')
                     ->where('td_form_received.deleted_flag','N')
                     ->where('td_form_received.product_id', $request->product_id)
