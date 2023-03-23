@@ -802,6 +802,7 @@ class FormEntryController extends Controller
                     $data=Insurance::create(array(
                         'temp_tin_no' =>$request->temp_tin_no,
                         'tin_no'=> $tin_no,
+                        'entry_tin_status'=>$request->tin_status,
                         'entry_date'=> date('Y-m-d'),
                         'proposer_id'=>$request->proposer_id,
                         'insured_person_id'=>$insured_person_id,
@@ -885,6 +886,7 @@ class FormEntryController extends Controller
                 $data=Insurance::create(array(
                     'temp_tin_no' =>$ttin_no,
                     'tin_no'=> $tin_no,
+                    'entry_tin_status'=>$request->tin_status,
                     'entry_date'=> date('Y-m-d'),
                     'proposer_id'=>$request->proposer_id,
                     'insured_person_id'=>$request->insured_person_id,

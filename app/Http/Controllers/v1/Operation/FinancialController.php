@@ -531,6 +531,7 @@ class FinancialController extends Controller
                     $data=MutualFund::create(array(
                         'temp_tin_no' =>$request->temp_tin_no,
                         'tin_no'=> $tin_no,
+                        'entry_tin_status'=>$request->tin_status,
                         'entry_date'=> date('Y-m-d'),
                         'first_client_id'=>$request->first_client_id,
                         'first_kyc'=>$request->first_kyc,
@@ -781,6 +782,7 @@ class FinancialController extends Controller
                     $data=MutualFund::create(array(
                         'temp_tin_no' =>$ttin_no,
                         'tin_no'=> $tin_no,
+                        'entry_tin_status'=>$request->tin_status,
                         'entry_date'=> date('Y-m-d'),
                         'first_client_id'=>$request->first_client_id,
                         'first_kyc'=>isset($request->first_kyc)?$request->first_kyc:NULL,

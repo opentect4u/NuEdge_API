@@ -13,6 +13,7 @@ class MutualFund extends Model
     protected $fillable = [
         'temp_tin_no',
         'tin_no',
+        'entry_tin_status',
         'entry_date',
         'first_client_id',
         'first_kyc',

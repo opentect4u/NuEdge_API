@@ -12,6 +12,7 @@ class Insurance extends Model
     protected $fillable = [
         'temp_tin_no',
         'tin_no',
+        'entry_tin_status',
         'entry_date',
         'proposer_id',
         'insured_person_id',
