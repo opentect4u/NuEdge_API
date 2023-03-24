@@ -511,46 +511,51 @@ class AMCController extends Controller
                 }else {
                     // return $value[0];
                     $totarray=array();
-                    if ($value[18]!='' && $value[19]!='') {
-                        $setdata['id']=0;
-                        $setdata['sec_qus']=$value[18];
-                        $setdata['sec_ans']=$value[19];
-                        array_push($totarray,$setdata);
-                    }
                     if ($value[20]!='' && $value[21]!='') {
-                        $setdata['id']=1;
+                        $setdata['id']=0;
                         $setdata['sec_qus']=$value[20];
                         $setdata['sec_ans']=$value[21];
                         array_push($totarray,$setdata);
                     }
                     if ($value[22]!='' && $value[23]!='') {
-                        $setdata['id']=2;
+                        $setdata['id']=1;
                         $setdata['sec_qus']=$value[22];
                         $setdata['sec_ans']=$value[23];
                         array_push($totarray,$setdata);
                     }
+
                     if ($value[24]!='' && $value[25]!='') {
-                        $setdata['id']=3;
+                        $setdata['id']=2;
                         $setdata['sec_qus']=$value[24];
                         $setdata['sec_ans']=$value[25];
                         array_push($totarray,$setdata);
                     }
+
                     if ($value[26]!='' && $value[27]!='') {
-                        $setdata['id']=4;
+                        $setdata['id']=3;
                         $setdata['sec_qus']=$value[26];
                         $setdata['sec_ans']=$value[27];
                         array_push($totarray,$setdata);
                     }
+
                     if ($value[28]!='' && $value[29]!='') {
-                        $setdata['id']=5;
+                        $setdata['id']=4;
                         $setdata['sec_qus']=$value[28];
                         $setdata['sec_ans']=$value[29];
                         array_push($totarray,$setdata);
                     }
+
                     if ($value[30]!='' && $value[31]!='') {
-                        $setdata['id']=6;
+                        $setdata['id']=5;
                         $setdata['sec_qus']=$value[30];
                         $setdata['sec_ans']=$value[31];
+                        array_push($totarray,$setdata);
+                    }
+
+                    if ($value[32]!='' && $value[33]!='') {
+                        $setdata['id']=6;
+                        $setdata['sec_qus']=$value[32];
+                        $setdata['sec_ans']=$value[33];
                         array_push($totarray,$setdata);
                     }
 
@@ -566,38 +571,42 @@ class AMCController extends Controller
                             'cus_care_whatsapp_no'=>$value[4],
                             'cus_care_no'=>$value[5],
                             'cus_care_email'=>$value[6],
-                            'head_ofc_contact_per'=>$value[7],
-                            'head_contact_per_mob'=>$value[8],
-                            'head_contact_per_email'=>$value[9],
-                            'head_ofc_addr'=>$value[10],
-                            'local_ofc_contact_per'=>$value[11],
-                            'local_contact_per_mob'=>$value[12],
-                            'local_contact_per_email'=>$value[13],
-                            'local_ofc_addr'=>$value[14],
-                            'login_url'=>$value[15],
-                            'login_id'=>$value[16],
-                            'login_pass'=>$value[17],
+                            'distributor_care_no'=>$value[7],
+                            'distributor_care_email'=>$value[8],
+                            'head_ofc_contact_per'=>$value[9],
+                            'head_contact_per_mob'=>$value[10],
+                            'head_contact_per_email'=>$value[11],
+                            'head_ofc_addr'=>$value[12],
+                            'local_ofc_contact_per'=>$value[13],
+                            'local_contact_per_mob'=>$value[14],
+                            'local_contact_per_email'=>$value[15],
+                            'local_ofc_addr'=>$value[16],
+                            'login_url'=>$value[17],
+                            'login_id'=>$value[18],
+                            'login_pass'=>$value[19],
                             'security_qus_ans'=>json_encode($totarray),
-                            'l1_name'=>$value[32],
-                            'l1_contact_no'=>$value[33],
-                            'l1_email'=>$value[34],
-                            'l2_name'=>$value[35],
-                            'l2_contact_no'=>$value[36],
-                            'l2_email'=>$value[37],
-                            'l3_name'=>$value[38],
-                            'l3_contact_no'=>$value[39],
-                            'l3_email'=>$value[40],
-                            'l4_name'=>$value[41],
-                            'l4_contact_no'=>$value[42],
-                            'l4_email'=>$value[43],
-                            'l5_name'=>$value[44],
-                            'l5_contact_no'=>$value[45],
-                            'l5_email'=>$value[46],
-                            'l6_name'=>$value[47],
-                            'l6_contact_no'=>$value[48],
-                            'l6_email'=>$value[49],
+                            'l1_name'=>$value[34],
+                            'l1_contact_no'=>$value[35],
+                            'l1_email'=>$value[36],
+                            'l2_name'=>$value[37],
+                            'l2_contact_no'=>$value[38],
+                            'l2_email'=>$value[39],
+                            'l3_name'=>$value[40],
+                            'l3_contact_no'=>$value[41],
+                            'l3_email'=>$value[42],
+                            'l4_name'=>$value[43],
+                            'l4_contact_no'=>$value[43],
+                            'l4_email'=>$value[45],
+                            'l5_name'=>$value[46],
+                            'l5_contact_no'=>$value[47],
+                            'l5_email'=>$value[48],
+                            'l6_name'=>$value[49],
+                            'l6_contact_no'=>$value[50],
+                            'l6_email'=>$value[51],
                             'delete_flag'=>'N',
                         ));
+                    }else {
+                        return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
                     }
                 }
                
