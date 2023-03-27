@@ -13,12 +13,14 @@ class CompanyController extends Controller
     public function searchDetails(Request $request)
     {
         try {
+            // return 'hii';
             $paginate=$request->paginate;
             $sort_by=$request->sort_by;
             $column_name=$request->column_name;
-            $ins_type_id=$request->ins_type_id;
-            $name=$request->name;
+            
             $contact_person=$request->contact_person;
+            $ins_type_id=json_decode($request->ins_type_id);
+            $comp_name=json_decode($request->comp_name);
             
             if ($paginate=='A') {
                 $paginate=999999999;
@@ -37,27 +39,83 @@ class CompanyController extends Controller
                     ->orderBy('md_ins_company.'.$column_name,$sort_by)
                     ->paginate($paginate); 
                 }
-            }elseif ($contact_person) {
+            }elseif ($contact_person && !empty($ins_type_id) && $contact_person) {
+                $setarray=[];
+                foreach ($comp_name as $key => $comp) {
+                    array_push($setarray,$comp->id);
+                }
                 $data=InsCompany::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_company.ins_type_id')
                     ->select('md_ins_company.*','md_ins_type.type as ins_type')
                     ->where('md_ins_company.delete_flag','N')
-                    ->OrWhere('md_ins_company.local_ofc_contact_per','like', '%' . $contact_person . '%')
+                    ->whereIn('md_ins_company.id',$setarray)
+                    ->whereIn('md_ins_company.ins_type_id',$ins_type_id)
+                    ->where('md_ins_company.local_ofc_contact_per','like', '%' . $contact_person . '%')
                     ->OrWhere('md_ins_company.local_ofc_contact_per','like', '%' . $contact_person . '%')
                     ->orderBy('md_ins_company.updated_at','DESC')
                     ->paginate($paginate);  
-            }elseif ($name) {
+            }elseif ($contact_person && !empty($ins_type_id)) {
+                $setarray=[];
+                foreach ($comp_name as $key => $comp) {
+                    array_push($setarray,$comp->id);
+                }
                 $data=InsCompany::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_company.ins_type_id')
                     ->select('md_ins_company.*','md_ins_type.type as ins_type')
                     ->where('md_ins_company.delete_flag','N')
-                    ->OrWhere('md_ins_company.comp_short_name','like', '%' . $name . '%')
-                    ->OrWhere('md_ins_company.comp_full_name','like', '%' . $name . '%')
+                    ->whereIn('md_ins_company.ins_type_id',$ins_type_id)
+                    ->where('md_ins_company.local_ofc_contact_per','like', '%' . $contact_person . '%')
+                    ->OrWhere('md_ins_company.local_ofc_contact_per','like', '%' . $contact_person . '%')
                     ->orderBy('md_ins_company.updated_at','DESC')
                     ->paginate($paginate);  
-            }elseif ($ins_type_id) {
+            }elseif (!empty($ins_type_id) && !empty($comp_name)) {
+                $setarray=[];
+                foreach ($comp_name as $key => $comp) {
+                    array_push($setarray,$comp->id);
+                }
                 $data=InsCompany::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_company.ins_type_id')
                     ->select('md_ins_company.*','md_ins_type.type as ins_type')
                     ->where('md_ins_company.delete_flag','N')
-                    ->where('md_ins_company.ins_type_id',$ins_type_id)
+                    ->whereIn('md_ins_company.id',$setarray)
+                    ->whereIn('md_ins_company.ins_type_id',$ins_type_id)
+                    ->orderBy('md_ins_company.updated_at','DESC')
+                    ->paginate($paginate);  
+            }elseif ($contact_person && !empty($comp_name)) {
+                $setarray=[];
+                foreach ($comp_name as $key => $comp) {
+                    array_push($setarray,$comp->id);
+                }
+                $data=InsCompany::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_company.ins_type_id')
+                    ->select('md_ins_company.*','md_ins_type.type as ins_type')
+                    ->where('md_ins_company.delete_flag','N')
+                    ->whereIn('md_ins_company.id',$setarray)
+                    ->where('md_ins_company.local_ofc_contact_per','like', '%' . $contact_person . '%')
+                    ->OrWhere('md_ins_company.local_ofc_contact_per','like', '%' . $contact_person . '%')
+                    ->orderBy('md_ins_company.updated_at','DESC')
+                    ->paginate($paginate);  
+            } elseif ($contact_person) {
+                $data=InsCompany::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_company.ins_type_id')
+                    ->select('md_ins_company.*','md_ins_type.type as ins_type')
+                    ->where('md_ins_company.delete_flag','N')
+                    ->where('md_ins_company.local_ofc_contact_per','like', '%' . $contact_person . '%')
+                    ->OrWhere('md_ins_company.local_ofc_contact_per','like', '%' . $contact_person . '%')
+                    ->orderBy('md_ins_company.updated_at','DESC')
+                    ->paginate($paginate);  
+            }elseif (!empty($ins_type_id)) {
+                $data=InsCompany::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_company.ins_type_id')
+                    ->select('md_ins_company.*','md_ins_type.type as ins_type')
+                    ->where('md_ins_company.delete_flag','N')
+                    ->whereIn('md_ins_company.ins_type_id',$ins_type_id)
+                    ->orderBy('md_ins_company.updated_at','DESC')
+                    ->paginate($paginate);  
+            }elseif (!empty($comp_name)) {
+                $setarray=[];
+                foreach ($comp_name as $key => $comp) {
+                    array_push($setarray,$comp->id);
+                }
+                // return $setarray;
+                $data=InsCompany::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_company.ins_type_id')
+                    ->select('md_ins_company.*','md_ins_type.type as ins_type')
+                    ->where('md_ins_company.delete_flag','N')
+                    ->whereIn('md_ins_company.id',$setarray)
                     ->orderBy('md_ins_company.updated_at','DESC')
                     ->paginate($paginate);  
             } else {
@@ -79,10 +137,12 @@ class CompanyController extends Controller
             $paginate=$request->paginate;
             $sort_by=$request->sort_by;
             $column_name=$request->column_name;
-            $ins_type_id=$request->ins_type_id;
-            $name=$request->name;
-            $contact_person=$request->contact_person;
             
+            $contact_person=$request->contact_person;
+            $ins_type_id=json_decode($request->ins_type_id);
+            $comp_name=json_decode($request->comp_name);
+            
+           
             if ($sort_by && $column_name) {
                 if ($column_name='ins_type') {
                     $data=$data=InsCompany::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_company.ins_type_id')
@@ -97,27 +157,83 @@ class CompanyController extends Controller
                     ->orderBy('md_ins_company.'.$column_name,$sort_by)
                     ->get(); 
                 }
-            }elseif ($contact_person) {
+            }elseif ($contact_person && !empty($ins_type_id) && $contact_person) {
+                $setarray=[];
+                foreach ($comp_name as $key => $comp) {
+                    array_push($setarray,$comp->id);
+                }
                 $data=InsCompany::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_company.ins_type_id')
                     ->select('md_ins_company.*','md_ins_type.type as ins_type')
                     ->where('md_ins_company.delete_flag','N')
-                    ->OrWhere('md_ins_company.local_ofc_contact_per','like', '%' . $contact_person . '%')
+                    ->whereIn('md_ins_company.id',$setarray)
+                    ->whereIn('md_ins_company.ins_type_id',$ins_type_id)
+                    ->where('md_ins_company.local_ofc_contact_per','like', '%' . $contact_person . '%')
                     ->OrWhere('md_ins_company.local_ofc_contact_per','like', '%' . $contact_person . '%')
                     ->orderBy('md_ins_company.updated_at','DESC')
                     ->get();  
-            }elseif ($name) {
+            }elseif ($contact_person && !empty($ins_type_id)) {
+                $setarray=[];
+                foreach ($comp_name as $key => $comp) {
+                    array_push($setarray,$comp->id);
+                }
                 $data=InsCompany::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_company.ins_type_id')
                     ->select('md_ins_company.*','md_ins_type.type as ins_type')
                     ->where('md_ins_company.delete_flag','N')
-                    ->OrWhere('md_ins_company.comp_short_name','like', '%' . $name . '%')
-                    ->OrWhere('md_ins_company.comp_full_name','like', '%' . $name . '%')
+                    ->whereIn('md_ins_company.ins_type_id',$ins_type_id)
+                    ->where('md_ins_company.local_ofc_contact_per','like', '%' . $contact_person . '%')
+                    ->OrWhere('md_ins_company.local_ofc_contact_per','like', '%' . $contact_person . '%')
                     ->orderBy('md_ins_company.updated_at','DESC')
                     ->get();  
-            }elseif ($ins_type_id) {
+            }elseif (!empty($ins_type_id) && !empty($comp_name)) {
+                $setarray=[];
+                foreach ($comp_name as $key => $comp) {
+                    array_push($setarray,$comp->id);
+                }
                 $data=InsCompany::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_company.ins_type_id')
                     ->select('md_ins_company.*','md_ins_type.type as ins_type')
                     ->where('md_ins_company.delete_flag','N')
-                    ->where('md_ins_company.ins_type_id',$ins_type_id)
+                    ->whereIn('md_ins_company.id',$setarray)
+                    ->whereIn('md_ins_company.ins_type_id',$ins_type_id)
+                    ->orderBy('md_ins_company.updated_at','DESC')
+                    ->get();  
+            }elseif ($contact_person && !empty($comp_name)) {
+                $setarray=[];
+                foreach ($comp_name as $key => $comp) {
+                    array_push($setarray,$comp->id);
+                }
+                $data=InsCompany::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_company.ins_type_id')
+                    ->select('md_ins_company.*','md_ins_type.type as ins_type')
+                    ->where('md_ins_company.delete_flag','N')
+                    ->whereIn('md_ins_company.id',$setarray)
+                    ->where('md_ins_company.local_ofc_contact_per','like', '%' . $contact_person . '%')
+                    ->OrWhere('md_ins_company.local_ofc_contact_per','like', '%' . $contact_person . '%')
+                    ->orderBy('md_ins_company.updated_at','DESC')
+                    ->get();  
+            } elseif ($contact_person) {
+                $data=InsCompany::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_company.ins_type_id')
+                    ->select('md_ins_company.*','md_ins_type.type as ins_type')
+                    ->where('md_ins_company.delete_flag','N')
+                    ->where('md_ins_company.local_ofc_contact_per','like', '%' . $contact_person . '%')
+                    ->OrWhere('md_ins_company.local_ofc_contact_per','like', '%' . $contact_person . '%')
+                    ->orderBy('md_ins_company.updated_at','DESC')
+                    ->get();  
+            }elseif (!empty($ins_type_id)) {
+                $data=InsCompany::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_company.ins_type_id')
+                    ->select('md_ins_company.*','md_ins_type.type as ins_type')
+                    ->where('md_ins_company.delete_flag','N')
+                    ->whereIn('md_ins_company.ins_type_id',$ins_type_id)
+                    ->orderBy('md_ins_company.updated_at','DESC')
+                    ->get();  
+            }elseif (!empty($comp_name)) {
+                $setarray=[];
+                foreach ($comp_name as $key => $comp) {
+                    array_push($setarray,$comp->id);
+                }
+                // return $setarray;
+                $data=InsCompany::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_company.ins_type_id')
+                    ->select('md_ins_company.*','md_ins_type.type as ins_type')
+                    ->where('md_ins_company.delete_flag','N')
+                    ->whereIn('md_ins_company.id',$setarray)
                     ->orderBy('md_ins_company.updated_at','DESC')
                     ->get();  
             } else {
@@ -194,6 +310,26 @@ class CompanyController extends Controller
                 $data->cus_care_no=$request->cus_care_no;
                 $data->cus_care_email=$request->cus_care_email;
                 $data->cus_care_whatsapp_no=$request->cus_care_whatsapp_no;
+                $data->distributor_care_no=$request->distributor_care_no;
+                $data->distributor_care_email=$request->distributor_care_email;
+                $data->l1_name=$request->l1_name;
+                $data->l1_contact_no=$request->l1_contact_no;
+                $data->l1_email=$request->l1_email;
+                $data->l2_name=$request->l2_name;
+                $data->l2_contact_no=$request->l2_contact_no;
+                $data->l2_email=$request->l2_email;
+                $data->l3_name=$request->l3_name;
+                $data->l3_contact_no=$request->l3_contact_no;
+                $data->l3_contact_no=$request->l3_contact_no;
+                $data->l4_name=$request->l4_name;
+                $data->l4_contact_no=$request->l4_contact_no;
+                $data->l4_email=$request->l4_email;
+                $data->l5_name=$request->l5_name;
+                $data->l5_contact_no=$request->l5_contact_no;
+                $data->l5_email=$request->l5_email;
+                $data->l6_name=$request->l6_name;
+                $data->l6_contact_no=$request->l6_contact_no;
+                $data->l6_email=$request->l6_email;
                 $data->save();
             }else{
                 $is_has=InsCompany::where('comp_short_name',$request->comp_short_name)->where('comp_full_name',$request->comp_full_name)->get();
@@ -222,6 +358,26 @@ class CompanyController extends Controller
                         'cus_care_no'=>$request->cus_care_no,
                         'cus_care_email'=>$request->cus_care_email,
                         'cus_care_whatsapp_no'=>$request->cus_care_whatsapp_no,
+                        'distributor_care_no'=>$request->distributor_care_no,
+                        'distributor_care_email'=>$request->distributor_care_email,
+                        'l1_name'=>$request->l1_name,
+                        'l1_contact_no'=>$request->l1_contact_no,
+                        'l1_email'=>$request->l1_email,
+                        'l2_name'=>$request->l2_name,
+                        'l2_contact_no'=>$request->l2_contact_no,
+                        'l2_email'=>$request->l2_email,
+                        'l3_name'=>$request->l3_name,
+                        'l3_contact_no'=>$request->l3_contact_no,
+                        'l3_contact_no'=>$request->l3_contact_no,
+                        'l4_name'=>$request->l4_name,
+                        'l4_contact_no'=>$request->l4_contact_no,
+                        'l4_email'=>$request->l4_email,
+                        'l5_name'=>$request->l5_name,
+                        'l5_contact_no'=>$request->l5_contact_no,
+                        'l5_email'=>$request->l5_email,
+                        'l6_name'=>$request->l6_name,
+                        'l6_contact_no'=>$request->l6_contact_no,
+                        'l6_email'=>$request->l6_email,
                         // 'created_by'=>'',
                     ));
                 }      

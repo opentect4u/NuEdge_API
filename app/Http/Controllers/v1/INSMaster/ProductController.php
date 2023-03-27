@@ -13,11 +13,12 @@ class ProductController extends Controller
     public function searchDetails(Request $request)
     {
         try {
+            // return $request;
             $paginate=$request->paginate;
             $sort_by=$request->sort_by;
             $column_name=$request->column_name;
             $product_name=$request->product_name;
-            $company_id=$request->company_id;
+            $company_id=json_decode($request->company_id);
             $ins_type_id=$request->ins_type_id;
             if ($paginate=='A') {
                 $paginate=999999999;
@@ -67,13 +68,17 @@ class ProductController extends Controller
                     ->where('md_ins_products.ins_type_id',$ins_type_id)
                     ->orderBy('md_ins_products.updated_at','DESC')
                     ->paginate($paginate);  
-            }elseif ($company_id) {
+            }elseif (!empty($company_id)) {
+                $setarray=[];
+                foreach ($company_id as $key => $comp) {
+                    array_push($setarray,$comp->id);
+                }
                 $data=InsProduct::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_products.ins_type_id')
                     ->leftJoin('md_ins_company','md_ins_company.id','=','md_ins_products.company_id')
                     ->leftJoin('md_ins_product_type','md_ins_product_type.id','=','md_ins_products.product_type_id')
                     ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name','md_ins_product_type.product_type as product_type')
                     ->where('md_ins_products.delete_flag','N')
-                    ->where('md_ins_products.company_id',$company_id)
+                    ->whereIn('md_ins_products.company_id',$setarray)
                     ->orderBy('md_ins_products.updated_at','DESC')
                     ->paginate($paginate);  
             }elseif ($product_name) {
@@ -95,7 +100,7 @@ class ProductController extends Controller
                     ->paginate($paginate);  
             }
         } catch (\Throwable $th) {
-            //throw $th;
+            // throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
         return Helper::SuccessResponse($data);
@@ -196,11 +201,18 @@ class ProductController extends Controller
             $paginate=$request->paginate;
             $ins_type_id=$request->ins_type_id;
             $company_id=$request->company_id;
+            $product_type_id=$request->product_type_id;
             $paginate=$request->paginate;
             if ($paginate=='A') {
                 $paginate=999999999;
             }
-            if ($company_id && $ins_type_id) {
+            if ($company_id && $ins_type_id && $product_type_id) {
+                $data=InsProduct::where('delete_flag','N')
+                    ->where('company_id',$company_id)
+                    ->where('ins_type_id',$ins_type_id)
+                    ->where('product_type_id',$product_type_id)
+                    ->get();      
+            }else if ($company_id && $ins_type_id) {
                 $data=InsProduct::where('delete_flag','N')
                     ->where('company_id',$company_id)
                     ->where('ins_type_id',$ins_type_id)

@@ -119,6 +119,7 @@ class ProductTypeController extends Controller
         try {  
             $search=$request->search;
             $id=$request->id;
+            $ins_type_id=$request->ins_type_id;
             $paginate=$request->paginate;
             if ($paginate=='A') {
                 $paginate=999999999;
@@ -129,6 +130,8 @@ class ProductTypeController extends Controller
                 $data=InsProductType::where('delete_flag','N')->where('id',$id)->get();      
             }elseif ($paginate!='') {
                 $data=InsProductType::where('delete_flag','N')->paginate($paginate);      
+            }elseif ($ins_type_id!='') {
+                $data=InsProductType::where('delete_flag','N')->where('ins_type_id',$ins_type_id)->get();      
             } else {
                 $data=InsProductType::where('delete_flag','N')->get();      
             }
