@@ -5,7 +5,7 @@ namespace App\Http\Controllers\v1\Master;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Helpers\Helper;
-use App\Models\{Scheme,MutualFund,FormReceived};
+use App\Models\{Scheme,MutualFund,FormReceived,AMC,Category,SubCategory};
 use Validator;
 use Excel;
 use App\Imports\SchemeImport;
@@ -452,7 +452,7 @@ class SchemeController extends Controller
             if ($scheme_type=='O') {
                 foreach ($data as $key => $value) {
                     if ($key==0) {
-                        if (str_replace(" ","_",$value[0])!="AMC_Id"  && str_replace(" ","_",$value[1])!="Category_Id"  && str_replace(" ","_",$value[2])!="Sub_Category_Id"  && $value[3]!="Scheme" && str_replace(" ","_",$value[4])!="PIP_Fresh_Minimum_Amount" && str_replace(" ","_",$value[5])!="PIP_Additional_Minimum_Amount" && str_replace(" ","_",$value[6])!="Special_SIP") {
+                        if (str_replace(" ","_",$value[0])!="AMC_Short_Name"  && str_replace(" ","_",$value[1])!="Category_Name"  && str_replace(" ","_",$value[2])!="Sub_Category_Name"  && $value[3]!="Scheme" && str_replace(" ","_",$value[4])!="PIP_Fresh_Minimum_Amount" && str_replace(" ","_",$value[5])!="PIP_Additional_Minimum_Amount" && str_replace(" ","_",$value[6])!="Special_SIP") {
                             return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
                         }
                         // return $value;
@@ -615,12 +615,15 @@ class SchemeController extends Controller
                         array_push($stp_freq_wise_amt,$stp_aa);
                         // return $stp_freq_wise_amt;
                         $is_has=Scheme::where('scheme_name',$value[3])->get();
-                        if (count($is_has) < 0) {
+                        if (count($is_has) <= 0) {
+                            $amc_id=AMC::where('amc_short_name',$value[0])->value('id');
+                            $category_id=Category::where('cat_name',$value[1])->value('id');
+                            $subcategory_id=SubCategory::where('subcategory_name',$value[2])->value('id');
                             Scheme::create(array(
                                 'product_id'=>base64_decode($product_id),
-                                'amc_id'=>$value[0],
-                                'category_id'=>$value[1],
-                                'subcategory_id'=>$value[2],
+                                'amc_id'=>$amc_id,
+                                'category_id'=>$category_id,
+                                'subcategory_id'=>$subcategory_id,
                                 'scheme_type'=>$scheme_type,
                                 'scheme_name'=>$value[3],
                                 'pip_fresh_min_amt'=>$value[4],
@@ -642,9 +645,12 @@ class SchemeController extends Controller
                     }
                 }
             }else {
+                // return 'hii';
                 foreach ($data as $key => $value) {
                     if ($key==0) {
-                        if (str_replace(" ","_",$value[0])!="AMC_Id"  && str_replace(" ","_",$value[1])!="Category_Id"  && str_replace(" ","_",$value[2])!="Sub_Category_Id"  && $value[3]!="Scheme" && str_replace(" ","_",$value[4])!="NFO_Start_Date" && str_replace(" ","_",$value[5])!="NFO_End_Date" && str_replace(" ","_",$value[6])!="NFO_Reopen_Date") {
+                        // return 'hii';
+                        if (str_replace(" ","_",$value[0])!="AMC_Short_Name"  && str_replace(" ","_",$value[1])!="Category_Name"  && str_replace(" ","_",$value[2])!="Sub_Category_Name"  && $value[3]!="Scheme" && str_replace(" ","_",$value[4])!="NFO_Start_Date" && str_replace(" ","_",$value[5])!="NFO_End_Date" && str_replace(" ","_",$value[6])!="NFO_Reopen_Date") {
+                            // return 'hii';
                             return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
                         }
                         // return $value;
@@ -807,12 +813,17 @@ class SchemeController extends Controller
                         array_push($stp_freq_wise_amt,$stp_aa);
                         // return $stp_freq_wise_amt;
                         $is_has=Scheme::where('scheme_name',$value[3])->get();
-                        if (count($is_has) < 0) {
+                        // return count($is_has);
+                        if (count($is_has) <= 0) {
+                            $amc_id=AMC::where('amc_short_name',$value[0])->value('id');
+                            $category_id=Category::where('cat_name',$value[1])->value('id');
+                            $subcategory_id=SubCategory::where('subcategory_name',$value[2])->value('id');
+                            // return $amc_id;
                             Scheme::create(array(
                                 'product_id'=>base64_decode($product_id),
-                                'amc_id'=>$value[0],
-                                'category_id'=>$value[1],
-                                'subcategory_id'=>$value[2],
+                                'amc_id'=>$amc_id,
+                                'category_id'=>$category_id,
+                                'subcategory_id'=>$subcategory_id,
                                 'scheme_type'=>$scheme_type,
                                 'scheme_name'=>$value[3],
                                 'nfo_start_dt'=>$value[4],
@@ -832,6 +843,7 @@ class SchemeController extends Controller
                                 'delete_flag'=>'N',
                             ));
                         }else {
+                            // return 'else';
                             return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
                         }
                     }

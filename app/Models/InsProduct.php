@@ -12,6 +12,7 @@ class InsProduct extends Model
     protected $fillable = [
         'ins_type_id',
         'company_id',
+        'product_type_id',
         'product_name',
         'delete_flag',
         'deleted_date',

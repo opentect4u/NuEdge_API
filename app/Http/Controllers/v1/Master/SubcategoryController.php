@@ -122,7 +122,11 @@ class SubcategoryController extends Controller
                     ->orderBy('md_subcategory.updated_at','DESC')
                     ->paginate($paginate);   
             }else{
-                $data=SubCategory::get();   
+                $data=SubCategory::join('md_category','md_category.id','=','md_subcategory.category_id')
+                    ->select('md_subcategory.*','md_category.cat_name as cat_name')
+                    ->where('md_subcategory.delete_flag','N')
+                    ->orderBy('md_subcategory.updated_at','DESC')
+                    ->get();   
             }   
         } catch (\Throwable $th) {
             //throw $th;

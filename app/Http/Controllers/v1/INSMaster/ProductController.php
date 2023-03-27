@@ -26,21 +26,24 @@ class ProductController extends Controller
                 if ($column_name=='ins_type_name') {
                     $data=InsProduct::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_products.ins_type_id')
                         ->leftJoin('md_ins_company','md_ins_company.id','=','md_ins_products.company_id')
-                        ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name')
+                    ->leftJoin('md_ins_product_type','md_ins_product_type.id','=','md_ins_products.product_type_id')
+                        ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name','md_ins_product_type.product_type as product_type')
                         ->where('md_ins_products.delete_flag','N')
                         ->orderBy('md_ins_type.'.$column_name,$sort_by)
                         ->paginate($paginate); 
                 }elseif ($column_name=='comp_short_name' || $column_name=='comp_full_name') {
                     $data=InsProduct::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_products.ins_type_id')
                         ->leftJoin('md_ins_company','md_ins_company.id','=','md_ins_products.company_id')
-                        ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name')
+                    ->leftJoin('md_ins_product_type','md_ins_product_type.id','=','md_ins_products.product_type_id')
+                        ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name','md_ins_product_type.product_type as product_type')
                         ->where('md_ins_products.delete_flag','N')
                         ->orderBy('md_ins_company.'.$column_name,$sort_by)
                         ->paginate($paginate); 
                 }else {
                     $data=InsProduct::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_products.ins_type_id')
                         ->leftJoin('md_ins_company','md_ins_company.id','=','md_ins_products.company_id')
-                        ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name')
+                    ->leftJoin('md_ins_product_type','md_ins_product_type.id','=','md_ins_products.product_type_id')
+                        ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name','md_ins_product_type.product_type as product_type')
                         ->where('md_ins_products.delete_flag','N')
                         ->orderBy('md_ins_products.'.$column_name,$sort_by)
                         ->paginate($paginate); 
@@ -48,7 +51,8 @@ class ProductController extends Controller
             }elseif ($ins_type_id && $company_id) {
                 $data=InsProduct::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_products.ins_type_id')
                     ->leftJoin('md_ins_company','md_ins_company.id','=','md_ins_products.company_id')
-                    ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name')
+                    ->leftJoin('md_ins_product_type','md_ins_product_type.id','=','md_ins_products.product_type_id')
+                    ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name','md_ins_product_type.product_type as product_type')
                     ->where('md_ins_products.delete_flag','N')
                     ->where('md_ins_products.ins_type_id',$ins_type_id)
                     ->where('md_ins_products.company_id',$company_id)
@@ -57,7 +61,8 @@ class ProductController extends Controller
             }elseif ($ins_type_id) {
                 $data=InsProduct::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_products.ins_type_id')
                     ->leftJoin('md_ins_company','md_ins_company.id','=','md_ins_products.company_id')
-                    ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name')
+                    ->leftJoin('md_ins_product_type','md_ins_product_type.id','=','md_ins_products.product_type_id')
+                    ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name','md_ins_product_type.product_type as product_type')
                     ->where('md_ins_products.delete_flag','N')
                     ->where('md_ins_products.ins_type_id',$ins_type_id)
                     ->orderBy('md_ins_products.updated_at','DESC')
@@ -65,7 +70,8 @@ class ProductController extends Controller
             }elseif ($company_id) {
                 $data=InsProduct::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_products.ins_type_id')
                     ->leftJoin('md_ins_company','md_ins_company.id','=','md_ins_products.company_id')
-                    ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name')
+                    ->leftJoin('md_ins_product_type','md_ins_product_type.id','=','md_ins_products.product_type_id')
+                    ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name','md_ins_product_type.product_type as product_type')
                     ->where('md_ins_products.delete_flag','N')
                     ->where('md_ins_products.company_id',$company_id)
                     ->orderBy('md_ins_products.updated_at','DESC')
@@ -73,7 +79,8 @@ class ProductController extends Controller
             }elseif ($product_name) {
                 $data=InsProduct::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_products.ins_type_id')
                     ->leftJoin('md_ins_company','md_ins_company.id','=','md_ins_products.company_id')
-                    ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name')
+                    ->leftJoin('md_ins_product_type','md_ins_product_type.id','=','md_ins_products.product_type_id')
+                    ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name','md_ins_product_type.product_type as product_type')
                     ->where('md_ins_products.delete_flag','N')
                     ->where('md_ins_products.product_name','like', '%' . $product_name . '%')
                     ->orderBy('md_ins_products.updated_at','DESC')
@@ -81,7 +88,8 @@ class ProductController extends Controller
             } else {
                 $data=InsProduct::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_products.ins_type_id')
                     ->leftJoin('md_ins_company','md_ins_company.id','=','md_ins_products.company_id')
-                    ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name')
+                    ->leftJoin('md_ins_product_type','md_ins_product_type.id','=','md_ins_products.product_type_id')
+                    ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name','md_ins_product_type.product_type as product_type')
                     ->where('md_ins_products.delete_flag','N')
                     ->orderBy('md_ins_products.updated_at','DESC')
                     ->paginate($paginate);  
@@ -106,21 +114,24 @@ class ProductController extends Controller
                 if ($column_name=='ins_type_name') {
                     $data=InsProduct::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_products.ins_type_id')
                         ->leftJoin('md_ins_company','md_ins_company.id','=','md_ins_products.company_id')
-                        ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name')
+                        ->leftJoin('md_ins_product_type','md_ins_product_type.id','=','md_ins_products.product_type_id')
+                        ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name','md_ins_product_type.product_type as product_type')
                         ->where('md_ins_products.delete_flag','N')
                         ->orderBy('md_ins_type.'.$column_name,$sort_by)
                         ->get(); 
                 }elseif ($column_name=='comp_short_name' || $column_name=='comp_full_name') {
                     $data=InsProduct::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_products.ins_type_id')
                         ->leftJoin('md_ins_company','md_ins_company.id','=','md_ins_products.company_id')
-                        ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name')
+                        ->leftJoin('md_ins_product_type','md_ins_product_type.id','=','md_ins_products.product_type_id')
+                        ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name','md_ins_product_type.product_type as product_type')
                         ->where('md_ins_products.delete_flag','N')
                         ->orderBy('md_ins_company.'.$column_name,$sort_by)
                         ->get(); 
                 }else {
                     $data=InsProduct::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_products.ins_type_id')
                         ->leftJoin('md_ins_company','md_ins_company.id','=','md_ins_products.company_id')
-                        ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name')
+                        ->leftJoin('md_ins_product_type','md_ins_product_type.id','=','md_ins_products.product_type_id')
+                        ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name','md_ins_product_type.product_type as product_type')
                         ->where('md_ins_products.delete_flag','N')
                         ->orderBy('md_ins_products.'.$column_name,$sort_by)
                         ->get(); 
@@ -128,7 +139,8 @@ class ProductController extends Controller
             }elseif ($ins_type_id && $company_id) {
                 $data=InsProduct::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_products.ins_type_id')
                     ->leftJoin('md_ins_company','md_ins_company.id','=','md_ins_products.company_id')
-                    ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name')
+                    ->leftJoin('md_ins_product_type','md_ins_product_type.id','=','md_ins_products.product_type_id')
+                    ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name','md_ins_product_type.product_type as product_type')
                     ->where('md_ins_products.delete_flag','N')
                     ->where('md_ins_products.ins_type_id',$ins_type_id)
                     ->where('md_ins_products.company_id',$company_id)
@@ -137,7 +149,8 @@ class ProductController extends Controller
             }elseif ($ins_type_id) {
                 $data=InsProduct::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_products.ins_type_id')
                     ->leftJoin('md_ins_company','md_ins_company.id','=','md_ins_products.company_id')
-                    ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name')
+                    ->leftJoin('md_ins_product_type','md_ins_product_type.id','=','md_ins_products.product_type_id')
+                    ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name','md_ins_product_type.product_type as product_type')
                     ->where('md_ins_products.delete_flag','N')
                     ->where('md_ins_products.ins_type_id',$ins_type_id)
                     ->orderBy('md_ins_products.updated_at','DESC')
@@ -145,7 +158,8 @@ class ProductController extends Controller
             }elseif ($company_id) {
                 $data=InsProduct::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_products.ins_type_id')
                     ->leftJoin('md_ins_company','md_ins_company.id','=','md_ins_products.company_id')
-                    ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name')
+                    ->leftJoin('md_ins_product_type','md_ins_product_type.id','=','md_ins_products.product_type_id')
+                    ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name','md_ins_product_type.product_type as product_type')
                     ->where('md_ins_products.delete_flag','N')
                     ->where('md_ins_products.company_id',$company_id)
                     ->orderBy('md_ins_products.updated_at','DESC')
@@ -153,7 +167,8 @@ class ProductController extends Controller
             }elseif ($product_name) {
                 $data=InsProduct::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_products.ins_type_id')
                     ->leftJoin('md_ins_company','md_ins_company.id','=','md_ins_products.company_id')
-                    ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name')
+                    ->leftJoin('md_ins_product_type','md_ins_product_type.id','=','md_ins_products.product_type_id')
+                    ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name','md_ins_product_type.product_type as product_type')
                     ->where('md_ins_products.delete_flag','N')
                     ->where('md_ins_products.product_name','like', '%' . $product_name . '%')
                     ->orderBy('md_ins_products.updated_at','DESC')
@@ -161,13 +176,14 @@ class ProductController extends Controller
             } else {
                 $data=InsProduct::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_products.ins_type_id')
                     ->leftJoin('md_ins_company','md_ins_company.id','=','md_ins_products.company_id')
-                    ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name')
+                    ->leftJoin('md_ins_product_type','md_ins_product_type.id','=','md_ins_products.product_type_id')
+                    ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name','md_ins_product_type.product_type as product_type')
                     ->where('md_ins_products.delete_flag','N')
                     ->orderBy('md_ins_products.updated_at','DESC')
                     ->get();  
             }
         } catch (\Throwable $th) {
-            //throw $th;
+            // throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
         return Helper::SuccessResponse($data);
@@ -222,6 +238,7 @@ class ProductController extends Controller
                 $data=InsProduct::find($request->id);
                 $data->ins_type_id=$request->ins_type_id;
                 $data->company_id=$request->company_id;
+                $data->product_type_id=$request->product_type_id;
                 $data->product_name=$request->product_name;
                 $data->save();
             }else{
@@ -233,6 +250,7 @@ class ProductController extends Controller
                     $data=InsProduct::create(array(
                         'ins_type_id'=>$request->ins_type_id,
                         'company_id'=>$request->company_id,
+                        'product_type_id'=>$request->product_type_id,
                         'product_name'=>$request->product_name,
                         // 'created_by'=>'',
                     ));  
@@ -240,7 +258,8 @@ class ProductController extends Controller
             } 
             $data1=InsProduct::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_products.ins_type_id')
                     ->leftJoin('md_ins_company','md_ins_company.id','=','md_ins_products.company_id')
-                    ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name')
+                    ->leftJoin('md_ins_product_type','md_ins_product_type.id','=','md_ins_products.product_type_id')
+                    ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name','md_ins_product_type.product_type as product_type')
                     ->where('md_ins_products.id',$data->id)
                     ->first();  
         } catch (\Throwable $th) {

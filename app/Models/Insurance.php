@@ -24,6 +24,8 @@ class Insurance extends Model
         'mode_of_premium',
         'gross_premium',
         'net_premium',
+        'third_party_premium',
+        'od_premium',
         'mode_of_payment',
         'chq_bank',
         'acc_no',
