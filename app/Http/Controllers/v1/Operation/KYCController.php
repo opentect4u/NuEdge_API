@@ -296,7 +296,7 @@ class KYCController extends Controller
                     $doc_name='';
                     if ($scaned_form) {
                         $cv_path_extension=$scaned_form->getClientOriginalExtension();
-                        $doc_name=microtime().".".$cv_path_extension;
+                        $doc_name=microtime(true).".".$cv_path_extension;
                         $scaned_form->move(public_path('kyc-form/'),$doc_name);
                     }
 

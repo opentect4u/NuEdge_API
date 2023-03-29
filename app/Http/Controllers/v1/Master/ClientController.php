@@ -201,7 +201,7 @@ class ClientController extends Controller
                                 // return $file;
                                 if ($file) {
                                     $cv_path_extension=$file->getClientOriginalExtension();
-                                    $doc_name=microtime().'_'.$datas->id.".".$cv_path_extension;
+                                    $doc_name=microtime(true).'_'.$datas->id.".".$cv_path_extension;
                                     $file->move(public_path('client-doc/'.$datas->id."/"),$doc_name);
                                 }
                                 Document::create(array(
@@ -287,7 +287,7 @@ class ClientController extends Controller
                                     // return $file;
                                     if ($file) {
                                         $cv_path_extension=$file->getClientOriginalExtension();
-                                        $doc_name=microtime().'_'.$u_data->id.".".$cv_path_extension;
+                                        $doc_name=microtime(true).'_'.$u_data->id.".".$cv_path_extension;
                                         $file->move(public_path('client-doc/'.$u_data->id."/"),$doc_name);
                                     }
                                     Document::create(array(
@@ -337,7 +337,7 @@ class ClientController extends Controller
                                 // return $file;
                                 if ($file) {
                                     $cv_path_extension=$file->getClientOriginalExtension();
-                                    $doc_name=microtime().'_'.$u_data->id.".".$cv_path_extension;
+                                    $doc_name=microtime(true).'_'.$u_data->id.".".$cv_path_extension;
                                     $file->move(public_path('client-doc/'.$u_data->id."/"),$doc_name);
                                 }
                                 Document::create(array(

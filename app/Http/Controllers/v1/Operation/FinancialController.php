@@ -512,7 +512,7 @@ class FinancialController extends Controller
                     $doc_name='';
                     if ($app_form_scan) {
                         $cv_path_extension=$app_form_scan->getClientOriginalExtension();
-                        $doc_name=microtime().".".$cv_path_extension;
+                        $doc_name=microtime(true).".".$cv_path_extension;
                         $app_form_scan->move(public_path('application-form/'),$doc_name);
                     }
                     FormReceived::where('temp_tin_no',$request->temp_tin_no)->update(array(
@@ -776,7 +776,7 @@ class FinancialController extends Controller
                     $doc_name='';
                     if ($app_form_scan) {
                         $cv_path_extension=$app_form_scan->getClientOriginalExtension();
-                        $doc_name=microtime().".".$cv_path_extension;
+                        $doc_name=microtime(true).".".$cv_path_extension;
                         $app_form_scan->move(public_path('application-form/'),$doc_name);
                     }
                     $data=MutualFund::create(array(
@@ -1015,7 +1015,7 @@ class FinancialController extends Controller
             $ack_copy_scan=$request->ack_copy_scan;
             if ($ack_copy_scan) {
                 $path_extension=$ack_copy_scan->getClientOriginalExtension();
-                $ack_copy_scan_name=microtime().".".$path_extension;
+                $ack_copy_scan_name=microtime(true).".".$path_extension;
                 $ack_copy_scan->move(public_path('acknowledgement-copy/'),$ack_copy_scan_name);
             }else{
                 $ack_copy_scan_name=$data1->ack_copy_scan;
@@ -1046,7 +1046,7 @@ class FinancialController extends Controller
             $app_form_scan=$request->app_form_scan;
             if ($app_form_scan) {
                 $cv_path_extension=$app_form_scan->getClientOriginalExtension();
-                $doc_name=microtime().".".$cv_path_extension;
+                $doc_name=microtime(true).".".$cv_path_extension;
                 $app_form_scan->move(public_path('acknowledgement-copy/'),$doc_name);
             }else{
                 $doc_name=$data1->app_form_scan;

@@ -103,7 +103,7 @@ class DocumentController extends Controller
                     // return $file;
                     if ($file) {
                         $cv_path_extension=$file->getClientOriginalExtension();
-                        $doc_name=microtime().'_'.$request->client_id.".".$cv_path_extension;
+                        $doc_name=microtime(true).'_'.$request->client_id.".".$cv_path_extension;
                         $file->move(public_path('client-doc/'.$request->client_id."/"),$doc_name);
                     }
                     Document::create(array(
@@ -148,7 +148,7 @@ class DocumentController extends Controller
                     if ($row_id==0) {
                         if ($file[$key]) {
                             $cv_path_extension=$file[$key]->getClientOriginalExtension();
-                            $doc_name=microtime().'_'.$request->client_id.".".$cv_path_extension;
+                            $doc_name=microtime(true).'_'.$request->client_id.".".$cv_path_extension;
                             $file[$key]->move(public_path('client-doc/'.$request->client_id."/"),$doc_name);
                         }
                         Document::create(array(
@@ -160,7 +160,7 @@ class DocumentController extends Controller
                     } else {
                         if ($file[$key]) {
                             $cv_path_extension=$file[$key]->getClientOriginalExtension();
-                            $doc_name=microtime().'_'.$request->client_id.".".$cv_path_extension;
+                            $doc_name=microtime(true).'_'.$request->client_id.".".$cv_path_extension;
                             $file[$key]->move(public_path('client-doc/'.$request->client_id."/"),$doc_name);
                         }
                         $data=Document::find($row_id);

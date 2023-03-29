@@ -16,8 +16,9 @@ class ProductTypeController extends Controller
             $paginate=$request->paginate;
             $sort_by=$request->sort_by;
             $column_name=$request->column_name;
-            $product_type=$request->product_type;
-            $ins_type_id=$request->ins_type_id;
+
+            $product_type=json_decode($request->product_type);
+            $ins_type_id=json_decode($request->ins_type_id);
 
             if ($paginate=='A') {
                 $paginate=999999999;
@@ -36,18 +37,34 @@ class ProductTypeController extends Controller
                         ->orderBy('md_ins_product_type.'.$column_name,$sort_by)
                         ->paginate($paginate);  
                 }
-            }elseif ($product_type) {
+            }elseif (!empty($product_type) && !empty($ins_type_id)) {
+                $parr=[];
+                foreach ($product_type as $value) {
+                    array_push($parr,$value->id);
+                }
                 $data=InsProductType::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_product_type.ins_type_id')
                     ->select('md_ins_product_type.*','md_ins_type.type as ins_type')
                     ->where('md_ins_product_type.delete_flag','N')
-                    ->where('md_ins_product_type.product_type','like', '%' . $product_type . '%')
+                    ->whereIn('md_ins_product_type.id',$parr)
+                    ->whereIn('md_ins_product_type.ins_type_id',$ins_type_id)
                     ->orderBy('md_ins_product_type.updated_at','DESC')
                     ->paginate($paginate);  
-            }elseif ($ins_type_id) {
+            } elseif (!empty($product_type)) {
+                $parr=[];
+                foreach ($product_type as $value) {
+                    array_push($parr,$value->id);
+                }
                 $data=InsProductType::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_product_type.ins_type_id')
                     ->select('md_ins_product_type.*','md_ins_type.type as ins_type')
                     ->where('md_ins_product_type.delete_flag','N')
-                    ->where('md_ins_product_type.ins_type_id',$ins_type_id)
+                    ->whereIn('md_ins_product_type.id',$parr)
+                    ->orderBy('md_ins_product_type.updated_at','DESC')
+                    ->paginate($paginate);  
+            }elseif (!empty($ins_type_id)) {
+                $data=InsProductType::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_product_type.ins_type_id')
+                    ->select('md_ins_product_type.*','md_ins_type.type as ins_type')
+                    ->where('md_ins_product_type.delete_flag','N')
+                    ->whereIn('md_ins_product_type.ins_type_id',$ins_type_id)
                     ->orderBy('md_ins_product_type.updated_at','DESC')
                     ->paginate($paginate);  
             } else {
@@ -69,10 +86,10 @@ class ProductTypeController extends Controller
             $paginate=$request->paginate;
             $sort_by=$request->sort_by;
             $column_name=$request->column_name;
-            $product_type=$request->product_type;
-            $ins_type_id=$request->ins_type_id;
 
-            
+            $product_type=json_decode($request->product_type);
+            $ins_type_id=json_decode($request->ins_type_id);
+
             if ($sort_by && $column_name) {
                 if ($column_name=='ins_type') {
                     $data=InsProductType::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_product_type.ins_type_id')
@@ -87,18 +104,34 @@ class ProductTypeController extends Controller
                         ->orderBy('md_ins_product_type.'.$column_name,$sort_by)
                         ->get();  
                 }
-            }elseif ($product_type) {
+            }elseif (!empty($product_type) && !empty($ins_type_id)) {
+                $parr=[];
+                foreach ($product_type as $value) {
+                    array_push($parr,$value->id);
+                }
                 $data=InsProductType::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_product_type.ins_type_id')
                     ->select('md_ins_product_type.*','md_ins_type.type as ins_type')
                     ->where('md_ins_product_type.delete_flag','N')
-                    ->where('md_ins_product_type.product_type','like', '%' . $product_type . '%')
+                    ->whereIn('md_ins_product_type.id',$parr)
+                    ->whereIn('md_ins_product_type.ins_type_id',$ins_type_id)
                     ->orderBy('md_ins_product_type.updated_at','DESC')
                     ->get();  
-            }elseif ($ins_type_id) {
+            } elseif (!empty($product_type)) {
+                $parr=[];
+                foreach ($product_type as $value) {
+                    array_push($parr,$value->id);
+                }
                 $data=InsProductType::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_product_type.ins_type_id')
                     ->select('md_ins_product_type.*','md_ins_type.type as ins_type')
                     ->where('md_ins_product_type.delete_flag','N')
-                    ->where('md_ins_product_type.ins_type_id',$ins_type_id)
+                    ->whereIn('md_ins_product_type.id',$parr)
+                    ->orderBy('md_ins_product_type.updated_at','DESC')
+                    ->get();  
+            }elseif (!empty($ins_type_id)) {
+                $data=InsProductType::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_product_type.ins_type_id')
+                    ->select('md_ins_product_type.*','md_ins_type.type as ins_type')
+                    ->where('md_ins_product_type.delete_flag','N')
+                    ->whereIn('md_ins_product_type.ins_type_id',$ins_type_id)
                     ->orderBy('md_ins_product_type.updated_at','DESC')
                     ->get();  
             } else {

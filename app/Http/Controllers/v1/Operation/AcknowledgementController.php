@@ -251,7 +251,7 @@ class AcknowledgementController extends Controller
             $ack_copy_scan=$request->ack_copy_scan;
             if ($ack_copy_scan) {
                 $path_extension=$ack_copy_scan->getClientOriginalExtension();
-                $ack_copy_scan_name=microtime().".".$path_extension;
+                $ack_copy_scan_name=microtime(true).".".$path_extension;
                 $ack_copy_scan->move(public_path('acknowledgement-copy/'),$ack_copy_scan_name);
             }else{
                 $ack_copy_scan_name=$data1->ack_copy_scan;

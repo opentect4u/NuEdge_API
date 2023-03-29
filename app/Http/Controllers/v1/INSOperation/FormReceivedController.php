@@ -20,6 +20,9 @@ class FormReceivedController extends Controller
             $sub_brk_cd=$request->sub_brk_cd;
             $euin_no=$request->euin_no;
             $bu_type=json_decode($request->bu_type);
+            $ins_type_id=json_decode($request->ins_type_id);
+            $start_date=$request->start_date;
+            $end_date=$request->end_date;
 
             $column_name=$request->column_name;
             $sort_by=$request->sort_by;
@@ -52,6 +55,15 @@ class FormReceivedController extends Controller
                         ->orderBy('td_ins_form_received.'.$column_name , $sort_by)
                         ->paginate($paginate);
                 }
+            }elseif ($start_date && $end_date) {
+                // return 'hii';
+                $data=InsFormReceived::leftJoin('md_client','md_client.id','=','td_ins_form_received.proposer_id')
+                    ->leftJoin('md_ins_type','md_ins_type.id','=','td_ins_form_received.ins_type_id')
+                    ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name')
+                    ->where('td_ins_form_received.deleted_flag','N')
+                    ->whereDate('td_ins_form_received.rec_datetime','>=',$start_date)
+                    ->whereDate('td_ins_form_received.rec_datetime','<=',$end_date)
+                    ->paginate($paginate);
             }elseif ($temp_tin_no!='') {
                 $data=InsFormReceived::leftJoin('md_client','md_client.id','=','td_ins_form_received.proposer_id')
                     ->leftJoin('md_ins_type','md_ins_type.id','=','td_ins_form_received.ins_type_id')
@@ -74,6 +86,13 @@ class FormReceivedController extends Controller
                     ->where('md_client.client_code','like', '%' . $proposer_code . '%')
                     ->orWhere('md_client.client_name','like', '%' . $proposer_code . '%')
                     ->orWhere('md_client.pan','like', '%' . $proposer_code . '%')
+                    ->paginate($paginate);
+            }elseif (!empty($ins_type_id)) {
+                $data=InsFormReceived::leftJoin('md_client','md_client.id','=','td_ins_form_received.proposer_id')
+                    ->leftJoin('md_ins_type','md_ins_type.id','=','td_ins_form_received.ins_type_id')
+                    ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name')
+                    ->where('td_ins_form_received.deleted_flag','N')
+                    ->whereIn('td_ins_form_received.ins_type_id',$ins_type_id)
                     ->paginate($paginate);
             }elseif (!empty($bu_type)) {
                 $data=InsFormReceived::leftJoin('md_client','md_client.id','=','td_ins_form_received.proposer_id')
@@ -106,6 +125,9 @@ class FormReceivedController extends Controller
             $sub_brk_cd=$request->sub_brk_cd;
             $euin_no=$request->euin_no;
             $bu_type=json_decode($request->bu_type);
+            $ins_type_id=json_decode($request->ins_type_id);
+            $start_date=$request->start_date;
+            $end_date=$request->end_date;
 
             $column_name=$request->column_name;
             $sort_by=$request->sort_by;
@@ -136,6 +158,15 @@ class FormReceivedController extends Controller
                         ->orderBy('td_ins_form_received.'.$column_name , $sort_by)
                         ->get();
                 }
+            }elseif ($start_date && $end_date) {
+                // return 'hii';
+                $data=InsFormReceived::leftJoin('md_client','md_client.id','=','td_ins_form_received.proposer_id')
+                    ->leftJoin('md_ins_type','md_ins_type.id','=','td_ins_form_received.ins_type_id')
+                    ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name')
+                    ->where('td_ins_form_received.deleted_flag','N')
+                    ->whereDate('td_ins_form_received.rec_datetime','>=',$start_date)
+                    ->whereDate('td_ins_form_received.rec_datetime','<=',$end_date)
+                    ->get();
             }elseif ($temp_tin_no!='') {
                 $data=InsFormReceived::leftJoin('md_client','md_client.id','=','td_ins_form_received.proposer_id')
                     ->leftJoin('md_ins_type','md_ins_type.id','=','td_ins_form_received.ins_type_id')
@@ -158,6 +189,13 @@ class FormReceivedController extends Controller
                     ->where('md_client.client_code','like', '%' . $proposer_code . '%')
                     ->orWhere('md_client.client_name','like', '%' . $proposer_code . '%')
                     ->orWhere('md_client.pan','like', '%' . $proposer_code . '%')
+                    ->get();
+            }elseif (!empty($ins_type_id)) {
+                $data=InsFormReceived::leftJoin('md_client','md_client.id','=','td_ins_form_received.proposer_id')
+                    ->leftJoin('md_ins_type','md_ins_type.id','=','td_ins_form_received.ins_type_id')
+                    ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name')
+                    ->where('td_ins_form_received.deleted_flag','N')
+                    ->whereIn('td_ins_form_received.ins_type_id',$ins_type_id)
                     ->get();
             }elseif (!empty($bu_type)) {
                 $data=InsFormReceived::leftJoin('md_client','md_client.id','=','td_ins_form_received.proposer_id')
