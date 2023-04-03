@@ -451,7 +451,7 @@ class SchemeController extends Controller
 
             $file = fopen($request->file('file'), "r");
             // fgets($file);
-            return  fgets($file);
+            return  fgetcsv($file);
 
             if ($scheme_type=='O') {
                 foreach ($data as $key => $value) {
