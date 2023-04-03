@@ -446,8 +446,11 @@ class SchemeController extends Controller
             $subcategory_id=$request->subcategory_id;
             $product_id=$request->product_id;
             $path = $request->file('file')->getRealPath();
-            $data = array_map('str_getcsv', file($path));
+            // $data = array_map('str_getcsv', file($path));
             // return $data;
+
+            $handle = fopen($path, "r");
+            return $handle;
 
             if ($scheme_type=='O') {
                 foreach ($data as $key => $value) {
