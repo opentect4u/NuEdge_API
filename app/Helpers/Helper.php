@@ -50,6 +50,8 @@ class Helper{
             $tin='MFT00'.$val;
         }elseif ($product_id==3) { // Insurance 
             $tin='INST00'.$val;
+        }elseif ($product_id==4) { // Foixed Deposit 
+            $tin='FDT00'.$val;
         }
         return $tin;
     }
@@ -68,6 +70,8 @@ class Helper{
             }
         }elseif ($product_id==3) {  // Insurance
             $tin='INS00'.$val;
+        }elseif ($product_id==4) { // Foixed Deposit 
+            $tin='FD00'.$val;
         }
         return $tin;
     }
