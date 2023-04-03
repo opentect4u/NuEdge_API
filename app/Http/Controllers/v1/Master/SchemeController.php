@@ -450,7 +450,7 @@ class SchemeController extends Controller
             // return $data;
 
             $file = fopen($request->file('file'), "r");
-            fgets($file);
+            // fgets($file);
             return  fgets($file);
 
             if ($scheme_type=='O') {
