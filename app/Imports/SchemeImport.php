@@ -15,7 +15,7 @@ class SchemeImport implements ToModel,WithHeadingRow
     *
     * @return \Illuminate\Database\Eloquent\Model|null
     */
-    public function model(array $row,$request)
+    public function model(array $row)
     {
         $validator = Validator::make($row,[
             'product_id' =>'required',

@@ -449,7 +449,7 @@ class SchemeController extends Controller
             $path = $request->file('file');
             $data = array_map('str_getcsv', file($path));
             return $data;
-            
+
             $row = 1;
             if (($handle = fopen($request->file('file'), "r")) !== FALSE) {
                 while (($data = fgetcsv($handle, 1000, ",","\"","\\")) !== FALSE) {
@@ -879,7 +879,7 @@ class SchemeController extends Controller
             // if ($data[0][0] == "rnt_id" && $data[0][1] == "product_id" && $data[0][2] == "amc_name" && $data[0][3] == "website" && $data[0][4] == "ofc_addr") {
             //     return "hii";
                 // Excel::import(new SchemeImport,$request->file);
-                Excel::import(new SchemeImport,request()->file('file'),$request);
+                // Excel::import(new SchemeImport,request()->file('file'));
                 $data1=[];
             // }else {
             //     return "else";
