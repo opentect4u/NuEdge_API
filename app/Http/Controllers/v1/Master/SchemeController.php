@@ -446,9 +446,21 @@ class SchemeController extends Controller
             $subcategory_id=$request->subcategory_id;
             $product_id=$request->product_id;
             // $path = $request->file('file')->getRealPath();
-            $path = $request->file('file');
-            $data = array_map('str_getcsv', file($path));
+            // $path = $request->file('file');
+            // $data = array_map('str_getcsv', file($path));
             // return $data;
+            $row = 1;
+            if (($handle = fopen($request->file('file'), "r")) !== FALSE) {
+                while (($data = fgetcsv($handle, 1000, ",","\"","\\")) !== FALSE) {
+                    return $num = count($data);
+                    echo "<p> $num fields in line $row: <br /></p>\n";
+                    $row++;
+                    for ($c=0; $c < $num; $c++) {
+                        echo $data[$c] . "<br />\n";
+                    }
+                }
+                fclose($handle);
+            }
 
             $open = fopen($request->file('file'), "r");
             // fgets($file);
