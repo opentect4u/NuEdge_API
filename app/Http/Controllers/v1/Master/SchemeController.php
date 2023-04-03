@@ -452,8 +452,7 @@ class SchemeController extends Controller
             if ($scheme_type=='O') {
                 foreach ($data as $key => $value) {
                     if ($key==0) {
-                        if (str_replace(" ","_",$value[0])=="AMC_Short_Name" ) {
-                            // if (str_replace(" ","_",$value[0])!="AMC_Short_Name"  && str_replace(" ","_",$value[1])!="Category_Name"  && str_replace(" ","_",$value[2])!="Sub_Category_Name"  && $value[3]!="Scheme" && str_replace(" ","_",$value[4])!="PIP_Fresh_Minimum_Amount" && str_replace(" ","_",$value[5])!="PIP_Additional_Minimum_Amount" && str_replace(" ","_",$value[6])!="Special_SIP") {
+                        if (str_replace(" ","_",$value[0])!="AMC_Short_Name"  && str_replace(" ","_",$value[1])!="Category_Name"  && str_replace(" ","_",$value[2])!="Sub_Category_Name"  && $value[3]!="Scheme" && str_replace(" ","_",$value[4])!="PIP_Fresh_Minimum_Amount" && str_replace(" ","_",$value[5])!="PIP_Additional_Minimum_Amount" && str_replace(" ","_",$value[6])!="Special_SIP") {
                             return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
                         }
                         // return $value;
@@ -651,8 +650,7 @@ class SchemeController extends Controller
                 foreach ($data as $key => $value) {
                     if ($key==0) {
                         // return 'hii';
-                        if (str_replace(" ","_",$value[0])=="AMC_Short_Name" ) {
-                            // if (str_replace(" ","_",$value[0])!="AMC_Short_Name"  && str_replace(" ","_",$value[1])!="Category_Name"  && str_replace(" ","_",$value[2])!="Sub_Category_Name"  && $value[3]!="Scheme" && str_replace(" ","_",$value[4])!="NFO_Start_Date" && str_replace(" ","_",$value[5])!="NFO_End_Date" && str_replace(" ","_",$value[6])!="NFO_Reopen_Date") {
+                        if (str_replace(" ","_",$value[0])!="AMC_Short_Name"  && str_replace(" ","_",$value[1])!="Category_Name"  && str_replace(" ","_",$value[2])!="Sub_Category_Name"  && $value[3]!="Scheme" && str_replace(" ","_",$value[4])!="NFO_Start_Date" && str_replace(" ","_",$value[5])!="NFO_End_Date" && str_replace(" ","_",$value[6])!="NFO_Reopen_Date") {
                             // return 'hii';
                             return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
                         }
