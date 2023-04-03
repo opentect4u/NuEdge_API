@@ -445,17 +445,19 @@ class SchemeController extends Controller
             $category_id=$request->category_id;
             $subcategory_id=$request->subcategory_id;
             $product_id=$request->product_id;
-            $path = $request->file('file')->getRealPath();
-            // $data = array_map('str_getcsv', file($path));
+            // $path = $request->file('file')->getRealPath();
+            $path = $request->file('file');
+            $data = array_map('str_getcsv', file($path));
             // return $data;
 
-            $open = fopen($request->file('file'), "r");
-            // fgets($file);
-            return  $data = fgetcsv($open, 1000, ",");
-            // return $data;
-            return 'hii';
+            // $open = fopen($request->file('file'), "r");
+            // // fgets($file);
+            // return  $data = fgetcsv($open, 1000, ",");
+            // // return $data;
+            // return 'hii';
 
             if ($scheme_type=='O') {
+                return $data;
                 foreach ($data as $key => $value) {
                     if ($key==0) {
                         if (str_replace(" ","_",$value[0])!="AMC_Short_Name"  && str_replace(" ","_",$value[1])!="Category_Name"  && str_replace(" ","_",$value[2])!="Sub_Category_Name"  && $value[3]!="Scheme" && str_replace(" ","_",$value[4])!="PIP_Fresh_Minimum_Amount" && str_replace(" ","_",$value[5])!="PIP_Additional_Minimum_Amount" && str_replace(" ","_",$value[6])!="Special_SIP") {
