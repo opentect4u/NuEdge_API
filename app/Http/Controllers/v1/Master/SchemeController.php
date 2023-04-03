@@ -639,7 +639,8 @@ class SchemeController extends Controller
                                 'delete_flag'=>'N',
                             ));
                         }else {
-                            return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
+                            $msg='Already exists.';
+                            return Helper::WarningResponse($msg);
                         }
                         
                     }
@@ -844,16 +845,13 @@ class SchemeController extends Controller
                             ));
                         }else {
                             // return 'else';
-                            return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
+                            $msg='Already exists.';
+                            return Helper::WarningResponse($msg);
                         }
                     }
                 
                 }
             }
-
-
-
-
 
             // return gettype($data[0][0]) ;
             // if (in_array("rnt_id", $data)) {
