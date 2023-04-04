@@ -642,7 +642,26 @@ class SchemeController extends Controller
                                 'delete_flag'=>'N',
                             ));
                         }else {
-                            return Helper::WarningResponse(parent::ALREADY_EXIST);
+                            // return Helper::WarningResponse(parent::ALREADY_EXIST);
+                            Scheme::whereId($is_has[0]->id)->update(array(
+                                'product_id'=>base64_decode($product_id),
+                                'amc_id'=>$amc_id,
+                                'category_id'=>$category_id,
+                                'subcategory_id'=>$subcategory_id,
+                                'scheme_type'=>$scheme_type,
+                                'scheme_name'=>$value[3],
+                                'pip_fresh_min_amt'=>$value[4],
+                                'pip_add_min_amt'=>$value[5],
+                                'ava_special_sip'=>$ava_special_sip,
+                                'special_sip_name'=>isset($value[6])?$value[6]:NULL,
+                                'sip_date'=>json_encode($sip_date_array),
+                                'swp_date'=>json_encode($swp_date_array),
+                                'stp_date'=>json_encode($stp_date_array),
+                                'sip_freq_wise_amt'=>json_encode($sip_freq_wise_amt),
+                                'swp_freq_wise_amt'=>json_encode($swp_freq_wise_amt),
+                                'stp_freq_wise_amt'=>json_encode($stp_freq_wise_amt),
+                                'delete_flag'=>'N',
+                            ));
                         }
                         
                     }
@@ -817,10 +836,11 @@ class SchemeController extends Controller
                         // return $stp_freq_wise_amt;
                         $is_has=Scheme::where('scheme_name',$value[3])->get();
                         // return count($is_has);
+                        $amc_id=AMC::where('amc_short_name',$value[0])->value('id');
+                        $category_id=Category::where('cat_name',$value[1])->value('id');
+                        $subcategory_id=SubCategory::where('subcategory_name',$value[2])->value('id');
                         if (count($is_has) <= 0) {
-                            $amc_id=AMC::where('amc_short_name',$value[0])->value('id');
-                            $category_id=Category::where('cat_name',$value[1])->value('id');
-                            $subcategory_id=SubCategory::where('subcategory_name',$value[2])->value('id');
+                            
                             // return $amc_id;
                             Scheme::create(array(
                                 'product_id'=>base64_decode($product_id),
@@ -847,7 +867,30 @@ class SchemeController extends Controller
                             ));
                         }else {
                             // return 'else';
-                            return Helper::WarningResponse(parent::ALREADY_EXIST);
+                            // return Helper::WarningResponse(parent::ALREADY_EXIST);
+                            Scheme::whereId($is_has[0]->id)->update(array(
+                                'product_id'=>base64_decode($product_id),
+                                'amc_id'=>$amc_id,
+                                'category_id'=>$category_id,
+                                'subcategory_id'=>$subcategory_id,
+                                'scheme_type'=>$scheme_type,
+                                'scheme_name'=>$value[3],
+                                'nfo_start_dt'=>$value[4],
+                                'nfo_end_dt'=>$value[5],
+                                'nfo_reopen_dt'=>$value[6],
+                                'nfo_entry_date'=>$value[7],
+                                'pip_fresh_min_amt'=>$value[8],
+                                'pip_add_min_amt'=>$value[9],
+                                'ava_special_sip'=>$ava_special_sip,
+                                'special_sip_name'=>isset($value[10])?$value[10]:NULL,
+                                'sip_date'=>json_encode($sip_date_array),
+                                'swp_date'=>json_encode($swp_date_array),
+                                'stp_date'=>json_encode($stp_date_array),
+                                'sip_freq_wise_amt'=>json_encode($sip_freq_wise_amt),
+                                'swp_freq_wise_amt'=>json_encode($swp_freq_wise_amt),
+                                'stp_freq_wise_amt'=>json_encode($stp_freq_wise_amt),
+                                'delete_flag'=>'N',
+                            ));
                         }
                     }
                 
