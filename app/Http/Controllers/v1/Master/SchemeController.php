@@ -642,8 +642,7 @@ class SchemeController extends Controller
                                 'delete_flag'=>'N',
                             ));
                         }else {
-                            $msg='Already exists.';
-                            return Helper::WarningResponse($msg);
+                            return Helper::WarningResponse(parent::ALREADY_EXIST);
                         }
                         
                     }
@@ -848,8 +847,7 @@ class SchemeController extends Controller
                             ));
                         }else {
                             // return 'else';
-                            $msg='Already exists.';
-                            return Helper::WarningResponse($msg);
+                            return Helper::WarningResponse(parent::ALREADY_EXIST);
                         }
                     }
                 

@@ -609,8 +609,7 @@ class AMCController extends Controller
                             'delete_flag'=>'N',
                         ));
                     }else {
-                        $msg='Already exists.';
-                        return Helper::WarningResponse($msg);
+                        return Helper::WarningResponse(parent::ALREADY_EXIST);
                     }
                 }
                
