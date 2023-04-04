@@ -762,7 +762,7 @@ class FinancialController extends Controller
                     $third_client_id=$request->third_client_id;
                     $third_client_name=$request->third_client_name;
                     $third_client_pan=$request->third_client_pan;
-                    if ($second_client_id=='' && $third_client_name!='' && $third_client_pan!='') {
+                    if ($third_client_id=='' && $third_client_name!='' && $third_client_pan!='') {
                         $t_c_data=Client::create(array(
                             'client_name'=>$third_client_name,
                             'pan'=>$third_client_pan,

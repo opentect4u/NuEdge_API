@@ -251,10 +251,13 @@ class FormReceivedController extends Controller
             if ($temp_tin_no && $flag=='C') {
                 // return 'Hii';
                 $data=FDFormReceived::leftJoin('md_client','md_client.id','=','td_fd_form_received.investor_id')
-                    ->leftJoin('md_ins_type','md_ins_type.id','=','td_fd_form_received.comp_id')
-                    ->leftJoin('md_employee','md_employee.euin_no','=','td_fd_form_received.euin_no')
+                    ->leftJoin('md_fd_company','md_fd_company.id','=','td_fd_form_received.comp_id')
+                    ->leftJoin('md_fd_scheme','md_fd_scheme.id','=','td_fd_form_received.scheme_id')
                     ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_fd_form_received.sub_brk_cd')
-                    ->select('td_fd_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.client_type as proposer_type','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name',
+                    ->leftJoin('md_employee','md_employee.euin_no','=','td_fd_form_received.euin_no')
+                    ->select('td_fd_form_received.*','md_client.client_name as investor_name','md_client.client_code as investor_code','md_client.dob as dob','md_client.pan as pan',
+                    'md_fd_company.comp_short_name as comp_short_name','md_fd_company.comp_full_name as comp_full_name','md_fd_scheme.scheme_name as scheme_name','md_fd_scheme.comp_type_id as comp_type_id',
+                    'md_sub_broker.bro_name as broker_name',
                     'md_employee.emp_name as emp_name')
                     ->where('td_fd_form_received.deleted_flag','N')
                     ->where('td_fd_form_received.temp_tin_no',$temp_tin_no)
@@ -277,7 +280,8 @@ class FormReceivedController extends Controller
                     ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_fd_form_received.sub_brk_cd')
                     ->leftJoin('md_employee','md_employee.euin_no','=','td_fd_form_received.euin_no')
                     ->select('td_fd_form_received.*','md_client.client_name as investor_name','md_client.client_code as investor_code','md_client.dob as dob','md_client.pan as pan',
-                    'md_fd_company.comp_short_name as comp_short_name','md_fd_company.comp_full_name as comp_full_name','md_fd_scheme.scheme_name as scheme_name','md_sub_broker.bro_name as broker_name',
+                    'md_fd_company.comp_short_name as comp_short_name','md_fd_company.comp_full_name as comp_full_name','md_fd_scheme.scheme_name as scheme_name','md_fd_scheme.comp_type_id as comp_type_id',
+                    'md_sub_broker.bro_name as broker_name',
                     'md_employee.emp_name as emp_name')
                     ->where('td_fd_form_received.deleted_flag','N')
                     ->where('td_fd_form_received.temp_tin_no',$temp_tin_no)
