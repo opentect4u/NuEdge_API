@@ -609,7 +609,52 @@ class AMCController extends Controller
                             'delete_flag'=>'N',
                         ));
                     }else {
-                        return Helper::WarningResponse(parent::ALREADY_EXIST);
+                        return $is_has[0]->id;
+                        // return Helper::WarningResponse(parent::ALREADY_EXIST);
+                        AMC::whereId($is_has[0]->id)->update(array(
+                            'product_id'=>base64_decode($request->product_id),
+                            'rnt_id'=>$request->rnt_id,
+                            'amc_name'=>$value[0],
+                            'amc_short_name'=>$value[1],
+                            'gstin'=>$value[2],
+                            'website'=>$value[3],
+                            'cus_care_whatsapp_no'=>$value[4],
+                            'cus_care_no'=>$value[5],
+                            'cus_care_email'=>$value[6],
+                            'distributor_care_no'=>$value[7],
+                            'distributor_care_email'=>$value[8],
+                            'head_ofc_contact_per'=>$value[9],
+                            'head_contact_per_mob'=>$value[10],
+                            'head_contact_per_email'=>$value[11],
+                            'head_ofc_addr'=>$value[12],
+                            'local_ofc_contact_per'=>$value[13],
+                            'local_contact_per_mob'=>$value[14],
+                            'local_contact_per_email'=>$value[15],
+                            'local_ofc_addr'=>$value[16],
+                            'login_url'=>$value[17],
+                            'login_id'=>$value[18],
+                            'login_pass'=>$value[19],
+                            'security_qus_ans'=>json_encode($totarray),
+                            'l1_name'=>$value[34],
+                            'l1_contact_no'=>$value[35],
+                            'l1_email'=>$value[36],
+                            'l2_name'=>$value[37],
+                            'l2_contact_no'=>$value[38],
+                            'l2_email'=>$value[39],
+                            'l3_name'=>$value[40],
+                            'l3_contact_no'=>$value[41],
+                            'l3_email'=>$value[42],
+                            'l4_name'=>$value[43],
+                            'l4_contact_no'=>$value[43],
+                            'l4_email'=>$value[45],
+                            'l5_name'=>$value[46],
+                            'l5_contact_no'=>$value[47],
+                            'l5_email'=>$value[48],
+                            'l6_name'=>$value[49],
+                            'l6_contact_no'=>$value[50],
+                            'l6_email'=>$value[51],
+                            'delete_flag'=>'N',
+                        ));
                     }
                 }
                
