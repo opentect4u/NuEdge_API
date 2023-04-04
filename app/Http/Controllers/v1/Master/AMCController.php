@@ -609,7 +609,8 @@ class AMCController extends Controller
                             'delete_flag'=>'N',
                         ));
                     }else {
-                        return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
+                        $msg='Already exists.';
+                        return Helper::WarningResponse($msg);
                     }
                 }
                
