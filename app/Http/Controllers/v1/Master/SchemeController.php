@@ -445,9 +445,12 @@ class SchemeController extends Controller
             $category_id=$request->category_id;
             $subcategory_id=$request->subcategory_id;
             $product_id=$request->product_id;
-            $path = $request->file('file')->getRealPath();
-            $data = array_map('str_getcsv', file($path));
+            // $path = $request->file('file')->getRealPath();
+            // $data = array_map('str_getcsv', file($path));
             // return $data;
+            $datas = Excel::toArray([],  $request->file('file'));
+            // return $data[0];
+            $data=$datas[0];
 
             if ($scheme_type=='O') {
                 foreach ($data as $key => $value) {

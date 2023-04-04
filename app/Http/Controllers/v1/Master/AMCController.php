@@ -498,11 +498,12 @@ class AMCController extends Controller
     {
         try {
             // return $request;
-            $path = $request->file('file')->getRealPath();
-            $data = array_map('str_getcsv', file($path));
+            // $path = $request->file('file')->getRealPath();
+            // $data = array_map('str_getcsv', file($path));
             // return $data ;
-            $data = Excel::toArray([],  $request->file('file'));
-            return $data[0];
+            $datas = Excel::toArray([],  $request->file('file'));
+            // return $data[0];
+            $data=$datas[0];
 
             foreach ($data as $key => $value) {
                 if ($key==0) {
