@@ -618,10 +618,12 @@ class SchemeController extends Controller
                         array_push($stp_freq_wise_amt,$stp_aa);
                         // return $stp_freq_wise_amt;
                         $is_has=Scheme::where('scheme_name',$value[3])->get();
+
+                        $amc_id=AMC::where('amc_short_name',$value[0])->value('id');
+                        $category_id=Category::where('cat_name',$value[1])->value('id');
+                        $subcategory_id=SubCategory::where('subcategory_name',$value[2])->value('id');
                         if (count($is_has) <= 0) {
-                            $amc_id=AMC::where('amc_short_name',$value[0])->value('id');
-                            $category_id=Category::where('cat_name',$value[1])->value('id');
-                            $subcategory_id=SubCategory::where('subcategory_name',$value[2])->value('id');
+                            
                             Scheme::create(array(
                                 'product_id'=>base64_decode($product_id),
                                 'amc_id'=>$amc_id,
