@@ -609,7 +609,7 @@ class AMCController extends Controller
                             'delete_flag'=>'N',
                         ));
                     }else {
-                        return $is_has[0]->id;
+                        // return $is_has[0]->id;
                         // return Helper::WarningResponse(parent::ALREADY_EXIST);
                         AMC::whereId($is_has[0]->id)->update(array(
                             'product_id'=>base64_decode($request->product_id),
