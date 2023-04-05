@@ -449,7 +449,7 @@ class SchemeController extends Controller
             // $data = array_map('str_getcsv', file($path));
             // return $data;
             $datas = Excel::toArray([],  $request->file('file'));
-            // return $data[0];
+            // return $datas[0];
             $data=$datas[0];
 
             if ($scheme_type=='O') {
@@ -916,6 +916,7 @@ class SchemeController extends Controller
             // }
         } catch (\Throwable $th) {
             // throw $th;
+            //return $value;
             return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
         }
         return Helper::SuccessResponse($data1);
@@ -926,7 +927,7 @@ class SchemeController extends Controller
         if ($val1 && $val2) {
             $is_checked='true';
         }else{
-            $is_checked='null';
+            $is_checked='false';
         }
         return $is_checked;
     }
@@ -936,7 +937,7 @@ class SchemeController extends Controller
         if ($val1) {
             $is_checked='true';
         }else{
-            $is_checked='null';
+            $is_checked='false';
         }
         return $is_checked;
     }

@@ -5,7 +5,7 @@ namespace App\Http\Controllers\v1\FDOperation;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Helpers\Helper;
-use App\Models\{InsProduct,FDFormReceived,Insurance};
+use App\Models\{InsProduct,FDFormReceived,FixedDeposit};
 use Validator;
 
 class FormReceivedController extends Controller
@@ -31,6 +31,7 @@ class FormReceivedController extends Controller
                 $paginate=999999999;
             }
 
+            $data=[];
             if ($sort_by && $column_name) {
                 if ($column_name=="proposer_name") {
                     $data=FDFormReceived::leftJoin('md_client','md_client.id','=','td_fd_form_received.investor_id')
@@ -60,56 +61,17 @@ class FormReceivedController extends Controller
                 }
             }elseif ($start_date && $end_date) {
                 // return 'hii';
-                $data=FDFormReceived::leftJoin('md_client','md_client.id','=','td_fd_form_received.investor_id')
-                    ->leftJoin('md_ins_type','md_ins_type.id','=','td_fd_form_received.comp_id')
-                    ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_fd_form_received.sub_brk_cd')
-                    ->select('td_fd_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name')
-                    ->where('td_fd_form_received.deleted_flag','N')
-                    ->whereDate('td_fd_form_received.rec_datetime','>=',$start_date)
-                    ->whereDate('td_fd_form_received.rec_datetime','<=',$end_date)
-                    ->paginate($paginate);
+                
             }elseif ($temp_tin_no!='') {
-                $data=FDFormReceived::leftJoin('md_client','md_client.id','=','td_fd_form_received.investor_id')
-                    ->leftJoin('md_ins_type','md_ins_type.id','=','td_fd_form_received.comp_id')
-                    ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_fd_form_received.sub_brk_cd')
-                    ->select('td_fd_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name')
-                    ->where('td_fd_form_received.deleted_flag','N')
-                    ->where('td_fd_form_received.temp_tin_no',$temp_tin_no)
-                    ->paginate($paginate);
+                
             }elseif ($recv_from!='') {
-                $data=FDFormReceived::leftJoin('md_client','md_client.id','=','td_fd_form_received.investor_id')
-                    ->leftJoin('md_ins_type','md_ins_type.id','=','td_fd_form_received.comp_id')
-                    ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_fd_form_received.sub_brk_cd')
-                    ->select('td_fd_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name')
-                    ->where('td_fd_form_received.deleted_flag','N')
-                    ->where('td_fd_form_received.recv_from','like', '%' . $recv_from . '%')
-                    ->paginate($paginate);
+                
             }elseif ($proposer_code!='') {
-                $data=FDFormReceived::leftJoin('md_client','md_client.id','=','td_fd_form_received.investor_id')
-                    ->leftJoin('md_ins_type','md_ins_type.id','=','td_fd_form_received.comp_id')
-                    ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_fd_form_received.sub_brk_cd')
-                    ->select('td_fd_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name')
-                    ->where('td_fd_form_received.deleted_flag','N')
-                    ->where('md_client.client_code','like', '%' . $proposer_code . '%')
-                    ->orWhere('md_client.client_name','like', '%' . $proposer_code . '%')
-                    ->orWhere('md_client.pan','like', '%' . $proposer_code . '%')
-                    ->paginate($paginate);
+                
             }elseif (!empty($comp_id)) {
-                $data=FDFormReceived::leftJoin('md_client','md_client.id','=','td_fd_form_received.investor_id')
-                    ->leftJoin('md_ins_type','md_ins_type.id','=','td_fd_form_received.comp_id')
-                    ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_fd_form_received.sub_brk_cd')
-                    ->select('td_fd_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name')
-                    ->where('td_fd_form_received.deleted_flag','N')
-                    ->whereIn('td_fd_form_received.comp_id',$comp_id)
-                    ->paginate($paginate);
+                
             }elseif (!empty($bu_type)) {
-                $data=FDFormReceived::leftJoin('md_client','md_client.id','=','td_fd_form_received.investor_id')
-                    ->leftJoin('md_ins_type','md_ins_type.id','=','td_fd_form_received.comp_id')
-                    ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_fd_form_received.sub_brk_cd')
-                    ->select('td_fd_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name')
-                    ->where('td_fd_form_received.deleted_flag','N')
-                    ->whereIn('td_fd_form_received.bu_type',$bu_type)
-                    ->paginate($paginate);
+                
             }else {
                 $data=FDFormReceived::leftJoin('md_client','md_client.id','=','td_fd_form_received.investor_id')
                     ->leftJoin('md_fd_company','md_fd_company.id','=','td_fd_form_received.comp_id')
@@ -264,7 +226,7 @@ class FormReceivedController extends Controller
                     ->get();
                 // return $data;
                 if (count($data)>0) {
-                    $data1=Insurance::where('delete_flag','N')
+                    $data1=FixedDeposit::where('delete_flag','N')
                         ->where('temp_tin_no', $temp_tin_no)
                         ->get();
                         // return $data1;
@@ -342,7 +304,6 @@ class FormReceivedController extends Controller
                     'comp_id'=>$request->company_id,
                     'scheme_id'=>$request->scheme_id,
                     'recv_from'=>$request->recv_from,
-                    'proposal_no'=>isset($request->proposal_no)?$request->proposal_no:NULL,
                     'branch_code'=>$branch_code,
                     // 'created_by'=>'',
                 ));      
@@ -411,7 +372,7 @@ class FormReceivedController extends Controller
         }
         try {
             // return $request;
-            $data=Insurance::where('temp_tin_no',$request->id)->get();
+            $data=FixedDeposit::where('temp_tin_no',$request->id)->get();
             if (count($data)>0) {
                 $msg='Not delete';
                 return Helper::ErrorResponse($msg);
