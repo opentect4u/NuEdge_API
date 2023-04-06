@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Helpers\Helper;
 use App\Models\{FDCompany,InsProduct};
 use Validator;
+use Excel;
 
 class CompanyController extends Controller
 {
@@ -292,10 +293,13 @@ class CompanyController extends Controller
             }elseif ($paginate!='') {
                 $data=FDCompany::where('delete_flag','N')->paginate($paginate);      
             } else {
-                $data=FDCompany::where('delete_flag','N')->get();      
+                $data=FDCompany::leftJoin('md_fd_type_of_company','md_fd_type_of_company.id','=','md_fd_company.comp_type_id')
+                    ->select('md_fd_company.*','md_fd_type_of_company.comp_type')
+                    ->where('md_fd_company.delete_flag','N')
+                    ->get();      
             }
         } catch (\Throwable $th) {
-            //throw $th;
+            // throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
         return Helper::SuccessResponse($data);
@@ -440,9 +444,12 @@ class CompanyController extends Controller
     {
         try {
             // return $request;
-            $path = $request->file('file')->getRealPath();
-            $data = array_map('str_getcsv', file($path));
+            // $path = $request->file('file')->getRealPath();
+            // $data = array_map('str_getcsv', file($path));
             // return $data;
+            $datas = Excel::toArray([],  $request->file('file'));
+            return $data[0];
+            $data=$datas[0];
 
             foreach ($data as $key => $value) {
                 if ($key==0) {

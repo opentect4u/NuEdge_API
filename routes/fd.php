@@ -28,6 +28,13 @@ Route::prefix('v1')->group(function () {
             // Route::post('schemeDelete', [App\Http\Controllers\v1\FDMaster\SchemeController::class,'delete']);
             Route::post('schemeDetails', [App\Http\Controllers\v1\FDMaster\SchemeController::class,'schemeDetails']);
 
+            Route::get('rejectReason',[App\Http\Controllers\v1\FDMaster\RejectReasonController::class,'index']);
+            Route::any('rejectReasonDetailSearch',[App\Http\Controllers\v1\FDMaster\RejectReasonController::class,'searchDetails']);
+            Route::post('rejectReasonExport',[App\Http\Controllers\v1\FDMaster\RejectReasonController::class,'export']);
+            Route::post('rejectReasonAddEdit',[App\Http\Controllers\v1\FDMaster\RejectReasonController::class,'createUpdate']);
+            Route::post('rejectReasonimport', [App\Http\Controllers\v1\FDMaster\RejectReasonController::class,'import']);
+            Route::post('rejectReasonDelete', [App\Http\Controllers\v1\FDMaster\RejectReasonController::class,'delete']);
+
 
             // Route::get('medicalStatus',[App\Http\Controllers\v1\FDMaster\MedicalStatusController::class,'index']);
             // Route::any('medicalStatusDetailSearch',[App\Http\Controllers\v1\FDMaster\MedicalStatusController::class,'searchDetails']);

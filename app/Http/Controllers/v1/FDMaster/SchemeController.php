@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Helpers\Helper;
 use App\Models\FDScheme;
 use Validator;
+use Excel;
 
 class SchemeController extends Controller
 {
@@ -234,6 +235,9 @@ class SchemeController extends Controller
             $path = $request->file('file')->getRealPath();
             $data = array_map('str_getcsv', file($path));
             // return $data[0][0];
+            $datas = Excel::toArray([],  $request->file('file'));
+            return $data[0];
+            $data=$datas[0];
 
             foreach ($data as $key => $value) {
                 if ($key==0) {
