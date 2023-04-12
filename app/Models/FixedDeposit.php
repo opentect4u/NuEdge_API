@@ -77,6 +77,7 @@ class FixedDeposit extends Model
         'cert_rec_by_dt',
         'cert_rec_by_name',
         'cert_rec_by_scan',
+        'cert_delivery_flag',
         'deleted_at',
         'deleted_by',
         'deleted_flag',

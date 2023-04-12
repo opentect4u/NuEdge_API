@@ -238,6 +238,11 @@ Route::prefix('v1')->group(function () {
         Route::post('ackUpload',[App\Http\Controllers\v1\Operation\AcknowledgementController::class,'update']);
         Route::post('ackFinalSubmit',[App\Http\Controllers\v1\Operation\AcknowledgementController::class,'finalSubmit']);
 
+        Route::any('manualUpdateDetailSearch',[App\Http\Controllers\v1\Operation\ManualUpdateController::class,'searchDetails']);
+        Route::post('manualUpdateExport',[App\Http\Controllers\v1\Operation\ManualUpdateController::class,'export']);
+        Route::post('manualUpdate',[App\Http\Controllers\v1\Operation\ManualUpdateController::class,'update']);
+        Route::post('manualUpdateFinalSubmit',[App\Http\Controllers\v1\Operation\ManualUpdateController::class,'finalSubmit']);
+
         // =========================== operations routes end =======================================
 
         // Route::post('index1',[App\Http\Controllers\v1\Master\TestController::class,'index1']);

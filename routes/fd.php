@@ -77,6 +77,10 @@ Route::prefix('v1')->group(function () {
             Route::post('manualUpdate',[App\Http\Controllers\v1\FDOperation\ManualUpdateController::class,'update']);
             Route::post('manualUpdateFinalSubmit',[App\Http\Controllers\v1\FDOperation\ManualUpdateController::class,'finalSubmit']);
 
+            Route::any('deliveryUpdateDetailSearch',[App\Http\Controllers\v1\FDOperation\CertificateDeliveryController::class,'searchDetails']);
+            Route::post('deliveryUpdateExport',[App\Http\Controllers\v1\FDOperation\CertificateDeliveryController::class,'export']);
+            Route::post('deliveryUpdate',[App\Http\Controllers\v1\FDOperation\CertificateDeliveryController::class,'update']);
+
             // ==========================================End Operation=============================
     
         });
