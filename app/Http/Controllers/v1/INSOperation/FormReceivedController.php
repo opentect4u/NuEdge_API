@@ -36,7 +36,9 @@ class FormReceivedController extends Controller
                     $data=InsFormReceived::leftJoin('md_client','md_client.id','=','td_ins_form_received.proposer_id')
                         ->leftJoin('md_ins_type','md_ins_type.id','=','td_ins_form_received.ins_type_id')
                     ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_ins_form_received.sub_brk_cd')
-                        ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name')
+                    ->leftJoin('md_ins_company','md_ins_company.id','=','td_ins_form_received.company_id')
+                        ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name',
+                        'md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name')
                         ->where('td_ins_form_received.deleted_flag','N')
                         ->orderBy('md_client.client_name' , $sort_by)
                         ->paginate($paginate);
@@ -45,7 +47,9 @@ class FormReceivedController extends Controller
                     $data=InsFormReceived::leftJoin('md_client','md_client.id','=','td_ins_form_received.proposer_id')
                         ->leftJoin('md_ins_type','md_ins_type.id','=','td_ins_form_received.ins_type_id')
                     ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_ins_form_received.sub_brk_cd')
-                        ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name')
+                    ->leftJoin('md_ins_company','md_ins_company.id','=','td_ins_form_received.company_id')
+                        ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name',
+                        'md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name')
                         ->where('td_ins_form_received.deleted_flag','N')
                         ->orderBy('td_ins_form_received.ins_type_id',$sort_by)
                         ->paginate($paginate);
@@ -53,7 +57,9 @@ class FormReceivedController extends Controller
                     $data=InsFormReceived::leftJoin('md_client','md_client.id','=','td_ins_form_received.proposer_id')
                         ->leftJoin('md_ins_type','md_ins_type.id','=','td_ins_form_received.ins_type_id')
                     ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_ins_form_received.sub_brk_cd')
-                        ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name')
+                    ->leftJoin('md_ins_company','md_ins_company.id','=','td_ins_form_received.company_id')
+                        ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name',
+                        'md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name')
                         ->where('td_ins_form_received.deleted_flag','N')
                         ->orderBy('td_ins_form_received.'.$column_name , $sort_by)
                         ->paginate($paginate);
@@ -63,7 +69,9 @@ class FormReceivedController extends Controller
                 $data=InsFormReceived::leftJoin('md_client','md_client.id','=','td_ins_form_received.proposer_id')
                     ->leftJoin('md_ins_type','md_ins_type.id','=','td_ins_form_received.ins_type_id')
                     ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_ins_form_received.sub_brk_cd')
-                    ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name')
+                    ->leftJoin('md_ins_company','md_ins_company.id','=','td_ins_form_received.company_id')
+                    ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name',
+                    'md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name')
                     ->where('td_ins_form_received.deleted_flag','N')
                     ->whereDate('td_ins_form_received.rec_datetime','>=',$start_date)
                     ->whereDate('td_ins_form_received.rec_datetime','<=',$end_date)
@@ -72,7 +80,9 @@ class FormReceivedController extends Controller
                 $data=InsFormReceived::leftJoin('md_client','md_client.id','=','td_ins_form_received.proposer_id')
                     ->leftJoin('md_ins_type','md_ins_type.id','=','td_ins_form_received.ins_type_id')
                     ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_ins_form_received.sub_brk_cd')
-                    ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name')
+                    ->leftJoin('md_ins_company','md_ins_company.id','=','td_ins_form_received.company_id')
+                    ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name',
+                    'md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name')
                     ->where('td_ins_form_received.deleted_flag','N')
                     ->where('td_ins_form_received.temp_tin_no',$temp_tin_no)
                     ->paginate($paginate);
@@ -80,7 +90,9 @@ class FormReceivedController extends Controller
                 $data=InsFormReceived::leftJoin('md_client','md_client.id','=','td_ins_form_received.proposer_id')
                     ->leftJoin('md_ins_type','md_ins_type.id','=','td_ins_form_received.ins_type_id')
                     ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_ins_form_received.sub_brk_cd')
-                    ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name')
+                    ->leftJoin('md_ins_company','md_ins_company.id','=','td_ins_form_received.company_id')
+                    ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name',
+                    'md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name')
                     ->where('td_ins_form_received.deleted_flag','N')
                     ->where('td_ins_form_received.recv_from','like', '%' . $recv_from . '%')
                     ->paginate($paginate);
@@ -88,7 +100,9 @@ class FormReceivedController extends Controller
                 $data=InsFormReceived::leftJoin('md_client','md_client.id','=','td_ins_form_received.proposer_id')
                     ->leftJoin('md_ins_type','md_ins_type.id','=','td_ins_form_received.ins_type_id')
                     ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_ins_form_received.sub_brk_cd')
-                    ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name')
+                    ->leftJoin('md_ins_company','md_ins_company.id','=','td_ins_form_received.company_id')
+                    ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name',
+                    'md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name')
                     ->where('td_ins_form_received.deleted_flag','N')
                     ->where('md_client.client_code','like', '%' . $proposer_code . '%')
                     ->orWhere('md_client.client_name','like', '%' . $proposer_code . '%')
@@ -98,7 +112,9 @@ class FormReceivedController extends Controller
                 $data=InsFormReceived::leftJoin('md_client','md_client.id','=','td_ins_form_received.proposer_id')
                     ->leftJoin('md_ins_type','md_ins_type.id','=','td_ins_form_received.ins_type_id')
                     ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_ins_form_received.sub_brk_cd')
-                    ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name')
+                    ->leftJoin('md_ins_company','md_ins_company.id','=','td_ins_form_received.company_id')
+                    ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name',
+                    'md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name')
                     ->where('td_ins_form_received.deleted_flag','N')
                     ->whereIn('td_ins_form_received.ins_type_id',$ins_type_id)
                     ->paginate($paginate);
@@ -106,7 +122,9 @@ class FormReceivedController extends Controller
                 $data=InsFormReceived::leftJoin('md_client','md_client.id','=','td_ins_form_received.proposer_id')
                     ->leftJoin('md_ins_type','md_ins_type.id','=','td_ins_form_received.ins_type_id')
                     ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_ins_form_received.sub_brk_cd')
-                    ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name')
+                    ->leftJoin('md_ins_company','md_ins_company.id','=','td_ins_form_received.company_id')
+                    ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name',
+                    'md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name')
                     ->where('td_ins_form_received.deleted_flag','N')
                     ->whereIn('td_ins_form_received.bu_type',$bu_type)
                     ->paginate($paginate);
@@ -114,7 +132,9 @@ class FormReceivedController extends Controller
                 $data=InsFormReceived::leftJoin('md_client','md_client.id','=','td_ins_form_received.proposer_id')
                     ->leftJoin('md_ins_type','md_ins_type.id','=','td_ins_form_received.ins_type_id')
                     ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_ins_form_received.sub_brk_cd')
-                    ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name')
+                    ->leftJoin('md_ins_company','md_ins_company.id','=','td_ins_form_received.company_id')
+                    ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name',
+                    'md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name')
                     ->where('td_ins_form_received.deleted_flag','N')
                     ->paginate($paginate);
             }
@@ -149,7 +169,9 @@ class FormReceivedController extends Controller
                     $data=InsFormReceived::leftJoin('md_client','md_client.id','=','td_ins_form_received.proposer_id')
                         ->leftJoin('md_ins_type','md_ins_type.id','=','td_ins_form_received.ins_type_id')
                     ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_ins_form_received.sub_brk_cd')
-                        ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name')
+                    ->leftJoin('md_ins_company','md_ins_company.id','=','td_ins_form_received.company_id')
+                        ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name',
+                        'md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name')
                         ->where('td_ins_form_received.deleted_flag','N')
                         ->orderBy('md_client.client_name' , $sort_by)
                         ->get();
@@ -158,7 +180,9 @@ class FormReceivedController extends Controller
                     $data=InsFormReceived::leftJoin('md_client','md_client.id','=','td_ins_form_received.proposer_id')
                         ->leftJoin('md_ins_type','md_ins_type.id','=','td_ins_form_received.ins_type_id')
                     ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_ins_form_received.sub_brk_cd')
-                        ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name')
+                    ->leftJoin('md_ins_company','md_ins_company.id','=','td_ins_form_received.company_id')
+                        ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name',
+                        'md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name')
                         ->where('td_ins_form_received.deleted_flag','N')
                         ->orderBy('td_ins_form_received.ins_type_id',$sort_by)
                         ->get();
@@ -166,7 +190,9 @@ class FormReceivedController extends Controller
                     $data=InsFormReceived::leftJoin('md_client','md_client.id','=','td_ins_form_received.proposer_id')
                         ->leftJoin('md_ins_type','md_ins_type.id','=','td_ins_form_received.ins_type_id')
                     ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_ins_form_received.sub_brk_cd')
-                        ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name')
+                    ->leftJoin('md_ins_company','md_ins_company.id','=','td_ins_form_received.company_id')
+                        ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name',
+                        'md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name')
                         ->where('td_ins_form_received.deleted_flag','N')
                         ->orderBy('td_ins_form_received.'.$column_name , $sort_by)
                         ->get();
@@ -176,7 +202,9 @@ class FormReceivedController extends Controller
                 $data=InsFormReceived::leftJoin('md_client','md_client.id','=','td_ins_form_received.proposer_id')
                     ->leftJoin('md_ins_type','md_ins_type.id','=','td_ins_form_received.ins_type_id')
                     ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_ins_form_received.sub_brk_cd')
-                    ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name')
+                    ->leftJoin('md_ins_company','md_ins_company.id','=','td_ins_form_received.company_id')
+                    ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name',
+                    'md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name')
                     ->where('td_ins_form_received.deleted_flag','N')
                     ->whereDate('td_ins_form_received.rec_datetime','>=',$start_date)
                     ->whereDate('td_ins_form_received.rec_datetime','<=',$end_date)
@@ -185,7 +213,9 @@ class FormReceivedController extends Controller
                 $data=InsFormReceived::leftJoin('md_client','md_client.id','=','td_ins_form_received.proposer_id')
                     ->leftJoin('md_ins_type','md_ins_type.id','=','td_ins_form_received.ins_type_id')
                     ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_ins_form_received.sub_brk_cd')
-                    ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name')
+                    ->leftJoin('md_ins_company','md_ins_company.id','=','td_ins_form_received.company_id')
+                    ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name',
+                    'md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name')
                     ->where('td_ins_form_received.deleted_flag','N')
                     ->where('td_ins_form_received.temp_tin_no',$temp_tin_no)
                     ->get();
@@ -193,7 +223,9 @@ class FormReceivedController extends Controller
                 $data=InsFormReceived::leftJoin('md_client','md_client.id','=','td_ins_form_received.proposer_id')
                     ->leftJoin('md_ins_type','md_ins_type.id','=','td_ins_form_received.ins_type_id')
                     ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_ins_form_received.sub_brk_cd')
-                    ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name')
+                    ->leftJoin('md_ins_company','md_ins_company.id','=','td_ins_form_received.company_id')
+                    ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name',
+                    'md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name')
                     ->where('td_ins_form_received.deleted_flag','N')
                     ->where('td_ins_form_received.recv_from','like', '%' . $recv_from . '%')
                     ->get();
@@ -201,7 +233,9 @@ class FormReceivedController extends Controller
                 $data=InsFormReceived::leftJoin('md_client','md_client.id','=','td_ins_form_received.proposer_id')
                     ->leftJoin('md_ins_type','md_ins_type.id','=','td_ins_form_received.ins_type_id')
                     ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_ins_form_received.sub_brk_cd')
-                    ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name')
+                    ->leftJoin('md_ins_company','md_ins_company.id','=','td_ins_form_received.company_id')
+                    ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name',
+                    'md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name')
                     ->where('td_ins_form_received.deleted_flag','N')
                     ->where('md_client.client_code','like', '%' . $proposer_code . '%')
                     ->orWhere('md_client.client_name','like', '%' . $proposer_code . '%')
@@ -211,7 +245,9 @@ class FormReceivedController extends Controller
                 $data=InsFormReceived::leftJoin('md_client','md_client.id','=','td_ins_form_received.proposer_id')
                     ->leftJoin('md_ins_type','md_ins_type.id','=','td_ins_form_received.ins_type_id')
                     ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_ins_form_received.sub_brk_cd')
-                    ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name')
+                    ->leftJoin('md_ins_company','md_ins_company.id','=','td_ins_form_received.company_id')
+                    ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name',
+                    'md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name')
                     ->where('td_ins_form_received.deleted_flag','N')
                     ->whereIn('td_ins_form_received.ins_type_id',$ins_type_id)
                     ->get();
@@ -219,7 +255,9 @@ class FormReceivedController extends Controller
                 $data=InsFormReceived::leftJoin('md_client','md_client.id','=','td_ins_form_received.proposer_id')
                     ->leftJoin('md_ins_type','md_ins_type.id','=','td_ins_form_received.ins_type_id')
                     ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_ins_form_received.sub_brk_cd')
-                    ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name')
+                    ->leftJoin('md_ins_company','md_ins_company.id','=','td_ins_form_received.company_id')
+                    ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name',
+                    'md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name')
                     ->where('td_ins_form_received.deleted_flag','N')
                     ->whereIn('td_ins_form_received.bu_type',$bu_type)
                     ->get();
@@ -227,7 +265,9 @@ class FormReceivedController extends Controller
                 $data=InsFormReceived::leftJoin('md_client','md_client.id','=','td_ins_form_received.proposer_id')
                     ->leftJoin('md_ins_type','md_ins_type.id','=','td_ins_form_received.ins_type_id')
                     ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_ins_form_received.sub_brk_cd')
-                    ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name')
+                    ->leftJoin('md_ins_company','md_ins_company.id','=','td_ins_form_received.company_id')
+                    ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name',
+                    'md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name')
                     ->where('td_ins_form_received.deleted_flag','N')
                     ->get();
             }
@@ -250,7 +290,9 @@ class FormReceivedController extends Controller
                     ->leftJoin('md_ins_type','md_ins_type.id','=','td_ins_form_received.ins_type_id')
                     ->leftJoin('md_employee','md_employee.euin_no','=','td_ins_form_received.euin_no')
                     ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_ins_form_received.sub_brk_cd')
+                    ->leftJoin('md_ins_company','md_ins_company.id','=','td_ins_form_received.company_id')
                     ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.client_type as proposer_type','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name',
+                    'md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name',
                     'md_employee.emp_name as emp_name')
                     ->where('td_ins_form_received.deleted_flag','N')
                     ->where('td_ins_form_received.temp_tin_no',$temp_tin_no)
@@ -271,7 +313,9 @@ class FormReceivedController extends Controller
                     ->leftJoin('md_ins_type','md_ins_type.id','=','td_ins_form_received.ins_type_id')
                     ->leftJoin('md_employee','md_employee.euin_no','=','td_ins_form_received.euin_no')
                     ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_ins_form_received.sub_brk_cd')
+                    ->leftJoin('md_ins_company','md_ins_company.id','=','td_ins_form_received.company_id')
                     ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.client_type as proposer_type','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name',
+                    'md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name',
                     'md_employee.emp_name as emp_name')
                     ->where('td_ins_form_received.deleted_flag','N')
                     ->where('td_ins_form_received.temp_tin_no',$temp_tin_no)
@@ -281,7 +325,9 @@ class FormReceivedController extends Controller
                     ->leftJoin('md_ins_type','md_ins_type.id','=','td_ins_form_received.ins_type_id')
                     ->leftJoin('md_employee','md_employee.euin_no','=','td_ins_form_received.euin_no')
                     ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_ins_form_received.sub_brk_cd')
+                    ->leftJoin('md_ins_company','md_ins_company.id','=','td_ins_form_received.company_id')
                     ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.client_type as proposer_type','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name',
+                    'md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name',
                     'md_employee.emp_name as emp_name')
                     ->where('td_ins_form_received.deleted_flag','N')
                     ->get();
@@ -328,6 +374,7 @@ class FormReceivedController extends Controller
                     'proposer_id'=>$request->proposer_id,
                     'insure_bu_type'=>$request->insure_bu_type,
                     'ins_type_id'=>$request->ins_type_id,
+                    'company_id'=>$request->company_id,
                     'recv_from'=>$request->recv_from,
                     'proposal_no'=>isset($request->proposal_no)?$request->proposal_no:NULL,
                     'branch_code'=>$branch_code,
@@ -375,7 +422,9 @@ class FormReceivedController extends Controller
                 $data=InsFormReceived::leftJoin('md_client','md_client.id','=','td_ins_form_received.proposer_id')
                     ->leftJoin('md_ins_type','md_ins_type.id','=','td_ins_form_received.ins_type_id')
                     ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_ins_form_received.sub_brk_cd')
-                    ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name')
+                    ->leftJoin('md_ins_company','md_ins_company.id','=','td_ins_form_received.company_id')
+                    ->select('td_ins_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name',
+                    'md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name')
                     ->where('td_ins_form_received.deleted_flag','N')
                     ->where('td_ins_form_received.temp_tin_no',$request->temp_tin_no)
                     ->first();

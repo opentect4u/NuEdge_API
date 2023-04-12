@@ -21,6 +21,7 @@ class InsFormReceived extends Model
         'proposer_id',
         'insure_bu_type',
         'ins_type_id',
+        'company_id',
         'recv_from',
         'branch_code',
         'deleted_at',

@@ -260,7 +260,8 @@ class CompanyController extends Controller
                 $paginate=999999999;
             }
             if ($search!='') {
-                $data=InsCompany::where('type','like', '%' . $search . '%')->get();      
+                $data=InsCompany::where('comp_short_name','like', '%' . $search . '%')
+                    ->orWhere('comp_full_name','like', '%' . $search . '%')->get();      
             }else if ($id!='') {
                 $data=InsCompany::where('id',$id)->get();      
             }else if ($ins_type_id!='') {
@@ -271,7 +272,7 @@ class CompanyController extends Controller
                 $data=InsCompany::get();      
             }
         } catch (\Throwable $th) {
-            //throw $th;
+            // throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
         return Helper::SuccessResponse($data);
