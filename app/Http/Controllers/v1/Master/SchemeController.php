@@ -22,6 +22,8 @@ class SchemeController extends Controller
             $subcat_id=$request->subcat_id;
             $sort_by=$request->sort_by;
             $column_name=$request->column_name;
+
+            $scheme_type=$request->scheme_type;
             // return $request;
             if ($paginate=='A') {
                 $paginate=999999999;
@@ -35,6 +37,7 @@ class SchemeController extends Controller
                     ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
                     ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
                     ->where('md_scheme.delete_flag','N')
+                    ->where('md_scheme.scheme_type',$scheme_type)
                     // ->orWhere('md_scheme.scheme_name','like', '%' . $scheme_name . '%')
                     // ->orWhere('md_amc.amc_name','like', '%' . $amc_name . '%')
                     ->orderBy('md_scheme.'.$column_name,$sort_by)
@@ -46,6 +49,7 @@ class SchemeController extends Controller
                     ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
                     ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
                     ->where('md_scheme.delete_flag','N')
+                    ->where('md_scheme.scheme_type',$scheme_type)
                     // ->orWhere('md_scheme.scheme_name','like', '%' . $scheme_name . '%')
                     // ->orWhere('md_amc.amc_name','like', '%' . $amc_name . '%')
                     ->orderBy('md_category.'.$column_name,$sort_by)
@@ -57,6 +61,7 @@ class SchemeController extends Controller
                     ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
                     ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
                     ->where('md_scheme.delete_flag','N')
+                    ->where('md_scheme.scheme_type',$scheme_type)
                     // ->orWhere('md_scheme.scheme_name','like', '%' . $scheme_name . '%')
                     // ->orWhere('md_amc.amc_name','like', '%' . $amc_name . '%')
                     ->orderBy('md_subcategory.'.$column_name,$sort_by)
@@ -68,6 +73,7 @@ class SchemeController extends Controller
                     ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
                     ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
                     ->where('md_scheme.delete_flag','N')
+                    ->where('md_scheme.scheme_type',$scheme_type)
                     // ->orWhere('md_scheme.scheme_name','like', '%' . $scheme_name . '%')
                     // ->orWhere('md_amc.amc_name','like', '%' . $amc_name . '%')
                     ->orderBy('md_amc.'.$column_name,$sort_by)
@@ -81,6 +87,7 @@ class SchemeController extends Controller
                     ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
                     ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
                     ->where('md_scheme.delete_flag','N')
+                    ->where('md_scheme.scheme_type',$scheme_type)
                     ->where('md_scheme.scheme_name','like', '%' . $scheme_name . '%')
                     ->where('md_amc.amc_name','like', '%' . $amc_name . '%')
                     ->paginate($paginate);
@@ -91,6 +98,7 @@ class SchemeController extends Controller
                     ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
                     ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
                     ->where('md_scheme.delete_flag','N')
+                    ->where('md_scheme.scheme_type',$scheme_type)
                     ->where('md_scheme.scheme_name','like', '%' . $scheme_name . '%')
                     ->paginate($paginate);  
             }elseif ($amc_name) {
@@ -100,6 +108,7 @@ class SchemeController extends Controller
                     ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
                     ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
                     ->where('md_scheme.delete_flag','N')
+                    ->where('md_scheme.scheme_type',$scheme_type)
                     ->where('md_amc.amc_name','like', '%' . $amc_name . '%')
                     ->paginate($paginate);  
             } else {
@@ -109,6 +118,7 @@ class SchemeController extends Controller
                     ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
                     ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
                     ->where('md_scheme.delete_flag','N')
+                    ->where('md_scheme.scheme_type',$scheme_type)
                     ->paginate($paginate);  
             }
             
@@ -129,6 +139,8 @@ class SchemeController extends Controller
             $subcat_id=$request->subcat_id;
             $sort_by=$request->sort_by;
             $column_name=$request->column_name;
+
+            $scheme_type=$request->scheme_type;
             // return $request;
             
             if ($sort_by && $column_name) {
@@ -140,6 +152,7 @@ class SchemeController extends Controller
                     ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
                     ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
                     ->where('md_scheme.delete_flag','N')
+                    ->where('md_scheme.scheme_type',$scheme_type)
                     // ->orWhere('md_scheme.scheme_name','like', '%' . $scheme_name . '%')
                     // ->orWhere('md_amc.amc_name','like', '%' . $amc_name . '%')
                     ->orderBy('md_scheme.'.$column_name,$sort_by)
@@ -151,6 +164,7 @@ class SchemeController extends Controller
                     ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
                     ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
                     ->where('md_scheme.delete_flag','N')
+                    ->where('md_scheme.scheme_type',$scheme_type)
                     // ->orWhere('md_scheme.scheme_name','like', '%' . $scheme_name . '%')
                     // ->orWhere('md_amc.amc_name','like', '%' . $amc_name . '%')
                     ->orderBy('md_category.'.$column_name,$sort_by)
@@ -162,6 +176,7 @@ class SchemeController extends Controller
                     ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
                     ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
                     ->where('md_scheme.delete_flag','N')
+                    ->where('md_scheme.scheme_type',$scheme_type)
                     // ->orWhere('md_scheme.scheme_name','like', '%' . $scheme_name . '%')
                     // ->orWhere('md_amc.amc_name','like', '%' . $amc_name . '%')
                     ->orderBy('md_subcategory.'.$column_name,$sort_by)
@@ -173,6 +188,7 @@ class SchemeController extends Controller
                     ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
                     ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
                     ->where('md_scheme.delete_flag','N')
+                    ->where('md_scheme.scheme_type',$scheme_type)
                     // ->orWhere('md_scheme.scheme_name','like', '%' . $scheme_name . '%')
                     // ->orWhere('md_amc.amc_name','like', '%' . $amc_name . '%')
                     ->orderBy('md_amc.'.$column_name,$sort_by)
@@ -186,6 +202,7 @@ class SchemeController extends Controller
                     ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
                     ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
                     ->where('md_scheme.delete_flag','N')
+                    ->where('md_scheme.scheme_type',$scheme_type)
                     ->where('md_scheme.scheme_name','like', '%' . $scheme_name . '%')
                     ->where('md_amc.amc_name','like', '%' . $amc_name . '%')
                     ->get();
@@ -196,6 +213,7 @@ class SchemeController extends Controller
                     ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
                     ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
                     ->where('md_scheme.delete_flag','N')
+                    ->where('md_scheme.scheme_type',$scheme_type)
                     ->where('md_scheme.scheme_name','like', '%' . $scheme_name . '%')
                     ->get();  
             }elseif ($amc_name) {
@@ -205,6 +223,7 @@ class SchemeController extends Controller
                     ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
                     ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
                     ->where('md_scheme.delete_flag','N')
+                    ->where('md_scheme.scheme_type',$scheme_type)
                     ->where('md_amc.amc_name','like', '%' . $amc_name . '%')
                     ->get();  
             } else {
@@ -214,6 +233,7 @@ class SchemeController extends Controller
                     ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
                     ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
                     ->where('md_scheme.delete_flag','N')
+                    ->where('md_scheme.scheme_type',$scheme_type)
                     ->get();  
             }
         } catch (\Throwable $th) {
