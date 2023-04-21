@@ -363,8 +363,26 @@ class AMCController extends Controller
             return Helper::ErrorResponse(parent::VALIDATION_ERROR);
         }
         try {
+            // return $request;
             if ($request->id > 0) {
                 $data=AMC::find($request->id);
+
+                $logo=$request->logo;
+                if ($logo) {
+                    $logo_path_extension=$logo->getClientOriginalExtension();
+                    $logo_name=microtime(true).".".$logo_path_extension;
+                    $logo->move(public_path('amc-logo/'),$logo_name);
+
+                    if($data->logo!=null){
+                        $filecv = public_path('amc-logo/') . $data->logo;
+                        if (file_exists($filecv) != null) {
+                            unlink($filecv);
+                        }
+                    } 
+                }else {
+                    $logo_name=$data->logo;
+                }
+
                 $data->rnt_id=$request->rnt_id;
                 $data->product_id=$request->product_id;
                 $data->amc_name=$request->amc_name;
@@ -409,12 +427,20 @@ class AMCController extends Controller
                 $data->cus_care_whatsapp_no=$request->cus_care_whatsapp_no;
                 $data->distributor_care_no=$request->distributor_care_no;
                 $data->distributor_care_email=$request->distributor_care_email;
+                $data->logo=$logo_name;
                 $data->save();
             }else{
                 $is_has=AMC::where('amc_name',$request->amc_name)->where('delete_flag','N')->get();
                 if (count($is_has) > 0) {
                     return Helper::WarningResponse(parent::ALREADY_EXIST);
                 }else {
+                    $logo=$request->logo;
+                    if ($logo) {
+                        $logo_path_extension=$logo->getClientOriginalExtension();
+                        $logo_name=microtime(true).".".$logo_path_extension;
+                        $logo->move(public_path('amc-logo/'),$logo_name);
+                    }
+
                     $data=AMC::create(array(
                         'rnt_id'=>$request->rnt_id,
                         'product_id'=>$request->product_id,
@@ -460,6 +486,7 @@ class AMCController extends Controller
                         'cus_care_whatsapp_no'=>$request->cus_care_whatsapp_no,
                         'distributor_care_no'=>$request->distributor_care_no,
                         'distributor_care_email'=>$request->distributor_care_email,
+                        'logo'=>$logo_name,
                         'delete_flag'=>'N',
                         // 'created_by'=>'',
                     ));  

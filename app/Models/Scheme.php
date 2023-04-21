@@ -30,6 +30,11 @@ class Scheme extends Model
         'stp_date',
         'ava_special_sip',
         'special_sip_name',
+
+        'nfo_one_pager',
+        'nfo_kim',
+        'nfo_ppt',
+
         'delete_flag',
         'deleted_date',
         'deleted_by',

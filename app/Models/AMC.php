@@ -54,6 +54,7 @@ class AMC extends Model
         'cus_care_whatsapp_no',
         'distributor_care_no',
         'distributor_care_email',
+        'logo',
         'delete_flag',
         'deleted_date',
         'deleted_by',
