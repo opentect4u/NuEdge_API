@@ -5,7 +5,7 @@ namespace App\Http\Controllers\v1\Master;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Helpers\Helper;
-use App\Models\DepositBank;
+use App\Models\{DepositBank,MutualFund};
 use Validator;
 use Excel;
 use App\Imports\DepositBankImport;
@@ -152,5 +152,27 @@ class DepositBankController extends Controller
             return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
         }
         return Helper::SuccessResponse($data1);
+    }
+
+    public function delete(Request $request)
+    {
+        try {
+            $id=$request->id;
+            $is_has=MutualFund::where('chq_bank',$id)->get();
+            // return $is_has;
+            if (count($is_has)>0) {
+                return Helper::WarningResponse(parent::DELETE_NOT_ALLOW_ERROR);
+            }else {
+                $data=DepositBank::find($id);
+                $data->deleted_flag='Y';
+                $data->deleted_at=date('Y-m-d H:i:s');
+                $data->deleted_by=1;
+                $data->save();
+            }
+        } catch (\Throwable $th) {
+            // throw $th;
+            return Helper::ErrorResponse(parent::DELETE_FAIL_ERROR);
+        }
+        return Helper::SuccessResponse($data);
     }
 }

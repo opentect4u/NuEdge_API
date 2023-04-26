@@ -121,10 +121,20 @@ class SchemeController extends Controller
                     ->where('md_scheme.scheme_type',$scheme_type)
                     ->paginate($paginate);  
             }
+            // $mydata=$data;
+            // // return $mydata;
+            // $alldatas=[];
+            // foreach($data as $mydata){
+            //     $sip_freq_wise_amt=json_decode($mydata->sip_freq_wise_amt);
+            //     if ($sip_freq_wise_amt[0]->id=='D' && $sip_freq_wise_amt[0]->is_checked==true) {
+            //         array_push($alldatas,$mydata);
+            //     }
+            // }
+            // return $alldatas;
             
-            
+
         } catch (\Throwable $th) {
-            //throw $th;
+            // throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
         return Helper::SuccessResponse($data);

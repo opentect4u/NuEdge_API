@@ -278,7 +278,7 @@ class KYCController extends Controller
         try {
             $is_has=KYC::where('client_id',$request->client_id)->get();
             if (count($is_has) > 0) {
-                return Helper::ErrorResponse('Client already exist.');
+                return Helper::WarningResponse('Client already exist.');
             }else{
                 // return $request;
                 $product_id=1;

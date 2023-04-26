@@ -121,6 +121,7 @@ Route::prefix('v1')->group(function () {
         Route::post('depositbankExport',[App\Http\Controllers\v1\Master\DepositBankController::class,'export']);
         Route::post('depositbankAddEdit',[App\Http\Controllers\v1\Master\DepositBankController::class,'createUpdate']);
         Route::post('depositbankimport', [App\Http\Controllers\v1\Master\DepositBankController::class,'import']);
+        Route::post('depositbankDelete', [App\Http\Controllers\v1\Master\DepositBankController::class,'delete']);
 
         Route::get('documenttype',[App\Http\Controllers\v1\Master\DocumentTypeController::class,'index']);
         Route::get('documenttypeDetailSearch',[App\Http\Controllers\v1\Master\DocumentTypeController::class,'searchDetails']);

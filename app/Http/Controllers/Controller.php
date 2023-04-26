@@ -19,7 +19,7 @@ class Controller extends BaseController
     const METHOD_NOT_FOUND='Method does not exist.';
     const VALIDATION_ERROR='Some validation related error.';
     const IMPORT_CSV_ERROR='Error in importing csv.';
-    const DELETE_NOT_ALLOW_ERROR='Delete not allowed!';
+    const DELETE_NOT_ALLOW_ERROR='Already in use, deletion not allowed!';
     const DELETE_FAIL_ERROR='Record`s could not be deleted!';
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 }
