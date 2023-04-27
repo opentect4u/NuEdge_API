@@ -718,6 +718,7 @@ class FinancialController extends Controller
                         $up_data=Client::find($first_client_id);
                         $up_data->pan=$request->minor_to_major_pan;
                         $up_data->client_type='P';
+                        $up_data->save();
                     }
 
                     if ($request->transmission_type!='' && $data->trans_id==19) {

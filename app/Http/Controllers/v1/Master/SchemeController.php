@@ -5,7 +5,7 @@ namespace App\Http\Controllers\v1\Master;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Helpers\Helper;
-use App\Models\{Scheme,MutualFund,FormReceived,AMC,Category,SubCategory};
+use App\Models\{Scheme,MutualFund,FormReceived,AMC,Category,SubCategory,SchemeOtherForm};
 use Validator;
 use Excel;
 use App\Imports\SchemeImport;
@@ -336,7 +336,7 @@ class SchemeController extends Controller
             return Helper::ErrorResponse(parent::VALIDATION_ERROR);
         }
         try {
-            // $request->sip_date
+            // return $request;
             // $request->swp_date
             // $request->stp_date
             if ($request->sip_date!='') {
@@ -412,6 +412,55 @@ class SchemeController extends Controller
                             // 'created_by'=>'',
                         ));    
                     }elseif ($request->scheme_type=='N') {
+                        $doc_name_1='';
+                        $nfo_one_pager=$request->nfo_one_pager;
+                        if ($nfo_one_pager) {
+                            $cv_path_extension=$nfo_one_pager->getClientOriginalExtension();
+                            $doc_name_1=microtime(true).".".$cv_path_extension;
+                            $nfo_one_pager->move(public_path('application-forms/'),$doc_name_1);
+                        }
+                        $doc_name_2='';
+                        $nfo_kim=$request->nfo_kim;
+                        if ($nfo_kim) {
+                            $cv_path_extension=$nfo_kim->getClientOriginalExtension();
+                            $doc_name_2=microtime(true).".".$cv_path_extension;
+                            $nfo_kim->move(public_path('application-forms/'),$doc_name_2);
+                        }
+                        $doc_name_3='';
+                        $nfo_ppt=$request->nfo_ppt;
+                        if ($nfo_ppt) {
+                            $cv_path_extension=$nfo_ppt->getClientOriginalExtension();
+                            $doc_name_3=microtime(true).".".$cv_path_extension;
+                            $nfo_ppt->move(public_path('application-forms/'),$doc_name_3);
+                        }
+                        $doc_name_4='';
+                        $nfo_common_app=$request->nfo_common_app;
+                        if ($nfo_common_app) {
+                            $cv_path_extension=$nfo_common_app->getClientOriginalExtension();
+                            $doc_name_4=microtime(true).".".$cv_path_extension;
+                            $nfo_common_app->move(public_path('application-forms/'),$doc_name_4);
+                        }
+                        $doc_name_5='';
+                        $sip_registration=$request->sip_registration;
+                        if ($sip_registration) {
+                            $cv_path_extension=$sip_registration->getClientOriginalExtension();
+                            $doc_name_5=microtime(true).".".$cv_path_extension;
+                            $sip_registration->move(public_path('application-forms/'),$doc_name_5);
+                        }
+                        $doc_name_6='';
+                        $swp_registration=$request->swp_registration;
+                        if ($swp_registration) {
+                            $cv_path_extension=$swp_registration->getClientOriginalExtension();
+                            $doc_name_6=microtime(true).".".$cv_path_extension;
+                            $swp_registration->move(public_path('application-forms/'),$doc_name_6);
+                        }
+                        $doc_name_7='';
+                        $stp_registration=$request->stp_registration;
+                        if ($stp_registration) {
+                            $cv_path_extension=$stp_registration->getClientOriginalExtension();
+                            $doc_name_7=microtime(true).".".$cv_path_extension;
+                            $stp_registration->move(public_path('application-forms/'),$doc_name_7);
+                        }
                         $data=Scheme::create(array(
                             'product_id'=>$request->product_id,
                             'amc_id'=>$request->amc_id,
@@ -433,8 +482,42 @@ class SchemeController extends Controller
                             'stp_date'=>$stp_date,
                             'ava_special_sip'=>$request->ava_special_sip,
                             'special_sip_name'=>$request->special_sip_name,
+
+                            'ava_special_swp'=>$request->ava_special_swp,
+                            'special_swp_name'=>$request->special_swp_name,
+                            'ava_special_stp'=>$request->ava_special_stp,
+                            'special_stp_name'=>$request->special_stp_name,
+                            'step_up_min_amt'=>$request->step_up_min_amt,
+                            'step_up_min_per'=>$request->step_up_min_per,
+                            'nfo_one_pager'=>$doc_name_1,
+                            'nfo_kim'=>$doc_name_2,
+                            'nfo_ppt'=>$doc_name_3,
+                            'nfo_common_app'=>$doc_name_4,
+                            'sip_registration'=>$doc_name_5,
+                            'swp_registration'=>$doc_name_6,
+                            'stp_registration'=>$doc_name_7,
+                            'growth_isin'=>$request->growth_isin,
+                            'idcw_payout_isin'=>$request->idcw_payout_isin,
+                            'idcw_reinvestment_isin'=>$request->idcw_reinvestment_isin,
                             // 'created_by'=>'',
                         ));  
+
+                        $doc_names='';
+                        $files=$request->form_upload;
+                        foreach ($files as $key => $file) {
+                            // return $file;
+                            if ($file) {
+                                $cv_path_extension=$file->getClientOriginalExtension();
+                                $doc_names=microtime(true).$cv_path_extension;
+                                $file->move(public_path('application-forms/'),$doc_names);
+                            }
+                            SchemeOtherForm::create(array(
+                                'scheme_id'=>$data->id,
+                                'form_name'=>$request->form_name[$key],
+                                'form_upload'=>$doc_names,
+                                // 'created_by'=>'',
+                            ));      
+                        }
                     }  
                 }
             }    
