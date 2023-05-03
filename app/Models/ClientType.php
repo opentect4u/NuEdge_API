@@ -11,6 +11,7 @@ class ClientType extends Model
     protected $table="md_client_type";
     protected $fillable = [
         'type_name',
+        'type',
         'created_by',
         'updated_by',
     ];

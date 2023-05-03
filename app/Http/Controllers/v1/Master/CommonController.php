@@ -13,7 +13,9 @@ class CommonController extends Controller
     public function showAMC(Request $request)
     {
         try {  
-            $data=AMC::where('product_id',$request->product_id)->get();      
+            $data=AMC::where('product_id',$request->product_id)
+                ->orderBy('amc_short_name','ASC')
+                ->get();      
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);

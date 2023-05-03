@@ -341,7 +341,7 @@ class AMCController extends Controller
                     ->paginate($paginate);      
                 // $data=AMC::where('md_amc.delete_flag','N')->orderBy('updated_at','DESC')->paginate($paginate);      
             } else {
-                $data=AMC::where('delete_flag','N')->orderBy('updated_at','DESC')->get();      
+                $data=AMC::where('delete_flag','N')->orderBy('amc_short_name','ASC')->get();  
             }
         } catch (\Throwable $th) {
             //throw $th;
