@@ -115,6 +115,14 @@ Route::prefix('v1')->group(function () {
         Route::post('schemeimport', [App\Http\Controllers\v1\Master\SchemeController::class,'import']);
         Route::post('schemeDelete', [App\Http\Controllers\v1\Master\SchemeController::class,'delete']);
 
+        Route::get('schemeISIN',[App\Http\Controllers\v1\Master\SchemeISINController::class,'index']);
+        Route::get('schemeISINDetailSearch',[App\Http\Controllers\v1\Master\SchemeISINController::class,'searchDetails']);
+        Route::post('schemeISINDetailSearch',[App\Http\Controllers\v1\Master\SchemeISINController::class,'searchDetails']);
+        Route::post('schemeISINExport',[App\Http\Controllers\v1\Master\SchemeISINController::class,'export']);
+        Route::post('schemeISINAddEdit',[App\Http\Controllers\v1\Master\SchemeISINController::class,'createUpdate']);
+        Route::post('schemeISINimport', [App\Http\Controllers\v1\Master\SchemeISINController::class,'import']);
+        Route::post('schemeISINDelete', [App\Http\Controllers\v1\Master\SchemeISINController::class,'delete']);
+
         Route::get('depositbank',[App\Http\Controllers\v1\Master\DepositBankController::class,'index']);
         Route::get('depositbankDetailSearch',[App\Http\Controllers\v1\Master\DepositBankController::class,'searchDetails']);
         Route::post('depositbankDetailSearch',[App\Http\Controllers\v1\Master\DepositBankController::class,'searchDetails']);

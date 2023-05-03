@@ -304,6 +304,8 @@ class SchemeController extends Controller
                     ->where('md_scheme.id',$scheme_id)
                     ->get();      
                 // $data=Scheme::where('id',$scheme_id)->get();      
+            }elseif ($amc_id!='') {
+                $data=Scheme::where('delete_flag','N')->where('amc_id',$amc_id)->get();  
             }elseif ($id!='') {
                 $data=Scheme::where('delete_flag','N')->where('id',$id)->get();      
             }elseif ($scheme_type!='') {
@@ -360,11 +362,144 @@ class SchemeController extends Controller
             if ($request->id > 0) {
                 $data=Scheme::find($request->id);
                 if ($request->scheme_type=='N') {
+                        $doc_name_1='';
+                        $nfo_one_pager=$request->nfo_one_pager;
+                        if ($nfo_one_pager) {
+                            $cv_path_extension=$nfo_one_pager->getClientOriginalExtension();
+                            $doc_name_1=microtime(true).".".$cv_path_extension;
+                            $nfo_one_pager->move(public_path('application-forms/'),$doc_name_1);
+
+                            if($data->nfo_one_pager!=null){
+                                $filenfo_one_pager = public_path('application-forms/') . $data->nfo_one_pager;
+                                if (file_exists($filenfo_one_pager) != null) {
+                                    unlink($filenfo_one_pager);
+                                }
+                            } 
+                        }else {
+                            $doc_name_1=$data->nfo_one_pager;
+                        }
+                        $doc_name_2='';
+                        $nfo_kim=$request->nfo_kim;
+                        if ($nfo_kim) {
+                            $cv_path_extension=$nfo_kim->getClientOriginalExtension();
+                            $doc_name_2=microtime(true).".".$cv_path_extension;
+                            $nfo_kim->move(public_path('application-forms/'),$doc_name_2);
+
+                            if($data->nfo_kim!=null){
+                                $filenfo_kim = public_path('application-forms/') . $data->nfo_kim;
+                                if (file_exists($filenfo_kim) != null) {
+                                    unlink($filenfo_kim);
+                                }
+                            } 
+                        }else {
+                            $doc_name_2=$data->nfo_kim;
+                        }
+                        $doc_name_3='';
+                        $nfo_ppt=$request->nfo_ppt;
+                        if ($nfo_ppt) {
+                            $cv_path_extension=$nfo_ppt->getClientOriginalExtension();
+                            $doc_name_3=microtime(true).".".$cv_path_extension;
+                            $nfo_ppt->move(public_path('application-forms/'),$doc_name_3);
+
+                            if($data->nfo_ppt!=null){
+                                $filecv = public_path('application-forms/') . $data->nfo_ppt;
+                                if (file_exists($filecv) != null) {
+                                    unlink($filecv);
+                                }
+                            } 
+                        }else {
+                            $doc_name_3=$data->nfo_ppt;
+                        }
+                        $doc_name_4='';
+                        $nfo_common_app=$request->nfo_common_app;
+                        if ($nfo_common_app) {
+                            $cv_path_extension=$nfo_common_app->getClientOriginalExtension();
+                            $doc_name_4=microtime(true).".".$cv_path_extension;
+                            $nfo_common_app->move(public_path('application-forms/'),$doc_name_4);
+
+                            if($data->nfo_common_app!=null){
+                                $filecv = public_path('application-forms/') . $data->nfo_common_app;
+                                if (file_exists($filecv) != null) {
+                                    unlink($filecv);
+                                }
+                            } 
+                        }else {
+                            $doc_name_4=$data->nfo_common_app;
+                        }
+                        $doc_name_5='';
+                        $sip_registration=$request->sip_registration;
+                        if ($sip_registration) {
+                            $cv_path_extension=$sip_registration->getClientOriginalExtension();
+                            $doc_name_5=microtime(true).".".$cv_path_extension;
+                            $sip_registration->move(public_path('application-forms/'),$doc_name_5);
+
+                            if($data->sip_registration!=null){
+                                $filecv = public_path('application-forms/') . $data->sip_registration;
+                                if (file_exists($filecv) != null) {
+                                    unlink($filecv);
+                                }
+                            } 
+                        }else {
+                            $doc_name_5=$data->sip_registration;
+                        }
+                        $doc_name_6='';
+                        $swp_registration=$request->swp_registration;
+                        if ($swp_registration) {
+                            $cv_path_extension=$swp_registration->getClientOriginalExtension();
+                            $doc_name_6=microtime(true).".".$cv_path_extension;
+                            $swp_registration->move(public_path('application-forms/'),$doc_name_6);
+
+                            if($data->swp_registration!=null){
+                                $filecv = public_path('application-forms/') . $data->swp_registration;
+                                if (file_exists($filecv) != null) {
+                                    unlink($filecv);
+                                }
+                            } 
+                        }else {
+                            $doc_name_6=$data->swp_registration;
+                        }
+                        $doc_name_7='';
+                        $stp_registration=$request->stp_registration;
+                        if ($stp_registration) {
+                            $cv_path_extension=$stp_registration->getClientOriginalExtension();
+                            $doc_name_7=microtime(true).".".$cv_path_extension;
+                            $stp_registration->move(public_path('application-forms/'),$doc_name_7);
+
+                            if($data->stp_registration!=null){
+                                $filecv = public_path('application-forms/') . $data->stp_registration;
+                                if (file_exists($filecv) != null) {
+                                    unlink($filecv);
+                                }
+                            } 
+                        }else {
+                            $doc_name_7=$data->stp_registration;
+                        }
+                    
                     $data->nfo_start_dt=date('Y-m-d',strtotime($request->nfo_start_dt));
                     $data->nfo_end_dt=date('Y-m-d',strtotime($request->nfo_end_dt));
                     $data->nfo_reopen_dt=date('Y-m-d',strtotime($request->nfo_reopen_dt));
                     $data->nfo_entry_date=date('Y-m-d',strtotime($request->nfo_entry_date));
+
+                    $data->nfo_one_pager=$doc_name_1;
+                    $data->nfo_kim=$doc_name_2;
+                    $data->nfo_ppt=$doc_name_3;
+                    $data->nfo_common_app=$doc_name_4;
+                    $data->sip_registration=$doc_name_5;
+                    $data->swp_registration=$doc_name_6;
+                    $data->stp_registration=$doc_name_7;
                 }  
+
+                $data->ava_special_swp=$request->ava_special_swp;
+                $data->special_swp_name=$request->special_swp_name;
+                $data->ava_special_stp=$request->ava_special_stp;
+                $data->special_stp_name=$request->special_stp_name;
+                $data->step_up_min_amt=$request->step_up_min_amt;
+                $data->step_up_min_per=$request->step_up_min_per;
+
+                // $data->growth_isin=$request->growth_isin;
+                // $data->idcw_payout_isin=$request->idcw_payout_isin;
+                // $data->idcw_reinvestment_isin=$request->idcw_reinvestment_isin;
+
                 $data->product_id=$request->product_id;
                 $data->amc_id=$request->amc_id;
                 $data->category_id=$request->category_id;
@@ -383,6 +518,43 @@ class SchemeController extends Controller
                 $data->ava_special_sip=$request->ava_special_sip;
                 $data->special_sip_name=$request->special_sip_name;
                 $data->save();
+
+
+                $doc_names='';
+                $files=$request->form_upload;
+                if ($request->row_id!='') {
+                    foreach ($request->row_id as $key => $row_id) {
+                        if ($row_id==0) {
+                            if ($file[$key]) {
+                                $cv_path_extension=$file[$key]->getClientOriginalExtension();
+                                $doc_names=microtime(true).".".$cv_path_extension;
+                                $file[$key]->move(public_path('application-forms/'),$doc_names);
+                            }
+                            SchemeOtherForm::create(array(
+                                'scheme_id'=>$data->id,
+                                'form_name'=>$request->form_name[$key],
+                                'form_upload'=>$doc_names,
+                                // 'created_by'=>'',
+                            ));      
+                        } else {
+                            if ($file[$key]) {
+                                $cv_path_extension=$file[$key]->getClientOriginalExtension();
+                                $doc_names=microtime(true).".".$cv_path_extension;
+                                $file[$key]->move(public_path('application-forms/'),$doc_names);
+                            }
+                            $data=SchemeOtherForm::find($row_id);
+                            if($data->doc_names!=null){
+                                $filecv = public_path('application-forms/') . $data->doc_names;
+                                if (file_exists($filecv) != null) {
+                                    unlink($filecv);
+                                }
+                            } 
+                            $data->form_name=$request->form_name[$key];
+                            $data->form_upload=$doc_names;
+                            $data->save();
+                        }
+                    }
+                }
             }else{
                 $is_has=Scheme::where('scheme_name',$request->scheme_name)->where('delete_flag','N')->get();
                 if (count($is_has) > 0) {
@@ -496,9 +668,9 @@ class SchemeController extends Controller
                             'sip_registration'=>$doc_name_5,
                             'swp_registration'=>$doc_name_6,
                             'stp_registration'=>$doc_name_7,
-                            'growth_isin'=>$request->growth_isin,
-                            'idcw_payout_isin'=>$request->idcw_payout_isin,
-                            'idcw_reinvestment_isin'=>$request->idcw_reinvestment_isin,
+                            // 'growth_isin'=>$request->growth_isin,
+                            // 'idcw_payout_isin'=>$request->idcw_payout_isin,
+                            // 'idcw_reinvestment_isin'=>$request->idcw_reinvestment_isin,
                             // 'created_by'=>'',
                         ));  
 

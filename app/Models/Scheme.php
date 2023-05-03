@@ -44,9 +44,9 @@ class Scheme extends Model
         'sip_registration',
         'swp_registration',
         'stp_registration',
-        'growth_isin',
-        'idcw_payout_isin',
-        'idcw_reinvestment_isin',
+        // 'growth_isin',
+        // 'idcw_payout_isin',
+        // 'idcw_reinvestment_isin',
 
         'delete_flag',
         'deleted_date',
