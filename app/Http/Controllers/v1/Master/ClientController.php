@@ -7,12 +7,14 @@ use Illuminate\Http\Request;
 use App\Helpers\Helper;
 use App\Models\Client;
 use App\Models\Document;
+use App\Models\ClientPertner;
 use Validator;
 use Excel;
 use App\Imports\ClientImport;
 use Mail;
 use App\Mail\Master\CreatClientEmail;
 use App\Models\Email;
+use Carbon\Carbon;
 
 class ClientController extends Controller
 {
@@ -25,25 +27,60 @@ class ClientController extends Controller
             $column_name=$request->column_name;
             $client_type=$request->client_type;
 
+            $birth_date_month=$request->birth_date_month;
+            $anniversary_date_month=$request->anniversary_date_month;
+
+
+            // ->whereMonth('created_at', '=', $month)
+
             if ($sort_by && $column_name) {
-                $data=Client::with('ClientDoc')
+                $data=Client::with('ClientDoc')->with('PertnerDetails')
                     ->leftJoin('md_city','md_city.id','=','md_client.city')
                     ->leftJoin('md_district','md_district.id','=','md_client.dist')
                     ->leftJoin('md_states','md_states.id','=','md_client.state')
                     ->leftJoin('md_client_type','md_client_type.id','=','md_client.client_type_mode')
-                    ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name')
+                    ->leftJoin('md_pincode','md_pincode.id','=','md_client.pincode')
+                    ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name','md_pincode.pincode as pincode')
                     ->where('md_client.client_type',$client_type)
                     ->orderBy('md_client.'.$column_name,$sort_by)
+                    ->orderBy('md_client.created_at','desc')
                     ->paginate($paginate);    
-            }else {
-                $data=Client::with('ClientDoc')
+            }elseif ($birth_date_month) {
+                
+                $data=Client::with('ClientDoc')->with('PertnerDetails')
                     ->leftJoin('md_city','md_city.id','=','md_client.city')
                     ->leftJoin('md_district','md_district.id','=','md_client.dist')
                     ->leftJoin('md_states','md_states.id','=','md_client.state')
                     ->leftJoin('md_client_type','md_client_type.id','=','md_client.client_type_mode')
-                    ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name')
+                    ->leftJoin('md_pincode','md_pincode.id','=','md_client.pincode')
+                    ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name','md_pincode.pincode as pincode')
                     ->where('md_client.client_type',$client_type)
-                    // ->get();
+                    ->whereMonth('md_client.dob',$birth_date_month)
+                    // ->whereMonth('md_client.dob_actual',$birth_date_month)
+                    ->orderBy('md_client.created_at','desc')
+                    ->paginate($paginate);    
+            }elseif ($anniversary_date_month) {
+                $data=Client::with('ClientDoc')->with('PertnerDetails')
+                    ->leftJoin('md_city','md_city.id','=','md_client.city')
+                    ->leftJoin('md_district','md_district.id','=','md_client.dist')
+                    ->leftJoin('md_states','md_states.id','=','md_client.state')
+                    ->leftJoin('md_client_type','md_client_type.id','=','md_client.client_type_mode')
+                    ->leftJoin('md_pincode','md_pincode.id','=','md_client.pincode')
+                    ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name','md_pincode.pincode as pincode')
+                    ->where('md_client.client_type',$client_type)
+                    ->whereMonth('md_client.anniversary_date',$anniversary_date_month)
+                    ->orderBy('md_client.created_at','desc')
+                    ->paginate($paginate);    
+            } else {
+                $data=Client::with('ClientDoc')->with('PertnerDetails')
+                    ->leftJoin('md_city','md_city.id','=','md_client.city')
+                    ->leftJoin('md_district','md_district.id','=','md_client.dist')
+                    ->leftJoin('md_states','md_states.id','=','md_client.state')
+                    ->leftJoin('md_client_type','md_client_type.id','=','md_client.client_type_mode')
+                    ->leftJoin('md_pincode','md_pincode.id','=','md_client.pincode')
+                    ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name','md_pincode.pincode as pincode')
+                    ->where('md_client.client_type',$client_type)
+                    ->orderBy('md_client.created_at','desc')
                     ->paginate($paginate);    
             }  
         } catch (\Throwable $th) {
@@ -59,25 +96,58 @@ class ClientController extends Controller
             $sort_by=$request->sort_by;
             $column_name=$request->column_name;
             $client_type=$request->client_type;
+
+            $birth_date_month=$request->birth_date_month;
+            $anniversary_date_month=$request->anniversary_date_month;
+
             if ($sort_by && $column_name) {
-                $data=Client::with('ClientDoc')
+                $data=Client::with('ClientDoc')->with('PertnerDetails')
                     ->leftJoin('md_city','md_city.id','=','md_client.city')
                     ->leftJoin('md_district','md_district.id','=','md_client.dist')
                     ->leftJoin('md_states','md_states.id','=','md_client.state')
                     ->leftJoin('md_client_type','md_client_type.id','=','md_client.client_type_mode')
-                    ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name')
+                    ->leftJoin('md_pincode','md_pincode.id','=','md_client.pincode')
+                    ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name','md_pincode.pincode as pincode')
                     ->where('md_client.client_type',$client_type)
                     ->orderBy('md_client.'.$column_name,$sort_by)
+                    ->orderBy('md_client.created_at','desc')
                     ->get();    
+            }elseif ($birth_date_month) {
+                
+                    $data=Client::with('ClientDoc')->with('PertnerDetails')
+                        ->leftJoin('md_city','md_city.id','=','md_client.city')
+                        ->leftJoin('md_district','md_district.id','=','md_client.dist')
+                        ->leftJoin('md_states','md_states.id','=','md_client.state')
+                        ->leftJoin('md_client_type','md_client_type.id','=','md_client.client_type_mode')
+                        ->leftJoin('md_pincode','md_pincode.id','=','md_client.pincode')
+                        ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name','md_pincode.pincode as pincode')
+                        ->where('md_client.client_type',$client_type)
+                        ->whereMonth('md_client.dob',$birth_date_month)
+                        // ->whereMonth('md_client.dob_actual',$birth_date_month)
+                        ->orderBy('md_client.created_at','desc')
+                        ->get();    
+            }elseif ($anniversary_date_month) {
+                    $data=Client::with('ClientDoc')->with('PertnerDetails')
+                        ->leftJoin('md_city','md_city.id','=','md_client.city')
+                        ->leftJoin('md_district','md_district.id','=','md_client.dist')
+                        ->leftJoin('md_states','md_states.id','=','md_client.state')
+                        ->leftJoin('md_client_type','md_client_type.id','=','md_client.client_type_mode')
+                        ->leftJoin('md_pincode','md_pincode.id','=','md_client.pincode')
+                        ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name','md_pincode.pincode as pincode')
+                        ->where('md_client.client_type',$client_type)
+                        ->whereMonth('md_client.anniversary_date',$anniversary_date_month)
+                        ->orderBy('md_client.created_at','desc')
+                        ->get();    
             }else {
-                $data=Client::with('ClientDoc')
+                $data=Client::with('ClientDoc')->with('PertnerDetails')
                     ->leftJoin('md_city','md_city.id','=','md_client.city')
                     ->leftJoin('md_district','md_district.id','=','md_client.dist')
                     ->leftJoin('md_states','md_states.id','=','md_client.state')
                     ->leftJoin('md_client_type','md_client_type.id','=','md_client.client_type_mode')
-                    ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name')
+                    ->leftJoin('md_pincode','md_pincode.id','=','md_client.pincode')
+                    ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name','md_pincode.pincode as pincode')
                     ->where('md_client.client_type',$client_type)
-                    // ->get();
+                    ->orderBy('md_client.created_at','desc')
                     ->get();    
             }  
         } catch (\Throwable $th) {
@@ -107,6 +177,7 @@ class ClientController extends Controller
                     ->paginate($paginate);      
             }else if ($client_code!='') {
                 $data=Client::leftJoin('td_kyc','td_kyc.client_code','=','md_client.client_code')
+                    ->leftJoin('md_pincode','md_pincode.id','=','md_client.pincode')
                     ->select('md_client.*','td_kyc.final_kyc_status as final_kyc_status')
                     ->where('md_client.client_code',$client_code)
                     ->get();      
@@ -118,19 +189,24 @@ class ClientController extends Controller
             }else if ($id!='') {
                 $data=Client::with('ClientDoc')->where('id',$id)->get();
             }else if ($client_id!='') {
-                $data=Client::with('ClientDoc')
+                $data=Client::with('ClientDoc')->with('PertnerDetails')
                     ->join('md_city','md_city.id','=','md_client.city')
                     ->join('md_district','md_district.id','=','md_client.dist')
                     ->join('md_states','md_states.id','=','md_client.state')
-                    ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name')
+                    ->leftJoin('md_country','md_country.id','=','md_client.country_id')
+                    ->leftJoin('md_pincode','md_pincode.id','=','md_client.pincode')
+                    ->leftJoin('md_client_type','md_client_type.id','=','md_client.client_type_mode')
+                    ->leftJoin('md_pincode','md_pincode.id','=','md_client.pincode')
+                    ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as client_type_name',
+                    'md_country.name as country_name','md_pincode.pincode as pincode_name')
                     ->where('md_client.id',$client_id)
                     ->get();
             // }else if ($paginate!='') {
             //     $data=Client::with('ClientDoc')->paginate($paginate);    
             } else{
-                $data=Client::with('ClientDoc')->
+                $data=Client::with('ClientDoc')->orderBy('created_at','desc')
                 // whereDate('updated_at',date('Y-m-d'))->
-                get();      
+                ->get();      
             }
         } catch (\Throwable $th) {
             //throw $th;
@@ -159,6 +235,7 @@ class ClientController extends Controller
             return Helper::ErrorResponse(parent::VALIDATION_ERROR);
         }
         try {
+            // return $request;
             if ($request->id > 0) {
                 // return $request;
                 if ($request->client_type=='E') {
@@ -224,49 +301,48 @@ class ClientController extends Controller
                     $data='';
                 }
             }else{
-                if ($request->client_type=='E') {
-                    $already=Client::where('pan',$request->pan)->get();
-                    if (count($already)>0) {
-                        $ms='PAN no already exist.';
-                        return Helper::ErrorResponse($ms);
-                    }else{
-                        $u_data=Client::create(array(
-                            'client_name'=>$request->client_name,
-                            'pan'=>$request->pan,
-                            'client_type'=>$request->client_type,
-                            // 'created_by'=>'',
-                        ));  
-                    }
-                    $data=Client::with('ClientDoc')->where('id',$u_data->id)->first();    
-                }else {
-                    $client_name=ucwords($request->client_name);
-                    $words = explode(" ",$client_name);
+                // return $request;
+                
                     $client_code="";
-                    $client_code_1 = mb_substr($words[0], 0, 1).mb_substr($words[(count($words)-1)], 0, 1);;
-                    
-                    $is_has=Client::where('client_code',$client_code_1)->get();
+                    if ($request->client_type_mode==14) {
+                        $client_name = substr($request->client_name, 0, 2);
+                        $client_code_1 = strtoupper($client_name);
+                    }else {
+                        $client_name=ucwords($request->client_name);
+                        $words = explode(" ",$client_name);
+
+                        $client_code_1 = mb_substr($words[0], 0, 1).mb_substr($words[(count($words)-1)], 0, 1);
+                    }
+                    // return $client_code_1;
+                    $client_code=$client_code_1.date('dmy',strtotime($request->dob));
+                    // return $client_code;
+                    $is_has=Client::where('client_code','LIKE','%'.$client_code.'%')->get();
+                    // return $is_has;
                     if (count($is_has)>0) {
                         $client_code=$client_code_1.date('dmy',strtotime($request->dob)).count($is_has);
-                    }else {
-                        $client_code=$client_code_1.date('dmy',strtotime($request->dob));
                     }
-                    
+
                     if ($request->client_type=='P') {
                         // return $request;
                         $already=Client::where('pan',$request->pan)->get();
                         if (count($already)>0) {
                             $ms='PAN no already exist.';
-                            return Helper::ErrorResponse($ms);
+                            return Helper::WarningResponse($ms);
                         }else{
                             // return $request;
                             $u_data=Client::create(array(
                                 'client_code'=>$client_code,
                                 'client_name'=>$client_name,
+                                'karta_name'=>isset($request->karta_name)?$request->karta_name:NULL,
+                                'inc_date'=>isset($request->inc_date)?$request->inc_date:NULL,
+                                'proprietor_name'=>isset($request->proprietor_name)?$request->proprietor_name:NULL,
+                                'date_of_incorporation'=>isset($request->date_of_incorporation)?$request->date_of_incorporation:NULL,
                                 'dob'=>$request->dob,
                                 'dob_actual'=>$request->dob_actual,
                                 'anniversary_date'=>isset($request->anniversary_date)?$request->anniversary_date:NULL,
                                 'add_line_1'=>$request->add_line_1,
                                 'add_line_2'=>$request->add_line_2,
+                                'country_id'=>$request->country_id,
                                 'city'=>$request->city,
                                 'dist'=>$request->dist,
                                 'state'=>$request->state,
@@ -299,12 +375,91 @@ class ClientController extends Controller
                                 }
                             }
 
+                            $pertner_details=$request->pertner_details;
+                            if ($pertner_details!='') {
+                                $pertner_details=json_decode($pertner_details);
+                                foreach ($pertner_details as $key => $value10) {
+                                    ClientPertner::create(array(
+                                        'client_id'=>$u_data->id,
+                                        'name'=>$value10->name,
+                                        'mobile'=>$value10->mobile,
+                                        'email'=>$value10->email,
+                                        'dob'=>$value10->dob,
+                                        'pan'=>$value10->pan,
+                                    ));
+                                }
+                            }
+
                             $email=Email::find(1);
                             // Mail::to($request->email)->send(new CreatClientEmail($client_name,$email->subject,$email->body));
 
                             $data=Client::with('ClientDoc')->where('id',$u_data->id)->first();  
                         }  
-                    }else {
+                    }elseif ($request->client_type=='N') {
+                        $u_data=Client::create(array(
+                            'client_code'=>$client_code,
+                            'client_name'=>$client_name,
+                            'karta_name'=>isset($request->karta_name)?$request->karta_name:NULL,
+                            'inc_date'=>isset($request->inc_date)?$request->inc_date:NULL,
+                            'proprietor_name'=>isset($request->proprietor_name)?$request->proprietor_name:NULL,
+                            'date_of_incorporation'=>isset($request->date_of_incorporation)?$request->date_of_incorporation:NULL,
+                            'dob'=>$request->dob,
+                            'dob_actual'=>$request->dob_actual,
+                            'anniversary_date'=>isset($request->anniversary_date)?$request->anniversary_date:NULL,
+                            'add_line_1'=>$request->add_line_1,
+                            'add_line_2'=>$request->add_line_2,
+                            'country_id'=>$request->country_id,
+                            'city'=>$request->city,
+                            'dist'=>$request->dist,
+                            'state'=>$request->state,
+                            'pincode'=>$request->pincode,
+                            'mobile'=>$request->mobile,
+                            'sec_mobile'=>$request->sec_mobile,
+                            'email'=>$request->email,
+                            'sec_email'=>$request->sec_email,
+                            'client_type'=>$request->client_type,
+                            'client_type_mode'=>$request->client_type_mode,
+                        )); 
+                        $doc_name='';
+                        $files=$request->file;
+                        // return $files;
+                        if ($files!='') {
+                            foreach ($files as $key => $file) {
+                                // return $file;
+                                if ($file) {
+                                    $cv_path_extension=$file->getClientOriginalExtension();
+                                    $doc_name=microtime(true).'_'.$u_data->id.".".$cv_path_extension;
+                                    $file->move(public_path('client-doc/'.$u_data->id."/"),$doc_name);
+                                }
+                                Document::create(array(
+                                    'client_id'=>$u_data->id,
+                                    'doc_type_id'=>$request->doc_type_id[$key],
+                                    'doc_name'=>$doc_name,
+                                    // 'created_by'=>'',
+                                ));      
+                            }
+                        }
+
+                        $pertner_details=$request->pertner_details;
+                            if ($pertner_details!='') {
+                                $pertner_details=json_decode($pertner_details);
+                                foreach ($pertner_details as $key => $value10) {
+                                    ClientPertner::create(array(
+                                        'client_id'=>$u_data->id,
+                                        'name'=>$value10->name,
+                                        'mobile'=>$value10->mobile,
+                                        'email'=>$value10->email,
+                                        'dob'=>$value10->dob,
+                                        'pan'=>$value10->pan,
+                                    ));
+                                }
+                            }
+
+                        $email=Email::find(1);
+                        // Mail::to($request->email)->send(new CreatClientEmail($client_name,$email->subject,$email->body));
+
+                        $data=Client::with('ClientDoc')->where('id',$u_data->id)->first();  
+                    } else {
                         // return $request;
                         $u_data=Client::create(array(
                             'client_code'=>$client_code,
@@ -314,6 +469,7 @@ class ClientController extends Controller
                             'anniversary_date'=>isset($request->anniversary_date)?$request->anniversary_date:NULL,
                             'add_line_1'=>$request->add_line_1,
                             'add_line_2'=>$request->add_line_2,
+                            'country_id'=>$request->country_id,
                             'city'=>$request->city,
                             'dist'=>$request->dist,
                             'state'=>$request->state,
@@ -327,6 +483,7 @@ class ClientController extends Controller
                             'guardians_pan'=>$request->guardians_pan,
                             'guardians_name'=>$request->guardians_name,
                             'relation'=>$request->relation,
+                            'client_type_mode'=>$request->client_type_mode,
                             // 'created_by'=>'',
                         ));
                         $doc_name='';
@@ -353,10 +510,10 @@ class ClientController extends Controller
 
                         $data=Client::with('ClientDoc')->where('id',$u_data->id)->first();    
                     }
-                }
+                
             }  
         } catch (\Throwable $th) {
-            //throw $th;
+            // throw $th;
             return Helper::ErrorResponse(parent::DATA_SAVE_ERROR);
         }
         return Helper::SuccessResponse($data);

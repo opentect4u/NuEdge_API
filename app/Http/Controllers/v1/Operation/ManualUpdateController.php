@@ -210,7 +210,7 @@ class ManualUpdateController extends Controller
                     'reject_memo'=>$reject_memo_name,
                     'manual_update_remarks'=>$request->manual_update_remarks,
                 ));   
-            } elseif ($request->manual_trans_status=="P") { // pending
+            } elseif ($request->manual_trans_status=="N") { // pending
                 MutualFund::where('tin_no',$request->tin_no)->update(array(
                     'manual_trans_status'=>$request->manual_trans_status,
                     'contact_to_amc'=>$request->contact_to_amc,

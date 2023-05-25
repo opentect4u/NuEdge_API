@@ -10,6 +10,8 @@ class City extends Model
     use HasFactory;
     protected $table="md_city";
     protected $fillable = [
+        'country_id',
+        'state_id',
         'district_id',
         'name',
         'created_by',

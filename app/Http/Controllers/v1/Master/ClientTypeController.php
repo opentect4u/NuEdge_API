@@ -55,9 +55,12 @@ class ClientTypeController extends Controller
             $search=$request->search;
             $paginate=$request->paginate;
             $product_id=$request->product_id;
+            $flag=$request->flag;
             if ($search!='') {
                 $data=ClientType::orWhere('type_name','like', '%' . $search . '%')
                 ->get();      
+            }else if ($flag) {
+                $data=ClientType::where('flag',$flag)->orderBy('type_name','ASC')->get();      
             }elseif ($paginate!='') {
                 $data=ClientType::paginate($paginate);      
             } else {

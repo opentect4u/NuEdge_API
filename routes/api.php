@@ -40,8 +40,8 @@ Route::prefix('v1')->group(function () {
         Route::post('rntimport', [App\Http\Controllers\v1\Master\RNTController::class,'import']);
         Route::post('rntDelete', [App\Http\Controllers\v1\Master\RNTController::class,'delete']);
 
-        Route::get('product',[App\Http\Controllers\v1\Master\ProductController::class,'index']);
-        Route::post('productAddEdit',[App\Http\Controllers\v1\Master\ProductController::class,'createUpdate']);
+        // Route::get('product',[App\Http\Controllers\v1\Master\ProductController::class,'index']);
+        // Route::post('productAddEdit',[App\Http\Controllers\v1\Master\ProductController::class,'createUpdate']);
 
         Route::get('amc',[App\Http\Controllers\v1\Master\AMCController::class,'index']);
         Route::get('amcDetailSearch',[App\Http\Controllers\v1\Master\AMCController::class,'searchDetails']);
@@ -145,9 +145,44 @@ Route::prefix('v1')->group(function () {
         Route::get('subbroker',[App\Http\Controllers\v1\Master\SubBrokerController::class,'index']);
         Route::post('subbrokerAddEdit',[App\Http\Controllers\v1\Master\SubBrokerController::class,'createUpdate']);
 
+        // =============================geography masters start=================================
+        Route::get('country',[App\Http\Controllers\v1\Master\CountryController::class,'index']);
+        Route::any('countrySearch',[App\Http\Controllers\v1\Master\CountryController::class,'searchDetails']);
+        Route::post('countryExport',[App\Http\Controllers\v1\Master\CountryController::class,'export']);
+        Route::post('countryAddEdit',[App\Http\Controllers\v1\Master\CountryController::class,'createUpdate']);
+        Route::post('countryimport',[App\Http\Controllers\v1\Master\CountryController::class,'import']);
+
         Route::get('states',[App\Http\Controllers\v1\Master\StateController::class,'index']);
+        Route::any('stateSearch',[App\Http\Controllers\v1\Master\StateController::class,'searchDetails']);
+        Route::post('stateExport',[App\Http\Controllers\v1\Master\StateController::class,'export']);
+        Route::post('stateAddEdit',[App\Http\Controllers\v1\Master\StateController::class,'createUpdate']);
+        Route::post('stateimport',[App\Http\Controllers\v1\Master\StateController::class,'import']);
+
         Route::get('districts',[App\Http\Controllers\v1\Master\DistrictController::class,'index']);
+        Route::any('districtSearch',[App\Http\Controllers\v1\Master\DistrictController::class,'searchDetails']);
+        Route::post('districtExport',[App\Http\Controllers\v1\Master\DistrictController::class,'export']);
+        Route::post('districtAddEdit',[App\Http\Controllers\v1\Master\DistrictController::class,'createUpdate']);
+        Route::post('districtimport',[App\Http\Controllers\v1\Master\DistrictController::class,'import']);
+
         Route::get('city',[App\Http\Controllers\v1\Master\CityController::class,'index']);
+        Route::any('citySearch',[App\Http\Controllers\v1\Master\CityController::class,'searchDetails']);
+        Route::post('cityExport',[App\Http\Controllers\v1\Master\CityController::class,'export']);
+        Route::post('cityAddEdit',[App\Http\Controllers\v1\Master\CityController::class,'createUpdate']);
+        Route::post('cityimport',[App\Http\Controllers\v1\Master\CityController::class,'import']);
+
+        Route::get('pincode',[App\Http\Controllers\v1\Master\PincodeController::class,'index']);
+        Route::any('pincodeSearch',[App\Http\Controllers\v1\Master\PincodeController::class,'searchDetails']);
+        Route::post('pincodeExport',[App\Http\Controllers\v1\Master\PincodeController::class,'export']);
+        Route::post('pincodeAddEdit',[App\Http\Controllers\v1\Master\PincodeController::class,'createUpdate']);
+        Route::post('pincodeimport',[App\Http\Controllers\v1\Master\PincodeController::class,'import']);
+
+        Route::get('cityType',[App\Http\Controllers\v1\Master\CityTypeController::class,'index']);
+        Route::any('cityTypeSearch',[App\Http\Controllers\v1\Master\CityTypeController::class,'searchDetails']);
+        Route::post('cityTypeExport',[App\Http\Controllers\v1\Master\CityTypeController::class,'export']);
+        Route::post('cityTypeAddEdit',[App\Http\Controllers\v1\Master\CityTypeController::class,'createUpdate']);
+        Route::post('cityTypeimport',[App\Http\Controllers\v1\Master\CityTypeController::class,'import']);
+
+        // =============================geography masters end=================================
 
         Route::get('swpType',[App\Http\Controllers\v1\Master\SWPTypeController::class,'index']);
         Route::get('swpTypeSearch',[App\Http\Controllers\v1\Master\SWPTypeController::class,'searchDetails']);
@@ -222,6 +257,16 @@ Route::prefix('v1')->group(function () {
         Route::get('kycDetailSearch',[App\Http\Controllers\v1\Operation\KYCController::class,'searchDetails']);
         Route::post('kycDetailSearch',[App\Http\Controllers\v1\Operation\KYCController::class,'searchDetails']);
         Route::post('kycExport',[App\Http\Controllers\v1\Operation\KYCController::class,'export']);
+
+        Route::any('kycAckDetailSearch',[App\Http\Controllers\v1\Operation\KYCAckController::class,'searchDetails']);
+        Route::post('kycAckExport',[App\Http\Controllers\v1\Operation\KYCAckController::class,'export']);
+        Route::post('kycAckUpload',[App\Http\Controllers\v1\Operation\KYCAckController::class,'update']);
+        Route::post('kycAckFinalSubmit',[App\Http\Controllers\v1\Operation\KYCAckController::class,'finalSubmit']);
+
+        Route::any('kycManualUpdateDetailSearch',[App\Http\Controllers\v1\Operation\KYCManualUpdateController::class,'searchDetails']);
+        Route::post('kycManualUpdateExport',[App\Http\Controllers\v1\Operation\KYCManualUpdateController::class,'export']);
+        Route::post('kycManualUpdate',[App\Http\Controllers\v1\Operation\KYCManualUpdateController::class,'update']);
+        Route::post('kycManualUpdateFinalSubmit',[App\Http\Controllers\v1\Operation\KYCManualUpdateController::class,'finalSubmit']);
 
 
         Route::get('showTrans',[App\Http\Controllers\v1\Operation\CommonController::class,'showTrans']);
