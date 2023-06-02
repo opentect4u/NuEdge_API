@@ -12,7 +12,5 @@ class CompProduct extends Model
     protected $fillable = [
         'cm_profile_id',
         'product_name',
-        'created_by',
-        'updated_by',
     ];
 }

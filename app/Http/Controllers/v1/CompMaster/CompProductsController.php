@@ -41,10 +41,12 @@ class CompProductsController extends Controller
         try {
             if ($request->id > 0) {
                 $data=CompProduct::find($request->id);
+                $data->cm_profile_id=$request->cm_profile_id;
                 $data->product_name=$request->product_name;
                 $data->save();
             }else{
                 $data=CompProduct::create(array(
+                    'cm_profile_id'=>$request->cm_profile_id,
                     'product_name'=>$request->product_name,
                     // 'created_by'=>'',
                 ));      

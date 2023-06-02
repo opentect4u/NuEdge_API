@@ -19,6 +19,24 @@ Route::prefix('v1')->group(function () {
             Route::get('director',[App\Http\Controllers\v1\CompMaster\DirectorDetailsController::class,'index']); // show director deatils also use for dropdown list
             Route::post('directorAddEdit',[App\Http\Controllers\v1\CompMaster\DirectorDetailsController::class,'createUpdate']); // create and update director deatils
 
+            Route::get('bank',[App\Http\Controllers\v1\CompMaster\BankController::class,'index']); // show bank deatils also use for dropdown list
+            Route::post('bankAddEdit',[App\Http\Controllers\v1\CompMaster\BankController::class,'createUpdate']); // create and update bank deatils
+
+            Route::get('documentLocker',[App\Http\Controllers\v1\CompMaster\DocumentLockerController::class,'index']); // show document locker also use for dropdown list
+            Route::post('documentLockerAddEdit',[App\Http\Controllers\v1\CompMaster\DocumentLockerController::class,'createUpdate']); // create and update document locker
+
+            Route::get('product',[App\Http\Controllers\v1\CompMaster\CompProductsController::class,'index']); // show product deatils also use for dropdown list
+            Route::post('productAddEdit',[App\Http\Controllers\v1\CompMaster\CompProductsController::class,'createUpdate']); // create and update product deatils
+
+            Route::get('license',[App\Http\Controllers\v1\CompMaster\LicenseDetailsController::class,'index']); // show product deatils also use for dropdown list
+            Route::post('licenseAddEdit',[App\Http\Controllers\v1\CompMaster\LicenseDetailsController::class,'createUpdate']); // create and update product deatils
+
+            Route::get('loginpass',[App\Http\Controllers\v1\CompMaster\LoginPassLockerController::class,'index']); // show product deatils also use for dropdown list
+            Route::post('loginpassAddEdit',[App\Http\Controllers\v1\CompMaster\LoginPassLockerController::class,'createUpdate']); // create and update product deatils
+
+            Route::get('partnership',[App\Http\Controllers\v1\CompMaster\PartnershipDetailsController::class,'index']); // show product deatils also use for dropdown list
+            Route::post('partnershipAddEdit',[App\Http\Controllers\v1\CompMaster\PartnershipDetailsController::class,'createUpdate']); // create and update product deatils
+
         });
     // });
 });
