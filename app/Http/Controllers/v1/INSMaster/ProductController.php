@@ -5,7 +5,7 @@ namespace App\Http\Controllers\v1\INSMaster;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Helpers\Helper;
-use App\Models\InsProduct;
+use App\Models\{InsProduct,Insurance};
 use Validator;
 
 class ProductController extends Controller
@@ -299,7 +299,7 @@ class ProductController extends Controller
     {
         try {
             $id=$request->id;
-            $is_has=InsCompany::where('ins_type_id',$id)->get();
+            $is_has=Insurance::where('product_id',$id)->get();
             if (count($is_has)>0) {
                 return Helper::WarningResponse(parent::DELETE_NOT_ALLOW_ERROR);
             }else {
@@ -310,7 +310,7 @@ class ProductController extends Controller
                 $data->save();
             }
         } catch (\Throwable $th) {
-            //throw $th;
+            throw $th;
             return Helper::ErrorResponse(parent::DELETE_FAIL_ERROR);
         }
         return Helper::SuccessResponse($data);
