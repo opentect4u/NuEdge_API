@@ -37,6 +37,9 @@ Route::prefix('v1')->group(function () {
             Route::get('partnership',[App\Http\Controllers\v1\CompMaster\PartnershipDetailsController::class,'index']); // show product deatils also use for dropdown list
             Route::post('partnershipAddEdit',[App\Http\Controllers\v1\CompMaster\PartnershipDetailsController::class,'createUpdate']); // create and update product deatils
 
+            Route::get('sharedHolder',[App\Http\Controllers\v1\CompMaster\SharedHolderController::class,'index']); // show product deatils also use for dropdown list
+            Route::post('sharedHolderAddEdit',[App\Http\Controllers\v1\CompMaster\SharedHolderController::class,'createUpdate']); // create and update product deatils
+
         });
     // });
 });

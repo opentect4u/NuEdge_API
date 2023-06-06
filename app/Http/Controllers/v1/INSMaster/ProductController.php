@@ -270,9 +270,9 @@ class ProductController extends Controller
             }else{
                 $is_has=InsProduct::where('product_name',$request->product_name)->get();
                 // return $is_has;
-                if (count($is_has)>0) {
-                    return Helper::WarningResponse(parent::ALREADY_EXIST);
-                }else {
+                // if (count($is_has)>0) {
+                //     return Helper::WarningResponse(parent::ALREADY_EXIST);
+                // }else {
                     $data=InsProduct::create(array(
                         'ins_type_id'=>$request->ins_type_id,
                         'company_id'=>$request->company_id,
@@ -280,7 +280,7 @@ class ProductController extends Controller
                         'product_name'=>$request->product_name,
                         // 'created_by'=>'',
                     ));  
-                }  
+                // }  
             } 
             $data1=InsProduct::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_products.ins_type_id')
                     ->leftJoin('md_ins_company','md_ins_company.id','=','md_ins_products.company_id')

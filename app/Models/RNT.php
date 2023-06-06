@@ -52,6 +52,7 @@ class RNT extends Model
         'l7_email',
         'distributor_care_no',
         'distributor_care_email',
+        'logo',
         'delete_flag',
         'deleted_date',
         'deleted_by',

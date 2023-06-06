@@ -16,10 +16,13 @@ class RNTController extends Controller
     {
         try {
             $paginate=$request->paginate;
-            $rnt_id=$request->rnt_id;
+            // $rnt_id=$request->rnt_id;
             $contact_person=$request->contact_person;
             $sort_by=$request->sort_by;
             $column_name=$request->column_name;
+
+            $rnt_id=json_decode($request->rnt_id);
+
             if ($paginate=='A') {
                 $paginate=999999999;
             }
@@ -47,15 +50,17 @@ class RNTController extends Controller
                         ->orderBy($column_name,$sort_by)
                         ->paginate($paginate);  
                 }
-            }elseif ($rnt_id && $contact_person) {
+            }elseif (!empty($rnt_id) && $contact_person) {
                 $data=RNT::where('delete_flag','N')
-                    ->where('id',$rnt_id)
+                    ->whereIn('id',$rnt_id)
                     ->where('head_ofc_contact_per','like', '%' . $contact_person . '%')
                     ->orWhere('local_ofc_contact_per','like', '%' . $contact_person . '%')
                     ->orderBy('updated_at','DESC')->paginate($paginate);      
-            } elseif ($rnt_id) {
+            } elseif (!empty($rnt_id)) {
                 $data=RNT::where('delete_flag','N')
-                ->where('id',$rnt_id)->orderBy('updated_at','DESC')->paginate($paginate);      
+                    ->whereIn('id',$rnt_id)
+                    ->orderBy('updated_at','DESC')
+                    ->paginate($paginate);      
             } elseif ($contact_person) {
                 // return $contact_person;
                 $data=RNT::where('delete_flag','N')
@@ -77,27 +82,32 @@ class RNTController extends Controller
     {
         try {
             $paginate=$request->paginate;
-            $rnt_id=$request->rnt_id;
+            // $rnt_id=$request->rnt_id;
             $contact_person=$request->contact_person;
             $sort_by=$request->sort_by;
             $column_name=$request->column_name;
+
+            $rnt_id=json_decode($request->rnt_id);
+
             if ($sort_by && $column_name) {
                 $data=RNT::where('delete_flag','N')
-                    ->orWhere('id',$rnt_id)
+                    ->orWhereIn('id',$rnt_id)
                     ->orWhere('head_ofc_contact_per','like', '%' . $contact_person . '%')
                     ->orWhere('local_ofc_contact_per','like', '%' . $contact_person . '%')
                     ->orderBy($column_name,$sort_by)
                     ->get();   
-            }elseif ($rnt_id && $contact_person) {
+            }elseif (!empty($rnt_id) && $contact_person) {
                 $data=RNT::where('delete_flag','N')
-                    ->where('id',$rnt_id)
+                    ->whereIn('id',$rnt_id)
                     ->where('head_ofc_contact_per','like', '%' . $contact_person . '%')
                     ->orWhere('local_ofc_contact_per','like', '%' . $contact_person . '%')
-                    ->orderBy('updated_at','DESC')->get();      
-            } elseif ($rnt_id) {
+                    ->orderBy('updated_at','DESC')->paginate($paginate);      
+            } elseif (!empty($rnt_id)) {
                 $data=RNT::where('delete_flag','N')
-                ->where('id',$rnt_id)->orderBy('updated_at','DESC')->get();      
-            } elseif ($contact_person) {
+                    ->whereIn('id',$rnt_id)
+                    ->orderBy('updated_at','DESC')
+                    ->paginate($paginate);      
+            }  elseif ($contact_person) {
                 // return $contact_person;
                 $data=RNT::where('delete_flag','N')
                     ->where('head_ofc_contact_per','like', '%' . $contact_person . '%')
@@ -149,8 +159,23 @@ class RNTController extends Controller
             return Helper::ErrorResponse(parent::VALIDATION_ERROR);
         }
         try {
+            $file=$request->logo;
             if ($request->id > 0) {
                 $data=RNT::find($request->id);
+                if ($file) {
+                    $cv_path_extension=$file->getClientOriginalExtension();
+                    $logo=microtime(true).".".$cv_path_extension;
+                    $file->move(public_path('rnt-logo/'),$logo);
+                    if($data->logo!=null){
+                        $filecv = public_path('rnt-logo/') . $data->logo;
+                        if (file_exists($filecv) != null) {
+                            unlink($filecv);
+                        }
+                    }else {
+                        $logo=$data->logo;
+                    }
+                }
+
                 $data->rnt_name=$request->rnt_name;
                 $data->rnt_full_name=$request->rnt_full_name;
                 $data->login_url=$request->login_url;
@@ -193,6 +218,7 @@ class RNTController extends Controller
                 $data->l7_email=$request->l7_email;
                 $data->distributor_care_no=$request->distributor_care_no;
                 $data->distributor_care_email=$request->distributor_care_email;
+                $data->logo=$logo;
                 $data->save();
             }else{
                 $is_has=RNT::where('rnt_name',$request->rnt_name)->where('delete_flag','N')->get();
@@ -200,6 +226,11 @@ class RNTController extends Controller
                 if (count($is_has)>0) {
                     return Helper::WarningResponse(parent::ALREADY_EXIST);
                 }else {
+                    if ($file) {
+                        $cv_path_extension=$file->getClientOriginalExtension();
+                        $logo=microtime(true).".".$cv_path_extension;
+                        $file->move(public_path('rnt-logo/'),$logo);
+                    }
                     $data=RNT::create(array(
                         'rnt_name'=>$request->rnt_name,
                         'rnt_full_name'=>$request->rnt_full_name,
@@ -242,7 +273,7 @@ class RNTController extends Controller
                         'l7_contact_no'=>$request->l7_contact_no,
                         'l7_email'=>$request->l7_email,
                         'distributor_care_no'=>$request->distributor_care_no,
-                        'distributor_care_email'=>$request->distributor_care_email,
+                        'logo'=>$logo,
                         // 'created_by'=>'',
                     ));
                 }      

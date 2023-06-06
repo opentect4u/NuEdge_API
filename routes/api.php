@@ -182,6 +182,8 @@ Route::prefix('v1')->group(function () {
         Route::post('cityTypeAddEdit',[App\Http\Controllers\v1\Master\CityTypeController::class,'createUpdate']);
         Route::post('cityTypeimport',[App\Http\Controllers\v1\Master\CityTypeController::class,'import']);
 
+        Route::any('geographyDetailSearch',[App\Http\Controllers\v1\Master\PincodeController::class,'searchDetails']);
+
         // =============================geography masters end=================================
 
         Route::get('swpType',[App\Http\Controllers\v1\Master\SWPTypeController::class,'index']);

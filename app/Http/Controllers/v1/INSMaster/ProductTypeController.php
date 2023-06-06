@@ -229,7 +229,7 @@ class ProductTypeController extends Controller
                 $data->save();
             }
         } catch (\Throwable $th) {
-            //throw $th;
+            throw $th;
             return Helper::ErrorResponse(parent::DELETE_FAIL_ERROR);
         }
         return Helper::SuccessResponse($data);
