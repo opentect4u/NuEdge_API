@@ -32,7 +32,7 @@ Route::prefix('v1')->group(function () {
             Route::post('productExport',[App\Http\Controllers\v1\INSMaster\ProductController::class,'export']);
             Route::post('productAddEdit',[App\Http\Controllers\v1\INSMaster\ProductController::class,'createUpdate']);
             Route::post('productimport', [App\Http\Controllers\v1\INSMaster\ProductController::class,'import']);
-            // Route::post('productDelete', [App\Http\Controllers\v1\INSMaster\ProductController::class,'delete']);
+            Route::post('productDelete', [App\Http\Controllers\v1\INSMaster\ProductController::class,'delete']);
             Route::post('productDetails', [App\Http\Controllers\v1\INSMaster\ProductController::class,'productDetails']);
 
 
