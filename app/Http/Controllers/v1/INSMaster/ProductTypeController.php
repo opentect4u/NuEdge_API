@@ -5,7 +5,7 @@ namespace App\Http\Controllers\v1\INSMaster;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Helpers\Helper;
-use App\Models\InsProductType;
+use App\Models\{InsProductType,InsCompany};
 use Validator;
 
 class ProductTypeController extends Controller
