@@ -75,7 +75,7 @@ class SharedHolderController extends Controller
                 $data->save();
             }else{
                 if ($request->type=='T') {
-                    return $request;
+                    // return $request;
                     $upload_scan=$request->upload_scan;
                     $logo='';
                     if ($upload_scan) {
