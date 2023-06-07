@@ -183,6 +183,7 @@ Route::prefix('v1')->group(function () {
         Route::post('cityTypeimport',[App\Http\Controllers\v1\Master\CityTypeController::class,'import']);
 
         Route::any('geographyDetailSearch',[App\Http\Controllers\v1\Master\PincodeController::class,'searchDetails']);
+        Route::post('geographyExport',[App\Http\Controllers\v1\Master\PincodeController::class,'geographyExport']);
 
         // =============================geography masters end=================================
 

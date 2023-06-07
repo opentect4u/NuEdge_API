@@ -18,36 +18,47 @@ class RNTController extends Controller
             $paginate=$request->paginate;
             // $rnt_id=$request->rnt_id;
             $contact_person=$request->contact_person;
-            $sort_by=$request->sort_by;
-            $column_name=$request->column_name;
+            $order=$request->order;
+            $field=$request->field;
+            if ($order > 0 ) {
+                $order='ASC';
+            }else {
+                $order='DESC';
+            };
 
             $rnt_id=json_decode($request->rnt_id);
 
             if ($paginate=='A') {
                 $paginate=999999999;
             }
-            if ($sort_by && $column_name) {
+            if ($order && $field) {
+                $raw=$field.' '.$order;
+
                 if ($rnt_id && $contact_person) {
                     $data=RNT::where('delete_flag','N')
                         ->where('id',$rnt_id)
                         ->where('head_ofc_contact_per','like', '%' . $contact_person . '%')
                         ->orWhere('local_ofc_contact_per','like', '%' . $contact_person . '%')
-                        ->orderBy($column_name,$sort_by)
+                        // ->orderBy($column_name,$order)
+                        ->orderByRaw($raw)
                         ->paginate($paginate);      
                 }elseif ($rnt_id) {
                     $data=RNT::where('delete_flag','N')
                         ->where('id',$rnt_id)
-                        ->orderBy($column_name,$sort_by)
+                        // ->orderBy($column_name,$sort_by)
+                        ->orderByRaw($raw)
                         ->paginate($paginate);  
                 }elseif ($contact_person) {
                     $data=RNT::where('delete_flag','N')
                         ->where('head_ofc_contact_per','like', '%' . $contact_person . '%')
                         ->orWhere('local_ofc_contact_per','like', '%' . $contact_person . '%')
-                        ->orderBy($column_name,$sort_by)
+                        // ->orderBy($column_name,$sort_by)
+                        ->orderByRaw($raw)
                         ->paginate($paginate);   
                 } else {
                     $data=RNT::where('delete_flag','N')
-                        ->orderBy($column_name,$sort_by)
+                        // ->orderBy($column_name,$sort_by)
+                        ->orderByRaw($raw)
                         ->paginate($paginate);  
                 }
             }elseif (!empty($rnt_id) && $contact_person) {
@@ -161,6 +172,7 @@ class RNTController extends Controller
         try {
             $file=$request->logo;
             if ($request->id > 0) {
+                // return $request;
                 $data=RNT::find($request->id);
                 if ($file) {
                     $cv_path_extension=$file->getClientOriginalExtension();
@@ -171,9 +183,9 @@ class RNTController extends Controller
                         if (file_exists($filecv) != null) {
                             unlink($filecv);
                         }
-                    }else {
-                        $logo=$data->logo;
                     }
+                }else {
+                    $logo=$data->logo;
                 }
 
                 $data->rnt_name=$request->rnt_name;
