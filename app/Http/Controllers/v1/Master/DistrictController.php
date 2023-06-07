@@ -16,13 +16,16 @@ class DistrictController extends Controller
         try {  
             $search=$request->search;
             $state_id=$request->state_id;
+            $arr_state_id=json_decode($request->arr_state_id);
             $sort_by=$request->sort_by;
             $column_name=$request->column_name;
             $id=$request->id;
             if ($search!='') {
                 $data=District::where('name','like', '%' . $search . '%')->get();      
             }elseif ($state_id!='') {
-                $data=District::where('state_id',$state_id)->get();   
+                $data=District::where('state_id',$state_id)->orderBy('name','desc')->get();   
+            }elseif (!empty($arr_state_id)) {
+                $data=District::whereIn('state_id',$arr_state_id)->orderBy('name','desc')->get();   
             }elseif ($id!='') {
                 $data=District::where('id',$id)->get();   
             } else{

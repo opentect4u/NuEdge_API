@@ -19,10 +19,13 @@ class CityController extends Controller
             $sort_by=$request->sort_by;
             $column_name=$request->column_name;
             $id=$request->id;
+            $arr_district_id=json_decode($request->arr_district_id);
             if ($search!='') {
                 $data=City::where('name','like', '%' . $search . '%')->get();      
             }elseif ($district_id!='') {
                 $data=City::where('district_id',$district_id)->get();   
+            }elseif (!empty($arr_district_id)) {
+                $data=City::whereIn('district_id',$arr_district_id)->get();   
             }elseif ($id!='') {
                 $data=City::where('id',$id)->get();   
             } else{

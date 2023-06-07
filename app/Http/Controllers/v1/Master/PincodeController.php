@@ -19,9 +19,14 @@ class PincodeController extends Controller
             $sort_by=$request->sort_by;
             $column_name=$request->column_name;
             $city_id=$request->city_id;
+            $arr_city_id=json_decode($request->arr_city_id);
             $id=$request->id;
-            if ($search) {
-                $data=Pincode::where('name','like', '%' . $search . '%')->get();      
+            if (!empty($arr_city_id) &&  $search) {
+                $data=Pincode::whereIn('city_id',$arr_city_id)
+                    ->where('pincode','like', '%' . $search . '%')
+                    ->get();
+            }elseif ($search) {
+                $data=Pincode::where('pincode','like', '%' . $search . '%')->get();      
             }elseif ($city_id) {
                 $data=Pincode::where('city_id',$city_id)->get();
             }elseif ($id) {
@@ -30,7 +35,7 @@ class PincodeController extends Controller
                 $data=Pincode::get();   
             }   
         } catch (\Throwable $th) {
-            //throw $th;
+            throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
         return Helper::SuccessResponse($data);

@@ -52,18 +52,22 @@ class StateController extends Controller
             $sort_by=$request->sort_by;
             $column_name=$request->column_name;
             $country_id=$request->country_id;
+            $arr_country_id=json_decode($request->arr_country_id);
             $id=$request->id;
             if ($search) {
                 $data=State::where('name','like', '%' . $search . '%')->get();      
             }elseif ($country_id) {
                 $data=State::where('country_id',$country_id)->orderBy('name','desc')->get();
+            }elseif (!empty($arr_country_id)) {
+                // return $arr_country_id;
+                $data=State::whereIn('country_id',$arr_country_id)->orderBy('name','desc')->get();
             }elseif ($id) {
                 $data=State::where('id',$id)->orderBy('name','desc')->get();
             } else{
                 $data=State::get();   
             }   
         } catch (\Throwable $th) {
-            // throw $th;
+            throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
         return Helper::SuccessResponse($data);
