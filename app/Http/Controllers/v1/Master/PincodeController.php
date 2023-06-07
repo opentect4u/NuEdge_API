@@ -350,7 +350,7 @@ class PincodeController extends Controller
                     // ->whereIn('md_pincode.state_id', $state_id)
                     // ->whereIn('md_pincode.district_id', $district_id)
                     // ->whereIn('md_pincode.city_id', $city_id)
-                    ->whereInRaw($rawQuery)
+                    // ->whereInRaw($rawQuery)
                     ->orderByRaw($raw)
                     ->get();
             }elseif (!empty($country_id) && !empty($state_id) && !empty($district_id) && !empty($city_id) && !empty($city_type_id)) {
