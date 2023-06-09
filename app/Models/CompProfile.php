@@ -12,6 +12,8 @@ class CompProfile extends Model
     protected $fillable = [
         'type_of_comp',
         'name',
+        'establishment_name',
+        'proprietor_name',
         'cin_no',
         'date_of_inc',
         'pan',
@@ -32,6 +34,7 @@ class CompProfile extends Model
         'twitter',
         'instagram',
         'blog',
+        'comp_default',
         // 'created_by',
         // 'updated_by',
     ];

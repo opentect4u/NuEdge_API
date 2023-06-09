@@ -40,6 +40,10 @@ Route::prefix('v1')->group(function () {
             Route::get('sharedHolder',[App\Http\Controllers\v1\CompMaster\SharedHolderController::class,'index']); // show product deatils also use for dropdown list
             Route::post('sharedHolderAddEdit',[App\Http\Controllers\v1\CompMaster\SharedHolderController::class,'createUpdate']); // create and update product deatils
 
+
+            Route::get('tempProfile',[App\Http\Controllers\v1\CompMaster\CompProfileController::class,'tempIndex']);  // show company profile also use for dropdown list
+            Route::post('tempProfileAddEdit',[App\Http\Controllers\v1\CompMaster\CompProfileController::class,'tempCreateUpdate']); // create and update company profile
+
         });
     // });
 });

@@ -32,6 +32,7 @@ class CompShareHolder extends Model
         'distinctive_no_to',
         'nominee',
         'type',
+        'transfer_id',
         'upload_scan',
         // 'created_by',
         // 'updated_by',

@@ -44,11 +44,8 @@ class SharedHolderController extends Controller
                 // return $request;
                 $data=CompShareHolder::find($request->id);
 
-                if ($request->type=='T') {
-                    $type='P';
-                }else {
-                    $type=$request->type;
-                }
+            
+                $type=$request->type;
 
                 $data->cm_profile_id=$request->cm_profile_id;
                 $data->name=$request->name;
@@ -106,19 +103,14 @@ class SharedHolderController extends Controller
                         'distinctive_no_from'=>$request->distinctive_no_from,
                         'distinctive_no_to'=>$request->distinctive_no_to,
                         'nominee'=>$request->nominee,
-                        'type'=>'P',
+                        'type'=>$request->type,
+                        'transfer_id'=>$request->trans_from_id,
                         'upload_scan'=>isset($logo)?$logo:NULL,
                     ));      
                     $find=CompShareHolder::find($request->trans_from_id);
 
                     $no_of_share=$find->no_of_share - $request->no_of_share;
-                    if ($no_of_share > 0) {
-                        $type='P';
-                    }else {
-                        $type='E';
-                    }
                     $find->no_of_share=$no_of_share;
-                    $find->type=$type;
 
                     // $find->distinctive_no_from=$request->distinctive_no_from;
                     // $find->distinctive_no_to=$request->distinctive_no_to;
