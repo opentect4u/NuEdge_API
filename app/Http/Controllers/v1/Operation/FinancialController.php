@@ -23,6 +23,7 @@ class FinancialController extends Controller
             $date_status=$request->date_status;
             $start_date=$request->start_date;
             $end_date=$request->end_date;
+
             $sort_by=$request->sort_by;
             $column_name=$request->column_name;
 
@@ -93,7 +94,29 @@ class FinancialController extends Controller
                 }
             }else {
                 // return $request;
-                if ($tin_no!='') {
+                // if ($sort_by && $column_name) {
+                    
+                // } else
+                if ($tin_no) {
+                    $rawQuery='';
+                    // if ($from_date && $to_date) {
+                    //     if (strlen($rawQuery1) > 0) {
+                    //         $rawQuery1.=' AND coaching_expert_availability.availability_start'.' >= '. date('Y-m-d',strtotime($from_date));
+                    //     } else {
+                    //         $rawQuery1.=' coaching_expert_availability.availability_start'.' >= '. date('Y-m-d',strtotime($from_date));
+                    //     }
+                    //     $rawQuery1.=' AND coaching_expert_availability.availability_start'.' <= '. date('Y-m-d',strtotime($to_date));
+                    // }
+                    if ($tin_no) {
+                        if (strlen($rawQuery) > 0) {
+                            $rawQuery.=" AND td_mutual_fund.tin_no='".$tin_no."'";
+                        }else {
+                            $rawQuery.="td_mutual_fund.tin_no='".$tin_no."'";
+                        }
+                    }
+                    // return $rawQuery;
+
+
                     $data=MutualFund::join('td_form_received','td_form_received.temp_tin_no','=','td_mutual_fund.temp_tin_no')
                         ->join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
                         ->join('md_scheme','md_scheme.id','=','td_mutual_fund.trans_scheme_from')
@@ -115,9 +138,11 @@ class FinancialController extends Controller
                         'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_deposit_bank.bank_name as bank_name'
                         )
                         ->where('md_trans.trans_type_id',$trans_type_id)
-                        ->where('td_mutual_fund.tin_no',$tin_no)
-                        ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
-                        ->paginate($paginate);   
+                        // ->where('td_mutual_fund.tin_no',$tin_no)
+                        ->whereRaw($rawQuery)
+                        // ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
+                        // ->paginate($paginate);  
+                        ->get(); 
                 }else{
                     $data=MutualFund::join('td_form_received','td_form_received.temp_tin_no','=','td_mutual_fund.temp_tin_no')
                         ->join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
@@ -140,12 +165,12 @@ class FinancialController extends Controller
                         'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_deposit_bank.bank_name as bank_name'
                         )
                         ->where('md_trans.trans_type_id',$trans_type_id)
-                        // ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
+                        ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
                         ->paginate($paginate);   
                 }
             }
         } catch (\Throwable $th) {
-            //throw $th;
+            throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
         return Helper::SuccessResponse($data);
@@ -351,8 +376,7 @@ class FinancialController extends Controller
                     'md_client_2.client_code as second_client_code','md_client_2.client_name as second_client_name','md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
                     'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to'
                     )
-                    ->where('td_mutual_fund.tin_no',$tin_no)
-                    // ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
+                    ->where('td_mutual_fund.tin_no','like', '%' . $tin_no . '%')
                     ->get();   
             } else{
                 $data=MutualFund::join('td_form_received','td_form_received.temp_tin_no','=','td_mutual_fund.temp_tin_no')

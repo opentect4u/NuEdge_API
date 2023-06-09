@@ -31,6 +31,12 @@ Route::prefix('v1')->group(function () {
 
         Route::get('mdparams',[App\Http\Controllers\v1\CommonController::class,'CommonParamValue']);
 
+        /* ******************************** Start Common API ****************************   */
+        Route::get('branch',[App\Http\Controllers\v1\Master\BranchController::class,'index']);
+        Route::post('branchAddEdit',[App\Http\Controllers\v1\Master\BranchController::class,'createUpdate']);
+
+        /* ******************************** End Common API ****************************   */
+
 
         Route::get('rnt',[App\Http\Controllers\v1\Master\RNTController::class,'index']);
         Route::get('rntDetailSearch',[App\Http\Controllers\v1\Master\RNTController::class,'searchDetails']);
@@ -51,9 +57,7 @@ Route::prefix('v1')->group(function () {
         Route::post('amcimport', [App\Http\Controllers\v1\Master\AMCController::class,'import']);
         Route::post('amcDelete', [App\Http\Controllers\v1\Master\AMCController::class,'delete']);
 
-        Route::get('branch',[App\Http\Controllers\v1\Master\BranchController::class,'index']);
-        Route::post('branchAddEdit',[App\Http\Controllers\v1\Master\BranchController::class,'createUpdate']);
-
+        
         Route::get('plan',[App\Http\Controllers\v1\Master\PlanController::class,'index']);
         Route::get('planDetailSearch',[App\Http\Controllers\v1\Master\PlanController::class,'searchDetails']);
         Route::post('planDetailSearch',[App\Http\Controllers\v1\Master\PlanController::class,'searchDetails']);
