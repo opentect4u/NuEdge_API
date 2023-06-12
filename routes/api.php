@@ -308,6 +308,11 @@ Route::prefix('v1')->group(function () {
 
         // Route::post('index1',[App\Http\Controllers\v1\Master\TestController::class,'index1']);
 
+        /*  ********************************* Start Common Report *************************** */
+
+        
+        /*  ********************************* End Common Report *************************** */
+
 
         // ==========================================Cron routes===========================================
         Route::get('nfoTOongoing',[App\Http\Controllers\v1\Cron\SchemeController::class,'nfoTOongoing']);
