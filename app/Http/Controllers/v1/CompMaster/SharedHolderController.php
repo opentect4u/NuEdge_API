@@ -53,9 +53,30 @@ class SharedHolderController extends Controller
             if ($request->id > 0) {
                 // return $request;
                 $data=CompShareHolder::find($request->id);
-
-            
                 $type=$request->type;
+                if ($type=='T') {
+                    // return $request;
+                    $upload_scan=$request->upload_scan;
+                    $logo='';
+                    if ($upload_scan) {
+                        $logo_path_extension=$upload_scan->getClientOriginalExtension();
+                        $logo=(microtime(true) * 100).".".$logo_path_extension;
+                        $upload_scan->move(public_path('company/shared-doc/'),$logo);
+
+                        if($data->upload_scan!=null){
+                            $filelogo = public_path('company/shared-doc/') . $data->upload_scan;
+                            if (file_exists($filelogo) != null) {
+                                unlink($filelogo);
+                            }
+                        } 
+                    }else {
+                        $logo=$data->upload_scan;
+                    }
+
+                    $data->transfer_id=$request->trans_from_id;
+                    $data->upload_scan=$logo;
+                    $data->remarks=isset($request->remarks)?$request->remarks:NULL;
+                }
 
                 $data->cm_profile_id=$request->cm_profile_id;
                 $data->name=$request->name;
