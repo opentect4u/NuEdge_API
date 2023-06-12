@@ -34,6 +34,7 @@ class CompShareHolder extends Model
         'type',
         'transfer_id',
         'upload_scan',
+        'remarks',
         // 'created_by',
         // 'updated_by',
     ];

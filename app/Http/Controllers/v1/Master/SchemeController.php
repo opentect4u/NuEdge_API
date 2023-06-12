@@ -30,6 +30,7 @@ class SchemeController extends Controller
             }
             if ($sort_by && $column_name) {
                 // return $request;
+
                 // if ($column_name=='scheme_name' || $column_name=='scheme_type') {
                 //     $data=Scheme::join('md_amc','md_amc.id','=','md_scheme.amc_id')
                 //     ->join('md_category','md_category.id','=','md_scheme.category_id')
@@ -79,20 +80,44 @@ class SchemeController extends Controller
                 //     ->orderBy('md_amc.'.$column_name,$sort_by)
                 //     ->paginate($paginate);
                 // }
+                if ($scheme_name || $amc_name) {
+                    $rawQuery='';
+                    if ($scheme_name) {
+                        if (strlen($rawQuery) > 0) {
+                            $rawQuery.=" AND scheme_name LIKE '%".$scheme_name."%'";
+                        }else {
+                            $rawQuery.=" scheme_name LIKE '%".$scheme_name."%'";
+                        }
+                    }
+                    if ($amc_name) {
+                        if (strlen($rawQuery) > 0) {
+                            $rawQuery.=" AND amc_name LIKE '%".$amc_name."%'";
+                        }else {
+                            $rawQuery.=" amc_name LIKE '%".$amc_name."%'";
+                        }
+                    }
 
-
-                $data=Scheme::join('md_amc','md_amc.id','=','md_scheme.amc_id')
-                    ->join('md_category','md_category.id','=','md_scheme.category_id')
-                    ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
-                    ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
-                    ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
-                    ->where('md_scheme.delete_flag','N')
-                    ->where('md_scheme.scheme_type',$scheme_type)
-                    ->orderByRaw($column_name,$sort_by)
-                    ->paginate($paginate);
-
-
-                
+                    $data=Scheme::join('md_amc','md_amc.id','=','md_scheme.amc_id')
+                        ->join('md_category','md_category.id','=','md_scheme.category_id')
+                        ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
+                        ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                        ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
+                        ->where('md_scheme.delete_flag','N')
+                        ->where('md_scheme.scheme_type',$scheme_type)
+                        ->whereRaw($rawQuery)
+                        ->orderByRaw($column_name,$sort_by)
+                        ->paginate($paginate);
+                }else {
+                    $data=Scheme::join('md_amc','md_amc.id','=','md_scheme.amc_id')
+                        ->join('md_category','md_category.id','=','md_scheme.category_id')
+                        ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
+                        ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                        ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
+                        ->where('md_scheme.delete_flag','N')
+                        ->where('md_scheme.scheme_type',$scheme_type)
+                        ->orderByRaw($column_name,$sort_by)
+                        ->paginate($paginate);
+                }
             }elseif($scheme_name && $amc_name){
                 $data=Scheme::join('md_amc','md_amc.id','=','md_scheme.amc_id')
                     ->join('md_category','md_category.id','=','md_scheme.category_id')
