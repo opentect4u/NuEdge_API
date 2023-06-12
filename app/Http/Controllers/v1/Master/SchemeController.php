@@ -30,55 +30,68 @@ class SchemeController extends Controller
             }
             if ($sort_by && $column_name) {
                 // return $request;
-                if ($column_name=='scheme_name' || $column_name=='scheme_type') {
-                    $data=Scheme::join('md_amc','md_amc.id','=','md_scheme.amc_id')
+                // if ($column_name=='scheme_name' || $column_name=='scheme_type') {
+                //     $data=Scheme::join('md_amc','md_amc.id','=','md_scheme.amc_id')
+                //     ->join('md_category','md_category.id','=','md_scheme.category_id')
+                //     ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
+                //     ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                //     ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
+                //     ->where('md_scheme.delete_flag','N')
+                //     ->where('md_scheme.scheme_type',$scheme_type)
+                //     // ->orWhere('md_scheme.scheme_name','like', '%' . $scheme_name . '%')
+                //     // ->orWhere('md_amc.amc_name','like', '%' . $amc_name . '%')
+                //     ->orderBy('md_scheme.'.$column_name,$sort_by)
+                //     ->paginate($paginate);
+                // }elseif ($column_name=='cat_name') {
+                //     $data=Scheme::join('md_amc','md_amc.id','=','md_scheme.amc_id')
+                //     ->join('md_category','md_category.id','=','md_scheme.category_id')
+                //     ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
+                //     ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                //     ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
+                //     ->where('md_scheme.delete_flag','N')
+                //     ->where('md_scheme.scheme_type',$scheme_type)
+                //     // ->orWhere('md_scheme.scheme_name','like', '%' . $scheme_name . '%')
+                //     // ->orWhere('md_amc.amc_name','like', '%' . $amc_name . '%')
+                //     ->orderBy('md_category.'.$column_name,$sort_by)
+                //     ->paginate($paginate);
+                // }elseif ($column_name=='subcate_name') {
+                //     $data=Scheme::join('md_amc','md_amc.id','=','md_scheme.amc_id')
+                //     ->join('md_category','md_category.id','=','md_scheme.category_id')
+                //     ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
+                //     ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                //     ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
+                //     ->where('md_scheme.delete_flag','N')
+                //     ->where('md_scheme.scheme_type',$scheme_type)
+                //     // ->orWhere('md_scheme.scheme_name','like', '%' . $scheme_name . '%')
+                //     // ->orWhere('md_amc.amc_name','like', '%' . $amc_name . '%')
+                //     ->orderBy('md_subcategory.'.$column_name,$sort_by)
+                //     ->paginate($paginate);
+                // }elseif ($column_name=='amc_name') {
+                //     $data=Scheme::join('md_amc','md_amc.id','=','md_scheme.amc_id')
+                //     ->join('md_category','md_category.id','=','md_scheme.category_id')
+                //     ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
+                //     ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                //     ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
+                //     ->where('md_scheme.delete_flag','N')
+                //     ->where('md_scheme.scheme_type',$scheme_type)
+                //     // ->orWhere('md_scheme.scheme_name','like', '%' . $scheme_name . '%')
+                //     // ->orWhere('md_amc.amc_name','like', '%' . $amc_name . '%')
+                //     ->orderBy('md_amc.'.$column_name,$sort_by)
+                //     ->paginate($paginate);
+                // }
+
+
+                $data=Scheme::join('md_amc','md_amc.id','=','md_scheme.amc_id')
                     ->join('md_category','md_category.id','=','md_scheme.category_id')
                     ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
                     ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
                     ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
                     ->where('md_scheme.delete_flag','N')
                     ->where('md_scheme.scheme_type',$scheme_type)
-                    // ->orWhere('md_scheme.scheme_name','like', '%' . $scheme_name . '%')
-                    // ->orWhere('md_amc.amc_name','like', '%' . $amc_name . '%')
-                    ->orderBy('md_scheme.'.$column_name,$sort_by)
+                    ->orderByRaw($column_name,$sort_by)
                     ->paginate($paginate);
-                }elseif ($column_name=='cat_name') {
-                    $data=Scheme::join('md_amc','md_amc.id','=','md_scheme.amc_id')
-                    ->join('md_category','md_category.id','=','md_scheme.category_id')
-                    ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
-                    ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
-                    ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
-                    ->where('md_scheme.delete_flag','N')
-                    ->where('md_scheme.scheme_type',$scheme_type)
-                    // ->orWhere('md_scheme.scheme_name','like', '%' . $scheme_name . '%')
-                    // ->orWhere('md_amc.amc_name','like', '%' . $amc_name . '%')
-                    ->orderBy('md_category.'.$column_name,$sort_by)
-                    ->paginate($paginate);
-                }elseif ($column_name=='subcate_name') {
-                    $data=Scheme::join('md_amc','md_amc.id','=','md_scheme.amc_id')
-                    ->join('md_category','md_category.id','=','md_scheme.category_id')
-                    ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
-                    ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
-                    ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
-                    ->where('md_scheme.delete_flag','N')
-                    ->where('md_scheme.scheme_type',$scheme_type)
-                    // ->orWhere('md_scheme.scheme_name','like', '%' . $scheme_name . '%')
-                    // ->orWhere('md_amc.amc_name','like', '%' . $amc_name . '%')
-                    ->orderBy('md_subcategory.'.$column_name,$sort_by)
-                    ->paginate($paginate);
-                }elseif ($column_name=='amc_name') {
-                    $data=Scheme::join('md_amc','md_amc.id','=','md_scheme.amc_id')
-                    ->join('md_category','md_category.id','=','md_scheme.category_id')
-                    ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
-                    ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
-                    ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
-                    ->where('md_scheme.delete_flag','N')
-                    ->where('md_scheme.scheme_type',$scheme_type)
-                    // ->orWhere('md_scheme.scheme_name','like', '%' . $scheme_name . '%')
-                    // ->orWhere('md_amc.amc_name','like', '%' . $amc_name . '%')
-                    ->orderBy('md_amc.'.$column_name,$sort_by)
-                    ->paginate($paginate);
-                }
+
+
                 
             }elseif($scheme_name && $amc_name){
                 $data=Scheme::join('md_amc','md_amc.id','=','md_scheme.amc_id')
