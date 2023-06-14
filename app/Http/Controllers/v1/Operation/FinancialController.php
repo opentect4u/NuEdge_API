@@ -132,9 +132,11 @@ class FinancialController extends Controller
                             $rawQuery.="td_mutual_fund.tin_no='".$tin_no."'";
                         }
                     }
+
+                    // and md_scheme.amc_id in (4,5)  where in raw query 
                     // return $rawQuery;
 
-                    \DB::enableQueryLog();
+                    // \DB::enableQueryLog();
 
                     $data=MutualFund::join('td_form_received','td_form_received.temp_tin_no','=','td_mutual_fund.temp_tin_no')
                         ->join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
@@ -163,7 +165,7 @@ class FinancialController extends Controller
                         // ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
                         // ->paginate($paginate);  
                         ->get(); 
-                    dd(\DB::getQueryLog());
+                    // dd(\DB::getQueryLog());
                 }else{
                     $data=MutualFund::join('td_form_received','td_form_received.temp_tin_no','=','td_mutual_fund.temp_tin_no')
                         ->join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
