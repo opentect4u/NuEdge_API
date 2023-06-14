@@ -24,8 +24,26 @@ class FinancialController extends Controller
             $start_date=$request->start_date;
             $end_date=$request->end_date;
 
+            $amc_name=json_decode($request->amc_name);
+            $scheme_name=json_decode($request->scheme_name);
+
             $sort_by=$request->sort_by;
             $column_name=$request->column_name;
+
+            // amc_name: "[4,5]"
+            // brn_cd: null
+            // bu_type: 
+            // client_code: 
+            // euin_no: 
+            // from_date: 
+            // rnt_name: 
+            // scheme_name: "[92,93]"
+            // sub_brk_cd: null
+            // tin_no: "F001"
+            // to_date: null
+            // trans_id: "1"
+            // trans_type: null
+            // trans_type_id: "1"
 
             if ($paginate=='A') {
                 $paginate=999999999;
@@ -93,19 +111,19 @@ class FinancialController extends Controller
                         ->paginate($paginate);   
                 }
             }else {
-                return $request;
+                // return $request;
                 // if ($sort_by && $column_name) {
                     
                 // } else
-                if ($tin_no) {
+                if ($from_date && $to_date || $tin_no) {
                     $rawQuery='';
                     // if ($from_date && $to_date) {
-                    //     if (strlen($rawQuery1) > 0) {
-                    //         $rawQuery1.=' AND coaching_expert_availability.availability_start'.' >= '. date('Y-m-d',strtotime($from_date));
+                    //     if (strlen($rawQuery) > 0) {
+                    //         $rawQuery.=' AND td_mutual_fund.entry_date'.' >= '. date('Y-m-d',strtotime($from_date));
                     //     } else {
-                    //         $rawQuery1.=' coaching_expert_availability.availability_start'.' >= '. date('Y-m-d',strtotime($from_date));
+                    //         $rawQuery.=' td_mutual_fund.entry_date'.' >= '. date('Y-m-d',strtotime($from_date));
                     //     }
-                    //     $rawQuery1.=' AND coaching_expert_availability.availability_start'.' <= '. date('Y-m-d',strtotime($to_date));
+                    //     $rawQuery.=' AND td_mutual_fund.entry_date'.' <= '. date('Y-m-d',strtotime($to_date));
                     // }
                     if ($tin_no) {
                         if (strlen($rawQuery) > 0) {
@@ -116,6 +134,7 @@ class FinancialController extends Controller
                     }
                     // return $rawQuery;
 
+                    \DB::enableQueryLog();
 
                     $data=MutualFund::join('td_form_received','td_form_received.temp_tin_no','=','td_mutual_fund.temp_tin_no')
                         ->join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
@@ -138,11 +157,13 @@ class FinancialController extends Controller
                         'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_deposit_bank.bank_name as bank_name'
                         )
                         ->where('md_trans.trans_type_id',$trans_type_id)
+                        ->whereIn('md_scheme.amc_id',$amc_name)
                         // ->where('td_mutual_fund.tin_no',$tin_no)
                         ->whereRaw($rawQuery)
                         // ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
                         // ->paginate($paginate);  
                         ->get(); 
+                    dd(\DB::getQueryLog());
                 }else{
                     $data=MutualFund::join('td_form_received','td_form_received.temp_tin_no','=','td_mutual_fund.temp_tin_no')
                         ->join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
