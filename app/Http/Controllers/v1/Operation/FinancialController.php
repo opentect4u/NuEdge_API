@@ -115,7 +115,7 @@ class FinancialController extends Controller
                 // if ($sort_by && $column_name) {
                     
                 // } else
-                if ($from_date && $to_date || $tin_no) {
+                if ( $tin_no) {
                     $rawQuery='';
                     // if ($from_date && $to_date) {
                     //     if (strlen($rawQuery) > 0) {
