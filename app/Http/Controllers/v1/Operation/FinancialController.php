@@ -165,7 +165,7 @@ class FinancialController extends Controller
                         'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_deposit_bank.bank_name as bank_name'
                         )
                         ->where('md_trans.trans_type_id',$trans_type_id)
-                        // ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
+                        ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
                         ->paginate($paginate); 
                 }
             }
