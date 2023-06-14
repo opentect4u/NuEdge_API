@@ -93,7 +93,7 @@ class FinancialController extends Controller
                         ->paginate($paginate);   
                 }
             }else {
-                // return $request;
+                return $request;
                 // if ($sort_by && $column_name) {
                     
                 // } else
