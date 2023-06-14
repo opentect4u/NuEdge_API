@@ -32,8 +32,14 @@ Route::prefix('v1')->group(function () {
         Route::get('mdparams',[App\Http\Controllers\v1\CommonController::class,'CommonParamValue']);
 
         /* ******************************** Start Common API ****************************   */
+        // branch
         Route::get('branch',[App\Http\Controllers\v1\Master\BranchController::class,'index']);
         Route::post('branchAddEdit',[App\Http\Controllers\v1\Master\BranchController::class,'createUpdate']);
+
+        // business type
+        Route::get('businessType',[App\Http\Controllers\v1\Master\BusinessTypeController::class,'index']);
+        Route::post('businessTypeAddEdit',[App\Http\Controllers\v1\Master\BusinessTypeController::class,'createUpdate']);
+
 
         /* ******************************** End Common API ****************************   */
 

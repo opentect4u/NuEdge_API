@@ -74,6 +74,7 @@ class TransctionTypeController extends Controller
                     ->paginate($paginate);      
             }else{
                 $data=TransctionType::where('product_id',$product_id)->get();      
+                // $data=[];
             }
         } catch (\Throwable $th) {
             //throw $th;

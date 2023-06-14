@@ -342,6 +342,7 @@ class SchemeController extends Controller
             $scheme_type=$request->scheme_type;
             $paginate=$request->paginate;
             $amc_id=$request->amc_id;
+            $arr_amc_id=json_decode($request->arr_amc_id);
             if ($paginate=='A') {
                 $paginate=999999999;
             }
@@ -381,6 +382,8 @@ class SchemeController extends Controller
                     ->where('md_scheme.id',$scheme_id)
                     ->get();      
                 // $data=Scheme::where('id',$scheme_id)->get();      
+            }elseif (!empty($arr_amc_id)) {
+                $data=Scheme::where('delete_flag','N')->whereIn('amc_id',$arr_amc_id)->get();  
             }elseif ($amc_id!='') {
                 $data=Scheme::where('delete_flag','N')->where('amc_id',$amc_id)->get();  
             }elseif ($id!='') {

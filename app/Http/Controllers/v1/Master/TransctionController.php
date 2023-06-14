@@ -106,6 +106,7 @@ class TransctionController extends Controller
             $search=$request->search;
             $product_id=$request->product_id;
             $paginate=$request->paginate;
+            $trans_type_id=$request->trans_type_id;
             if ($search!='') {
                 $data=Transction::join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
                 ->select('md_trans.*','md_trns_type.trns_type as trns_type')
@@ -118,6 +119,8 @@ class TransctionController extends Controller
                     ->where('md_trns_type.product_id',$product_id)
                     ->orderBy('updated_at','DESC')
                     ->paginate($paginate);  
+            }elseif ($trans_type_id) {
+                $data=Transction::where('trans_type_id',$trans_type_id)->get();
             } else {
                 $data=Transction::join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
                     ->select('md_trans.*','md_trns_type.trns_type as trns_type')
