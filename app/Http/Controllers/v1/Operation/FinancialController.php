@@ -351,6 +351,29 @@ class FinancialController extends Controller
                     ->where('td_mutual_fund.tin_no',$search)
                     // ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
                     ->get();     
+            }elseif ($tin_no && $trans_type_id && $trans_id) {
+                $data=MutualFund::join('td_form_received','td_form_received.temp_tin_no','=','td_mutual_fund.temp_tin_no')
+                    ->join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
+                    ->join('md_scheme','md_scheme.id','=','td_mutual_fund.trans_scheme_from')
+                    ->leftJoin('md_scheme as md_scheme_2','md_scheme_2.id','=','td_mutual_fund.trans_scheme_to')
+                    ->join('md_client','md_client.id','=','td_mutual_fund.first_client_id')
+                    ->leftJoin('md_client as md_client_2','md_client_2.id','=','td_mutual_fund.second_client_id')
+                    ->leftJoin('md_client as md_client_3','md_client_3.id','=','td_mutual_fund.third_client_id')
+                    ->join('md_plan','md_plan.id','=','td_mutual_fund.plan_id')
+                    ->join('md_option','md_option.id','=','td_mutual_fund.option_id')
+                    ->leftJoin('md_plan as md_plan_2','md_plan_2.id','=','td_mutual_fund.plan_id_to')
+                    ->leftJoin('md_option as md_option_2','md_option_2.id','=','td_mutual_fund.option_id_to')
+                    ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_mutual_fund.chq_bank')
+                    ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','md_scheme.scheme_name as scheme_name',
+                    'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to',
+                    'md_client.client_code as first_client_code','md_client.client_name as first_client_name','md_client.pan as first_client_pan','md_client.client_type as first_client_type',
+                    'md_client_2.client_code as second_client_code','md_client_2.client_name as second_client_name','md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
+                    'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to'
+                    )
+                    ->where('md_trans.trans_type_id',$trans_type_id)
+                    ->where('td_mutual_fund.trans_id',$trans_id)
+                    ->where('td_mutual_fund.tin_no','like', '%' . $tin_no . '%')
+                    ->get();   
             }elseif ($paginate!='' && $trans_id!='') {
                 $data=MutualFund::join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
                         ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_mutual_fund.chq_bank')
@@ -422,6 +445,7 @@ class FinancialController extends Controller
                     ->get();      
             }
         } catch (\Throwable $th) {
+            // throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
         return Helper::SuccessResponse($data);
