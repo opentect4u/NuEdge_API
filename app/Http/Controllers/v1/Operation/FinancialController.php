@@ -163,12 +163,9 @@ class FinancialController extends Controller
                             $rawQuery.=" td_mutual_fund.trans_scheme_from IN (".$rnt_name_string.")";
                         }
                     }
-
-                    // and md_scheme.amc_id in (4,5)  where in raw query 
-                    return $rawQuery;
+                    // return $rawQuery;
 
                     // \DB::enableQueryLog();
-
                     $data=MutualFund::join('td_form_received','td_form_received.temp_tin_no','=','td_mutual_fund.temp_tin_no')
                         ->join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
                         ->join('md_scheme','md_scheme.id','=','td_mutual_fund.trans_scheme_from')
