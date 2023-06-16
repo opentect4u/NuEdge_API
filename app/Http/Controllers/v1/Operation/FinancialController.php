@@ -139,8 +139,10 @@ class FinancialController extends Controller
                     }
 
                     if (!empty($amc_name)) {
-                        return $amc_name;
-                        $amc_name_string='';
+                        // return $amc_name;
+                        $amc_name_string= implode(',', $amc_name);
+                        // $amc_name_string='';
+                        return $amc_name_string;
                         if (strlen($rawQuery) > 0) {
                             $rawQuery.=" AND md_scheme.amc_id IN (".$client_code.")";
                         }else {

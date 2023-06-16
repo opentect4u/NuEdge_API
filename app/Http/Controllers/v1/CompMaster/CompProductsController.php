@@ -16,9 +16,12 @@ class CompProductsController extends Controller
             $search=$request->search;
             $sort_by=$request->sort_by;
             $column_name=$request->column_name;
+            $cm_profile_id=$request->cm_profile_id;
             if ($search!='') {
                 $data=CompProduct::where('product_name','like', '%' . $search . '%')->get();      
-            }else {
+            }elseif ($cm_profile_id) {
+                $data=CompProduct::where('cm_profile_id',$cm_profile_id)->get();      
+            } else {
                 $data=CompProduct::get();      
             }
         } catch (\Throwable $th) {
