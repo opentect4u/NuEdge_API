@@ -27,6 +27,7 @@ class FinancialController extends Controller
 
             $amc_name=json_decode($request->amc_name);
             $scheme_name=json_decode($request->scheme_name);
+            $client_code=$request->client_code;
 
             $sort_by=$request->sort_by;
             $column_name=$request->column_name;
@@ -34,13 +35,10 @@ class FinancialController extends Controller
             $from_date=$request->from_date;
             $to_date=$request->to_date;
 
-            // amc_name: "[4,5]"
             // brn_cd: null
             // bu_type: 
-            // client_code: 
             // euin_no: 
             // rnt_name: 
-            // scheme_name: "[92,93]"
             // sub_brk_cd: null
             // tin_no: "F001"
             // trans_type: null
