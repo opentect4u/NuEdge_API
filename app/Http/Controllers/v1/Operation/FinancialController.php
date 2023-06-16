@@ -1345,14 +1345,14 @@ class FinancialController extends Controller
 
 
     public function rawQuery(){
-                    if ($from_date && $to_date) {
-                        if (strlen($rawQuery) > 0) {
-                            $rawQuery.=' AND td_mutual_fund.entry_date'.' >= '. $from_date;
-                        } else {
-                            $rawQuery.=' td_mutual_fund.entry_date'.' >= '. $from_date;
-                        }
-                        $rawQuery.=' AND td_mutual_fund.entry_date'.' <= '. $to_date;
-                    }
+        if ($from_date && $to_date) {
+            if (strlen($rawQuery) > 0) {
+                $rawQuery.=' AND td_mutual_fund.entry_date'.' >= '. $from_date;
+            } else {
+                $rawQuery.=' td_mutual_fund.entry_date'.' >= '. $from_date;
+            }
+            $rawQuery.=' AND td_mutual_fund.entry_date'.' <= '. $to_date;
+        }
                     if ($tin_no) {
                         if (strlen($rawQuery) > 0) {
                             $rawQuery.=" AND td_mutual_fund.tin_no='".$tin_no."'";
