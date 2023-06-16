@@ -16,10 +16,18 @@ class LoginPassLockerController extends Controller
             $search=$request->search;
             $sort_by=$request->sort_by;
             $column_name=$request->column_name;
+            $cm_profile_id=$request->cm_profile_id;
             if ($search!='') {
                 $data=CompLoginPwdLocker::where('bank_name','like', '%' . $search . '%')->get();      
-            }else {
-                $data=CompLoginPwdLocker::get();      
+            }elseif ($cm_profile_id) {
+                $data=CompLoginPwdLocker::leftJoin('md_cm_products','md_cm_products.id','=','md_cm_login_pwd_locker.product_id')
+                    ->select('md_cm_login_pwd_locker.*','md_cm_products.product_name as product_name','md_cm_products.cm_profile_id as cm_profile_id')
+                    ->where('md_cm_products.cm_profile_id',$cm_profile_id)
+                    ->get();      
+            } else {
+                $data=CompLoginPwdLocker::leftJoin('md_cm_products','md_cm_products.id','=','md_cm_login_pwd_locker.product_id')
+                    ->select('md_cm_login_pwd_locker.*','md_cm_products.product_name as product_name','md_cm_products.cm_profile_id as cm_profile_id')
+                    ->get();          
             }
         } catch (\Throwable $th) {
             //throw $th;
@@ -55,7 +63,11 @@ class LoginPassLockerController extends Controller
                     'login_pass'=>$request->login_pass,
                     'sec_qus_ans'=>$request->sec_qus_ans,
                 ));      
-            }    
+            }  
+            $data=CompLoginPwdLocker::leftJoin('md_cm_products','md_cm_products.id','=','md_cm_login_pwd_locker.product_id')
+                    ->select('md_cm_login_pwd_locker.*','md_cm_products.product_name as product_name','md_cm_products.cm_profile_id as cm_profile_id')
+                    ->where('md_cm_login_pwd_locker.id',$data->id)
+                    ->first();
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_SAVE_ERROR);

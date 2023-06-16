@@ -20,9 +20,14 @@ class CompProductsController extends Controller
             if ($search!='') {
                 $data=CompProduct::where('product_name','like', '%' . $search . '%')->get();      
             }elseif ($cm_profile_id) {
-                $data=CompProduct::where('cm_profile_id',$cm_profile_id)->get();      
+                $data=CompProduct::leftJoin('md_cm_profile','md_cm_profile.id','=','md_cm_products.cm_profile_id')
+                    ->select('md_cm_products.*','md_cm_profile.type_of_comp as type_of_comp','md_cm_profile.name as cm_profile_name','md_cm_profile.establishment_name as establishment_name')
+                    ->where('md_cm_products.cm_profile_id',$cm_profile_id)
+                    ->get();      
             } else {
-                $data=CompProduct::get();      
+                $data=CompProduct::leftJoin('md_cm_profile','md_cm_profile.id','=','md_cm_products.cm_profile_id')
+                    ->select('md_cm_products.*','md_cm_profile.type_of_comp as type_of_comp','md_cm_profile.name as cm_profile_name','md_cm_profile.establishment_name as establishment_name')
+                    ->get();        
             }
         } catch (\Throwable $th) {
             //throw $th;
@@ -54,6 +59,10 @@ class CompProductsController extends Controller
                     // 'created_by'=>'',
                 ));      
             }    
+            $data=CompProduct::leftJoin('md_cm_profile','md_cm_profile.id','=','md_cm_products.cm_profile_id')
+                ->select('md_cm_products.*','md_cm_profile.type_of_comp as type_of_comp','md_cm_profile.name as cm_profile_name','md_cm_profile.establishment_name as establishment_name')
+                ->where('md_cm_products.id',$data->id)
+                ->first();  
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_SAVE_ERROR);

@@ -21,12 +21,12 @@ class LicenseDetailsController extends Controller
                 $data=CompLicenseDetails::where('bank_name','like', '%' . $search . '%')->get();      
             }elseif ($cm_profile_id) {
                 $data=CompLicenseDetails::leftJoin('md_cm_products','md_cm_products.id','=','md_cm_licence_details.product_id')
-                    ->select('md_cm_licence_details.*','md_cm_products.product_name as product_name')
+                    ->select('md_cm_licence_details.*','md_cm_products.product_name as product_name','md_cm_products.cm_profile_id as cm_profile_id')
                     ->where('md_cm_products.cm_profile_id',$cm_profile_id)
                     ->get();      
             } else {
                 $data=CompLicenseDetails::leftJoin('md_cm_products','md_cm_products.id','=','md_cm_licence_details.product_id')
-                    ->select('md_cm_licence_details.*','md_cm_products.product_name as product_name')
+                    ->select('md_cm_licence_details.*','md_cm_products.product_name as product_name','md_cm_products.cm_profile_id as cm_profile_id')
                     ->get();       
             }
         } catch (\Throwable $th) {
@@ -87,7 +87,7 @@ class LicenseDetailsController extends Controller
                     'valid_to'=>$request->valid_to,
                     'upload_file'=>$upload_file,
                 ));      
-            }    
+            }            
         } catch (\Throwable $th) {
             // throw $th;
             return Helper::ErrorResponse(parent::DATA_SAVE_ERROR);
