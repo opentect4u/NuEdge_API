@@ -16,6 +16,7 @@ class FinancialController extends Controller
         try {
             $paginate=$request->paginate;
             $trans_type_id=$request->trans_type_id;
+            $trans_id=$request->trans_id;
             $tin_no=$request->tin_no;
             $cat_name=$request->cat_name;
             $option=$request->option;
@@ -30,20 +31,19 @@ class FinancialController extends Controller
             $sort_by=$request->sort_by;
             $column_name=$request->column_name;
 
+            $from_date=$request->from_date;
+            $to_date=$request->to_date;
+
             // amc_name: "[4,5]"
             // brn_cd: null
             // bu_type: 
             // client_code: 
             // euin_no: 
-            // from_date: 
             // rnt_name: 
             // scheme_name: "[92,93]"
             // sub_brk_cd: null
             // tin_no: "F001"
-            // to_date: null
-            // trans_id: "1"
             // trans_type: null
-            // trans_type_id: "1"
 
             if ($paginate=='A') {
                 $paginate=999999999;
@@ -115,21 +115,38 @@ class FinancialController extends Controller
                 // if ($sort_by && $column_name) {
                     
                 // } else
-                if ( $tin_no) {
+                if (($from_date && $to_date) || $tin_no || $client_code || $amc_name || $scheme_name) {
                     $rawQuery='';
-                    // if ($from_date && $to_date) {
-                    //     if (strlen($rawQuery) > 0) {
-                    //         $rawQuery.=' AND td_mutual_fund.entry_date'.' >= '. date('Y-m-d',strtotime($from_date));
-                    //     } else {
-                    //         $rawQuery.=' td_mutual_fund.entry_date'.' >= '. date('Y-m-d',strtotime($from_date));
-                    //     }
-                    //     $rawQuery.=' AND td_mutual_fund.entry_date'.' <= '. date('Y-m-d',strtotime($to_date));
-                    // }
+                    if ($from_date && $to_date) {
+                        if (strlen($rawQuery) > 0) {
+                            $rawQuery.=' AND td_mutual_fund.entry_date'.' >= '. $from_date;
+                        } else {
+                            $rawQuery.=' td_mutual_fund.entry_date'.' >= '. $from_date;
+                        }
+                        $rawQuery.=' AND td_mutual_fund.entry_date'.' <= '. $to_date;
+                    }
                     if ($tin_no) {
                         if (strlen($rawQuery) > 0) {
                             $rawQuery.=" AND td_mutual_fund.tin_no='".$tin_no."'";
                         }else {
                             $rawQuery.="td_mutual_fund.tin_no='".$tin_no."'";
+                        }
+                    }
+                    if ($client_code) {
+                        if (strlen($rawQuery) > 0) {
+                            $rawQuery.=" AND td_mutual_fund.first_client_id='".$client_code."'";
+                        }else {
+                            $rawQuery.="td_mutual_fund.first_client_id='".$client_code."'";
+                        }
+                    }
+
+                    if (!empty($amc_name)) {
+                        return $amc_name;
+                        $amc_name_string='';
+                        if (strlen($rawQuery) > 0) {
+                            $rawQuery.=" AND md_scheme.amc_id IN (".$client_code.")";
+                        }else {
+                            $rawQuery.="md_scheme.amc_id IN (".$client_code.")";
                         }
                     }
 
@@ -159,7 +176,8 @@ class FinancialController extends Controller
                         'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_deposit_bank.bank_name as bank_name'
                         )
                         ->where('md_trans.trans_type_id',$trans_type_id)
-                        ->whereIn('md_scheme.amc_id',$amc_name)
+                        ->where('td_mutual_fund.trans_id',$trans_id)
+                        // ->whereIn('md_scheme.amc_id',$amc_name)
                         // ->where('td_mutual_fund.tin_no',$tin_no)
                         ->whereRaw($rawQuery)
                         // ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
@@ -188,6 +206,7 @@ class FinancialController extends Controller
                         'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_deposit_bank.bank_name as bank_name'
                         )
                         ->where('md_trans.trans_type_id',$trans_type_id)
+                        ->where('td_mutual_fund.trans_id',$trans_id)
                         ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
                         ->paginate($paginate); 
                 }

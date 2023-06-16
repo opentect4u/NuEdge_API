@@ -21,11 +21,19 @@ class CompProfileController extends Controller
             if ($search!='') {
                 $data=CompProfile::where('name','like', '%' . $search . '%')->get();      
             }elseif ($show_type_comp=='D') {
-                $data=CompProfile::where('type_of_comp','!=','3')->get();      
+                $data=CompProfile::leftJoin('md_cm_type','md_cm_type.id','=','md_cm_profile.type_of_comp')
+                    ->select('md_cm_profile.*','md_cm_type.type as comp_type_name')
+                    ->where('md_cm_profile.type_of_comp','!=','3')
+                    ->get();   
             }elseif ($show_type_comp=='P') {
-                $data=CompProfile::where('type_of_comp','3')->get();      
+                $data=CompProfile::leftJoin('md_cm_type','md_cm_type.id','=','md_cm_profile.type_of_comp')
+                    ->select('md_cm_profile.*','md_cm_type.type as comp_type_name')
+                    ->where('md_cm_profile.type_of_comp','3')
+                    ->get();    
             }else {
-                $data=CompProfile::get();      
+                $data=CompProfile::leftJoin('md_cm_type','md_cm_type.id','=','md_cm_profile.type_of_comp')
+                    ->select('md_cm_profile.*','md_cm_type.type as comp_type_name')
+                    ->get();  
             }
         } catch (\Throwable $th) {
             //throw $th;

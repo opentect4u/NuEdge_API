@@ -17,5 +17,6 @@ class CompBank extends Model
         'micr',
         'branch_name',
         'branch_add',
+        'upload_chq',
     ];
 }
