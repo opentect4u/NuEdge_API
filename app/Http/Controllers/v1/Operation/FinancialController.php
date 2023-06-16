@@ -27,6 +27,7 @@ class FinancialController extends Controller
 
             $amc_name=json_decode($request->amc_name);
             $scheme_name=json_decode($request->scheme_name);
+            $rnt_name=json_decode($request->rnt_name);
             $client_code=$request->client_code;
 
             $sort_by=$request->sort_by;
@@ -113,7 +114,7 @@ class FinancialController extends Controller
                 // if ($sort_by && $column_name) {
                     
                 // } else
-                if (($from_date && $to_date) || $tin_no || $client_code || $amc_name || $scheme_name) {
+                if (($from_date && $to_date) || $tin_no || $client_code || $amc_name || $scheme_name || $rnt_name) {
                     $rawQuery='';
                     if ($from_date && $to_date) {
                         if (strlen($rawQuery) > 0) {
@@ -127,23 +128,39 @@ class FinancialController extends Controller
                         if (strlen($rawQuery) > 0) {
                             $rawQuery.=" AND td_mutual_fund.tin_no='".$tin_no."'";
                         }else {
-                            $rawQuery.="td_mutual_fund.tin_no='".$tin_no."'";
+                            $rawQuery.=" td_mutual_fund.tin_no='".$tin_no."'";
                         }
                     }
                     if ($client_code) {
                         if (strlen($rawQuery) > 0) {
                             $rawQuery.=" AND td_mutual_fund.first_client_id='".$client_code."'";
                         }else {
-                            $rawQuery.="td_mutual_fund.first_client_id='".$client_code."'";
+                            $rawQuery.=" td_mutual_fund.first_client_id='".$client_code."'";
                         }
                     }
-
                     if (!empty($amc_name)) {
                         $amc_name_string= implode(',', $amc_name);
                         if (strlen($rawQuery) > 0) {
                             $rawQuery.=" AND md_scheme.amc_id IN (".$amc_name_string.")";
                         }else {
-                            $rawQuery.="md_scheme.amc_id IN (".$amc_name_string.")";
+                            $rawQuery.=" md_scheme.amc_id IN (".$amc_name_string.")";
+                        }
+                    }
+                    if (!empty($scheme_name)) {
+                        $scheme_name_string= implode(',', $scheme_name);
+                        if (strlen($rawQuery) > 0) {
+                            $rawQuery.=" AND td_mutual_fund.trans_scheme_from IN (".$scheme_name_string.")";
+                        }else {
+                            $rawQuery.=" td_mutual_fund.trans_scheme_from IN (".$scheme_name_string.")";
+                        }
+                    }
+
+                    if (!empty($rnt_name)) {
+                        $rnt_name_string= implode(',', $rnt_name);
+                        if (strlen($rawQuery) > 0) {
+                            $rawQuery.=" AND td_mutual_fund.trans_scheme_from IN (".$rnt_name_string.")";
+                        }else {
+                            $rawQuery.=" td_mutual_fund.trans_scheme_from IN (".$rnt_name_string.")";
                         }
                     }
 

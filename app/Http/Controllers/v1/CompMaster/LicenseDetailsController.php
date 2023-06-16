@@ -16,10 +16,18 @@ class LicenseDetailsController extends Controller
             $search=$request->search;
             $sort_by=$request->sort_by;
             $column_name=$request->column_name;
+            $cm_profile_id=$request->cm_profile_id;
             if ($search!='') {
                 $data=CompLicenseDetails::where('bank_name','like', '%' . $search . '%')->get();      
-            }else {
-                $data=CompLicenseDetails::get();      
+            }elseif ($cm_profile_id) {
+                $data=CompLicenseDetails::leftJoin('md_cm_products','md_cm_products.id','=','md_cm_licence_details.product_id')
+                    ->select('md_cm_licence_details.*','md_cm_products.product_name as product_name')
+                    ->where('md_cm_products.cm_profile_id',$cm_profile_id)
+                    ->get();      
+            } else {
+                $data=CompLicenseDetails::leftJoin('md_cm_products','md_cm_products.id','=','md_cm_licence_details.product_id')
+                    ->select('md_cm_licence_details.*','md_cm_products.product_name as product_name')
+                    ->get();       
             }
         } catch (\Throwable $th) {
             //throw $th;
