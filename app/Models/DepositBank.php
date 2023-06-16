@@ -12,6 +12,9 @@ class DepositBank extends Model
     protected $fillable = [
         'bank_name',
         'ifs_code',
+        'branch_name',
+        'micr_code',
+        'branch_addr',
         'deleted_flag',
         'deleted_at',
         'deleted_by',
