@@ -25,9 +25,9 @@ class CompanyTypeController extends Controller
                 if (!empty($comp_type)) {
                     $t_type=[];
                     foreach ($comp_type as $key => $type) {
-                        array_push($t_type,$value->id);
+                        array_push($t_type,$type->id);
                     }
-                    $data=FDCompanyType::where('comp_type',$t_type)
+                    $data=FDCompanyType::whereIn('id',$t_type)
                         ->where('delete_flag','N')
                         ->orderBy($column_name,$sort_by)
                         ->paginate($paginate); 
@@ -37,11 +37,13 @@ class CompanyTypeController extends Controller
                         ->paginate($paginate); 
                 }
             }elseif (!empty($comp_type)) {
+                // return $comp_type;
                 $t_type=[];
                 foreach ($comp_type as $key => $type) {
-                    array_push($t_type,$value->id);
+                    array_push($t_type,$type->id);
                 }
-                $data=FDCompanyType::where('comp_type',$t_type)
+                // return $t_type;
+                $data=FDCompanyType::whereIn('id',$t_type)
                     ->where('delete_flag','N')
                     ->orderBy('updated_at','DESC')
                     ->paginate($paginate);  
@@ -49,7 +51,7 @@ class CompanyTypeController extends Controller
                 $data=FDCompanyType::where('delete_flag','N')->orderBy('updated_at','DESC')->paginate($paginate);  
             }
         } catch (\Throwable $th) {
-            //throw $th;
+            throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
         return Helper::SuccessResponse($data);
