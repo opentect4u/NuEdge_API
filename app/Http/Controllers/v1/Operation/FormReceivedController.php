@@ -18,64 +18,199 @@ class FormReceivedController extends Controller
 
             $temp_tin_no=$request->temp_tin_no;
             $client_code=$request->client_code;
+            $trans_id=$request->trans_id;
             $recv_from=$request->recv_from;
+
+            $trans_type=$request->trans_type;
             $sub_brk_cd=$request->sub_brk_cd;
             $euin_no=$request->euin_no;
             $inv_type=$request->inv_type;
-            $trans_type=$request->trans_type;
+
             $bu_type=json_decode($request->bu_type);
             $kyc_status=json_decode($request->kyc_status);
             // return $bu_type;
 
+            $from_date=$request->from_date;
+            $to_date=$request->to_date;
+
+            $order=$request->order;
+            $field=$request->field;
+
+
             if ($paginate=='A' || $paginate=='undefined') {
                 $paginate=999999999;
             }
-            if ($temp_tin_no!='') {
+            if ($order && $field) {
+                $rawOrderBy='';
+                if ($order > 0) {
+                    $rawOrderBy=$field.' ASC';
+                } else {
+                    $rawOrderBy=$field.' DESC';
+                }
+                if (($from_date && $to_date) || $temp_tin_no || $client_code || $trans_id || $recv_from) {
+                    $rawQuery='';
+                    if ($from_date && $to_date) {
+                        if (strlen($rawQuery) > 0) {
+                            $rawQuery.=' AND td_form_received.rec_datetime'.' >= '. $from_date;
+                        } else {
+                            $rawQuery.=' td_form_received.rec_datetime'.' >= '. $from_date;
+                        }
+                        $rawQuery.=' AND td_form_received.rec_datetime'.' <= '. $to_date;
+                    }
+                    if ($temp_tin_no) {
+                        if (strlen($rawQuery) > 0) {
+                            $rawQuery.=" AND td_form_received.temp_tin_no='".$temp_tin_no."'";
+                        }else {
+                            $rawQuery.=" td_form_received.temp_tin_no='".$temp_tin_no."'";
+                        }
+                    }
+                    if ($client_code) {
+                        if (strlen($rawQuery) > 0) {
+                            $rawQuery.=" AND td_form_received.client_id='".$client_code."'";
+                        }else {
+                            $rawQuery.=" td_form_received.client_id='".$client_code."'";
+                        }
+                    }
+                    if ($trans_id) {
+                        if (strlen($rawQuery) > 0) {
+                            $rawQuery.=" AND td_form_received.trans_id='".$trans_id."'";
+                        }else {
+                            $rawQuery.=" td_form_received.trans_id='".$trans_id."'";
+                        }
+                    }
+                    if ($recv_from) {
+                        if (strlen($rawQuery) > 0) {
+                            $rawQuery.=" AND td_form_received.recv_from LIKE '%".$recv_from."%'";
+                        }else {
+                            $rawQuery.=" td_form_received.recv_from LIKE '%".$recv_from."%'";
+                        }
+                    }
+                    $data=FormReceived::join('md_trans','md_trans.id','=','td_form_received.trans_id')
+                        ->join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
+                        ->join('md_scheme','md_scheme.id','=','td_form_received.scheme_id')
+                        ->leftJoin('md_scheme as md_scheme_2','md_scheme_2.id','=','td_form_received.scheme_id_to')
+                        ->join('md_client','md_client.id','=','td_form_received.client_id')
+                        ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
+                        ->select('td_form_received.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','md_trns_type.trns_type as trans_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to','md_employee.emp_name as emp_name',
+                        'md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type')
+                        ->where('md_trans.trans_type_id',$trans_type_id)
+                        ->where('td_form_received.deleted_flag','N')
+                        ->whereRaw($rawQuery)
+                        ->orderByRaw($rawOrderBy)
+                        ->paginate($paginate); 
+                }else {
+                    $data=FormReceived::join('md_trans','md_trans.id','=','td_form_received.trans_id')
+                        ->join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
+                        ->join('md_scheme','md_scheme.id','=','td_form_received.scheme_id')
+                        ->leftJoin('md_scheme as md_scheme_2','md_scheme_2.id','=','td_form_received.scheme_id_to')
+                        ->join('md_client','md_client.id','=','td_form_received.client_id')
+                        ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
+                        ->select('td_form_received.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','md_trns_type.trns_type as trans_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to','md_employee.emp_name as emp_name',
+                        'md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type')
+                        ->where('md_trans.trans_type_id',$trans_type_id)
+                        ->where('td_form_received.deleted_flag','N')
+                        ->orderByRaw($rawOrderBy)
+                        ->paginate($paginate); 
+                }
+            }elseif (($from_date && $to_date) || $temp_tin_no || $client_code || $trans_id || $recv_from) {
+                $rawQuery='';
+                if ($from_date && $to_date) {
+                    if (strlen($rawQuery) > 0) {
+                        $rawQuery.=' AND td_form_received.rec_datetime'.' >= '. $from_date;
+                    } else {
+                        $rawQuery.=' td_form_received.rec_datetime'.' >= '. $from_date;
+                    }
+                    $rawQuery.=' AND td_form_received.rec_datetime'.' <= '. $to_date;
+                }
+                if ($temp_tin_no) {
+                    if (strlen($rawQuery) > 0) {
+                        $rawQuery.=" AND td_form_received.temp_tin_no='".$temp_tin_no."'";
+                    }else {
+                        $rawQuery.=" td_form_received.temp_tin_no='".$temp_tin_no."'";
+                    }
+                }
+                if ($client_code) {
+                    if (strlen($rawQuery) > 0) {
+                        $rawQuery.=" AND td_form_received.client_id='".$client_code."'";
+                    }else {
+                        $rawQuery.=" td_form_received.client_id='".$client_code."'";
+                    }
+                }
+                if ($trans_id) {
+                    if (strlen($rawQuery) > 0) {
+                        $rawQuery.=" AND td_form_received.trans_id='".$trans_id."'";
+                    }else {
+                        $rawQuery.=" td_form_received.trans_id='".$trans_id."'";
+                    }
+                }
+                if ($recv_from) {
+                    if (strlen($rawQuery) > 0) {
+                        $rawQuery.=" AND td_form_received.recv_from LIKE '%".$recv_from."%'";
+                    }else {
+                        $rawQuery.=" td_form_received.recv_from LIKE '%".$recv_from."%'";
+                    }
+                }
                 $data=FormReceived::join('md_trans','md_trans.id','=','td_form_received.trans_id')
                     ->join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
                     ->join('md_scheme','md_scheme.id','=','td_form_received.scheme_id')
                     ->leftJoin('md_scheme as md_scheme_2','md_scheme_2.id','=','td_form_received.scheme_id_to')
                     ->join('md_client','md_client.id','=','td_form_received.client_id')
-                        ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
+                    ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
                     ->select('td_form_received.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','md_trns_type.trns_type as trans_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to','md_employee.emp_name as emp_name',
                     'md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type')
-                    ->where('td_form_received.temp_tin_no',$temp_tin_no)
-                    ->where('td_form_received.deleted_flag','N')
                     ->where('md_trans.trans_type_id',$trans_type_id)
-                    ->orderBy('td_form_received.updated_at','DESC')
-                    ->paginate($paginate);      
-            }elseif (!empty($client_code)) {
-                $data=FormReceived::join('md_trans','md_trans.id','=','td_form_received.trans_id')
-                    ->join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
-                    ->join('md_scheme','md_scheme.id','=','td_form_received.scheme_id')
-                    ->leftJoin('md_scheme as md_scheme_2','md_scheme_2.id','=','td_form_received.scheme_id_to')
-                    ->join('md_client','md_client.id','=','td_form_received.client_id')
-                        ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
-                    ->select('td_form_received.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','md_trns_type.trns_type as trans_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to','md_employee.emp_name as emp_name',
-                    'md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type')
                     ->where('td_form_received.deleted_flag','N')
-                    ->where('md_trans.trans_type_id',$trans_type_id)
-                    ->where('md_client.client_code','like', '%' . $client_code . '%')
-                    ->orWhere('md_client.client_name','like', '%' . $client_code . '%')
-                    ->orWhere('md_client.pan','like', '%' . $client_code . '%')
+                    ->whereRaw($rawQuery)
                     ->orderBy('td_form_received.updated_at','DESC')
-                    ->paginate($paginate);      
-            }elseif (!empty($bu_type)) {
-                // return $bu_type;
-                $data=FormReceived::join('md_trans','md_trans.id','=','td_form_received.trans_id')
-                    ->join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
-                    ->join('md_scheme','md_scheme.id','=','td_form_received.scheme_id')
-                    ->leftJoin('md_scheme as md_scheme_2','md_scheme_2.id','=','td_form_received.scheme_id_to')
-                    ->join('md_client','md_client.id','=','td_form_received.client_id')
-                        ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
-                    ->select('td_form_received.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','md_trns_type.trns_type as trans_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to','md_employee.emp_name as emp_name',
-                    'md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type')
-                    ->where('td_form_received.deleted_flag','N')
-                    ->where('md_trans.trans_type_id',$trans_type_id)
-                    ->whereIn('td_form_received.bu_type',$bu_type)
-                    ->orderBy('td_form_received.updated_at','DESC')
-                    ->paginate($paginate);      
-            } else {
+                    ->paginate($paginate);   
+            }
+            // elseif ($temp_tin_no!='') {
+            //     $data=FormReceived::join('md_trans','md_trans.id','=','td_form_received.trans_id')
+            //         ->join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
+            //         ->join('md_scheme','md_scheme.id','=','td_form_received.scheme_id')
+            //         ->leftJoin('md_scheme as md_scheme_2','md_scheme_2.id','=','td_form_received.scheme_id_to')
+            //         ->join('md_client','md_client.id','=','td_form_received.client_id')
+            //         ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
+            //         ->select('td_form_received.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','md_trns_type.trns_type as trans_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to','md_employee.emp_name as emp_name',
+            //         'md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type')
+            //         ->where('td_form_received.temp_tin_no',$temp_tin_no)
+            //         ->where('td_form_received.deleted_flag','N')
+            //         ->where('md_trans.trans_type_id',$trans_type_id)
+            //         ->orderBy('td_form_received.updated_at','DESC')
+            //         ->paginate($paginate);      
+            // }elseif (!empty($client_code)) {
+            //     $data=FormReceived::join('md_trans','md_trans.id','=','td_form_received.trans_id')
+            //         ->join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
+            //         ->join('md_scheme','md_scheme.id','=','td_form_received.scheme_id')
+            //         ->leftJoin('md_scheme as md_scheme_2','md_scheme_2.id','=','td_form_received.scheme_id_to')
+            //         ->join('md_client','md_client.id','=','td_form_received.client_id')
+            //             ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
+            //         ->select('td_form_received.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','md_trns_type.trns_type as trans_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to','md_employee.emp_name as emp_name',
+            //         'md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type')
+            //         ->where('td_form_received.deleted_flag','N')
+            //         ->where('md_trans.trans_type_id',$trans_type_id)
+            //         ->where('md_client.client_code','like', '%' . $client_code . '%')
+            //         ->orWhere('md_client.client_name','like', '%' . $client_code . '%')
+            //         ->orWhere('md_client.pan','like', '%' . $client_code . '%')
+            //         ->orderBy('td_form_received.updated_at','DESC')
+            //         ->paginate($paginate);      
+            // }elseif (!empty($bu_type)) {
+            //     // return $bu_type;
+            //     $data=FormReceived::join('md_trans','md_trans.id','=','td_form_received.trans_id')
+            //         ->join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
+            //         ->join('md_scheme','md_scheme.id','=','td_form_received.scheme_id')
+            //         ->leftJoin('md_scheme as md_scheme_2','md_scheme_2.id','=','td_form_received.scheme_id_to')
+            //         ->join('md_client','md_client.id','=','td_form_received.client_id')
+            //             ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
+            //         ->select('td_form_received.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','md_trns_type.trns_type as trans_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to','md_employee.emp_name as emp_name',
+            //         'md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type')
+            //         ->where('td_form_received.deleted_flag','N')
+            //         ->where('md_trans.trans_type_id',$trans_type_id)
+            //         ->whereIn('td_form_received.bu_type',$bu_type)
+            //         ->orderBy('td_form_received.updated_at','DESC')
+            //         ->paginate($paginate);      
+            // } 
+            else {
                 $data=FormReceived::join('md_trans','md_trans.id','=','td_form_received.trans_id')
                     ->join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
                     ->join('md_scheme','md_scheme.id','=','td_form_received.scheme_id')
@@ -101,19 +236,163 @@ class FormReceivedController extends Controller
     {
         try {
             $trans_type_id=$request->trans_type_id;
-            $data=FormReceived::join('md_trans','md_trans.id','=','td_form_received.trans_id')
+
+            $temp_tin_no=$request->temp_tin_no;
+            $client_code=$request->client_code;
+            $trans_id=$request->trans_id;
+            $recv_from=$request->recv_from;
+
+            $trans_type=$request->trans_type;
+            $sub_brk_cd=$request->sub_brk_cd;
+            $euin_no=$request->euin_no;
+            $inv_type=$request->inv_type;
+            $bu_type=json_decode($request->bu_type);
+            $kyc_status=json_decode($request->kyc_status);
+            // return $bu_type;
+            $from_date=$request->from_date;
+            $to_date=$request->to_date;
+
+            $order=$request->order;
+            $field=$request->field;
+
+            if ($order && $field) {
+                $rawOrderBy='';
+                if ($order > 0) {
+                    $rawOrderBy=$field.' ASC';
+                } else {
+                    $rawOrderBy=$field.' DESC';
+                }
+                if (($from_date && $to_date) || $temp_tin_no || $client_code || $trans_id || $recv_from) {
+                    $rawQuery='';
+                    if ($from_date && $to_date) {
+                        if (strlen($rawQuery) > 0) {
+                            $rawQuery.=' AND td_form_received.rec_datetime'.' >= '. $from_date;
+                        } else {
+                            $rawQuery.=' td_form_received.rec_datetime'.' >= '. $from_date;
+                        }
+                        $rawQuery.=' AND td_form_received.rec_datetime'.' <= '. $to_date;
+                    }
+                    if ($temp_tin_no) {
+                        if (strlen($rawQuery) > 0) {
+                            $rawQuery.=" AND td_form_received.temp_tin_no='".$temp_tin_no."'";
+                        }else {
+                            $rawQuery.=" td_form_received.temp_tin_no='".$temp_tin_no."'";
+                        }
+                    }
+                    if ($client_code) {
+                        if (strlen($rawQuery) > 0) {
+                            $rawQuery.=" AND td_form_received.client_id='".$client_code."'";
+                        }else {
+                            $rawQuery.=" td_form_received.client_id='".$client_code."'";
+                        }
+                    }
+                    if ($trans_id) {
+                        if (strlen($rawQuery) > 0) {
+                            $rawQuery.=" AND td_form_received.trans_id='".$trans_id."'";
+                        }else {
+                            $rawQuery.=" td_form_received.trans_id='".$trans_id."'";
+                        }
+                    }
+                    if ($recv_from) {
+                        if (strlen($rawQuery) > 0) {
+                            $rawQuery.=" AND td_form_received.recv_from LIKE '%".$recv_from."%'";
+                        }else {
+                            $rawQuery.=" td_form_received.recv_from LIKE '%".$recv_from."%'";
+                        }
+                    }
+                    $data=FormReceived::join('md_trans','md_trans.id','=','td_form_received.trans_id')
+                        ->join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
+                        ->join('md_scheme','md_scheme.id','=','td_form_received.scheme_id')
+                        ->leftJoin('md_scheme as md_scheme_2','md_scheme_2.id','=','td_form_received.scheme_id_to')
+                        ->join('md_client','md_client.id','=','td_form_received.client_id')
+                        ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
+                        ->select('td_form_received.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','md_trns_type.trns_type as trans_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to','md_employee.emp_name as emp_name',
+                        'md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type')
+                        ->where('md_trans.trans_type_id',$trans_type_id)
+                        ->where('td_form_received.deleted_flag','N')
+                        ->whereRaw($rawQuery)
+                        ->orderByRaw($rawOrderBy)
+                        ->get(); 
+                }else {
+                    $data=FormReceived::join('md_trans','md_trans.id','=','td_form_received.trans_id')
+                        ->join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
+                        ->join('md_scheme','md_scheme.id','=','td_form_received.scheme_id')
+                        ->leftJoin('md_scheme as md_scheme_2','md_scheme_2.id','=','td_form_received.scheme_id_to')
+                        ->join('md_client','md_client.id','=','td_form_received.client_id')
+                        ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
+                        ->select('td_form_received.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','md_trns_type.trns_type as trans_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to','md_employee.emp_name as emp_name',
+                        'md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type')
+                        ->where('md_trans.trans_type_id',$trans_type_id)
+                        ->where('td_form_received.deleted_flag','N')
+                        ->orderByRaw($rawOrderBy)
+                        ->get(); 
+                }
+            }elseif (($from_date && $to_date) || $temp_tin_no || $client_code || $trans_id || $recv_from) {
+                $rawQuery='';
+                if ($from_date && $to_date) {
+                    if (strlen($rawQuery) > 0) {
+                        $rawQuery.=' AND td_form_received.rec_datetime'.' >= '. $from_date;
+                    } else {
+                        $rawQuery.=' td_form_received.rec_datetime'.' >= '. $from_date;
+                    }
+                    $rawQuery.=' AND td_form_received.rec_datetime'.' <= '. $to_date;
+                }
+                if ($temp_tin_no) {
+                    if (strlen($rawQuery) > 0) {
+                        $rawQuery.=" AND td_form_received.temp_tin_no='".$temp_tin_no."'";
+                    }else {
+                        $rawQuery.=" td_form_received.temp_tin_no='".$temp_tin_no."'";
+                    }
+                }
+                if ($client_code) {
+                    if (strlen($rawQuery) > 0) {
+                        $rawQuery.=" AND td_form_received.client_id='".$client_code."'";
+                    }else {
+                        $rawQuery.=" td_form_received.client_id='".$client_code."'";
+                    }
+                }
+                if ($trans_id) {
+                    if (strlen($rawQuery) > 0) {
+                        $rawQuery.=" AND td_form_received.trans_id='".$trans_id."'";
+                    }else {
+                        $rawQuery.=" td_form_received.trans_id='".$trans_id."'";
+                    }
+                }
+                if ($recv_from) {
+                    if (strlen($rawQuery) > 0) {
+                        $rawQuery.=" AND td_form_received.recv_from LIKE '%".$recv_from."%'";
+                    }else {
+                        $rawQuery.=" td_form_received.recv_from LIKE '%".$recv_from."%'";
+                    }
+                }
+                $data=FormReceived::join('md_trans','md_trans.id','=','td_form_received.trans_id')
                     ->join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
                     ->join('md_scheme','md_scheme.id','=','td_form_received.scheme_id')
                     ->leftJoin('md_scheme as md_scheme_2','md_scheme_2.id','=','td_form_received.scheme_id_to')
                     ->join('md_client','md_client.id','=','td_form_received.client_id')
-                        ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
-                    ->select('td_form_received.*','md_trans.trns_name as trans_name','md_trns_type.trns_type as trans_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to','md_employee.emp_name as emp_name',
+                    ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
+                    ->select('td_form_received.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','md_trns_type.trns_type as trans_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to','md_employee.emp_name as emp_name',
                     'md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type')
-                    ->whereDate('td_form_received.updated_at',date('Y-m-d'))
+                    ->where('md_trans.trans_type_id',$trans_type_id)
+                    ->where('td_form_received.deleted_flag','N')
+                    ->whereRaw($rawQuery)
+                    ->orderBy('td_form_received.updated_at','DESC')
+                    ->get();   
+            }else {
+                $data=FormReceived::join('md_trans','md_trans.id','=','td_form_received.trans_id')
+                    ->join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
+                    ->join('md_scheme','md_scheme.id','=','td_form_received.scheme_id')
+                    ->leftJoin('md_scheme as md_scheme_2','md_scheme_2.id','=','td_form_received.scheme_id_to')
+                    ->join('md_client','md_client.id','=','td_form_received.client_id')
+                    ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
+                    ->select('td_form_received.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','md_trns_type.trns_type as trans_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to','md_employee.emp_name as emp_name',
+                    'md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type')
                     ->where('td_form_received.deleted_flag','N')
                     ->where('md_trans.trans_type_id',$trans_type_id)
                     ->orderBy('td_form_received.updated_at','DESC')
-                    ->get();        
+                    ->get(); 
+            }
+                 
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
@@ -227,7 +506,7 @@ class FormReceivedController extends Controller
                     'md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type',
                     'md_employee.emp_name as emp_name')
                     ->where('td_form_received.deleted_flag','N')
-                    ->where('td_form_received.temp_tin_no',$temp_tin_no)
+                    ->where('td_form_received.temp_tin_no','like', '%' . $temp_tin_no . '%')
                     ->orderBy('td_form_received.updated_at','DESC')
                     ->get();    
             }else {
@@ -252,10 +531,10 @@ class FormReceivedController extends Controller
     public function createShow(Request $request)
     {
         try {
-            $datas=FormReceived::join('md_products','md_products.id','=','td_form_received.product_id')
+            $datas=FormReceived::join('md_cm_products','md_cm_products.id','=','td_form_received.product_id')
                     ->join('md_trans','md_trans.id','=','td_form_received.trans_id')
-                        ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
-                    ->select('td_form_received.*','md_products.product_name as product_name','md_trans.trns_name as trans_name')
+                    ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
+                    ->select('td_form_received.*','md_cm_products.product_name as product_name','md_trans.trns_name as trans_name')
                     ->where('td_form_received.deleted_flag','N')
                     ->where('td_form_received.product_id', $request->product_id)
                     ->where('md_trans.trans_type_id',$request->trans_type_id)
@@ -314,6 +593,7 @@ class FormReceivedController extends Controller
             }
             // return $data;
         } catch (\Throwable $th) {
+            throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
         return Helper::SuccessResponse($data);

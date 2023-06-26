@@ -54,7 +54,7 @@ Route::prefix('v1')->group(function () {
             // =======================================End Form Reeceived==================================
 
             // ==========================================Start Operation =============================
-            // Route::get('fdTraxShow',[App\Http\Controllers\v1\FDOperation\FormEntryController::class,'index']);
+            Route::get('fdTraxShow',[App\Http\Controllers\v1\FDOperation\FormEntryController::class,'index']);
             // Route::get('fdTraxCreateShow',[App\Http\Controllers\v1\FDOperation\FormEntryController::class,'createShow']);
 
             Route::post('fdTraxCreate',[App\Http\Controllers\v1\FDOperation\FormEntryController::class,'create']);
