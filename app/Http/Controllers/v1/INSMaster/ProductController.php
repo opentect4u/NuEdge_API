@@ -216,6 +216,7 @@ class ProductController extends Controller
             $ins_type_id=$request->ins_type_id;
             $company_id=$request->company_id;
             $product_type_id=$request->product_type_id;
+            $arr_product_type_id=json_decode($request->arr_product_type_id);
             $paginate=$request->paginate;
             if ($paginate=='A') {
                 $paginate=999999999;
@@ -231,6 +232,10 @@ class ProductController extends Controller
                     ->where('company_id',$company_id)
                     ->where('ins_type_id',$ins_type_id)
                     ->get();      
+            }elseif ($arr_product_type_id) {
+                $data=InsProduct::where('delete_flag','N')
+                    ->whereIn('product_type_id',$product_type_id)
+                    ->get();    
             }else if ($search!='') {
                 $data=InsProduct::where('delete_flag','N')
                 ->where('product_name','like', '%' . $search . '%')
@@ -357,19 +362,26 @@ class ProductController extends Controller
         try {
             $company_id=json_decode($request->company_id);
             $product_type_id=json_decode($request->product_type_id);
-            $comp=[];
-            foreach ($company_id as $key => $value) {
-                array_push($comp,$value->id);
+            $arr_product_type_id=json_decode($request->arr_product_type_id);
+            // return $arr_product_type_id;
+            if (!empty($arr_product_type_id)) {
+                $data=InsProduct::where('delete_flag','N')
+                    ->whereIn('product_type_id',$arr_product_type_id)
+                    ->get();     
+            } else {
+                $comp=[];
+                foreach ($company_id as $key => $value) {
+                    array_push($comp,$value->id);
+                }
+                $product_type=[];
+                foreach ($product_type_id as $key => $value1) {
+                    array_push($product_type,$value1->id);
+                }
+                $data=InsProduct::where('delete_flag','N')
+                    ->whereIn('company_id',$comp)
+                    ->whereIn('product_type_id',$product_type)
+                    ->get();      
             }
-            $product_type=[];
-            foreach ($product_type_id as $key => $value1) {
-                array_push($product_type,$value1->id);
-            }
-            $data=InsProduct::where('delete_flag','N')
-                ->whereIn('company_id',$comp)
-                ->whereIn('product_type_id',$product_type)
-                ->get();      
-
         } catch (\Throwable $th) {
             throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);

@@ -16,36 +16,76 @@ class SubcategoryController extends Controller
     {
         try {
             $paginate=$request->paginate;
-            $cat_id=$request->cat_id;
+            $cat_id=json_decode($request->cat_id);
             $subcat_id=$request->subcat_id;
-            $sort_by=$request->sort_by;
-            $column_name=$request->column_name;
+            $order=$request->order;
+            $field=$request->field;
             if ($paginate=='A') {
                 $paginate=999999999;
             }
-            if ($subcat_id && $cat_id) {
+            if ($order && $field) {
+                $rawOrderBy='';
+                if ($order > 0) {
+                    $rawOrderBy=$field.' ASC';
+                } else {
+                    $rawOrderBy=$field.' DESC';
+                }
+                if ($subcat_id || $cat_id) {
+                    $rawQuery='';
+                    if (!empty($cat_id)) {
+                        $cat_id_string= implode(',', $cat_id);
+                        if (strlen($rawQuery) > 0) {
+                            $rawQuery.=" AND md_subcategory.category_id IN (".$cat_id_string.")";
+                        }else {
+                            $rawQuery.=" md_subcategory.category_id IN (".$cat_id_string.")";
+                        }
+                    }
+                    if ($subcat_id) {
+                        if (strlen($rawQuery) > 0) {
+                            $rawQuery.=" AND md_subcategory.id=".$subcat_id;
+                        }else {
+                            $rawQuery.=" md_subcategory.id=".$subcat_id;
+                        }
+                    }
+                    $data=SubCategory::join('md_category','md_category.id','=','md_subcategory.category_id')
+                        ->select('md_subcategory.*','md_category.cat_name as cat_name')
+                        ->where('md_subcategory.delete_flag','N')
+                        ->whereRaw($rawQuery)
+                        ->orderByRaw($rawOrderBy)
+                        ->paginate($paginate);    
+                }else {
+                    $data=SubCategory::join('md_category','md_category.id','=','md_subcategory.category_id')
+                        ->select('md_subcategory.*','md_category.cat_name as cat_name')
+                        ->where('md_subcategory.delete_flag','N')
+                        ->orderByRaw($rawOrderBy)
+                        ->paginate($paginate);     
+                } 
+            }else if ($subcat_id || $cat_id) {
+                $rawQuery='';
+                if (!empty($cat_id)) {
+                    $cat_id_string= implode(',', $cat_id);
+                    if (strlen($rawQuery) > 0) {
+                        $rawQuery.=" AND md_subcategory.category_id IN (".$cat_id_string.")";
+                    }else {
+                        $rawQuery.=" md_subcategory.category_id IN (".$cat_id_string.")";
+                    }
+                }
+                if ($subcat_id) {
+                    if (strlen($rawQuery) > 0) {
+                        $rawQuery.=" AND md_subcategory.id=".$subcat_id;
+                    }else {
+                        $rawQuery.=" md_subcategory.id=".$subcat_id;
+                    }
+                }
                 $data=SubCategory::join('md_category','md_category.id','=','md_subcategory.category_id')
                     ->select('md_subcategory.*','md_category.cat_name as cat_name')
                     ->where('md_subcategory.delete_flag','N')
-                    ->where('md_subcategory.id',$subcat_id)
-                    ->where('md_subcategory.category_id',$cat_id)
+                    // ->where('md_subcategory.id',$subcat_id)
+                    // ->where('md_subcategory.category_id',$cat_id)
+                    ->whereRaw($rawQuery)
                     ->orderBy('updated_at','DESC')
                     ->paginate($paginate);    
-            }elseif ($subcat_id) {
-                $data=SubCategory::join('md_category','md_category.id','=','md_subcategory.category_id')
-                    ->select('md_subcategory.*','md_category.cat_name as cat_name')
-                    ->where('md_subcategory.delete_flag','N')
-                    ->where('md_subcategory.id',$subcat_id)
-                    ->orderBy('updated_at','DESC')
-                    ->paginate($paginate);     
-            }elseif ($cat_id) {
-                $data=SubCategory::join('md_category','md_category.id','=','md_subcategory.category_id')
-                    ->select('md_subcategory.*','md_category.cat_name as cat_name')
-                    ->where('md_subcategory.category_id',$cat_id)
-                    ->where('md_subcategory.delete_flag','N')
-                    ->orderBy('updated_at','DESC')
-                    ->paginate($paginate);   
-            } else {
+            }else {
                 $data=SubCategory::join('md_category','md_category.id','=','md_subcategory.category_id')
                     ->select('md_subcategory.*','md_category.cat_name as cat_name')
                     ->where('md_subcategory.delete_flag','N')
@@ -62,31 +102,74 @@ class SubcategoryController extends Controller
     {
         try {
             $paginate=$request->paginate;
-            $cat_id=$request->cat_id;
+            $cat_id=json_decode($request->cat_id);
             $subcat_id=$request->subcat_id;
-            if ($subcat_id && $cat_id) {
+            $order=$request->order;
+            $field=$request->field;
+           
+            if ($order && $field) {
+                $rawOrderBy='';
+                if ($order > 0) {
+                    $rawOrderBy=$field.' ASC';
+                } else {
+                    $rawOrderBy=$field.' DESC';
+                }
+                if ($subcat_id || $cat_id) {
+                    $rawQuery='';
+                    if (!empty($cat_id)) {
+                        $cat_id_string= implode(',', $cat_id);
+                        if (strlen($rawQuery) > 0) {
+                            $rawQuery.=" AND md_subcategory.category_id IN (".$cat_id_string.")";
+                        }else {
+                            $rawQuery.=" md_subcategory.category_id IN (".$cat_id_string.")";
+                        }
+                    }
+                    if ($subcat_id) {
+                        if (strlen($rawQuery) > 0) {
+                            $rawQuery.=" AND md_subcategory.id=".$subcat_id;
+                        }else {
+                            $rawQuery.=" md_subcategory.id=".$subcat_id;
+                        }
+                    }
+                    $data=SubCategory::join('md_category','md_category.id','=','md_subcategory.category_id')
+                        ->select('md_subcategory.*','md_category.cat_name as cat_name')
+                        ->where('md_subcategory.delete_flag','N')
+                        ->whereRaw($rawQuery)
+                        ->orderByRaw($rawOrderBy)
+                        ->get();    
+                }else {
+                    $data=SubCategory::join('md_category','md_category.id','=','md_subcategory.category_id')
+                        ->select('md_subcategory.*','md_category.cat_name as cat_name')
+                        ->where('md_subcategory.delete_flag','N')
+                        ->orderByRaw($rawOrderBy)
+                        ->get();     
+                } 
+            }else if ($subcat_id || $cat_id) {
+                $rawQuery='';
+                if (!empty($cat_id)) {
+                    $cat_id_string= implode(',', $cat_id);
+                    if (strlen($rawQuery) > 0) {
+                        $rawQuery.=" AND md_subcategory.category_id IN (".$cat_id_string.")";
+                    }else {
+                        $rawQuery.=" md_subcategory.category_id IN (".$cat_id_string.")";
+                    }
+                }
+                if ($subcat_id) {
+                    if (strlen($rawQuery) > 0) {
+                        $rawQuery.=" AND md_subcategory.id=".$subcat_id;
+                    }else {
+                        $rawQuery.=" md_subcategory.id=".$subcat_id;
+                    }
+                }
                 $data=SubCategory::join('md_category','md_category.id','=','md_subcategory.category_id')
                     ->select('md_subcategory.*','md_category.cat_name as cat_name')
                     ->where('md_subcategory.delete_flag','N')
-                    ->where('md_subcategory.id',$subcat_id)
-                    ->where('md_subcategory.category_id',$cat_id)
+                    // ->where('md_subcategory.id',$subcat_id)
+                    // ->where('md_subcategory.category_id',$cat_id)
+                    ->whereRaw($rawQuery)
                     ->orderBy('updated_at','DESC')
                     ->get();    
-            }elseif ($subcat_id) {
-                $data=SubCategory::join('md_category','md_category.id','=','md_subcategory.category_id')
-                    ->select('md_subcategory.*','md_category.cat_name as cat_name')
-                    ->where('md_subcategory.id',$subcat_id)
-                    ->where('md_subcategory.delete_flag','N')
-                    ->orderBy('updated_at','DESC')
-                    ->get();     
-            }elseif ($cat_id) {
-                $data=SubCategory::join('md_category','md_category.id','=','md_subcategory.category_id')
-                    ->select('md_subcategory.*','md_category.cat_name as cat_name')
-                    ->where('md_subcategory.category_id',$cat_id)
-                    ->where('md_subcategory.delete_flag','N')
-                    ->orderBy('updated_at','DESC')
-                    ->get();   
-            } else {
+            }else {
                 $data=SubCategory::join('md_category','md_category.id','=','md_subcategory.category_id')
                     ->select('md_subcategory.*','md_category.cat_name as cat_name')
                     ->where('md_subcategory.delete_flag','N')
@@ -104,13 +187,24 @@ class SubcategoryController extends Controller
         try {  
             $search=$request->search;
             $category_id=$request->category_id;
+            $arr_cat_id=json_decode($request->arr_cat_id);
             $id=$request->id;
             $paginate=$request->paginate;
             if ($paginate=='A') {
                 $paginate=999999999;
             }
-            if ($search!='') {
+            if ($search && $arr_cat_id) {
+                $data=SubCategory::where('delete_flag','N')
+                    ->whereIn('category_id',$arr_cat_id)
+                    ->where('subcategory_name','like', '%' . $search . '%')
+                    ->get();   
+            }else if ($search!='') {
                 $data=SubCategory::where('delete_flag','N')->where('subcategory_name','like', '%' . $search . '%')->get();      
+            }else if ($arr_cat_id) {
+                $data=SubCategory::where('delete_flag','N')
+                    ->whereIn('category_id',$arr_cat_id)
+                    // ->where('subcategory_name','like', '%' . $search . '%')
+                    ->get();      
             }else if ($category_id!='') {
                 $data=SubCategory::where('delete_flag','N')->where('category_id',$category_id)->paginate($paginate);      
             }else if ($id!='') {

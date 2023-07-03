@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Helpers\Helper;
 use App\Models\{InsProduct,FDFormReceived,FixedDeposit};
 use Validator;
+use DB;
 
 class FormReceivedController extends Controller
 {
@@ -14,75 +15,176 @@ class FormReceivedController extends Controller
     {
         try {
             // return $request;
-            $temp_tin_no=$request->temp_tin_no;
-            $proposer_code=$request->proposer_code;
-            $recv_from=$request->recv_from;
-            $sub_brk_cd=$request->sub_brk_cd;
-            $euin_no=$request->euin_no;
-            $bu_type=json_decode($request->bu_type);
-            $comp_id=json_decode($request->comp_id);
-            $start_date=$request->start_date;
-            $end_date=$request->end_date;
-
-            $column_name=$request->column_name;
-            $sort_by=$request->sort_by;
             $paginate=$request->paginate;
+            $field=$request->field;
+            $order=$request->order;
+
+            $from_date=$request->from_date;
+            $to_date=$request->to_date;
+            $investor_code=$request->investor_code;
+            $temp_tin_no=$request->temp_tin_no;
+            $fd_bu_type=json_decode($request->fd_bu_type);
+            $recv_from=$request->recv_from;
+            $euin_no=json_decode($request->euin_no);
+            $brn_cd=json_decode($request->brn_cd);
+            $bu_type=json_decode($request->bu_type);
+            $rm_id=json_decode($request->rm_id);
+            $sub_brk_cd=json_decode($request->sub_brk_cd);
+
             if ($paginate=='A') {
                 $paginate=999999999;
             }
-
-            $data=[];
-            if ($sort_by && $column_name) {
-                if ($column_name=="proposer_name") {
-                    $data=FDFormReceived::leftJoin('md_client','md_client.id','=','td_fd_form_received.investor_id')
-                        ->leftJoin('md_ins_type','md_ins_type.id','=','td_fd_form_received.comp_id')
-                    ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_fd_form_received.sub_brk_cd')
-                        ->select('td_fd_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name')
-                        ->where('td_fd_form_received.deleted_flag','N')
-                        ->orderBy('md_client.client_name' , $sort_by)
-                        ->paginate($paginate);
-                }elseif ($column_name=="ins_type_name") {
-                    // return "hii";
-                    $data=FDFormReceived::leftJoin('md_client','md_client.id','=','td_fd_form_received.investor_id')
-                        ->leftJoin('md_ins_type','md_ins_type.id','=','td_fd_form_received.comp_id')
-                    ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_fd_form_received.sub_brk_cd')
-                        ->select('td_fd_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name')
-                        ->where('td_fd_form_received.deleted_flag','N')
-                        ->orderBy('td_fd_form_received.comp_id',$sort_by)
-                        ->paginate($paginate);
+            if ($order && $field) {
+                $rawOrderBy='';
+                if ($order > 0) {
+                    $rawOrderBy=$field.' ASC';
                 } else {
+                    $rawOrderBy=$field.' DESC';
+                }
+                if (($from_date && $to_date) || $temp_tin_no || $investor_code || $fd_bu_type || $recv_from) {
+                    $rawQuery='';
+                    if ($from_date && $to_date) {
+                        if (strlen($rawQuery) > 0) {
+                            $rawQuery.=' AND td_fd_form_received.rec_datetime'.' >= '. $from_date;
+                        } else {
+                            $rawQuery.=' td_fd_form_received.rec_datetime'.' >= '. $from_date;
+                        }
+                        $rawQuery.=' AND td_fd_form_received.rec_datetime'.' <= '. $to_date;
+                    }
+                    if ($temp_tin_no) {
+                        if (strlen($rawQuery) > 0) {
+                            $rawQuery.=" AND td_fd_form_received.temp_tin_no='".$temp_tin_no."'";
+                        }else {
+                            $rawQuery.=" td_fd_form_received.temp_tin_no='".$temp_tin_no."'";
+                        }
+                    }
+                    if ($investor_code) {
+                        if (strlen($rawQuery) > 0) {
+                            $rawQuery.=" AND td_fd_form_received.investor_id='".$investor_code."'";
+                        }else {
+                            $rawQuery.=" td_fd_form_received.investor_id='".$investor_code."'";
+                        }
+                    }
+                    if (!empty($fd_bu_type)) {
+                        $fd_bu_type_string= implode(',', $fd_bu_type);
+                        if (strlen($rawQuery) > 0) {
+                            $rawQuery.=" AND td_fd_form_received.fd_bu_type IN (".$fd_bu_type_string.")";
+                        }else {
+                            $rawQuery.=" td_fd_form_received.fd_bu_type IN (".$fd_bu_type_string.")";
+                        }
+                    }
+                    if ($recv_from) {
+                        if (strlen($rawQuery) > 0) {
+                            $rawQuery.=" AND td_fd_form_received.recv_from LIKE '%".$recv_from."%'";
+                        }else {
+                            $rawQuery.=" td_fd_form_received.recv_from LIKE '%".$recv_from."%'";
+                        }
+                    }
                     $data=FDFormReceived::leftJoin('md_client','md_client.id','=','td_fd_form_received.investor_id')
-                        ->leftJoin('md_ins_type','md_ins_type.id','=','td_fd_form_received.comp_id')
-                    ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_fd_form_received.sub_brk_cd')
-                        ->select('td_fd_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name')
+                        ->leftJoin('md_fd_company','md_fd_company.id','=','td_fd_form_received.comp_id')
+                        ->leftJoin('md_fd_scheme','md_fd_scheme.id','=','td_fd_form_received.scheme_id')
+                        ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_fd_form_received.sub_brk_cd')
+                        ->leftJoin('md_employee','md_employee.euin_no','=','td_fd_form_received.euin_no')
+                        ->leftJoin('md_branch','md_branch.id','=','td_fd_form_received.branch_code')
+                        ->select('td_fd_form_received.*','td_fd_form_received.rec_datetime as entry_date','md_client.client_name as investor_name','md_client.client_code as investor_code','md_client.dob as dob','md_client.pan as pan',
+                        'md_fd_company.comp_short_name as comp_short_name','md_fd_company.comp_full_name as comp_full_name','md_fd_scheme.scheme_name as scheme_name','md_sub_broker.bro_name as broker_name',
+                        'md_employee.emp_name as emp_name','md_branch.brn_name as branch_name')
                         ->where('td_fd_form_received.deleted_flag','N')
-                        ->orderBy('td_fd_form_received.'.$column_name , $sort_by)
+                        ->whereRaw($rawQuery)
+                        ->orderByRaw($rawOrderBy)
+                        ->paginate($paginate);
+                }else {
+                    $data=FDFormReceived::leftJoin('md_client','md_client.id','=','td_fd_form_received.investor_id')
+                        ->leftJoin('md_fd_company','md_fd_company.id','=','td_fd_form_received.comp_id')
+                        ->leftJoin('md_fd_scheme','md_fd_scheme.id','=','td_fd_form_received.scheme_id')
+                        ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_fd_form_received.sub_brk_cd')
+                        ->leftJoin('md_employee','md_employee.euin_no','=','td_fd_form_received.euin_no')
+                        ->leftJoin('md_branch','md_branch.id','=','td_fd_form_received.branch_code')
+                        ->select('td_fd_form_received.*','td_fd_form_received.rec_datetime as entry_date','md_client.client_name as investor_name','md_client.client_code as investor_code','md_client.dob as dob','md_client.pan as pan',
+                        'md_fd_company.comp_short_name as comp_short_name','md_fd_company.comp_full_name as comp_full_name','md_fd_scheme.scheme_name as scheme_name','md_sub_broker.bro_name as broker_name',
+                        'md_employee.emp_name as emp_name','md_branch.brn_name as branch_name')
+                        ->where('td_fd_form_received.deleted_flag','N')
+                        ->orderByRaw($rawOrderBy)
                         ->paginate($paginate);
                 }
-            }elseif ($start_date && $end_date) {
-                // return 'hii';
-                
-            }elseif ($temp_tin_no!='') {
-                
-            }elseif ($recv_from!='') {
-                
-            }elseif ($proposer_code!='') {
-                
-            }elseif (!empty($comp_id)) {
-                
-            }elseif (!empty($bu_type)) {
-                
-            }else {
+            }elseif (($from_date && $to_date) || $temp_tin_no || $investor_code || $fd_bu_type || $recv_from) {
+                $rawQuery='';
+                $queryString='td_fd_form_received.rec_datetime';
+                $rawQuery.=Helper::FrmToDateRawQuery($from_date,$to_date,$rawQuery,$queryString);
+                // return $rawQuery;
+                // if ($from_date && $to_date) {
+                //     if (strlen($rawQuery) > 0) {
+                //         // date(`td_fd_form_received`.`rec_datetime`)
+                //         $rawQuery.=" AND date(td_fd_form_received.rec_datetime)"." >= '". $from_date."'";
+                //     } else {
+                //         $rawQuery.=" date(td_fd_form_received.rec_datetime)"." >= '". $from_date."'";
+                //     }
+                //     $rawQuery.=" AND date(td_fd_form_received.rec_datetime)"." <= '". $to_date."'";
+                // }
+                $queryString1='td_fd_form_received.temp_tin_no';
+                $rawQuery.=Helper::WhereRawQuery($temp_tin_no,$rawQuery,$queryString1);
+
+                // if ($temp_tin_no) {
+                //     if (strlen($rawQuery) > 0) {
+                //         $rawQuery.=" AND td_fd_form_received.temp_tin_no='".$temp_tin_no."'";
+                //     }else {
+                //         $rawQuery.=" td_fd_form_received.temp_tin_no='".$temp_tin_no."'";
+                //     }
+                // }
+                if ($investor_code) {
+                    if (strlen($rawQuery) > 0) {
+                        $rawQuery.=" AND td_fd_form_received.investor_id='".$investor_code."'";
+                    }else {
+                        $rawQuery.=" td_fd_form_received.investor_id='".$investor_code."'";
+                    }
+                }
+                if (!empty($fd_bu_type)) {
+                    $fd_bu_type_string= implode(',', $fd_bu_type);
+                    if (strlen($rawQuery) > 0) {
+                        $rawQuery.=" AND td_fd_form_received.fd_bu_type IN (".$fd_bu_type_string.")";
+                    }else {
+                        $rawQuery.=" td_fd_form_received.fd_bu_type IN (".$fd_bu_type_string.")";
+                    }
+                }
+                if ($recv_from) {
+                    if (strlen($rawQuery) > 0) {
+                        $rawQuery.=" AND td_fd_form_received.recv_from LIKE '%".$recv_from."%'";
+                    }else {
+                        $rawQuery.=" td_fd_form_received.recv_from LIKE '%".$recv_from."%'";
+                    }
+                }
+                // DB::enableQueryLog();
                 $data=FDFormReceived::leftJoin('md_client','md_client.id','=','td_fd_form_received.investor_id')
                     ->leftJoin('md_fd_company','md_fd_company.id','=','td_fd_form_received.comp_id')
                     ->leftJoin('md_fd_scheme','md_fd_scheme.id','=','td_fd_form_received.scheme_id')
                     ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_fd_form_received.sub_brk_cd')
                     ->leftJoin('md_employee','md_employee.euin_no','=','td_fd_form_received.euin_no')
-                    ->select('td_fd_form_received.*','md_client.client_name as investor_name','md_client.client_code as investor_code','md_client.dob as dob','md_client.pan as pan',
+                    ->leftJoin('md_branch','md_branch.id','=','td_fd_form_received.branch_code')
+                    ->select('td_fd_form_received.*','td_fd_form_received.rec_datetime as entry_date','md_client.client_name as investor_name','md_client.client_code as investor_code','md_client.dob as dob','md_client.pan as pan',
                     'md_fd_company.comp_short_name as comp_short_name','md_fd_company.comp_full_name as comp_full_name','md_fd_scheme.scheme_name as scheme_name','md_sub_broker.bro_name as broker_name',
-                    'md_employee.emp_name as emp_name')
+                    'md_employee.emp_name as emp_name','md_branch.brn_name as branch_name')
                     ->where('td_fd_form_received.deleted_flag','N')
+                    ->whereRaw($rawQuery)
                     ->paginate($paginate);
+                // dd(DB::getQueryLog());
+                // return DB::getQueryLog($data);
+            }else {
+                // DB::enableQueryLog();
+                $data=FDFormReceived::leftJoin('md_client','md_client.id','=','td_fd_form_received.investor_id')
+                    ->leftJoin('md_fd_company','md_fd_company.id','=','td_fd_form_received.comp_id')
+                    ->leftJoin('md_fd_scheme','md_fd_scheme.id','=','td_fd_form_received.scheme_id')
+                    ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_fd_form_received.sub_brk_cd')
+                    ->leftJoin('md_employee','md_employee.euin_no','=','td_fd_form_received.euin_no')
+                    ->leftJoin('md_branch','md_branch.id','=','td_fd_form_received.branch_code')
+                    ->select('td_fd_form_received.*','td_fd_form_received.rec_datetime as entry_date','md_client.client_name as investor_name','md_client.client_code as investor_code','md_client.dob as dob','md_client.pan as pan',
+                    'md_fd_company.comp_short_name as comp_short_name','md_fd_company.comp_full_name as comp_full_name','md_fd_scheme.scheme_name as scheme_name','md_sub_broker.bro_name as broker_name',
+                    'md_employee.emp_name as emp_name','md_branch.brn_name as branch_name')
+                    ->where('td_fd_form_received.deleted_flag','N')
+                    // ->whereDate('td_fd_form_received.rec_datetime',date('Y-m-d'))
+                    ->orderBy('td_fd_form_received.rec_datetime','desc')
+                    ->paginate($paginate);
+                
+                // dd(DB::getQueryLog());
             }
         } catch (\Throwable $th) {
             throw $th;
@@ -95,106 +197,160 @@ class FormReceivedController extends Controller
     {
         try {
             // return $request;
-            $temp_tin_no=$request->temp_tin_no;
-            $proposer_code=$request->proposer_code;
-            $recv_from=$request->recv_from;
-            $sub_brk_cd=$request->sub_brk_cd;
-            $euin_no=$request->euin_no;
-            $bu_type=json_decode($request->bu_type);
-            $comp_id=json_decode($request->comp_id);
-            $start_date=$request->start_date;
-            $end_date=$request->end_date;
-
-            $column_name=$request->column_name;
-            $sort_by=$request->sort_by;
             $paginate=$request->paginate;
-            
+            $field=$request->field;
+            $order=$request->order;
 
-            if ($sort_by && $column_name) {
-                if ($column_name=="proposer_name") {
-                    $data=FDFormReceived::leftJoin('md_client','md_client.id','=','td_fd_form_received.investor_id')
-                        ->leftJoin('md_ins_type','md_ins_type.id','=','td_fd_form_received.comp_id')
-                    ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_fd_form_received.sub_brk_cd')
-                        ->select('td_fd_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name')
-                        ->where('td_fd_form_received.deleted_flag','N')
-                        ->orderBy('md_client.client_name' , $sort_by)
-                        ->get();
-                }elseif ($column_name=="ins_type_name") {
-                    // return "hii";
-                    $data=FDFormReceived::leftJoin('md_client','md_client.id','=','td_fd_form_received.investor_id')
-                        ->leftJoin('md_ins_type','md_ins_type.id','=','td_fd_form_received.comp_id')
-                    ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_fd_form_received.sub_brk_cd')
-                        ->select('td_fd_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name')
-                        ->where('td_fd_form_received.deleted_flag','N')
-                        ->orderBy('td_fd_form_received.comp_id',$sort_by)
-                        ->get();
+            $from_date=$request->from_date;
+            $to_date=$request->to_date;
+            $investor_code=$request->investor_code;
+            $temp_tin_no=$request->temp_tin_no;
+            $fd_bu_type=json_decode($request->fd_bu_type);
+            $recv_from=$request->recv_from;
+            $euin_no=json_decode($request->euin_no);
+            $brn_cd=json_decode($request->brn_cd);
+            $bu_type=json_decode($request->bu_type);
+            $rm_id=json_decode($request->rm_id);
+            $sub_brk_cd=json_decode($request->sub_brk_cd);
+
+            if ($order && $field) {
+                $rawOrderBy='';
+                if ($order > 0) {
+                    $rawOrderBy=$field.' ASC';
                 } else {
+                    $rawOrderBy=$field.' DESC';
+                }
+                if (($from_date && $to_date) || $temp_tin_no || $investor_code || $fd_bu_type || $recv_from) {
+                    $rawQuery='';
+                    if ($from_date && $to_date) {
+                        if (strlen($rawQuery) > 0) {
+                            $rawQuery.=' AND td_fd_form_received.rec_datetime'.' >= '. $from_date;
+                        } else {
+                            $rawQuery.=' td_fd_form_received.rec_datetime'.' >= '. $from_date;
+                        }
+                        $rawQuery.=' AND td_fd_form_received.rec_datetime'.' <= '. $to_date;
+                    }
+                    if ($temp_tin_no) {
+                        if (strlen($rawQuery) > 0) {
+                            $rawQuery.=" AND td_fd_form_received.temp_tin_no='".$temp_tin_no."'";
+                        }else {
+                            $rawQuery.=" td_fd_form_received.temp_tin_no='".$temp_tin_no."'";
+                        }
+                    }
+                    if ($investor_code) {
+                        if (strlen($rawQuery) > 0) {
+                            $rawQuery.=" AND td_fd_form_received.investor_id='".$investor_code."'";
+                        }else {
+                            $rawQuery.=" td_fd_form_received.investor_id='".$investor_code."'";
+                        }
+                    }
+                    if (!empty($fd_bu_type)) {
+                        $fd_bu_type_string= implode(',', $fd_bu_type);
+                        if (strlen($rawQuery) > 0) {
+                            $rawQuery.=" AND td_fd_form_received.fd_bu_type IN (".$fd_bu_type_string.")";
+                        }else {
+                            $rawQuery.=" td_fd_form_received.fd_bu_type IN (".$fd_bu_type_string.")";
+                        }
+                    }
+                    if ($recv_from) {
+                        if (strlen($rawQuery) > 0) {
+                            $rawQuery.=" AND td_fd_form_received.recv_from LIKE '%".$recv_from."%'";
+                        }else {
+                            $rawQuery.=" td_fd_form_received.recv_from LIKE '%".$recv_from."%'";
+                        }
+                    }
                     $data=FDFormReceived::leftJoin('md_client','md_client.id','=','td_fd_form_received.investor_id')
-                        ->leftJoin('md_ins_type','md_ins_type.id','=','td_fd_form_received.comp_id')
-                    ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_fd_form_received.sub_brk_cd')
-                        ->select('td_fd_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name')
+                        ->leftJoin('md_fd_company','md_fd_company.id','=','td_fd_form_received.comp_id')
+                        ->leftJoin('md_fd_scheme','md_fd_scheme.id','=','td_fd_form_received.scheme_id')
+                        ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_fd_form_received.sub_brk_cd')
+                        ->leftJoin('md_employee','md_employee.euin_no','=','td_fd_form_received.euin_no')
+                        ->leftJoin('md_branch','md_branch.id','=','td_fd_form_received.branch_code')
+                        ->select('td_fd_form_received.*','td_fd_form_received.rec_datetime as entry_date','md_client.client_name as investor_name','md_client.client_code as investor_code','md_client.dob as dob','md_client.pan as pan',
+                        'md_fd_company.comp_short_name as comp_short_name','md_fd_company.comp_full_name as comp_full_name','md_fd_scheme.scheme_name as scheme_name','md_sub_broker.bro_name as broker_name',
+                        'md_employee.emp_name as emp_name','md_branch.brn_name as branch_name')
                         ->where('td_fd_form_received.deleted_flag','N')
-                        ->orderBy('td_fd_form_received.'.$column_name , $sort_by)
+                        ->whereRaw($rawQuery)
+                        ->orderByRaw($rawOrderBy)
+                        ->get();
+                }else {
+                    $data=FDFormReceived::leftJoin('md_client','md_client.id','=','td_fd_form_received.investor_id')
+                        ->leftJoin('md_fd_company','md_fd_company.id','=','td_fd_form_received.comp_id')
+                        ->leftJoin('md_fd_scheme','md_fd_scheme.id','=','td_fd_form_received.scheme_id')
+                        ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_fd_form_received.sub_brk_cd')
+                        ->leftJoin('md_employee','md_employee.euin_no','=','td_fd_form_received.euin_no')
+                        ->leftJoin('md_branch','md_branch.id','=','td_fd_form_received.branch_code')
+                        ->select('td_fd_form_received.*','td_fd_form_received.rec_datetime as entry_date','md_client.client_name as investor_name','md_client.client_code as investor_code','md_client.dob as dob','md_client.pan as pan',
+                        'md_fd_company.comp_short_name as comp_short_name','md_fd_company.comp_full_name as comp_full_name','md_fd_scheme.scheme_name as scheme_name','md_sub_broker.bro_name as broker_name',
+                        'md_employee.emp_name as emp_name','md_branch.brn_name as branch_name')
+                        ->where('td_fd_form_received.deleted_flag','N')
+                        ->orderByRaw($rawOrderBy)
+                        ->orderBy('td_fd_form_received.rec_datetime','desc')
                         ->get();
                 }
-            }elseif ($start_date && $end_date) {
-                // return 'hii';
+            }elseif (($from_date && $to_date) || $temp_tin_no || $investor_code || $fd_bu_type || $recv_from) {
+                $rawQuery='';
+                if ($from_date && $to_date) {
+                    if (strlen($rawQuery) > 0) {
+                        $rawQuery.=' AND td_fd_form_received.rec_datetime'.' >= '. $from_date;
+                    } else {
+                        $rawQuery.=' td_fd_form_received.rec_datetime'.' >= '. $from_date;
+                    }
+                    $rawQuery.=' AND td_fd_form_received.rec_datetime'.' <= '. $to_date;
+                }
+                if ($temp_tin_no) {
+                    if (strlen($rawQuery) > 0) {
+                        $rawQuery.=" AND td_fd_form_received.temp_tin_no='".$temp_tin_no."'";
+                    }else {
+                        $rawQuery.=" td_fd_form_received.temp_tin_no='".$temp_tin_no."'";
+                    }
+                }
+                if ($investor_code) {
+                    if (strlen($rawQuery) > 0) {
+                        $rawQuery.=" AND td_fd_form_received.investor_id='".$investor_code."'";
+                    }else {
+                        $rawQuery.=" td_fd_form_received.investor_id='".$investor_code."'";
+                    }
+                }
+                if (!empty($fd_bu_type)) {
+                    $fd_bu_type_string= implode(',', $fd_bu_type);
+                    if (strlen($rawQuery) > 0) {
+                        $rawQuery.=" AND td_fd_form_received.fd_bu_type IN (".$fd_bu_type_string.")";
+                    }else {
+                        $rawQuery.=" td_fd_form_received.fd_bu_type IN (".$fd_bu_type_string.")";
+                    }
+                }
+                if ($recv_from) {
+                    if (strlen($rawQuery) > 0) {
+                        $rawQuery.=" AND td_fd_form_received.recv_from LIKE '%".$recv_from."%'";
+                    }else {
+                        $rawQuery.=" td_fd_form_received.recv_from LIKE '%".$recv_from."%'";
+                    }
+                }
                 $data=FDFormReceived::leftJoin('md_client','md_client.id','=','td_fd_form_received.investor_id')
-                    ->leftJoin('md_ins_type','md_ins_type.id','=','td_fd_form_received.comp_id')
+                    ->leftJoin('md_fd_company','md_fd_company.id','=','td_fd_form_received.comp_id')
+                    ->leftJoin('md_fd_scheme','md_fd_scheme.id','=','td_fd_form_received.scheme_id')
                     ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_fd_form_received.sub_brk_cd')
-                    ->select('td_fd_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name')
+                    ->leftJoin('md_employee','md_employee.euin_no','=','td_fd_form_received.euin_no')
+                    ->leftJoin('md_branch','md_branch.id','=','td_fd_form_received.branch_code')
+                    ->select('td_fd_form_received.*','td_fd_form_received.rec_datetime as entry_date','md_client.client_name as investor_name','md_client.client_code as investor_code','md_client.dob as dob','md_client.pan as pan',
+                    'md_fd_company.comp_short_name as comp_short_name','md_fd_company.comp_full_name as comp_full_name','md_fd_scheme.scheme_name as scheme_name','md_sub_broker.bro_name as broker_name',
+                    'md_employee.emp_name as emp_name','md_branch.brn_name as branch_name')
                     ->where('td_fd_form_received.deleted_flag','N')
-                    ->whereDate('td_fd_form_received.rec_datetime','>=',$start_date)
-                    ->whereDate('td_fd_form_received.rec_datetime','<=',$end_date)
-                    ->get();
-            }elseif ($temp_tin_no!='') {
-                $data=FDFormReceived::leftJoin('md_client','md_client.id','=','td_fd_form_received.investor_id')
-                    ->leftJoin('md_ins_type','md_ins_type.id','=','td_fd_form_received.comp_id')
-                    ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_fd_form_received.sub_brk_cd')
-                    ->select('td_fd_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name')
-                    ->where('td_fd_form_received.deleted_flag','N')
-                    ->where('td_fd_form_received.temp_tin_no',$temp_tin_no)
-                    ->get();
-            }elseif ($recv_from!='') {
-                $data=FDFormReceived::leftJoin('md_client','md_client.id','=','td_fd_form_received.investor_id')
-                    ->leftJoin('md_ins_type','md_ins_type.id','=','td_fd_form_received.comp_id')
-                    ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_fd_form_received.sub_brk_cd')
-                    ->select('td_fd_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name')
-                    ->where('td_fd_form_received.deleted_flag','N')
-                    ->where('td_fd_form_received.recv_from','like', '%' . $recv_from . '%')
-                    ->get();
-            }elseif ($proposer_code!='') {
-                $data=FDFormReceived::leftJoin('md_client','md_client.id','=','td_fd_form_received.investor_id')
-                    ->leftJoin('md_ins_type','md_ins_type.id','=','td_fd_form_received.comp_id')
-                    ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_fd_form_received.sub_brk_cd')
-                    ->select('td_fd_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name')
-                    ->where('td_fd_form_received.deleted_flag','N')
-                    ->where('md_client.client_code','like', '%' . $proposer_code . '%')
-                    ->orWhere('md_client.client_name','like', '%' . $proposer_code . '%')
-                    ->orWhere('md_client.pan','like', '%' . $proposer_code . '%')
-                    ->get();
-            }elseif (!empty($comp_id)) {
-                $data=FDFormReceived::leftJoin('md_client','md_client.id','=','td_fd_form_received.investor_id')
-                    ->leftJoin('md_ins_type','md_ins_type.id','=','td_fd_form_received.comp_id')
-                    ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_fd_form_received.sub_brk_cd')
-                    ->select('td_fd_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name')
-                    ->where('td_fd_form_received.deleted_flag','N')
-                    ->whereIn('td_fd_form_received.comp_id',$comp_id)
-                    ->get();
-            }elseif (!empty($bu_type)) {
-                $data=FDFormReceived::leftJoin('md_client','md_client.id','=','td_fd_form_received.investor_id')
-                    ->leftJoin('md_ins_type','md_ins_type.id','=','td_fd_form_received.comp_id')
-                    ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_fd_form_received.sub_brk_cd')
-                    ->select('td_fd_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name')
-                    ->where('td_fd_form_received.deleted_flag','N')
-                    ->whereIn('td_fd_form_received.bu_type',$bu_type)
+                    ->whereRaw($rawQuery)
                     ->get();
             }else {
                 $data=FDFormReceived::leftJoin('md_client','md_client.id','=','td_fd_form_received.investor_id')
-                    ->leftJoin('md_ins_type','md_ins_type.id','=','td_fd_form_received.comp_id')
+                    ->leftJoin('md_fd_company','md_fd_company.id','=','td_fd_form_received.comp_id')
+                    ->leftJoin('md_fd_scheme','md_fd_scheme.id','=','td_fd_form_received.scheme_id')
                     ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_fd_form_received.sub_brk_cd')
-                    ->select('td_fd_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name')
+                    ->leftJoin('md_employee','md_employee.euin_no','=','td_fd_form_received.euin_no')
+                    ->leftJoin('md_branch','md_branch.id','=','td_fd_form_received.branch_code')
+                    ->select('td_fd_form_received.*','td_fd_form_received.rec_datetime as entry_date','md_client.client_name as investor_name','md_client.client_code as investor_code','md_client.dob as dob','md_client.pan as pan',
+                    'md_fd_company.comp_short_name as comp_short_name','md_fd_company.comp_full_name as comp_full_name','md_fd_scheme.scheme_name as scheme_name','md_sub_broker.bro_name as broker_name',
+                    'md_employee.emp_name as emp_name','md_branch.brn_name as branch_name')
                     ->where('td_fd_form_received.deleted_flag','N')
+                    // ->whereDate('td_fd_form_received.rec_datetime',date('Y-m-d'))
+                    ->orderBy('td_fd_form_received.rec_datetime','desc')
                     ->get();
             }
         } catch (\Throwable $th) {
@@ -246,7 +402,7 @@ class FormReceivedController extends Controller
                     'md_sub_broker.bro_name as broker_name',
                     'md_employee.emp_name as emp_name')
                     ->where('td_fd_form_received.deleted_flag','N')
-                    ->where('td_fd_form_received.temp_tin_no',$temp_tin_no)
+                    ->where('td_fd_form_received.temp_tin_no','like', '%' . $temp_tin_no . '%')
                     ->get();
             }else {
                 $data=FDFormReceived::leftJoin('md_client','md_client.id','=','td_fd_form_received.investor_id')
@@ -307,7 +463,17 @@ class FormReceivedController extends Controller
                     'branch_code'=>$branch_code,
                     // 'created_by'=>'',
                 ));      
-              
+                $data=FDFormReceived::leftJoin('md_client','md_client.id','=','td_fd_form_received.investor_id')
+                    ->leftJoin('md_fd_company','md_fd_company.id','=','td_fd_form_received.comp_id')
+                    ->leftJoin('md_fd_scheme','md_fd_scheme.id','=','td_fd_form_received.scheme_id')
+                    ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_fd_form_received.sub_brk_cd')
+                    ->leftJoin('md_employee','md_employee.euin_no','=','td_fd_form_received.euin_no')
+                    ->leftJoin('md_branch','md_branch.id','=','td_fd_form_received.branch_code')
+                    ->select('td_fd_form_received.*','td_fd_form_received.rec_datetime as entry_date','md_client.client_name as investor_name','md_client.client_code as investor_code','md_client.dob as dob','md_client.pan as pan',
+                    'md_fd_company.comp_short_name as comp_short_name','md_fd_company.comp_full_name as comp_full_name','md_fd_scheme.scheme_name as scheme_name','md_sub_broker.bro_name as broker_name',
+                    'md_employee.emp_name as emp_name','md_branch.brn_name as branch_name')
+                    ->where('td_fd_form_received.temp_tin_no',$data->temp_tin_no)
+                    ->first(); 
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_SAVE_ERROR);
@@ -332,7 +498,7 @@ class FormReceivedController extends Controller
                 $arn_no=Helper::CommonParamValue(1);
                 // $euin_to=Helper::CommonParamValue(2);
                 $branch_code=1;
-                $data=FDFormReceived::where('temp_tin_no',$request->temp_tin_no)->update([
+                $da=FDFormReceived::where('temp_tin_no',$request->temp_tin_no)->update([
                     'bu_type'=>$request->bu_type,
                     'arn_no'=>$arn_no,
                     'euin_no'=>$request->euin_no,
@@ -340,22 +506,25 @@ class FormReceivedController extends Controller
                     'sub_brk_cd'=>isset($request->sub_brk_cd)?$request->sub_brk_cd:NULL,
                     'investor_id'=>$request->investor_id,
                     'fd_bu_type'=>$request->fd_bu_type,
-                    'comp_id'=>$request->comp_id,
+                    'comp_id'=>$request->company_id,
                     'scheme_id'=>$request->scheme_id,
                     'recv_from'=>$request->recv_from,
-                    'proposal_no'=>isset($request->proposal_no)?$request->proposal_no:NULL,
                     'branch_code'=>$branch_code,
                     // 'created_by'=>'',
                 ]);      
                 $data=FDFormReceived::leftJoin('md_client','md_client.id','=','td_fd_form_received.investor_id')
-                    ->leftJoin('md_ins_type','md_ins_type.id','=','td_fd_form_received.comp_id')
+                    ->leftJoin('md_fd_company','md_fd_company.id','=','td_fd_form_received.comp_id')
+                    ->leftJoin('md_fd_scheme','md_fd_scheme.id','=','td_fd_form_received.scheme_id')
                     ->leftJoin('md_sub_broker','md_sub_broker.code','=','td_fd_form_received.sub_brk_cd')
-                    ->select('td_fd_form_received.*','md_client.client_name as proposer_name','md_client.client_code as proposer_code','md_client.dob as dob','md_client.pan as pan','md_ins_type.type as ins_type_name','md_sub_broker.bro_name as broker_name')
-                    ->where('td_fd_form_received.deleted_flag','N')
+                    ->leftJoin('md_employee','md_employee.euin_no','=','td_fd_form_received.euin_no')
+                    ->leftJoin('md_branch','md_branch.id','=','td_fd_form_received.branch_code')
+                    ->select('td_fd_form_received.*','td_fd_form_received.rec_datetime as entry_date','md_client.client_name as investor_name','md_client.client_code as investor_code','md_client.dob as dob','md_client.pan as pan',
+                    'md_fd_company.comp_short_name as comp_short_name','md_fd_company.comp_full_name as comp_full_name','md_fd_scheme.scheme_name as scheme_name','md_sub_broker.bro_name as broker_name',
+                    'md_employee.emp_name as emp_name','md_branch.brn_name as branch_name')
                     ->where('td_fd_form_received.temp_tin_no',$request->temp_tin_no)
-                    ->first();
+                    ->first(); 
         } catch (\Throwable $th) {
-            //throw $th;
+            // throw $th;
             return Helper::ErrorResponse(parent::DATA_SAVE_ERROR);
         }
         return Helper::SuccessResponse($data);

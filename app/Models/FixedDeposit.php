@@ -32,6 +32,7 @@ class FixedDeposit extends Model
         'tenure',
         'interest_rate',
         'maturity_instruction',
+        'maturity_date',
         'amount',
         'mode_of_payment',
         'chq_bank',

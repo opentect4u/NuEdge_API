@@ -33,7 +33,7 @@ Route::prefix('v1')->group(function () {
             Route::post('productAddEdit',[App\Http\Controllers\v1\INSMaster\ProductController::class,'createUpdate']);
             Route::post('productimport', [App\Http\Controllers\v1\INSMaster\ProductController::class,'import']);
             Route::post('productDelete', [App\Http\Controllers\v1\INSMaster\ProductController::class,'delete']);
-            Route::post('productDetails', [App\Http\Controllers\v1\INSMaster\ProductController::class,'productDetails']);
+            Route::any('productDetails', [App\Http\Controllers\v1\INSMaster\ProductController::class,'productDetails']);
 
 
             Route::get('medicalStatus',[App\Http\Controllers\v1\INSMaster\MedicalStatusController::class,'index']);
@@ -54,7 +54,7 @@ Route::prefix('v1')->group(function () {
             // =======================================End Form Reeceived==================================
 
             // ==========================================Start Operation =============================
-            // Route::get('insTraxShow',[App\Http\Controllers\v1\INSOperation\FormEntryController::class,'index']);
+            Route::get('insTraxShow',[App\Http\Controllers\v1\INSOperation\FormEntryController::class,'index']);
             // Route::get('insTraxCreateShow',[App\Http\Controllers\v1\INSOperation\FormEntryController::class,'createShow']);
 
             Route::post('insTraxCreate',[App\Http\Controllers\v1\INSOperation\FormEntryController::class,'create']);
@@ -79,6 +79,15 @@ Route::prefix('v1')->group(function () {
 
             // ==========================================End Operation=============================
     
+            /* ******************************** start Renew Business Opportunity *****************************/
+            Route::get('businessOpportunity',[App\Http\Controllers\v1\INSOperation\BuOpportunityController::class,'index']);
+            Route::post('businessOpportunityAddEdit',[App\Http\Controllers\v1\INSOperation\BuOpportunityController::class,'createUpdate']);
+            // Route::post('businessOpportunityDelete',[App\Http\Controllers\v1\INSOperation\BuOpportunityController::class,'delete']);
+            Route::any('businessOpportunityDetailSearch',[App\Http\Controllers\v1\INSOperation\BuOpportunityController::class,'searchDetails']);
+            Route::post('businessOpportunityExport',[App\Http\Controllers\v1\INSOperation\BuOpportunityController::class,'export']);
+            
+            /* ******************************** start Renew Business Opportunity *****************************/
+
         });
     // });
 });

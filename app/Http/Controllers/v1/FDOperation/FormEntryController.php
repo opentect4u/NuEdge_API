@@ -15,20 +15,27 @@ class FormEntryController extends Controller
     {
         try {
             $paginate=$request->paginate;
-            $sort_by=$request->sort_by;
-            $column_name=$request->column_name;
+            $field=$request->field;
+            $order=$request->order;
+
+            $from_date=$request->from_date;
+            $to_date=$request->to_date;
+            $investor_code=$request->investor_code;
+            $fd_bu_type=json_decode($request->fd_bu_type);
+            $euin_no=json_decode($request->euin_no);
+            $brn_cd=json_decode($request->brn_cd);
+            $rm_id=json_decode($request->rm_id);
+            $sub_brk_cd=json_decode($request->sub_brk_cd);
             
             $tin_no=$request->tin_no;
             $option=$request->option;
-            $sub_brk_cd=$request->sub_brk_cd;
             $investor_name=$request->investor_name;
-            $euin_no=$request->euin_no;
-            $sub_brk_cd=$request->sub_brk_cd;
             $bu_type=json_decode($request->bu_type);
             $ins_type_id=json_decode($request->ins_type_id);
             $insured_bu_type=json_decode($request->insured_bu_type);
-            $from_date=$request->from_date;
-            $to_date=$request->to_date;
+            $company_id=json_decode($request->company_id);
+            $comp_type_id=json_decode($request->comp_type_id);
+            $scheme_id=json_decode($request->scheme_id);
 
             $login_status=$request->login_status;
             $date_status=$request->date_status;
@@ -47,8 +54,36 @@ class FormEntryController extends Controller
                 }
 
                 if ($date_status=='T') {
-                    if ($sort_by && $column_name) {
-                        
+                    if ($field && $order) {
+                        $rawOrderBy='';
+                        if ($order > 0) {
+                            $rawOrderBy=$field.' ASC';
+                        } else {
+                            $rawOrderBy=$field.' DESC';
+                        }
+                        $data=FixedDeposit::join('td_fd_form_received','td_fd_form_received.temp_tin_no','=','td_fixed_deposit.temp_tin_no')
+                            ->leftJoin('md_fd_scheme','md_fd_scheme.id','=','td_fixed_deposit.scheme_id')
+                            ->leftJoin('md_fd_type_of_company','md_fd_type_of_company.id','=','md_fd_scheme.comp_type_id')
+                            ->leftJoin('md_fd_company','md_fd_company.id','=','md_fd_scheme.comp_id')
+                            ->leftJoin('md_fd_company as md_fd_company_2','md_fd_company_2.id','=','td_fixed_deposit.comp_login_at')
+                            ->leftJoin('md_client','md_client.id','=','td_fixed_deposit.first_client_id')
+                            ->leftJoin('md_client as md_client_2','md_client_2.id','=','td_fixed_deposit.second_client_id')
+                            ->leftJoin('md_client as md_client_3','md_client_3.id','=','td_fixed_deposit.third_client_id')
+                            ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_fixed_deposit.chq_bank')
+                            ->leftJoin('md_employee','md_employee.euin_no','=','td_fd_form_received.euin_no')
+                            ->leftJoin('md_branch','md_branch.id','=','td_fd_form_received.branch_code')
+                            ->select('td_fixed_deposit.*','td_fd_form_received.bu_type as bu_type','td_fd_form_received.arn_no as arn_no','td_fd_form_received.euin_no as euin_no','td_fd_form_received.fd_bu_type as fd_bu_type','td_fd_form_received.sub_brk_cd as sub_brk_cd','md_employee.emp_name as emp_name',
+                            'md_fd_scheme.scheme_name as scheme_name','md_fd_type_of_company.comp_type as comp_type_name','md_fd_company.comp_short_name as comp_short_name','md_fd_company.comp_full_name as comp_full_name',
+                            'md_client.client_code as investor_code','md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.dob as investor_dob',
+                            'md_client_2.client_code as investor_code_2','md_client_2.client_name as investor_name_2','md_client_2.pan as investor_pan_2','md_client_2.dob as investor_dob_2',
+                            'md_client_3.client_code as investor_code_3','md_client_3.client_name as investor_name_3','md_client_3.pan as investor_pan_3','md_client_3.dob as investor_dob_3',
+                            'md_deposit_bank.bank_name as chq_bank','md_fd_company_2.comp_short_name as comp_login_name','md_branch.brn_name as branch_name')
+                            ->where('td_fixed_deposit.delete_flag','N')
+                            ->whereDate('td_fixed_deposit.entry_date',date('Y-m-d'))
+                            ->where('td_fixed_deposit.comp_login_dt',$login_status,NULL)
+                            ->where('td_fixed_deposit.comp_login_cutt_off',$login_status,NULL)
+                            ->orderByRaw($rawOrderBy)
+                            ->paginate($paginate);
                     }else {
                         $data=FixedDeposit::join('td_fd_form_received','td_fd_form_received.temp_tin_no','=','td_fixed_deposit.temp_tin_no')
                             ->leftJoin('md_fd_scheme','md_fd_scheme.id','=','td_fixed_deposit.scheme_id')
@@ -60,12 +95,13 @@ class FormEntryController extends Controller
                             ->leftJoin('md_client as md_client_3','md_client_3.id','=','td_fixed_deposit.third_client_id')
                             ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_fixed_deposit.chq_bank')
                             ->leftJoin('md_employee','md_employee.euin_no','=','td_fd_form_received.euin_no')
+                            ->leftJoin('md_branch','md_branch.id','=','td_fd_form_received.branch_code')
                             ->select('td_fixed_deposit.*','td_fd_form_received.bu_type as bu_type','td_fd_form_received.arn_no as arn_no','td_fd_form_received.euin_no as euin_no','td_fd_form_received.fd_bu_type as fd_bu_type','td_fd_form_received.sub_brk_cd as sub_brk_cd','md_employee.emp_name as emp_name',
                             'md_fd_scheme.scheme_name as scheme_name','md_fd_type_of_company.comp_type as comp_type_name','md_fd_company.comp_short_name as comp_short_name','md_fd_company.comp_full_name as comp_full_name',
                             'md_client.client_code as investor_code','md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.dob as investor_dob',
                             'md_client_2.client_code as investor_code_2','md_client_2.client_name as investor_name_2','md_client_2.pan as investor_pan_2','md_client_2.dob as investor_dob_2',
                             'md_client_3.client_code as investor_code_3','md_client_3.client_name as investor_name_3','md_client_3.pan as investor_pan_3','md_client_3.dob as investor_dob_3',
-                            'md_deposit_bank.bank_name as chq_bank','md_fd_company_2.comp_short_name as comp_login_name')
+                            'md_deposit_bank.bank_name as chq_bank','md_fd_company_2.comp_short_name as comp_login_name','md_branch.brn_name as branch_name')
                             ->where('td_fixed_deposit.delete_flag','N')
                             ->whereDate('td_fixed_deposit.entry_date',date('Y-m-d'))
                             ->where('td_fixed_deposit.comp_login_dt',$login_status,NULL)
@@ -74,8 +110,37 @@ class FormEntryController extends Controller
                             ->paginate($paginate);
                     }
                 }else {
-                    if ($sort_by && $column_name) {
-                        
+                    if ($field && $order) {
+                        $rawOrderBy='';
+                        if ($order > 0) {
+                            $rawOrderBy=$field.' ASC';
+                        } else {
+                            $rawOrderBy=$field.' DESC';
+                        }
+                        $data=FixedDeposit::join('td_fd_form_received','td_fd_form_received.temp_tin_no','=','td_fixed_deposit.temp_tin_no')
+                            ->leftJoin('md_fd_scheme','md_fd_scheme.id','=','td_fixed_deposit.scheme_id')
+                            ->leftJoin('md_fd_type_of_company','md_fd_type_of_company.id','=','md_fd_scheme.comp_type_id')
+                            ->leftJoin('md_fd_company','md_fd_company.id','=','md_fd_scheme.comp_id')
+                            ->leftJoin('md_fd_company as md_fd_company_2','md_fd_company_2.id','=','td_fixed_deposit.comp_login_at')
+                            ->leftJoin('md_client','md_client.id','=','td_fixed_deposit.first_client_id')
+                            ->leftJoin('md_client as md_client_2','md_client_2.id','=','td_fixed_deposit.second_client_id')
+                            ->leftJoin('md_client as md_client_3','md_client_3.id','=','td_fixed_deposit.third_client_id')
+                            ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_fixed_deposit.chq_bank')
+                            ->leftJoin('md_employee','md_employee.euin_no','=','td_fd_form_received.euin_no')
+                            ->leftJoin('md_branch','md_branch.id','=','td_fd_form_received.branch_code')
+                            ->select('td_fixed_deposit.*','td_fd_form_received.bu_type as bu_type','td_fd_form_received.arn_no as arn_no','td_fd_form_received.euin_no as euin_no','td_fd_form_received.fd_bu_type as fd_bu_type','td_fd_form_received.sub_brk_cd as sub_brk_cd','md_employee.emp_name as emp_name',
+                            'md_fd_scheme.scheme_name as scheme_name','md_fd_type_of_company.comp_type as comp_type_name','md_fd_company.comp_short_name as comp_short_name','md_fd_company.comp_full_name as comp_full_name',
+                            'md_client.client_code as investor_code','md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.dob as investor_dob',
+                            'md_client_2.client_code as investor_code_2','md_client_2.client_name as investor_name_2','md_client_2.pan as investor_pan_2','md_client_2.dob as investor_dob_2',
+                            'md_client_3.client_code as investor_code_3','md_client_3.client_name as investor_name_3','md_client_3.pan as investor_pan_3','md_client_3.dob as investor_dob_3',
+                            'md_deposit_bank.bank_name as chq_bank','md_fd_company_2.comp_short_name as comp_login_name','md_branch.brn_name as branch_name')
+                            ->where('td_fixed_deposit.delete_flag','N')
+                            ->whereDate('td_fixed_deposit.entry_date','>=',date('Y-m-d',strtotime($start_date)))
+                            ->whereDate('td_fixed_deposit.entry_date','<=',date('Y-m-d',strtotime($end_date)))
+                            ->where('td_fixed_deposit.comp_login_dt',$login_status,NULL)
+                            ->where('td_fixed_deposit.comp_login_cutt_off',$login_status,NULL)
+                            ->orderByRaw($rawOrderBy)
+                            ->paginate($paginate);
                     }else {
                         $data=FixedDeposit::join('td_fd_form_received','td_fd_form_received.temp_tin_no','=','td_fixed_deposit.temp_tin_no')
                             ->leftJoin('md_fd_scheme','md_fd_scheme.id','=','td_fixed_deposit.scheme_id')
@@ -87,12 +152,13 @@ class FormEntryController extends Controller
                             ->leftJoin('md_client as md_client_3','md_client_3.id','=','td_fixed_deposit.third_client_id')
                             ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_fixed_deposit.chq_bank')
                             ->leftJoin('md_employee','md_employee.euin_no','=','td_fd_form_received.euin_no')
+                            ->leftJoin('md_branch','md_branch.id','=','td_fd_form_received.branch_code')
                             ->select('td_fixed_deposit.*','td_fd_form_received.bu_type as bu_type','td_fd_form_received.arn_no as arn_no','td_fd_form_received.euin_no as euin_no','td_fd_form_received.fd_bu_type as fd_bu_type','td_fd_form_received.sub_brk_cd as sub_brk_cd','md_employee.emp_name as emp_name',
                             'md_fd_scheme.scheme_name as scheme_name','md_fd_type_of_company.comp_type as comp_type_name','md_fd_company.comp_short_name as comp_short_name','md_fd_company.comp_full_name as comp_full_name',
                             'md_client.client_code as investor_code','md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.dob as investor_dob',
                             'md_client_2.client_code as investor_code_2','md_client_2.client_name as investor_name_2','md_client_2.pan as investor_pan_2','md_client_2.dob as investor_dob_2',
                             'md_client_3.client_code as investor_code_3','md_client_3.client_name as investor_name_3','md_client_3.pan as investor_pan_3','md_client_3.dob as investor_dob_3',
-                            'md_deposit_bank.bank_name as chq_bank','md_fd_company_2.comp_short_name as comp_login_name')
+                            'md_deposit_bank.bank_name as chq_bank','md_fd_company_2.comp_short_name as comp_login_name','md_branch.brn_name as branch_name')
                             ->where('td_fixed_deposit.delete_flag','N')
                             ->whereDate('td_fixed_deposit.entry_date','>=',date('Y-m-d',strtotime($start_date)))
                             ->whereDate('td_fixed_deposit.entry_date','<=',date('Y-m-d',strtotime($end_date)))
@@ -103,19 +169,29 @@ class FormEntryController extends Controller
                     }
                 }
             }else {
-                if ($sort_by && $column_name) {
-                    if ($column_name=="bu_type" || $column_name=="arn_no" || $column_name=="euin_no" || $column_name=="insure_bu_type") {
-                       
-                    }elseif ($column_name=="comp_full_name" || $column_name=="comp_short_name") {
-                        
-                    }elseif ($column_name=="product_type") {
-                       
-                    }elseif ($column_name=="product_name") {
-                       
+                if ($order && $field) {
+                    $rawOrderBy='';
+                    if ($order > 0) {
+                        $rawOrderBy=$field.' ASC';
                     } else {
-                        
+                        $rawOrderBy=$field.' DESC';
                     }
-                } elseif ($from_date && $to_date) {
+                }elseif (($from_date && $to_date) || $tin_no || $investor_code || $company_id || $comp_type_id || $scheme_id) {
+                    $rawQuery='';
+                    $queryString='td_fixed_deposit.entry_date';
+                    $rawQuery.=Helper::FrmToDateRawQuery($from_date,$to_date,$rawQuery,$queryString);
+                    $queryString1='td_fixed_deposit.tin_no';
+                    $rawQuery.=Helper::WhereRawQuery($tin_no,$rawQuery,$queryString1);
+                    // return $rawQuery;
+                    $queryString2='td_fixed_deposit.first_client_id';
+                    $rawQuery.=Helper::WhereRawQuery($investor_code,$rawQuery,$queryString2);
+                    $queryString3='md_fd_scheme.comp_id';
+                    $rawQuery.=Helper::WhereRawQuery($company_id,$rawQuery,$queryString3);
+                    $queryString4='md_fd_scheme.comp_type_id';
+                    $rawQuery.=Helper::WhereRawQuery($comp_type_id,$rawQuery,$queryString4);
+                    $queryString5='td_fixed_deposit.scheme_id';
+                    $rawQuery.=Helper::WhereRawQuery($scheme_id,$rawQuery,$queryString5);
+
                     $data=FixedDeposit::join('td_fd_form_received','td_fd_form_received.temp_tin_no','=','td_fixed_deposit.temp_tin_no')
                         ->leftJoin('md_fd_scheme','md_fd_scheme.id','=','td_fixed_deposit.scheme_id')
                         ->leftJoin('md_fd_type_of_company','md_fd_type_of_company.id','=','md_fd_scheme.comp_type_id')
@@ -126,101 +202,15 @@ class FormEntryController extends Controller
                         ->leftJoin('md_client as md_client_3','md_client_3.id','=','td_fixed_deposit.third_client_id')
                         ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_fixed_deposit.chq_bank')
                         ->leftJoin('md_employee','md_employee.euin_no','=','td_fd_form_received.euin_no')
+                        ->leftJoin('md_branch','md_branch.id','=','td_fd_form_received.branch_code')
                         ->select('td_fixed_deposit.*','td_fd_form_received.bu_type as bu_type','td_fd_form_received.arn_no as arn_no','td_fd_form_received.euin_no as euin_no','td_fd_form_received.fd_bu_type as fd_bu_type','td_fd_form_received.sub_brk_cd as sub_brk_cd','md_employee.emp_name as emp_name',
                         'md_fd_scheme.scheme_name as scheme_name','md_fd_type_of_company.comp_type as comp_type_name','md_fd_company.comp_short_name as comp_short_name','md_fd_company.comp_full_name as comp_full_name',
                         'md_client.client_code as investor_code','md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.dob as investor_dob',
                         'md_client_2.client_code as investor_code_2','md_client_2.client_name as investor_name_2','md_client_2.pan as investor_pan_2','md_client_2.dob as investor_dob_2',
                         'md_client_3.client_code as investor_code_3','md_client_3.client_name as investor_name_3','md_client_3.pan as investor_pan_3','md_client_3.dob as investor_dob_3',
-                        'md_deposit_bank.bank_name as chq_bank','md_fd_company_2.comp_short_name as comp_login_name')
+                        'md_deposit_bank.bank_name as chq_bank','md_fd_company_2.comp_short_name as comp_login_name','md_branch.brn_name as branch_name')
                         ->where('td_fixed_deposit.delete_flag','N')
-                        ->whereDate('td_fixed_deposit.entry_date','>=',$from_date)
-                        ->whereDate('td_fixed_deposit.entry_date','<=',$to_date)
-                        ->orderBy('td_fixed_deposit.updated_at','desc')
-                        ->paginate($paginate);
-                } elseif (!empty($bu_type)) {
-                    $data=FixedDeposit::join('td_fd_form_received','td_fd_form_received.temp_tin_no','=','td_fixed_deposit.temp_tin_no')
-                        ->leftJoin('md_fd_scheme','md_fd_scheme.id','=','td_fixed_deposit.scheme_id')
-                        ->leftJoin('md_fd_type_of_company','md_fd_type_of_company.id','=','md_fd_scheme.comp_type_id')
-                        ->leftJoin('md_fd_company','md_fd_company.id','=','md_fd_scheme.comp_id')
-                        ->leftJoin('md_fd_company as md_fd_company_2','md_fd_company_2.id','=','td_fixed_deposit.comp_login_at')
-                        ->leftJoin('md_client','md_client.id','=','td_fixed_deposit.first_client_id')
-                        ->leftJoin('md_client as md_client_2','md_client_2.id','=','td_fixed_deposit.second_client_id')
-                        ->leftJoin('md_client as md_client_3','md_client_3.id','=','td_fixed_deposit.third_client_id')
-                        ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_fixed_deposit.chq_bank')
-                        ->leftJoin('md_employee','md_employee.euin_no','=','td_fd_form_received.euin_no')
-                        ->select('td_fixed_deposit.*','td_fd_form_received.bu_type as bu_type','td_fd_form_received.arn_no as arn_no','td_fd_form_received.euin_no as euin_no','td_fd_form_received.fd_bu_type as fd_bu_type','td_fd_form_received.sub_brk_cd as sub_brk_cd','md_employee.emp_name as emp_name',
-                        'md_fd_scheme.scheme_name as scheme_name','md_fd_type_of_company.comp_type as comp_type_name','md_fd_company.comp_short_name as comp_short_name','md_fd_company.comp_full_name as comp_full_name',
-                        'md_client.client_code as investor_code','md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.dob as investor_dob',
-                        'md_client_2.client_code as investor_code_2','md_client_2.client_name as investor_name_2','md_client_2.pan as investor_pan_2','md_client_2.dob as investor_dob_2',
-                        'md_client_3.client_code as investor_code_3','md_client_3.client_name as investor_name_3','md_client_3.pan as investor_pan_3','md_client_3.dob as investor_dob_3',
-                        'md_deposit_bank.bank_name as chq_bank','md_fd_company_2.comp_short_name as comp_login_name')
-                        ->where('td_fixed_deposit.delete_flag','N')
-                        ->whereIn('td_fixed_deposit.bu_type',$bu_type)
-                        ->orderBy('td_fixed_deposit.updated_at','desc')
-                        ->paginate($paginate);
-                } elseif ($investor_name) {
-                    $data=FixedDeposit::join('td_fd_form_received','td_fd_form_received.temp_tin_no','=','td_fixed_deposit.temp_tin_no')
-                        ->leftJoin('md_fd_scheme','md_fd_scheme.id','=','td_fixed_deposit.scheme_id')
-                        ->leftJoin('md_fd_type_of_company','md_fd_type_of_company.id','=','md_fd_scheme.comp_type_id')
-                        ->leftJoin('md_fd_company','md_fd_company.id','=','md_fd_scheme.comp_id')
-                        ->leftJoin('md_fd_company as md_fd_company_2','md_fd_company_2.id','=','td_fixed_deposit.comp_login_at')
-                        ->leftJoin('md_client','md_client.id','=','td_fixed_deposit.first_client_id')
-                        ->leftJoin('md_client as md_client_2','md_client_2.id','=','td_fixed_deposit.second_client_id')
-                        ->leftJoin('md_client as md_client_3','md_client_3.id','=','td_fixed_deposit.third_client_id')
-                        ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_fixed_deposit.chq_bank')
-                        ->leftJoin('md_employee','md_employee.euin_no','=','td_fd_form_received.euin_no')
-                        ->select('td_fixed_deposit.*','td_fd_form_received.bu_type as bu_type','td_fd_form_received.arn_no as arn_no','td_fd_form_received.euin_no as euin_no','td_fd_form_received.fd_bu_type as fd_bu_type','td_fd_form_received.sub_brk_cd as sub_brk_cd','md_employee.emp_name as emp_name',
-                        'md_fd_scheme.scheme_name as scheme_name','md_fd_type_of_company.comp_type as comp_type_name','md_fd_company.comp_short_name as comp_short_name','md_fd_company.comp_full_name as comp_full_name',
-                        'md_client.client_code as investor_code','md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.dob as investor_dob',
-                        'md_client_2.client_code as investor_code_2','md_client_2.client_name as investor_name_2','md_client_2.pan as investor_pan_2','md_client_2.dob as investor_dob_2',
-                        'md_client_3.client_code as investor_code_3','md_client_3.client_name as investor_name_3','md_client_3.pan as investor_pan_3','md_client_3.dob as investor_dob_3',
-                        'md_deposit_bank.bank_name as chq_bank','md_fd_company_2.comp_short_name as comp_login_name')
-                        ->where('td_fixed_deposit.delete_flag','N')
-                        ->where('md_client.client_code','like', '%' . $proposer_name . '%')
-                        ->orWhere('md_client.client_name','like', '%' . $proposer_name . '%')
-                        ->orWhere('md_client.pan','like', '%' . $proposer_name . '%')
-                        ->orderBy('td_fixed_deposit.updated_at','desc')
-                        ->paginate($paginate);
-                } elseif ($euin_no) {
-                    $data=FixedDeposit::join('td_fd_form_received','td_fd_form_received.temp_tin_no','=','td_fixed_deposit.temp_tin_no')
-                        ->leftJoin('md_fd_scheme','md_fd_scheme.id','=','td_fixed_deposit.scheme_id')
-                        ->leftJoin('md_fd_type_of_company','md_fd_type_of_company.id','=','md_fd_scheme.comp_type_id')
-                        ->leftJoin('md_fd_company','md_fd_company.id','=','md_fd_scheme.comp_id')
-                        ->leftJoin('md_fd_company as md_fd_company_2','md_fd_company_2.id','=','td_fixed_deposit.comp_login_at')
-                        ->leftJoin('md_client','md_client.id','=','td_fixed_deposit.first_client_id')
-                        ->leftJoin('md_client as md_client_2','md_client_2.id','=','td_fixed_deposit.second_client_id')
-                        ->leftJoin('md_client as md_client_3','md_client_3.id','=','td_fixed_deposit.third_client_id')
-                        ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_fixed_deposit.chq_bank')
-                        ->leftJoin('md_employee','md_employee.euin_no','=','td_fd_form_received.euin_no')
-                        ->select('td_fixed_deposit.*','td_fd_form_received.bu_type as bu_type','td_fd_form_received.arn_no as arn_no','td_fd_form_received.euin_no as euin_no','td_fd_form_received.fd_bu_type as fd_bu_type','td_fd_form_received.sub_brk_cd as sub_brk_cd','md_employee.emp_name as emp_name',
-                        'md_fd_scheme.scheme_name as scheme_name','md_fd_type_of_company.comp_type as comp_type_name','md_fd_company.comp_short_name as comp_short_name','md_fd_company.comp_full_name as comp_full_name',
-                        'md_client.client_code as investor_code','md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.dob as investor_dob',
-                        'md_client_2.client_code as investor_code_2','md_client_2.client_name as investor_name_2','md_client_2.pan as investor_pan_2','md_client_2.dob as investor_dob_2',
-                        'md_client_3.client_code as investor_code_3','md_client_3.client_name as investor_name_3','md_client_3.pan as investor_pan_3','md_client_3.dob as investor_dob_3',
-                        'md_deposit_bank.bank_name as chq_bank','md_fd_company_2.comp_short_name as comp_login_name')
-                        ->where('td_fixed_deposit.delete_flag','N')
-                        ->where('md_employee.emp_name','like', '%' . $euin_no . '%')
-                        ->orderBy('td_fixed_deposit.updated_at','desc')
-                        ->paginate($paginate);
-                } elseif ($tin_no) {
-                    $data=FixedDeposit::join('td_fd_form_received','td_fd_form_received.temp_tin_no','=','td_fixed_deposit.temp_tin_no')
-                        ->leftJoin('md_fd_scheme','md_fd_scheme.id','=','td_fixed_deposit.scheme_id')
-                        ->leftJoin('md_fd_type_of_company','md_fd_type_of_company.id','=','md_fd_scheme.comp_type_id')
-                        ->leftJoin('md_fd_company','md_fd_company.id','=','md_fd_scheme.comp_id')
-                        ->leftJoin('md_fd_company as md_fd_company_2','md_fd_company_2.id','=','td_fixed_deposit.comp_login_at')
-                        ->leftJoin('md_client','md_client.id','=','td_fixed_deposit.first_client_id')
-                        ->leftJoin('md_client as md_client_2','md_client_2.id','=','td_fixed_deposit.second_client_id')
-                        ->leftJoin('md_client as md_client_3','md_client_3.id','=','td_fixed_deposit.third_client_id')
-                        ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_fixed_deposit.chq_bank')
-                        ->leftJoin('md_employee','md_employee.euin_no','=','td_fd_form_received.euin_no')
-                        ->select('td_fixed_deposit.*','td_fd_form_received.bu_type as bu_type','td_fd_form_received.arn_no as arn_no','td_fd_form_received.euin_no as euin_no','td_fd_form_received.fd_bu_type as fd_bu_type','td_fd_form_received.sub_brk_cd as sub_brk_cd','md_employee.emp_name as emp_name',
-                        'md_fd_scheme.scheme_name as scheme_name','md_fd_type_of_company.comp_type as comp_type_name','md_fd_company.comp_short_name as comp_short_name','md_fd_company.comp_full_name as comp_full_name',
-                        'md_client.client_code as investor_code','md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.dob as investor_dob',
-                        'md_client_2.client_code as investor_code_2','md_client_2.client_name as investor_name_2','md_client_2.pan as investor_pan_2','md_client_2.dob as investor_dob_2',
-                        'md_client_3.client_code as investor_code_3','md_client_3.client_name as investor_name_3','md_client_3.pan as investor_pan_3','md_client_3.dob as investor_dob_3',
-                        'md_deposit_bank.bank_name as chq_bank','md_fd_company_2.comp_short_name as comp_login_name')
-                        ->where('td_fixed_deposit.delete_flag','N')
-                        ->where('td_fixed_deposit.tin_no',$tin_no)
+                        ->whereRaw($rawQuery)
                         ->orderBy('td_fixed_deposit.updated_at','desc')
                         ->paginate($paginate);
                 } else {
@@ -234,12 +224,13 @@ class FormEntryController extends Controller
                         ->leftJoin('md_client as md_client_3','md_client_3.id','=','td_fixed_deposit.third_client_id')
                         ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_fixed_deposit.chq_bank')
                         ->leftJoin('md_employee','md_employee.euin_no','=','td_fd_form_received.euin_no')
+                        ->leftJoin('md_branch','md_branch.id','=','td_fd_form_received.branch_code')
                         ->select('td_fixed_deposit.*','td_fd_form_received.bu_type as bu_type','td_fd_form_received.arn_no as arn_no','td_fd_form_received.euin_no as euin_no','td_fd_form_received.fd_bu_type as fd_bu_type','td_fd_form_received.sub_brk_cd as sub_brk_cd','md_employee.emp_name as emp_name',
                         'md_fd_scheme.scheme_name as scheme_name','md_fd_type_of_company.comp_type as comp_type_name','md_fd_company.comp_short_name as comp_short_name','md_fd_company.comp_full_name as comp_full_name',
                         'md_client.client_code as investor_code','md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.dob as investor_dob',
                         'md_client_2.client_code as investor_code_2','md_client_2.client_name as investor_name_2','md_client_2.pan as investor_pan_2','md_client_2.dob as investor_dob_2',
                         'md_client_3.client_code as investor_code_3','md_client_3.client_name as investor_name_3','md_client_3.pan as investor_pan_3','md_client_3.dob as investor_dob_3',
-                        'md_deposit_bank.bank_name as chq_bank','md_fd_company_2.comp_short_name as comp_login_name')
+                        'md_deposit_bank.bank_name as chq_bank','md_fd_company_2.comp_short_name as comp_login_name','md_branch.brn_name as branch_name')
                         ->where('td_fixed_deposit.delete_flag','N')
                         ->orderBy('td_fixed_deposit.updated_at','desc')
                         ->paginate($paginate);
@@ -663,6 +654,7 @@ class FormEntryController extends Controller
                         'tenure'=>$request->tenure,
                         'interest_rate'=>$request->interest_rate,
                         'maturity_instruction'=>$request->maturity_instruction,
+                        'maturity_date'=>$request->maturity_date,
                         'acc_no'=>isset($request->acc_no)?$request->acc_no:NULL,
                         'amount'=>$request->amount,
                         'mode_of_payment'=>$request->mode_of_payment,
@@ -772,6 +764,7 @@ class FormEntryController extends Controller
                     'tenure'=>$request->tenure,
                     'interest_rate'=>$request->interest_rate,
                     'maturity_instruction'=>$request->maturity_instruction,
+                    'maturity_date'=>$request->maturity_date,
                     'acc_no'=>isset($request->acc_no)?$request->acc_no:NULL,
                     'amount'=>$request->amount,
                     'mode_of_payment'=>$request->mode_of_payment,

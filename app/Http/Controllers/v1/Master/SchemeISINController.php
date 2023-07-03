@@ -16,23 +16,103 @@ class SchemeISINController extends Controller
     {
         try {
             $paginate=$request->paginate;
-            $scheme_name=$request->scheme_name;
-            $amc_name=$request->amc_name;
-            $cat_id=$request->cat_id;
-            $subcat_id=$request->subcat_id;
-            $sort_by=$request->sort_by;
-            $column_name=$request->column_name;
+            $order=$request->order;
+            $field=$request->field;
 
-            $scheme_type=$request->scheme_type;
+            $amc_id=json_decode($request->amc_id);
+            $cat_id=json_decode($request->cat_id);
+            $sub_cat_id=json_decode($request->sub_cat_id);
+            $scheme_id=json_decode($request->scheme_id);
+            $search_scheme_id=$request->search_scheme_id;
+            $plan_id=json_decode($request->plan_id);
+            $opt_id=json_decode($request->opt_id);
             // return $request;
             if ($paginate=='A') {
                 $paginate=999999999;
             }
 
-            
+            if ($order && $field) {
+                $rawOrderBy='';
+                if ($order > 0) {
+                    $rawOrderBy=$field.' ASC';
+                } else {
+                    $rawOrderBy=$field.' DESC';
+                }
+            }elseif ($amc_id || $cat_id || $sub_cat_id || $scheme_id || $search_scheme_id || $plan_id || $opt_id) {
+                $rawQuery='';
+                if (!empty($amc_id)) {
+                    $amc_id_string= implode(',', $amc_id);
+                    if (strlen($rawQuery) > 0) {
+                        $rawQuery.=" AND md_scheme.amc_id IN (".$amc_id_string.")";
+                    }else {
+                        $rawQuery.=" md_scheme.amc_id IN (".$amc_id_string.")";
+                    }
+                }
+                if (!empty($cat_id)) {
+                    $cat_id_string= implode(',', $cat_id);
+                    if (strlen($rawQuery) > 0) {
+                        $rawQuery.=" AND md_scheme.category_id IN (".$cat_id_string.")";
+                    }else {
+                        $rawQuery.=" md_scheme.category_id IN (".$cat_id_string.")";
+                    }
+                }
+                if (!empty($sub_cat_id)) {
+                    $sub_cat_id_string= implode(',', $sub_cat_id);
+                    if (strlen($rawQuery) > 0) {
+                        $rawQuery.=" AND md_scheme.category_id IN (".$sub_cat_id_string.")";
+                    }else {
+                        $rawQuery.=" md_scheme.category_id IN (".$sub_cat_id_string.")";
+                    }
+                }
+                if ($search_scheme_id) {
+                    if (strlen($rawQuery) > 0) {
+                        $rawQuery.=" AND md_scheme_isin.scheme_id=".$search_scheme_id;
+                    }else {
+                        $rawQuery.=" md_scheme_isin.scheme_id=".$search_scheme_id;
+                    }
+                }
+                if (!empty($plan_id)) {
+                    $plan_id_string= implode(',', $plan_id);
+                    if (strlen($rawQuery) > 0) {
+                        $rawQuery.=" AND md_scheme_isin.plan_id IN (".$plan_id_string.")";
+                    }else {
+                        $rawQuery.=" md_scheme_isin.plan_id IN (".$plan_id_string.")";
+                    }
+                }
+                if (!empty($opt_id)) {
+                    $opt_id_string= implode(',', $opt_id);
+                    if (strlen($rawQuery) > 0) {
+                        $rawQuery.=" AND md_scheme_isin.option_id IN (".$opt_id_string.")";
+                    }else {
+                        $rawQuery.=" md_scheme_isin.option_id IN (".$opt_id_string.")";
+                    }
+                }
+                $data=SchemeISIN::leftjoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
+                    ->leftjoin('md_amc','md_amc.id','=','md_scheme.amc_id')
+                    ->leftjoin('md_category','md_category.id','=','md_scheme.category_id')
+                    ->leftjoin('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
+                    ->leftjoin('md_plan','md_plan.id','=','md_scheme_isin.plan_id')
+                    ->leftjoin('md_option','md_option.id','=','md_scheme_isin.option_id')
+                    ->select('md_scheme_isin.*','md_scheme.scheme_name as scheme_name','md_amc.amc_short_name as amc_short_name'.'md_category.cat_name as cat_name',
+                    'md_subcategory.subcategory_name as subcategory_name','md_plan.plan_name as plan_name','md_option.opt_name as opt_name')
+                    ->where('md_scheme_isin.delete_flag','N')
+                    ->whereRaw($rawQuery)
+                    ->paginate($paginate); 
+            }else {
+                $data=SchemeISIN::leftjoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
+                    ->leftjoin('md_amc','md_amc.id','=','md_scheme.amc_id')
+                    ->leftjoin('md_category','md_category.id','=','md_scheme.category_id')
+                    ->leftjoin('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
+                    ->leftjoin('md_plan','md_plan.id','=','md_scheme_isin.plan_id')
+                    ->leftjoin('md_option','md_option.id','=','md_scheme_isin.option_id')
+                    ->select('md_scheme_isin.*','md_scheme.scheme_name as scheme_name','md_amc.amc_short_name as amc_short_name','md_category.cat_name as cat_name',
+                    'md_subcategory.subcategory_name as subcategory_name','md_plan.plan_name as plan_name','md_option.opt_name as opt_name')
+                    ->where('md_scheme_isin.delete_flag','N')
+                    ->paginate($paginate); 
+            }
 
         } catch (\Throwable $th) {
-            // throw $th;
+            throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
         return Helper::SuccessResponse($data);

@@ -16,71 +16,76 @@ class RNTController extends Controller
     {
         try {
             $paginate=$request->paginate;
-            // $rnt_id=$request->rnt_id;
             $contact_person=$request->contact_person;
             $order=$request->order;
             $field=$request->field;
-            if ($order > 0 ) {
-                $order='ASC';
-            }else {
-                $order='DESC';
-            };
-
             $rnt_id=json_decode($request->rnt_id);
 
             if ($paginate=='A') {
                 $paginate=999999999;
             }
             if ($order && $field) {
-                $raw=$field.' '.$order;
-
-                if ($rnt_id && $contact_person) {
-                    $data=RNT::where('delete_flag','N')
-                        ->where('id',$rnt_id)
-                        ->where('head_ofc_contact_per','like', '%' . $contact_person . '%')
-                        ->orWhere('local_ofc_contact_per','like', '%' . $contact_person . '%')
-                        // ->orderBy($column_name,$order)
-                        ->orderByRaw($raw)
-                        ->paginate($paginate);      
-                }elseif ($rnt_id) {
-                    $data=RNT::where('delete_flag','N')
-                        ->where('id',$rnt_id)
-                        // ->orderBy($column_name,$sort_by)
-                        ->orderByRaw($raw)
-                        ->paginate($paginate);  
-                }elseif ($contact_person) {
-                    $data=RNT::where('delete_flag','N')
-                        ->where('head_ofc_contact_per','like', '%' . $contact_person . '%')
-                        ->orWhere('local_ofc_contact_per','like', '%' . $contact_person . '%')
-                        // ->orderBy($column_name,$sort_by)
-                        ->orderByRaw($raw)
-                        ->paginate($paginate);   
+                $rawOrderBy='';
+                if ($order > 0) {
+                    $rawOrderBy=$field.' ASC';
                 } else {
+                    $rawOrderBy=$field.' DESC';
+                }
+
+                if ($rnt_id ||  $contact_person) {
+                    $rawQuery='';
+                    if (!empty($rnt_id)) {
+                        $rnt_id_string= implode(',', $rnt_id);
+                        if (strlen($rawQuery) > 0) {
+                            $rawQuery.=" AND id IN (".$rnt_id_string.")";
+                        }else {
+                            $rawQuery.=" id IN (".$rnt_id_string.")";
+                        }
+                    }
+                    if ($contact_person) {
+                        if (strlen($rawQuery) > 0) {
+                            $rawQuery.=" AND head_ofc_contact_per LIKE'%".$contact_person."%'";
+                        }else {
+                            $rawQuery.=" head_ofc_contact_per LIKE '%".$contact_person."%'";
+                        }
+                        $rawQuery.=" OR head_ofc_contact_per LIKE'%".$contact_person."%'";
+                    }
                     $data=RNT::where('delete_flag','N')
-                        // ->orderBy($column_name,$sort_by)
+                        ->whereRaw($rawQuery)
+                        ->orderByRaw($rawOrderBy)
+                        ->paginate($paginate);      
+                }else {
+                    $data=RNT::where('delete_flag','N')
                         ->orderByRaw($raw)
                         ->paginate($paginate);  
                 }
-            }elseif (!empty($rnt_id) && $contact_person) {
+            }elseif (!empty($rnt_id) || $contact_person) {
+                $rawQuery='';
+                if (!empty($rnt_id)) {
+                    $rnt_id_string= implode(',', $rnt_id);
+                    if (strlen($rawQuery) > 0) {
+                        $rawQuery.=" AND id IN (".$rnt_id_string.")";
+                    }else {
+                        $rawQuery.=" id IN (".$rnt_id_string.")";
+                    }
+                }
+                if ($contact_person) {
+                    if (strlen($rawQuery) > 0) {
+                        $rawQuery.=" AND head_ofc_contact_per LIKE'%".$contact_person."%'";
+                    }else {
+                        $rawQuery.=" head_ofc_contact_per LIKE '%".$contact_person."%'";
+                    }
+                    $rawQuery.=" OR head_ofc_contact_per LIKE'%".$contact_person."%'";
+                }
+                 
                 $data=RNT::where('delete_flag','N')
-                    ->whereIn('id',$rnt_id)
-                    ->where('head_ofc_contact_per','like', '%' . $contact_person . '%')
-                    ->orWhere('local_ofc_contact_per','like', '%' . $contact_person . '%')
-                    ->orderBy('updated_at','DESC')->paginate($paginate);      
-            } elseif (!empty($rnt_id)) {
-                $data=RNT::where('delete_flag','N')
-                    ->whereIn('id',$rnt_id)
-                    ->orderBy('updated_at','DESC')
-                    ->paginate($paginate);      
-            } elseif ($contact_person) {
-                // return $contact_person;
-                $data=RNT::where('delete_flag','N')
-                    ->where('head_ofc_contact_per','like', '%' . $contact_person . '%')
-                    ->orWhere('local_ofc_contact_per','like', '%' . $contact_person . '%')
+                    ->whereRaw($rawQuery)
                     ->orderBy('updated_at','DESC')
                     ->paginate($paginate);      
             } else {
-                $data=RNT::where('delete_flag','N')->orderBy('updated_at','DESC')->paginate($paginate);      
+                $data=RNT::where('delete_flag','N')
+                    ->orderBy('updated_at','DESC')
+                    ->paginate($paginate);      
             }
             
         } catch (\Throwable $th) {
@@ -92,42 +97,75 @@ class RNTController extends Controller
     public function export(Request $request)
     {
         try {
-            $paginate=$request->paginate;
-            // $rnt_id=$request->rnt_id;
             $contact_person=$request->contact_person;
-            $sort_by=$request->sort_by;
-            $column_name=$request->column_name;
-
+            $order=$request->order;
+            $field=$request->field;
             $rnt_id=json_decode($request->rnt_id);
+           
+            if ($order && $field) {
+                $rawOrderBy='';
+                if ($order > 0) {
+                    $rawOrderBy=$field.' ASC';
+                } else {
+                    $rawOrderBy=$field.' DESC';
+                }
 
-            if ($sort_by && $column_name) {
+                if ($rnt_id ||  $contact_person) {
+                    $rawQuery='';
+                    if (!empty($rnt_id)) {
+                        $rnt_id_string= implode(',', $rnt_id);
+                        if (strlen($rawQuery) > 0) {
+                            $rawQuery.=" AND id IN (".$rnt_id_string.")";
+                        }else {
+                            $rawQuery.=" id IN (".$rnt_id_string.")";
+                        }
+                    }
+                    if ($contact_person) {
+                        if (strlen($rawQuery) > 0) {
+                            $rawQuery.=" AND head_ofc_contact_per LIKE'%".$contact_person."%'";
+                        }else {
+                            $rawQuery.=" head_ofc_contact_per LIKE '%".$contact_person."%'";
+                        }
+                        $rawQuery.=" OR head_ofc_contact_per LIKE'%".$contact_person."%'";
+                    }
+                    $data=RNT::where('delete_flag','N')
+                        ->whereRaw($rawQuery)
+                        ->orderByRaw($rawOrderBy)
+                        ->get();      
+                }else {
+                    $data=RNT::where('delete_flag','N')
+                        ->orderByRaw($raw)
+                        ->get();  
+                }
+            }elseif (!empty($rnt_id) || $contact_person) {
+                $rawQuery='';
+                if (!empty($rnt_id)) {
+                    $rnt_id_string= implode(',', $rnt_id);
+                    if (strlen($rawQuery) > 0) {
+                        $rawQuery.=" AND id IN (".$rnt_id_string.")";
+                    }else {
+                        $rawQuery.=" id IN (".$rnt_id_string.")";
+                    }
+                }
+                if ($contact_person) {
+                    if (strlen($rawQuery) > 0) {
+                        $rawQuery.=" AND head_ofc_contact_per LIKE'%".$contact_person."%'";
+                    }else {
+                        $rawQuery.=" head_ofc_contact_per LIKE '%".$contact_person."%'";
+                    }
+                    $rawQuery.=" OR head_ofc_contact_per LIKE'%".$contact_person."%'";
+                }
+                 
                 $data=RNT::where('delete_flag','N')
-                    ->orWhereIn('id',$rnt_id)
-                    ->orWhere('head_ofc_contact_per','like', '%' . $contact_person . '%')
-                    ->orWhere('local_ofc_contact_per','like', '%' . $contact_person . '%')
-                    ->orderBy($column_name,$sort_by)
-                    ->get();   
-            }elseif (!empty($rnt_id) && $contact_person) {
-                $data=RNT::where('delete_flag','N')
-                    ->whereIn('id',$rnt_id)
-                    ->where('head_ofc_contact_per','like', '%' . $contact_person . '%')
-                    ->orWhere('local_ofc_contact_per','like', '%' . $contact_person . '%')
-                    ->orderBy('updated_at','DESC')->paginate($paginate);      
-            } elseif (!empty($rnt_id)) {
-                $data=RNT::where('delete_flag','N')
-                    ->whereIn('id',$rnt_id)
-                    ->orderBy('updated_at','DESC')
-                    ->paginate($paginate);      
-            }  elseif ($contact_person) {
-                // return $contact_person;
-                $data=RNT::where('delete_flag','N')
-                    ->where('head_ofc_contact_per','like', '%' . $contact_person . '%')
-                    ->orWhere('local_ofc_contact_per','like', '%' . $contact_person . '%')
+                    ->whereRaw($rawQuery)
                     ->orderBy('updated_at','DESC')
                     ->get();      
             } else {
-                $data=RNT::where('delete_flag','N')->orderBy('updated_at','DESC')->get();      
+                $data=RNT::where('delete_flag','N')
+                    ->orderBy('updated_at','DESC')
+                    ->get();      
             }
+            
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
