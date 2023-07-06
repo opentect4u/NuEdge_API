@@ -8,10 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class InsBuOpportunity extends Model
 {
     use HasFactory;
-    protected $table="td_ins_bu_opportunity ";
+    protected $table="td_ins_bu_opportunity";
     protected $fillable = [
         'rec_datetime',
-        'temp_tin_no ',
+        'temp_tin_no',
         'bu_type',
         'arn_no',
         'sub_arn_no',
@@ -28,6 +28,7 @@ class InsBuOpportunity extends Model
         'renewal_dt',
         'upload_file',
         'remarks',
+        'branch_code',
         'delete_flag',
         'deleted_date',
         'deleted_by',

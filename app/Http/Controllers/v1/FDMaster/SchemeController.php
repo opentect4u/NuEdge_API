@@ -151,16 +151,27 @@ class SchemeController extends Controller
             $search=$request->search;
             $id=$request->id;
             $comp_id=$request->comp_id;
+            $arr_comp_type_id=json_decode($request->arr_comp_type_id);
+            $arr_company_id=json_decode($request->arr_company_id);
             $paginate=$request->paginate;
             if ($paginate=='A') {
                 $paginate=999999999;
             }
-            if ($search!='') {
+            if (!empty($arr_comp_type_id) && !empty($arr_company_id)) {
+                $data=FDScheme::where('delete_flag','N')
+                    ->whereIn('comp_type_id',$arr_comp_type_id)
+                    ->whereIn('comp_id',$arr_company_id)
+                    ->get(); 
+            }elseif ($search!='') {
                 $data=FDScheme::where('delete_flag','N')->where('scheme_name','like', '%' . $search . '%')->get();      
             }else if ($id!='') {
                 $data=FDScheme::where('delete_flag','N')->where('id',$id)->get();      
             }elseif ($paginate!='') {
                 $data=FDScheme::where('delete_flag','N')->paginate($paginate);      
+            }else if (!empty($arr_company_id)) {
+                $data=FDScheme::where('delete_flag','N')
+                    ->whereIn('comp_id',$arr_company_id)
+                    ->get();      
             }else if ($comp_id!='') {
                 $data=FDScheme::where('delete_flag','N')->where('comp_id',$comp_id)->get();      
             } else {

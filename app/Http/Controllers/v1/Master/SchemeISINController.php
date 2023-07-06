@@ -93,7 +93,7 @@ class SchemeISINController extends Controller
                     ->leftjoin('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
                     ->leftjoin('md_plan','md_plan.id','=','md_scheme_isin.plan_id')
                     ->leftjoin('md_option','md_option.id','=','md_scheme_isin.option_id')
-                    ->select('md_scheme_isin.*','md_scheme.scheme_name as scheme_name','md_amc.amc_short_name as amc_short_name'.'md_category.cat_name as cat_name',
+                    ->select('md_scheme_isin.*','md_scheme.scheme_name as scheme_name','md_amc.amc_short_name as amc_short_name','md_amc.id as amc_id','md_category.cat_name as cat_name',
                     'md_subcategory.subcategory_name as subcategory_name','md_plan.plan_name as plan_name','md_option.opt_name as opt_name')
                     ->where('md_scheme_isin.delete_flag','N')
                     ->whereRaw($rawQuery)
@@ -105,7 +105,7 @@ class SchemeISINController extends Controller
                     ->leftjoin('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
                     ->leftjoin('md_plan','md_plan.id','=','md_scheme_isin.plan_id')
                     ->leftjoin('md_option','md_option.id','=','md_scheme_isin.option_id')
-                    ->select('md_scheme_isin.*','md_scheme.scheme_name as scheme_name','md_amc.amc_short_name as amc_short_name','md_category.cat_name as cat_name',
+                    ->select('md_scheme_isin.*','md_scheme.scheme_name as scheme_name','md_amc.amc_short_name as amc_short_name','md_amc.id as amc_id','md_category.cat_name as cat_name',
                     'md_subcategory.subcategory_name as subcategory_name','md_plan.plan_name as plan_name','md_option.opt_name as opt_name')
                     ->where('md_scheme_isin.delete_flag','N')
                     ->paginate($paginate); 
@@ -171,27 +171,39 @@ class SchemeISINController extends Controller
             // 'sip_date'=>json_encode($request->sip_date),
             
                 // return $isin_dtls;
-                foreach ($isin_dtls as $key => $value) {
-                    // return $value->row_id;
-                    if ($value->row_id==0) {
-                        SchemeISIN::create(array(
-                            'scheme_id'=>$value->scheme_id,
-                            'plan_id'=>$value->plan_id,
-                            'option_id'=>$value->option_id,
-                            'isin_no'=>$value->isin_no,
-                            // 'created_by'=>'',
-                        ));
-                    }else {
-                        $data=SchemeISIN::find($value->row_id);
-                        $data->scheme_id=$value->scheme_id;
-                        $data->plan_id=$value->plan_id;
-                        $data->option_id=$value->option_id;
-                        $data->isin_no=$value->isin_no;
-                        $data->save();
-                    }    
-                }
-          
             $data=[];  
+            foreach ($isin_dtls as $key => $value) {
+                // return $value->row_id;
+                if ($value->row_id==0) {
+                    $dt=SchemeISIN::create(array(
+                        'scheme_id'=>$value->scheme_id,
+                        'plan_id'=>$value->plan_id,
+                        'option_id'=>$value->option_id,
+                        'isin_no'=>$value->isin_no,
+                        // 'created_by'=>'',
+                    ));
+                }else {
+                    $dt=SchemeISIN::find($value->row_id);
+                    $dt->scheme_id=$value->scheme_id;
+                    $dt->plan_id=$value->plan_id;
+                    $dt->option_id=$value->option_id;
+                    $dt->isin_no=$value->isin_no;
+                    $dt->save();
+                }  
+                $sc_data=SchemeISIN::leftjoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
+                    ->leftjoin('md_amc','md_amc.id','=','md_scheme.amc_id')
+                    ->leftjoin('md_category','md_category.id','=','md_scheme.category_id')
+                    ->leftjoin('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
+                    ->leftjoin('md_plan','md_plan.id','=','md_scheme_isin.plan_id')
+                    ->leftjoin('md_option','md_option.id','=','md_scheme_isin.option_id')
+                    ->select('md_scheme_isin.*','md_scheme.scheme_name as scheme_name','md_amc.amc_short_name as amc_short_name','md_amc.id as amc_id','md_category.cat_name as cat_name',
+                    'md_subcategory.subcategory_name as subcategory_name','md_plan.plan_name as plan_name','md_option.opt_name as opt_name')
+                    ->where('md_scheme_isin.delete_flag','N')
+                    ->where('md_scheme_isin.id',$dt->id)
+                    ->first(); 
+                array_push($data,$sc_data);
+            }
+          
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_SAVE_ERROR);

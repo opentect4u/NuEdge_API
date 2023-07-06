@@ -343,10 +343,18 @@ class SchemeController extends Controller
             $paginate=$request->paginate;
             $amc_id=$request->amc_id;
             $arr_amc_id=json_decode($request->arr_amc_id);
+            $arr_cat_id=json_decode($request->arr_cat_id);
+            $arr_subcat_id=json_decode($request->arr_subcat_id);
             if ($paginate=='A') {
                 $paginate=999999999;
             }
-            if ($search!='' && $amc_id!='' && $scheme_type!='') {
+            if (!empty($arr_amc_id) && !empty($arr_cat_id) && !empty($arr_subcat_id)) {
+                $data=Scheme::where('delete_flag','N')
+                    ->whereIn('amc_id',$arr_amc_id)
+                    ->whereIn('category_id',$arr_cat_id)
+                    ->whereIn('subcategory_id',$arr_subcat_id)
+                    ->get();      
+            } elseif ($search!='' && $amc_id!='' && $scheme_type!='') {
                 $data=Scheme::where('scheme_type',$scheme_type)
                     ->where('delete_flag','N')
                     ->where('amc_id',$amc_id)
@@ -365,7 +373,8 @@ class SchemeController extends Controller
                     ->get();      
             }else if ($search!='') {
                     $data=Scheme::where('delete_flag','N')
-                        ->where('scheme_name','like', '%' . $search . '%')->get();      
+                        ->where('scheme_name','like', '%' . $search . '%')
+                        ->get();      
             }else if ($product_id!='' && $category_id!='' && $subcategory_id!='') {
                 $data=Scheme::where('product_id',$product_id)
                     ->where('delete_flag','N')

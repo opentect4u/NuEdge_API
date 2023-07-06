@@ -18,7 +18,14 @@ class EmployeeController extends Controller
             $sub_brk_cd=$request->sub_brk_cd;
             $sort_by=$request->sort_by;
             $column_name=$request->column_name;
-            if ($search!='' && $sub_arn_no!='') {
+            $arr_branch_id=json_decode($request->arr_branch_id);
+            $arr_bu_type_id=json_decode($request->arr_bu_type_id);
+
+            if (!empty($arr_branch_id) && !empty($arr_bu_type_id)) {
+                $data=Employee::whereIn('brn_cd',$arr_branch_id)
+                    ->whereIn('bu_type_id',$arr_bu_type_id)
+                    ->get();
+            }elseif ($search!='' && $sub_arn_no!='') {
                 $data=Employee::where('arn_no',$sub_arn_no)
                     ->where('euin_no','like', '%' . $search . '%')
                     ->orWhere('emp_name','like', '%' . $search . '%')

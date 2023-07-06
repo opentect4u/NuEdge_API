@@ -26,7 +26,7 @@ Route::prefix('v1')->group(function () {
             Route::post('schemeAddEdit',[App\Http\Controllers\v1\FDMaster\SchemeController::class,'createUpdate']);
             Route::post('schemeimport', [App\Http\Controllers\v1\FDMaster\SchemeController::class,'import']);
             // Route::post('schemeDelete', [App\Http\Controllers\v1\FDMaster\SchemeController::class,'delete']);
-            Route::post('schemeDetails', [App\Http\Controllers\v1\FDMaster\SchemeController::class,'schemeDetails']);
+            // Route::post('schemeDetails', [App\Http\Controllers\v1\FDMaster\SchemeController::class,'schemeDetails']);
 
             Route::get('rejectReason',[App\Http\Controllers\v1\FDMaster\RejectReasonController::class,'index']);
             Route::any('rejectReasonDetailSearch',[App\Http\Controllers\v1\FDMaster\RejectReasonController::class,'searchDetails']);

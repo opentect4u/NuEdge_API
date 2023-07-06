@@ -13,6 +13,7 @@ class Employee extends Model
     protected $fillable = [
         'arn_no',
         'brn_cd',
+        'bu_type_id',
         'euin_no',
         'emp_name',
         'created_by',

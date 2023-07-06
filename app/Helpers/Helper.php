@@ -104,6 +104,12 @@ class Helper{
         $mpdf->Output($outputFile, \Mpdf\Output\Destination::FILE, );
     }
 
+    public function getBranchCode()
+    {
+        $branch_cd=1;
+        return $branch_cd;
+    }
+
     // seatch from date to to date 
     public function FrmToDateRawQuery($from_date,$to_date,$rawQuery,$queryString)
     {
@@ -122,7 +128,8 @@ class Helper{
         $Query='';
         $condition=(strlen($rawQuery) > 0)? " AND ":" ";
         if (is_array($row_name) && !empty($row_name)) {
-            $row_name_string= implode(',', $row_name);
+            $row_name_string=  "'" .implode("','", $row_name). "'";
+            // $row_name_string= implode(',', $row_name);
             $Query.=$condition.$queryString." IN (".$row_name_string.")";
         } elseif($row_name) {
             $Query.=$condition.$queryString."='".$row_name."'";
@@ -132,10 +139,31 @@ class Helper{
 
     public function RawQueryLike($row_name,$rawQuery,$queryString)
     {
+        $Query='';
         if ($row_name) {
             $condition=(strlen($rawQuery) > 0)? " AND ":" ";
-            $rawQuery.=$condition.$queryString." LIKE '%".$row_name."%'";
+            $Query.=$condition.$queryString." LIKE '%".$row_name."%'";
         }
-        return $rawQuery;
+        return $Query;
+    }
+
+    public function RawQueryOnlyMonth($row_name,$rawQuery,$queryString)
+    {
+        $Query='';
+        if ($row_name) {
+            $condition=(strlen($rawQuery) > 0)? " AND ":" ";
+            $Query.=$condition."month(".$queryString.") ='".$row_name."'";
+        }
+        return $Query;
+    }
+
+    public function RawQueryOnlyYear($row_name,$rawQuery,$queryString)
+    {
+        $Query='';
+        if ($row_name) {
+            $condition=(strlen($rawQuery) > 0)? " AND ":" ";
+            $Query.=$condition."year(".$queryString.") ='".$row_name."'";
+        }
+        return $Query;
     }
 }

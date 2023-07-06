@@ -16,12 +16,18 @@ class SubBrokerController extends Controller
             $search=$request->search;
             $sort_by=$request->sort_by;
             $column_name=$request->column_name;
+            $arr_rm_id=json_decode($request->arr_rm_id);
+            $arr_sub_brk_id=json_decode($request->arr_sub_brk_id);
             if ($search!='') {
                 $data=SubBroker::where('arn_no','like', '%' . $search . '%')
                     ->orWhere('code','like', '%' . $search . '%')
                     ->orWhere('bro_name','like', '%' . $search . '%')
                     ->get();      
-            }else{
+            }elseif (!empty($arr_rm_id)) {
+                $data=SubBroker::whereIn('emp_id',$arr_rm_id)->get();   
+            }elseif (!empty($arr_sub_brk_id)) {
+                $data=SubBroker::whereIn('id',$arr_sub_brk_id)->get();   
+            } else{
                 $data=SubBroker::whereDate('updated_at',date('Y-m-d'))->get();   
             }   
         } catch (\Throwable $th) {
