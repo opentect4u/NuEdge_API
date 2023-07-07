@@ -40,6 +40,12 @@ Route::prefix('v1')->group(function () {
         Route::get('businessType',[App\Http\Controllers\v1\Master\BusinessTypeController::class,'index']);
         Route::post('businessTypeAddEdit',[App\Http\Controllers\v1\Master\BusinessTypeController::class,'createUpdate']);
 
+        Route::get('employee',[App\Http\Controllers\v1\Master\EmployeeController::class,'index']);
+        Route::post('employeeAdd',[App\Http\Controllers\v1\Master\EmployeeController::class,'create']);
+        Route::post('employeeEdit',[App\Http\Controllers\v1\Master\EmployeeController::class,'update']);
+
+        Route::get('subbroker',[App\Http\Controllers\v1\Master\SubBrokerController::class,'index']);
+        Route::post('subbrokerAddEdit',[App\Http\Controllers\v1\Master\SubBrokerController::class,'createUpdate']);
 
         /* ******************************** End Common API ****************************   */
 
@@ -148,13 +154,7 @@ Route::prefix('v1')->group(function () {
         Route::post('documenttypeAddEdit',[App\Http\Controllers\v1\Master\DocumentTypeController::class,'createUpdate']);
         Route::post('documenttypeimport',[App\Http\Controllers\v1\Master\DocumentTypeController::class,'import']);
 
-        Route::get('employee',[App\Http\Controllers\v1\Master\EmployeeController::class,'index']);
-        Route::post('employeeAdd',[App\Http\Controllers\v1\Master\EmployeeController::class,'create']);
-        Route::post('employeeEdit',[App\Http\Controllers\v1\Master\EmployeeController::class,'update']);
-
-        Route::get('subbroker',[App\Http\Controllers\v1\Master\SubBrokerController::class,'index']);
-        Route::post('subbrokerAddEdit',[App\Http\Controllers\v1\Master\SubBrokerController::class,'createUpdate']);
-
+        
         // =============================geography masters start=================================
         Route::get('country',[App\Http\Controllers\v1\Master\CountryController::class,'index']);
         Route::any('countrySearch',[App\Http\Controllers\v1\Master\CountryController::class,'searchDetails']);

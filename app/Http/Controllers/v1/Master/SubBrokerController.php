@@ -18,11 +18,14 @@ class SubBrokerController extends Controller
             $column_name=$request->column_name;
             $arr_rm_id=json_decode($request->arr_rm_id);
             $arr_sub_brk_id=json_decode($request->arr_sub_brk_id);
+            $arr_euin_no=json_decode($request->arr_euin_no);
             if ($search!='') {
                 $data=SubBroker::where('arn_no','like', '%' . $search . '%')
                     ->orWhere('code','like', '%' . $search . '%')
                     ->orWhere('bro_name','like', '%' . $search . '%')
                     ->get();      
+            }elseif (!empty($arr_euin_no)) {
+                $data=SubBroker::whereIn('emp_euin_no',$arr_euin_no)->get();   
             }elseif (!empty($arr_rm_id)) {
                 $data=SubBroker::whereIn('emp_id',$arr_rm_id)->get();   
             }elseif (!empty($arr_sub_brk_id)) {

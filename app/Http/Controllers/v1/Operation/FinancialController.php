@@ -36,14 +36,12 @@ class FinancialController extends Controller
             $from_date=$request->from_date;
             $to_date=$request->to_date;
 
-            // brn_cd: null
-            // bu_type: 
-            // euin_no: 
-            // rnt_name: 
-            // sub_brk_cd: null
-            // tin_no: "F001"
-            // trans_type: null
-
+            $brn_cd=json_decode($request->brn_cd);
+            $bu_type=json_decode($request->bu_type);
+            $rm_id=json_decode($request->rm_id);
+            $euin_no=json_decode($request->euin_no);
+            $sub_brk_cd=json_decode($request->sub_brk_cd);
+            
             if ($paginate=='A') {
                 $paginate=999999999;
             }
@@ -68,13 +66,16 @@ class FinancialController extends Controller
                         ->leftJoin('md_option as md_option_2','md_option_2.id','=','td_mutual_fund.option_id_to')
                         ->leftJoin('md_rnt','md_rnt.id','=','td_mutual_fund.rnt_login_at')
                         ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_mutual_fund.chq_bank')
-                        ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','md_scheme.scheme_name as scheme_name',
-                        'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to',
+                        ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
+                        ->leftJoin('md_branch','md_branch.id','=','td_form_received.branch_code')
+                        ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','td_form_received.application_no as application_no',
+                        'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme.id as scheme_id','md_scheme_2.scheme_name as scheme_name_to','md_scheme_2.id as scheme_id_to',
                         'md_client.client_code as first_client_code','md_client.client_name as first_client_name','md_client.pan as first_client_pan','md_client.client_type as first_client_type',
                         'md_client_2.client_code as second_client_code','md_client_2.client_name as second_client_name','md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
                         'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to',
-                        'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_deposit_bank.bank_name as bank_name'
-                        )
+                        'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_branch.brn_name as branch_name',
+                        'md_deposit_bank.bank_name as bank_name','md_deposit_bank.ifs_code as ifs_code','md_deposit_bank.micr_code as micr_code','md_deposit_bank.branch_name as chq_branch_name','md_deposit_bank.branch_addr as chq_branch_addr',
+                        'md_employee.emp_name as emp_name')
                         ->where('md_trans.trans_type_id',$trans_type_id)
                         ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
                         ->where('td_mutual_fund.rnt_login_dt',$login_status,NULL)
@@ -94,13 +95,16 @@ class FinancialController extends Controller
                         ->leftJoin('md_option as md_option_2','md_option_2.id','=','td_mutual_fund.option_id_to')
                         ->leftJoin('md_rnt','md_rnt.id','=','td_mutual_fund.rnt_login_at')
                         ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_mutual_fund.chq_bank')
-                        ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','md_scheme.scheme_name as scheme_name',
-                        'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to',
+                        ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
+                        ->leftJoin('md_branch','md_branch.id','=','td_form_received.branch_code')
+                        ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','td_form_received.application_no as application_no',
+                        'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme.id as scheme_id','md_scheme_2.scheme_name as scheme_name_to','md_scheme_2.id as scheme_id_to',
                         'md_client.client_code as first_client_code','md_client.client_name as first_client_name','md_client.pan as first_client_pan','md_client.client_type as first_client_type',
                         'md_client_2.client_code as second_client_code','md_client_2.client_name as second_client_name','md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
                         'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to',
-                        'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_deposit_bank.bank_name as bank_name'
-                        )
+                        'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_branch.brn_name as branch_name',
+                        'md_deposit_bank.bank_name as bank_name','md_deposit_bank.ifs_code as ifs_code','md_deposit_bank.micr_code as micr_code','md_deposit_bank.branch_name as chq_branch_name','md_deposit_bank.branch_addr as chq_branch_addr',
+                        'md_employee.emp_name as emp_name')
                         ->where('md_trans.trans_type_id',$trans_type_id)
                         // ->whereBetween('td_mutual_fund.entry_date',[date('Y-m-d',strtotime($start_date)),date('Y-m-d',strtotime($end_date))])
                         ->whereDate('td_mutual_fund.entry_date','>=',date('Y-m-d',strtotime($start_date)))
@@ -121,52 +125,7 @@ class FinancialController extends Controller
                     
                     if (($from_date && $to_date) || $tin_no || $client_code || $amc_name || $scheme_name || $rnt_name) {
                         $rawQuery='';
-                        if ($from_date && $to_date) {
-                            if (strlen($rawQuery) > 0) {
-                                $rawQuery.=" AND td_mutual_fund.entry_date"." >= '".date('Y-m-d',strtotime($from_date))."'";
-                            } else {
-                                $rawQuery.=" td_mutual_fund.entry_date"." >= '".date('Y-m-d',strtotime($from_date))."'";
-                            }
-                            $rawQuery.=" AND td_mutual_fund.entry_date"." <= '".date('Y-m-d',strtotime($to_date))."'";
-                        }
-                        if ($tin_no) {
-                            if (strlen($rawQuery) > 0) {
-                                $rawQuery.=" AND td_mutual_fund.tin_no='".$tin_no."'";
-                            }else {
-                                $rawQuery.=" td_mutual_fund.tin_no='".$tin_no."'";
-                            }
-                        }
-                        if ($client_code) {
-                            if (strlen($rawQuery) > 0) {
-                                $rawQuery.=" AND td_mutual_fund.first_client_id='".$client_code."'";
-                            }else {
-                                $rawQuery.=" td_mutual_fund.first_client_id='".$client_code."'";
-                            }
-                        }
-                        if (!empty($amc_name)) {
-                            $amc_name_string= implode(',', $amc_name);
-                            if (strlen($rawQuery) > 0) {
-                                $rawQuery.=" AND md_scheme.amc_id IN (".$amc_name_string.")";
-                            }else {
-                                $rawQuery.=" md_scheme.amc_id IN (".$amc_name_string.")";
-                            }
-                        }
-                        if (!empty($scheme_name)) {
-                            $scheme_name_string= implode(',', $scheme_name);
-                            if (strlen($rawQuery) > 0) {
-                                $rawQuery.=" AND td_mutual_fund.trans_scheme_from IN (".$scheme_name_string.")";
-                            }else {
-                                $rawQuery.=" td_mutual_fund.trans_scheme_from IN (".$scheme_name_string.")";
-                            }
-                        }
-                        if (!empty($rnt_name)) {
-                            $rnt_name_string= implode(',', $rnt_name);
-                            if (strlen($rawQuery) > 0) {
-                                $rawQuery.=" AND td_mutual_fund.trans_scheme_from IN (".$rnt_name_string.")";
-                            }else {
-                                $rawQuery.=" td_mutual_fund.trans_scheme_from IN (".$rnt_name_string.")";
-                            }
-                        }
+                        $rawQuery=$this->filterCriteria($rawQuery,$from_date,$to_date,$tin_no,$client_code,$amc_name,$scheme_name,$rnt_name);
                         // return $rawQuery;
                         $data=MutualFund::join('td_form_received','td_form_received.temp_tin_no','=','td_mutual_fund.temp_tin_no')
                             ->join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
@@ -181,19 +140,21 @@ class FinancialController extends Controller
                             ->leftJoin('md_option as md_option_2','md_option_2.id','=','td_mutual_fund.option_id_to')
                             ->leftJoin('md_rnt','md_rnt.id','=','td_mutual_fund.rnt_login_at')
                             ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_mutual_fund.chq_bank')
-                            ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','md_scheme.scheme_name as scheme_name',
-                            'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to',
+                            ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
+                            ->leftJoin('md_branch','md_branch.id','=','td_form_received.branch_code')
+                            ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','td_form_received.application_no as application_no',
+                            'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme.id as scheme_id','md_scheme_2.scheme_name as scheme_name_to','md_scheme_2.id as scheme_id_to',
                             'md_client.client_code as first_client_code','md_client.client_name as first_client_name','md_client.pan as first_client_pan','md_client.client_type as first_client_type',
                             'md_client_2.client_code as second_client_code','md_client_2.client_name as second_client_name','md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
                             'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to',
-                            'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_deposit_bank.bank_name as bank_name'
-                            )
+                            'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_branch.brn_name as branch_name',
+                            'md_deposit_bank.bank_name as bank_name','md_deposit_bank.ifs_code as ifs_code','md_deposit_bank.micr_code as micr_code','md_deposit_bank.branch_name as chq_branch_name','md_deposit_bank.branch_addr as chq_branch_addr',
+                            'md_employee.emp_name as emp_name')
                             ->where('md_trans.trans_type_id',$trans_type_id)
                             ->where('td_mutual_fund.trans_id',$trans_id)
                             ->whereRaw($rawQuery)
                             ->orderByRaw($rawOrderBy)
                             ->paginate($paginate); 
-                            // ->get(); 
                     }else{
                         $data=MutualFund::join('td_form_received','td_form_received.temp_tin_no','=','td_mutual_fund.temp_tin_no')
                             ->join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
@@ -208,71 +169,37 @@ class FinancialController extends Controller
                             ->leftJoin('md_option as md_option_2','md_option_2.id','=','td_mutual_fund.option_id_to')
                             ->leftJoin('md_rnt','md_rnt.id','=','td_mutual_fund.rnt_login_at')
                             ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_mutual_fund.chq_bank')
-                            ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','md_scheme.scheme_name as scheme_name',
-                            'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to',
+                            ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
+                            ->leftJoin('md_branch','md_branch.id','=','td_form_received.branch_code')
+                            ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','td_form_received.application_no as application_no',
+                            'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme.id as scheme_id','md_scheme_2.scheme_name as scheme_name_to','md_scheme_2.id as scheme_id_to',
                             'md_client.client_code as first_client_code','md_client.client_name as first_client_name','md_client.pan as first_client_pan','md_client.client_type as first_client_type',
                             'md_client_2.client_code as second_client_code','md_client_2.client_name as second_client_name','md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
                             'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to',
-                            'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_deposit_bank.bank_name as bank_name'
-                            )
+                            'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_branch.brn_name as branch_name',
+                            'md_deposit_bank.bank_name as bank_name','md_deposit_bank.ifs_code as ifs_code','md_deposit_bank.micr_code as micr_code','md_deposit_bank.branch_name as chq_branch_name','md_deposit_bank.branch_addr as chq_branch_addr',
+                            'md_employee.emp_name as emp_name')
                             ->where('md_trans.trans_type_id',$trans_type_id)
                             ->where('td_mutual_fund.trans_id',$trans_id)
                             ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
                             ->orderByRaw($rawOrderBy)
                             ->paginate($paginate); 
                     }
-                    
-                } elseif (($from_date && $to_date) || $tin_no || $client_code || $amc_name || $scheme_name || $rnt_name) {
+                } elseif (($from_date && $to_date) || $tin_no || $client_code || $amc_name || $scheme_name || $rnt_name || $brn_cd || $bu_type || $euin_no || $sub_brk_cd) {
+                    // return $request;
                     $rawQuery='';
-                    if ($from_date && $to_date) {
-                        if (strlen($rawQuery) > 0) {
-                            $rawQuery.=' AND td_mutual_fund.entry_date'.' >= '. $from_date;
-                        } else {
-                            $rawQuery.=' td_mutual_fund.entry_date'.' >= '. $from_date;
-                        }
-                        $rawQuery.=' AND td_mutual_fund.entry_date'.' <= '. $to_date;
-                    }
-                    if ($tin_no) {
-                        if (strlen($rawQuery) > 0) {
-                            $rawQuery.=" AND td_mutual_fund.tin_no='".$tin_no."'";
-                        }else {
-                            $rawQuery.=" td_mutual_fund.tin_no='".$tin_no."'";
-                        }
-                    }
-                    if ($client_code) {
-                        if (strlen($rawQuery) > 0) {
-                            $rawQuery.=" AND td_mutual_fund.first_client_id='".$client_code."'";
-                        }else {
-                            $rawQuery.=" td_mutual_fund.first_client_id='".$client_code."'";
-                        }
-                    }
-                    if (!empty($amc_name)) {
-                        $amc_name_string= implode(',', $amc_name);
-                        if (strlen($rawQuery) > 0) {
-                            $rawQuery.=" AND md_scheme.amc_id IN (".$amc_name_string.")";
-                        }else {
-                            $rawQuery.=" md_scheme.amc_id IN (".$amc_name_string.")";
-                        }
-                    }
-                    if (!empty($scheme_name)) {
-                        $scheme_name_string= implode(',', $scheme_name);
-                        if (strlen($rawQuery) > 0) {
-                            $rawQuery.=" AND td_mutual_fund.trans_scheme_from IN (".$scheme_name_string.")";
-                        }else {
-                            $rawQuery.=" td_mutual_fund.trans_scheme_from IN (".$scheme_name_string.")";
-                        }
-                    }
+                    
+                    $queryString='td_form_received.branch_code';
+                    $rawQuery.=Helper::WhereRawQuery($brn_cd,$rawQuery,$queryString);
+                    $queryString='td_form_received.bu_type';
+                    $rawQuery.=Helper::WhereRawQuery($bu_type,$rawQuery,$queryString);
+                    $queryString='td_form_received.euin_no';
+                    $rawQuery.=Helper::WhereRawQuery($euin_no,$rawQuery,$queryString);
+                    $queryString='td_form_received.sub_brk_cd';
+                    $rawQuery.=Helper::WhereRawQuery($sub_brk_cd,$rawQuery,$queryString);
 
-                    if (!empty($rnt_name)) {
-                        $rnt_name_string= implode(',', $rnt_name);
-                        if (strlen($rawQuery) > 0) {
-                            $rawQuery.=" AND td_mutual_fund.trans_scheme_from IN (".$rnt_name_string.")";
-                        }else {
-                            $rawQuery.=" td_mutual_fund.trans_scheme_from IN (".$rnt_name_string.")";
-                        }
-                    }
+                    $rawQuery=$this->filterCriteria($rawQuery,$from_date,$to_date,$tin_no,$client_code,$amc_name,$scheme_name,$rnt_name);
                     // return $rawQuery;
-
                     // \DB::enableQueryLog();
                     $data=MutualFund::join('td_form_received','td_form_received.temp_tin_no','=','td_mutual_fund.temp_tin_no')
                         ->join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
@@ -287,21 +214,20 @@ class FinancialController extends Controller
                         ->leftJoin('md_option as md_option_2','md_option_2.id','=','td_mutual_fund.option_id_to')
                         ->leftJoin('md_rnt','md_rnt.id','=','td_mutual_fund.rnt_login_at')
                         ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_mutual_fund.chq_bank')
-                        ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','md_scheme.scheme_name as scheme_name',
-                        'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to',
+                        ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
+                        ->leftJoin('md_branch','md_branch.id','=','td_form_received.branch_code')
+                        ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','td_form_received.application_no as application_no',
+                        'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme.id as scheme_id','md_scheme_2.scheme_name as scheme_name_to','md_scheme_2.id as scheme_id_to',
                         'md_client.client_code as first_client_code','md_client.client_name as first_client_name','md_client.pan as first_client_pan','md_client.client_type as first_client_type',
                         'md_client_2.client_code as second_client_code','md_client_2.client_name as second_client_name','md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
                         'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to',
-                        'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_deposit_bank.bank_name as bank_name'
-                        )
+                        'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_branch.brn_name as branch_name',
+                        'md_deposit_bank.bank_name as bank_name','md_deposit_bank.ifs_code as ifs_code','md_deposit_bank.micr_code as micr_code','md_deposit_bank.branch_name as chq_branch_name','md_deposit_bank.branch_addr as chq_branch_addr',
+                        'md_employee.emp_name as emp_name')
                         ->where('md_trans.trans_type_id',$trans_type_id)
                         ->where('td_mutual_fund.trans_id',$trans_id)
-                        // ->whereIn('md_scheme.amc_id',$amc_name)
-                        // ->where('td_mutual_fund.tin_no',$tin_no)
                         ->whereRaw($rawQuery)
-                        // ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
                         ->paginate($paginate);  
-                        // ->get(); 
                     // dd(\DB::getQueryLog());
                 }else{
                     $data=MutualFund::join('td_form_received','td_form_received.temp_tin_no','=','td_mutual_fund.temp_tin_no')
@@ -317,13 +243,16 @@ class FinancialController extends Controller
                         ->leftJoin('md_option as md_option_2','md_option_2.id','=','td_mutual_fund.option_id_to')
                         ->leftJoin('md_rnt','md_rnt.id','=','td_mutual_fund.rnt_login_at')
                         ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_mutual_fund.chq_bank')
-                        ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','md_scheme.scheme_name as scheme_name',
-                        'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to',
+                        ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
+                        ->leftJoin('md_branch','md_branch.id','=','td_form_received.branch_code')
+                        ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','td_form_received.application_no as application_no',
+                        'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme.id as scheme_id','md_scheme_2.scheme_name as scheme_name_to','md_scheme_2.id as scheme_id_to',
                         'md_client.client_code as first_client_code','md_client.client_name as first_client_name','md_client.pan as first_client_pan','md_client.client_type as first_client_type',
                         'md_client_2.client_code as second_client_code','md_client_2.client_name as second_client_name','md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
                         'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to',
-                        'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_deposit_bank.bank_name as bank_name'
-                        )
+                        'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_branch.brn_name as branch_name',
+                        'md_deposit_bank.bank_name as bank_name','md_deposit_bank.ifs_code as ifs_code','md_deposit_bank.micr_code as micr_code','md_deposit_bank.branch_name as chq_branch_name','md_deposit_bank.branch_addr as chq_branch_addr',
+                        'md_employee.emp_name as emp_name')
                         ->where('md_trans.trans_type_id',$trans_type_id)
                         ->where('td_mutual_fund.trans_id',$trans_id)
                         ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
@@ -361,13 +290,6 @@ class FinancialController extends Controller
             $from_date=$request->from_date;
             $to_date=$request->to_date;
 
-            // brn_cd: null
-            // bu_type: 
-            // euin_no: 
-            // rnt_name: 
-            // sub_brk_cd: null
-            // tin_no: "F001"
-            // trans_type: null
 
             if ($paginate=='A') {
                 $paginate=999999999;
@@ -393,13 +315,16 @@ class FinancialController extends Controller
                         ->leftJoin('md_option as md_option_2','md_option_2.id','=','td_mutual_fund.option_id_to')
                         ->leftJoin('md_rnt','md_rnt.id','=','td_mutual_fund.rnt_login_at')
                         ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_mutual_fund.chq_bank')
-                        ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','md_scheme.scheme_name as scheme_name',
-                        'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to',
+                        ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
+                        ->leftJoin('md_branch','md_branch.id','=','td_form_received.branch_code')
+                        ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','td_form_received.application_no as application_no',
+                        'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme.id as scheme_id','md_scheme_2.scheme_name as scheme_name_to','md_scheme_2.id as scheme_id_to',
                         'md_client.client_code as first_client_code','md_client.client_name as first_client_name','md_client.pan as first_client_pan','md_client.client_type as first_client_type',
                         'md_client_2.client_code as second_client_code','md_client_2.client_name as second_client_name','md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
                         'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to',
-                        'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_deposit_bank.bank_name as bank_name'
-                        )
+                        'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_branch.brn_name as branch_name',
+                        'md_deposit_bank.bank_name as bank_name','md_deposit_bank.ifs_code as ifs_code','md_deposit_bank.micr_code as micr_code','md_deposit_bank.branch_name as chq_branch_name','md_deposit_bank.branch_addr as chq_branch_addr',
+                        'md_employee.emp_name as emp_name')
                         ->where('md_trans.trans_type_id',$trans_type_id)
                         ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
                         ->where('td_mutual_fund.rnt_login_dt',$login_status,NULL)
@@ -419,13 +344,16 @@ class FinancialController extends Controller
                         ->leftJoin('md_option as md_option_2','md_option_2.id','=','td_mutual_fund.option_id_to')
                         ->leftJoin('md_rnt','md_rnt.id','=','td_mutual_fund.rnt_login_at')
                         ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_mutual_fund.chq_bank')
-                        ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','md_scheme.scheme_name as scheme_name',
-                        'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to',
+                        ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
+                        ->leftJoin('md_branch','md_branch.id','=','td_form_received.branch_code')
+                        ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','td_form_received.application_no as application_no',
+                        'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme.id as scheme_id','md_scheme_2.scheme_name as scheme_name_to','md_scheme_2.id as scheme_id_to',
                         'md_client.client_code as first_client_code','md_client.client_name as first_client_name','md_client.pan as first_client_pan','md_client.client_type as first_client_type',
                         'md_client_2.client_code as second_client_code','md_client_2.client_name as second_client_name','md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
                         'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to',
-                        'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_deposit_bank.bank_name as bank_name'
-                        )
+                        'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_branch.brn_name as branch_name',
+                        'md_deposit_bank.bank_name as bank_name','md_deposit_bank.ifs_code as ifs_code','md_deposit_bank.micr_code as micr_code','md_deposit_bank.branch_name as chq_branch_name','md_deposit_bank.branch_addr as chq_branch_addr',
+                        'md_employee.emp_name as emp_name')
                         ->where('md_trans.trans_type_id',$trans_type_id)
                         // ->whereBetween('td_mutual_fund.entry_date',[date('Y-m-d',strtotime($start_date)),date('Y-m-d',strtotime($end_date))])
                         ->whereDate('td_mutual_fund.entry_date','>=',date('Y-m-d',strtotime($start_date)))
@@ -434,7 +362,7 @@ class FinancialController extends Controller
                         ->where('td_mutual_fund.rnt_login_cutt_off',$login_status,NULL)
                         ->get();   
                 }
-            }else {
+            } else {
                 // return $request;
                 if ($order && $field) {
                     $rawOrderBy='';
@@ -506,13 +434,16 @@ class FinancialController extends Controller
                             ->leftJoin('md_option as md_option_2','md_option_2.id','=','td_mutual_fund.option_id_to')
                             ->leftJoin('md_rnt','md_rnt.id','=','td_mutual_fund.rnt_login_at')
                             ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_mutual_fund.chq_bank')
-                            ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','md_scheme.scheme_name as scheme_name',
-                            'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to',
+                            ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
+                            ->leftJoin('md_branch','md_branch.id','=','td_form_received.branch_code')
+                            ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','td_form_received.application_no as application_no',
+                            'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme.id as scheme_id','md_scheme_2.scheme_name as scheme_name_to','md_scheme_2.id as scheme_id_to',
                             'md_client.client_code as first_client_code','md_client.client_name as first_client_name','md_client.pan as first_client_pan','md_client.client_type as first_client_type',
                             'md_client_2.client_code as second_client_code','md_client_2.client_name as second_client_name','md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
                             'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to',
-                            'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_deposit_bank.bank_name as bank_name'
-                            )
+                            'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_branch.brn_name as branch_name',
+                            'md_deposit_bank.bank_name as bank_name','md_deposit_bank.ifs_code as ifs_code','md_deposit_bank.micr_code as micr_code','md_deposit_bank.branch_name as chq_branch_name','md_deposit_bank.branch_addr as chq_branch_addr',
+                            'md_employee.emp_name as emp_name')
                             ->where('md_trans.trans_type_id',$trans_type_id)
                             ->where('td_mutual_fund.trans_id',$trans_id)
                             ->whereRaw($rawQuery)
@@ -533,13 +464,16 @@ class FinancialController extends Controller
                             ->leftJoin('md_option as md_option_2','md_option_2.id','=','td_mutual_fund.option_id_to')
                             ->leftJoin('md_rnt','md_rnt.id','=','td_mutual_fund.rnt_login_at')
                             ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_mutual_fund.chq_bank')
-                            ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','md_scheme.scheme_name as scheme_name',
-                            'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to',
+                            ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
+                            ->leftJoin('md_branch','md_branch.id','=','td_form_received.branch_code')
+                            ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','td_form_received.application_no as application_no',
+                            'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme.id as scheme_id','md_scheme_2.scheme_name as scheme_name_to','md_scheme_2.id as scheme_id_to',
                             'md_client.client_code as first_client_code','md_client.client_name as first_client_name','md_client.pan as first_client_pan','md_client.client_type as first_client_type',
                             'md_client_2.client_code as second_client_code','md_client_2.client_name as second_client_name','md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
                             'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to',
-                            'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_deposit_bank.bank_name as bank_name'
-                            )
+                            'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_branch.brn_name as branch_name',
+                            'md_deposit_bank.bank_name as bank_name','md_deposit_bank.ifs_code as ifs_code','md_deposit_bank.micr_code as micr_code','md_deposit_bank.branch_name as chq_branch_name','md_deposit_bank.branch_addr as chq_branch_addr',
+                            'md_employee.emp_name as emp_name')
                             ->where('md_trans.trans_type_id',$trans_type_id)
                             ->where('td_mutual_fund.trans_id',$trans_id)
                             ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
@@ -612,21 +546,20 @@ class FinancialController extends Controller
                         ->leftJoin('md_option as md_option_2','md_option_2.id','=','td_mutual_fund.option_id_to')
                         ->leftJoin('md_rnt','md_rnt.id','=','td_mutual_fund.rnt_login_at')
                         ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_mutual_fund.chq_bank')
-                        ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','md_scheme.scheme_name as scheme_name',
-                        'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to',
+                        ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
+                        ->leftJoin('md_branch','md_branch.id','=','td_form_received.branch_code')
+                        ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','td_form_received.application_no as application_no',
+                        'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme.id as scheme_id','md_scheme_2.scheme_name as scheme_name_to','md_scheme_2.id as scheme_id_to',
                         'md_client.client_code as first_client_code','md_client.client_name as first_client_name','md_client.pan as first_client_pan','md_client.client_type as first_client_type',
                         'md_client_2.client_code as second_client_code','md_client_2.client_name as second_client_name','md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
                         'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to',
-                        'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_deposit_bank.bank_name as bank_name'
-                        )
+                        'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_branch.brn_name as branch_name',
+                        'md_deposit_bank.bank_name as bank_name','md_deposit_bank.ifs_code as ifs_code','md_deposit_bank.micr_code as micr_code','md_deposit_bank.branch_name as chq_branch_name','md_deposit_bank.branch_addr as chq_branch_addr',
+                        'md_employee.emp_name as emp_name')
                         ->where('md_trans.trans_type_id',$trans_type_id)
                         ->where('td_mutual_fund.trans_id',$trans_id)
-                        // ->whereIn('md_scheme.amc_id',$amc_name)
-                        // ->where('td_mutual_fund.tin_no',$tin_no)
                         ->whereRaw($rawQuery)
-                        // ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
                         ->get();  
-                        // ->get(); 
                     // dd(\DB::getQueryLog());
                 }else{
                     $data=MutualFund::join('td_form_received','td_form_received.temp_tin_no','=','td_mutual_fund.temp_tin_no')
@@ -642,13 +575,16 @@ class FinancialController extends Controller
                         ->leftJoin('md_option as md_option_2','md_option_2.id','=','td_mutual_fund.option_id_to')
                         ->leftJoin('md_rnt','md_rnt.id','=','td_mutual_fund.rnt_login_at')
                         ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_mutual_fund.chq_bank')
-                        ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','md_scheme.scheme_name as scheme_name',
-                        'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to',
+                        ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
+                        ->leftJoin('md_branch','md_branch.id','=','td_form_received.branch_code')
+                        ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','td_form_received.application_no as application_no',
+                        'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme.id as scheme_id','md_scheme_2.scheme_name as scheme_name_to','md_scheme_2.id as scheme_id_to',
                         'md_client.client_code as first_client_code','md_client.client_name as first_client_name','md_client.pan as first_client_pan','md_client.client_type as first_client_type',
                         'md_client_2.client_code as second_client_code','md_client_2.client_name as second_client_name','md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
                         'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to',
-                        'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_deposit_bank.bank_name as bank_name'
-                        )
+                        'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_branch.brn_name as branch_name',
+                        'md_deposit_bank.bank_name as bank_name','md_deposit_bank.ifs_code as ifs_code','md_deposit_bank.micr_code as micr_code','md_deposit_bank.branch_name as chq_branch_name','md_deposit_bank.branch_addr as chq_branch_addr',
+                        'md_employee.emp_name as emp_name')
                         ->where('md_trans.trans_type_id',$trans_type_id)
                         ->where('td_mutual_fund.trans_id',$trans_id)
                         ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
@@ -671,7 +607,7 @@ class FinancialController extends Controller
             $tin_no=$request->tin_no;
             if ($search!='') {
                 $data=MutualFund::join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
-                        ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_mutual_fund.chq_bank')
+                    ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_mutual_fund.chq_bank')
                     ->select('td_mutual_fund.*','md_trans.trans_type_id as trans_type_id')
                     ->where('md_trans.trans_type_id',$trans_type_id)
                     ->where('td_mutual_fund.tin_no',$search)
@@ -689,20 +625,25 @@ class FinancialController extends Controller
                     ->join('md_option','md_option.id','=','td_mutual_fund.option_id')
                     ->leftJoin('md_plan as md_plan_2','md_plan_2.id','=','td_mutual_fund.plan_id_to')
                     ->leftJoin('md_option as md_option_2','md_option_2.id','=','td_mutual_fund.option_id_to')
+                    ->leftJoin('md_rnt','md_rnt.id','=','td_mutual_fund.rnt_login_at')
                     ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_mutual_fund.chq_bank')
-                    ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','md_scheme.scheme_name as scheme_name',
-                    'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to',
+                    ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
+                    ->leftJoin('md_branch','md_branch.id','=','td_form_received.branch_code')
+                    ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','td_form_received.application_no as application_no',
+                    'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme.id as scheme_id','md_scheme_2.scheme_name as scheme_name_to','md_scheme_2.id as scheme_id_to',
                     'md_client.client_code as first_client_code','md_client.client_name as first_client_name','md_client.pan as first_client_pan','md_client.client_type as first_client_type',
                     'md_client_2.client_code as second_client_code','md_client_2.client_name as second_client_name','md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
-                    'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to'
-                    )
+                    'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to',
+                    'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_branch.brn_name as branch_name',
+                    'md_deposit_bank.bank_name as bank_name','md_deposit_bank.ifs_code as ifs_code','md_deposit_bank.micr_code as micr_code','md_deposit_bank.branch_name as chq_branch_name','md_deposit_bank.branch_addr as chq_branch_addr',
+                    'md_employee.emp_name as emp_name')
                     ->where('md_trans.trans_type_id',$trans_type_id)
                     ->where('td_mutual_fund.trans_id',$trans_id)
                     ->where('td_mutual_fund.tin_no','like', '%' . $tin_no . '%')
                     ->get();   
             }elseif ($paginate!='' && $trans_id!='') {
                 $data=MutualFund::join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
-                        ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_mutual_fund.chq_bank')
+                    ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_mutual_fund.chq_bank')
                     ->select('td_mutual_fund.*','md_trans.trans_type_id as trans_type_id')
                     ->where('td_mutual_fund.trans_id',$trans_id)
                     ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
@@ -719,13 +660,18 @@ class FinancialController extends Controller
                     ->join('md_option','md_option.id','=','td_mutual_fund.option_id')
                     ->leftJoin('md_plan as md_plan_2','md_plan_2.id','=','td_mutual_fund.plan_id_to')
                     ->leftJoin('md_option as md_option_2','md_option_2.id','=','td_mutual_fund.option_id_to')
-                        ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_mutual_fund.chq_bank')
-                    ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','md_scheme.scheme_name as scheme_name',
-                    'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to',
+                    ->leftJoin('md_rnt','md_rnt.id','=','td_mutual_fund.rnt_login_at')
+                    ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_mutual_fund.chq_bank')
+                    ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
+                    ->leftJoin('md_branch','md_branch.id','=','td_form_received.branch_code')
+                    ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','td_form_received.application_no as application_no',
+                    'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme.id as scheme_id','md_scheme_2.scheme_name as scheme_name_to','md_scheme_2.id as scheme_id_to',
                     'md_client.client_code as first_client_code','md_client.client_name as first_client_name','md_client.pan as first_client_pan','md_client.client_type as first_client_type',
                     'md_client_2.client_code as second_client_code','md_client_2.client_name as second_client_name','md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
-                    'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to'
-                    )
+                    'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to',
+                    'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_branch.brn_name as branch_name',
+                    'md_deposit_bank.bank_name as bank_name','md_deposit_bank.ifs_code as ifs_code','md_deposit_bank.micr_code as micr_code','md_deposit_bank.branch_name as chq_branch_name','md_deposit_bank.branch_addr as chq_branch_addr',
+                    'md_employee.emp_name as emp_name')
                     ->where('md_trans.trans_type_id',$trans_type_id)
                     // ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
                     ->paginate($paginate);   
@@ -741,13 +687,18 @@ class FinancialController extends Controller
                     ->join('md_option','md_option.id','=','td_mutual_fund.option_id')
                     ->leftJoin('md_plan as md_plan_2','md_plan_2.id','=','td_mutual_fund.plan_id_to')
                     ->leftJoin('md_option as md_option_2','md_option_2.id','=','td_mutual_fund.option_id_to')
-                        ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_mutual_fund.chq_bank')
-                    ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','md_scheme.scheme_name as scheme_name',
-                    'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to',
+                    ->leftJoin('md_rnt','md_rnt.id','=','td_mutual_fund.rnt_login_at')
+                    ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_mutual_fund.chq_bank')
+                    ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
+                    ->leftJoin('md_branch','md_branch.id','=','td_form_received.branch_code')
+                    ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','td_form_received.application_no as application_no',
+                    'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme.id as scheme_id','md_scheme_2.scheme_name as scheme_name_to','md_scheme_2.id as scheme_id_to',
                     'md_client.client_code as first_client_code','md_client.client_name as first_client_name','md_client.pan as first_client_pan','md_client.client_type as first_client_type',
                     'md_client_2.client_code as second_client_code','md_client_2.client_name as second_client_name','md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
-                    'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to'
-                    )
+                    'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to',
+                    'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_branch.brn_name as branch_name',
+                    'md_deposit_bank.bank_name as bank_name','md_deposit_bank.ifs_code as ifs_code','md_deposit_bank.micr_code as micr_code','md_deposit_bank.branch_name as chq_branch_name','md_deposit_bank.branch_addr as chq_branch_addr',
+                    'md_employee.emp_name as emp_name')
                     ->where('td_mutual_fund.tin_no','like', '%' . $tin_no . '%')
                     ->get();   
             } else{
@@ -756,16 +707,24 @@ class FinancialController extends Controller
                     ->join('md_scheme','md_scheme.id','=','td_mutual_fund.trans_scheme_from')
                     ->leftJoin('md_scheme as md_scheme_2','md_scheme_2.id','=','td_mutual_fund.trans_scheme_to')
                     ->join('md_client','md_client.id','=','td_mutual_fund.first_client_id')
+                    ->leftJoin('md_client as md_client_2','md_client_2.id','=','td_mutual_fund.second_client_id')
+                    ->leftJoin('md_client as md_client_3','md_client_3.id','=','td_mutual_fund.third_client_id')
                     ->join('md_plan','md_plan.id','=','td_mutual_fund.plan_id')
                     ->join('md_option','md_option.id','=','td_mutual_fund.option_id')
                     ->leftJoin('md_plan as md_plan_2','md_plan_2.id','=','td_mutual_fund.plan_id_to')
                     ->leftJoin('md_option as md_option_2','md_option_2.id','=','td_mutual_fund.option_id_to')
-                        ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_mutual_fund.chq_bank')
-                    ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','md_scheme.scheme_name as scheme_name',
-                    'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to',
-                    'md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_name as pan','md_client.client_type as client_type',
-                    'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to'
-                    )
+                    ->leftJoin('md_rnt','md_rnt.id','=','td_mutual_fund.rnt_login_at')
+                    ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_mutual_fund.chq_bank')
+                    ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
+                    ->leftJoin('md_branch','md_branch.id','=','td_form_received.branch_code')
+                    ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','td_form_received.application_no as application_no',
+                    'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme.id as scheme_id','md_scheme_2.scheme_name as scheme_name_to','md_scheme_2.id as scheme_id_to',
+                    'md_client.client_code as first_client_code','md_client.client_name as first_client_name','md_client.pan as first_client_pan','md_client.client_type as first_client_type',
+                    'md_client_2.client_code as second_client_code','md_client_2.client_name as second_client_name','md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
+                    'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to',
+                    'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_branch.brn_name as branch_name',
+                    'md_deposit_bank.bank_name as bank_name','md_deposit_bank.ifs_code as ifs_code','md_deposit_bank.micr_code as micr_code','md_deposit_bank.branch_name as chq_branch_name','md_deposit_bank.branch_addr as chq_branch_addr',
+                    'md_employee.emp_name as emp_name')
                     ->where('md_trans.trans_type_id',$trans_type_id)
                     ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
                     ->get();      
@@ -781,7 +740,7 @@ class FinancialController extends Controller
     {
         try {
             $datas=MutualFund::join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
-                        ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_mutual_fund.chq_bank')
+                    ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_mutual_fund.chq_bank')
                     ->select('td_mutual_fund.*','md_trans.trns_name as trans_name')
                     ->where('td_mutual_fund.delete_flag','N')
                     ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
@@ -991,7 +950,7 @@ class FinancialController extends Controller
                         'first_inv_amount'=>isset($request->first_inv_amount)?$request->first_inv_amount:NULL,
                         'sip_type'=>isset($request->sip_type)?$request->sip_type:NULL,
 
-                        // 'sip_swp_stp_duration_type'=>isset($request->sip_duration_type)?$request->sip_duration_type:isset($request->swp_stp_duration_type)?$request->swp_stp_duration_type:NULL,
+                        'sip_swp_stp_duration_type'=>((isset($request->sip_duration_type))?$request->sip_duration_type:((isset($request->swp_stp_duration_type))?$request->swp_stp_duration_type:NULL)),
                         'sip_swp_stp_duration'=>(($request->sip_duration)?$request->sip_duration:(($request->swp_stp_duration)?$request->swp_stp_duration:NULL)),
                         'sip_swp_stp_frequency'=>(($request->sip_frequency)?$request->sip_frequency:(($request->swp_stp_frequency)?$request->swp_stp_frequency:NULL)),
                         
@@ -1177,7 +1136,7 @@ class FinancialController extends Controller
                     'inv_type'=>isset($request->inv_type)?$request->inv_type:'N',
                     'application_no'=>isset($request->application_no)?$request->application_no:NULL,
                     'kyc_status'=>isset($request->kyc_status)?$request->kyc_status:'A',
-                    'branch_code'=>$branch_code,
+                    'branch_code'=>Helper::getBranchCode(),
                     // 'created_by'=>'',
                 ));   
                 // return $fr_data;
@@ -1243,7 +1202,7 @@ class FinancialController extends Controller
                         'first_inv_amount'=>isset($request->first_inv_amount)?$request->first_inv_amount:NULL,
                         'sip_type'=>isset($request->sip_type)?$request->sip_type:NULL,
 
-                        // 'sip_swp_stp_duration_type'=>isset($request->sip_duration_type)?$request->sip_duration_type:isset($request->swp_stp_duration_type)?$request->swp_stp_duration_type:NULL,
+                        'sip_swp_stp_duration_type'=>((isset($request->sip_duration_type))?$request->sip_duration_type:((isset($request->swp_stp_duration_type))?$request->swp_stp_duration_type:NULL)),
                         'sip_swp_stp_duration'=>(($request->sip_duration)?$request->sip_duration:(($request->swp_stp_duration)?$request->swp_stp_duration:NULL)),
                         'sip_swp_stp_frequency'=>(($request->sip_frequency)?$request->sip_frequency:(($request->swp_stp_frequency)?$request->swp_stp_frequency:NULL)),
                         
@@ -1424,14 +1383,16 @@ class FinancialController extends Controller
                         ->leftJoin('md_option as md_option_2','md_option_2.id','=','td_mutual_fund.option_id_to')
                         ->leftJoin('md_rnt','md_rnt.id','=','td_mutual_fund.rnt_login_at')
                         ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_mutual_fund.chq_bank')
-                        ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','md_scheme.scheme_name as scheme_name',
-                        'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to',
+                        ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
+                        ->leftJoin('md_branch','md_branch.id','=','td_form_received.branch_code')
+                        ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','td_form_received.application_no as application_no',
+                        'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme.id as scheme_id','md_scheme_2.scheme_name as scheme_name_to','md_scheme_2.id as scheme_id_to',
                         'md_client.client_code as first_client_code','md_client.client_name as first_client_name','md_client.pan as first_client_pan','md_client.client_type as first_client_type',
                         'md_client_2.client_code as second_client_code','md_client_2.client_name as second_client_name','md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
-                        'md_client_3.client_code as third_client_code','md_client_3.client_name as third_client_name','md_client_3.pan as third_client_pan','md_client_3.client_type as third_client_type',
                         'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to',
-                        'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_deposit_bank.bank_name as bank_name'
-                        )
+                        'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_branch.brn_name as branch_name',
+                        'md_deposit_bank.bank_name as bank_name','md_deposit_bank.ifs_code as ifs_code','md_deposit_bank.micr_code as micr_code','md_deposit_bank.branch_name as chq_branch_name','md_deposit_bank.branch_addr as chq_branch_addr',
+                        'md_employee.emp_name as emp_name')
                         ->where('td_mutual_fund.folio_no',$folio_no)
                         // ->orderBy('td_mutual_fund.created_at','ASC')
                         ->get();   
@@ -1532,54 +1493,20 @@ class FinancialController extends Controller
         return Helper::SuccessResponse($data);
     }
 
-
-    public function rawQuery(){
-        if ($from_date && $to_date) {
-            if (strlen($rawQuery) > 0) {
-                $rawQuery.=' AND td_mutual_fund.entry_date'.' >= '. $from_date;
-            } else {
-                $rawQuery.=' td_mutual_fund.entry_date'.' >= '. $from_date;
-            }
-            $rawQuery.=' AND td_mutual_fund.entry_date'.' <= '. $to_date;
-        }
-        if ($tin_no) {
-            if (strlen($rawQuery) > 0) {
-                $rawQuery.=" AND td_mutual_fund.tin_no='".$tin_no."'";
-            }else {
-                $rawQuery.=" td_mutual_fund.tin_no='".$tin_no."'";
-            }
-        }
-                    if ($client_code) {
-                        if (strlen($rawQuery) > 0) {
-                            $rawQuery.=" AND td_mutual_fund.first_client_id='".$client_code."'";
-                        }else {
-                            $rawQuery.=" td_mutual_fund.first_client_id='".$client_code."'";
-                        }
-                    }
-                    if (!empty($amc_name)) {
-                        $amc_name_string= implode(',', $amc_name);
-                        if (strlen($rawQuery) > 0) {
-                            $rawQuery.=" AND md_scheme.amc_id IN (".$amc_name_string.")";
-                        }else {
-                            $rawQuery.=" md_scheme.amc_id IN (".$amc_name_string.")";
-                        }
-                    }
-                    if (!empty($scheme_name)) {
-                        $scheme_name_string= implode(',', $scheme_name);
-                        if (strlen($rawQuery) > 0) {
-                            $rawQuery.=" AND td_mutual_fund.trans_scheme_from IN (".$scheme_name_string.")";
-                        }else {
-                            $rawQuery.=" td_mutual_fund.trans_scheme_from IN (".$scheme_name_string.")";
-                        }
-                    }
-
-                    if (!empty($rnt_name)) {
-                        $rnt_name_string= implode(',', $rnt_name);
-                        if (strlen($rawQuery) > 0) {
-                            $rawQuery.=" AND td_mutual_fund.trans_scheme_from IN (".$rnt_name_string.")";
-                        }else {
-                            $rawQuery.=" td_mutual_fund.trans_scheme_from IN (".$rnt_name_string.")";
-                        }
-                    }
+    public function filterCriteria($rawQuery,$from_date,$to_date,$tin_no,$client_code,$amc_name,$scheme_name,$rnt_name)
+    {
+        $queryString='td_mutual_fund.entry_date';
+        $rawQuery.=Helper::FrmToDateRawQuery($from_date,$to_date,$rawQuery,$queryString);
+        $queryString1='td_mutual_fund.tin_no';
+        $rawQuery.=Helper::WhereRawQuery($tin_no,$rawQuery,$queryString1);
+        $queryString2='td_mutual_fund.first_client_id';
+        $rawQuery.=Helper::WhereRawQuery($client_code,$rawQuery,$queryString2);
+        $queryString3='md_scheme.amc_id';
+        $rawQuery.=Helper::WhereRawQuery($amc_name,$rawQuery,$queryString3);
+        $queryString4='td_mutual_fund.trans_scheme_from';
+        $rawQuery.=Helper::WhereRawQuery($scheme_name,$rawQuery,$queryString4);
+        $queryString5='td_mutual_fund.rnt_login_at';
+        $rawQuery.=Helper::WhereRawQuery($rnt_name,$rawQuery,$queryString5);
+        return $rawQuery;
     }
 }

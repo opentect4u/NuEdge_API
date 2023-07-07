@@ -12,7 +12,7 @@ class Employee extends Model
     // protected $primaryKey="emp_code";
     protected $fillable = [
         'arn_no',
-        'brn_cd',
+        'branch_id',
         'bu_type_id',
         'euin_no',
         'emp_name',

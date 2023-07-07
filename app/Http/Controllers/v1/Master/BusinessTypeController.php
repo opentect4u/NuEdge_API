@@ -21,7 +21,9 @@ class BusinessTypeController extends Controller
             if ($search!='') {
                 $data=BusinessType::where('brn_name','like', '%' . $search . '%')->get();      
             }elseif (!empty($arr_branch_id)) {
-                $data=BusinessType::whereIn('branch_id',$arr_branch_id)->get();      
+                $data=BusinessType::whereIn('branch_id',$arr_branch_id)
+                    ->groupBy('bu_code')
+                    ->get();      
             }elseif ($branch_id) {
                 $data=BusinessType::where('branch_id',$branch_id)->get();      
             } else {
