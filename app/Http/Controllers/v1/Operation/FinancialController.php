@@ -41,7 +41,7 @@ class FinancialController extends Controller
             $rm_id=json_decode($request->rm_id);
             $euin_no=json_decode($request->euin_no);
             $sub_brk_cd=json_decode($request->sub_brk_cd);
-            
+
             if ($paginate=='A') {
                 $paginate=999999999;
             }
@@ -80,7 +80,7 @@ class FinancialController extends Controller
                         ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
                         ->where('td_mutual_fund.rnt_login_dt',$login_status,NULL)
                         ->where('td_mutual_fund.rnt_login_cutt_off',$login_status,NULL)
-                        ->paginate($paginate);   
+                        ->paginate($paginate);
                 }else{
                     $data=MutualFund::join('td_form_received','td_form_received.temp_tin_no','=','td_mutual_fund.temp_tin_no')
                         ->join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
@@ -111,7 +111,7 @@ class FinancialController extends Controller
                         ->whereDate('td_mutual_fund.entry_date','<=',date('Y-m-d',strtotime($end_date)))
                         ->where('td_mutual_fund.rnt_login_dt',$login_status,NULL)
                         ->where('td_mutual_fund.rnt_login_cutt_off',$login_status,NULL)
-                        ->paginate($paginate);   
+                        ->paginate($paginate);
                 }
             }else {
                 // return $request;
@@ -122,7 +122,7 @@ class FinancialController extends Controller
                     } else {
                         $rawOrderBy=$field.' DESC';
                     }
-                    
+
                     if (($from_date && $to_date) || $tin_no || $client_code || $amc_name || $scheme_name || $rnt_name) {
                         $rawQuery='';
                         $rawQuery=$this->filterCriteria($rawQuery,$from_date,$to_date,$tin_no,$client_code,$amc_name,$scheme_name,$rnt_name);
@@ -154,7 +154,7 @@ class FinancialController extends Controller
                             ->where('td_mutual_fund.trans_id',$trans_id)
                             ->whereRaw($rawQuery)
                             ->orderByRaw($rawOrderBy)
-                            ->paginate($paginate); 
+                            ->paginate($paginate);
                     }else{
                         $data=MutualFund::join('td_form_received','td_form_received.temp_tin_no','=','td_mutual_fund.temp_tin_no')
                             ->join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
@@ -181,14 +181,14 @@ class FinancialController extends Controller
                             'md_employee.emp_name as emp_name')
                             ->where('md_trans.trans_type_id',$trans_type_id)
                             ->where('td_mutual_fund.trans_id',$trans_id)
-                            ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
+                            // ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
                             ->orderByRaw($rawOrderBy)
-                            ->paginate($paginate); 
+                            ->paginate($paginate);
                     }
                 } elseif (($from_date && $to_date) || $tin_no || $client_code || $amc_name || $scheme_name || $rnt_name || $brn_cd || $bu_type || $euin_no || $sub_brk_cd) {
                     // return $request;
                     $rawQuery='';
-                    
+
                     $queryString='td_form_received.branch_code';
                     $rawQuery.=Helper::WhereRawQuery($brn_cd,$rawQuery,$queryString);
                     $queryString='td_form_received.bu_type';
@@ -227,7 +227,7 @@ class FinancialController extends Controller
                         ->where('md_trans.trans_type_id',$trans_type_id)
                         ->where('td_mutual_fund.trans_id',$trans_id)
                         ->whereRaw($rawQuery)
-                        ->paginate($paginate);  
+                        ->paginate($paginate);
                     // dd(\DB::getQueryLog());
                 }else{
                     $data=MutualFund::join('td_form_received','td_form_received.temp_tin_no','=','td_mutual_fund.temp_tin_no')
@@ -255,8 +255,8 @@ class FinancialController extends Controller
                         'md_employee.emp_name as emp_name')
                         ->where('md_trans.trans_type_id',$trans_type_id)
                         ->where('td_mutual_fund.trans_id',$trans_id)
-                        ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
-                        ->paginate($paginate); 
+                        // ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
+                        ->paginate($paginate);
                 }
             }
         } catch (\Throwable $th) {
@@ -329,7 +329,7 @@ class FinancialController extends Controller
                         ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
                         ->where('td_mutual_fund.rnt_login_dt',$login_status,NULL)
                         ->where('td_mutual_fund.rnt_login_cutt_off',$login_status,NULL)
-                        ->get();   
+                        ->get();
                 }else{
                     $data=MutualFund::join('td_form_received','td_form_received.temp_tin_no','=','td_mutual_fund.temp_tin_no')
                         ->join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
@@ -360,7 +360,7 @@ class FinancialController extends Controller
                         ->whereDate('td_mutual_fund.entry_date','<=',date('Y-m-d',strtotime($end_date)))
                         ->where('td_mutual_fund.rnt_login_dt',$login_status,NULL)
                         ->where('td_mutual_fund.rnt_login_cutt_off',$login_status,NULL)
-                        ->get();   
+                        ->get();
                 }
             } else {
                 // return $request;
@@ -371,7 +371,7 @@ class FinancialController extends Controller
                     } else {
                         $rawOrderBy=$field.' DESC';
                     }
-                    
+
                     if (($from_date && $to_date) || $tin_no || $client_code || $amc_name || $scheme_name || $rnt_name) {
                         $rawQuery='';
                         if ($from_date && $to_date) {
@@ -448,8 +448,8 @@ class FinancialController extends Controller
                             ->where('td_mutual_fund.trans_id',$trans_id)
                             ->whereRaw($rawQuery)
                             ->orderByRaw($rawOrderBy)
-                            ->get(); 
-                            // ->get(); 
+                            ->get();
+                            // ->get();
                     }else{
                         $data=MutualFund::join('td_form_received','td_form_received.temp_tin_no','=','td_mutual_fund.temp_tin_no')
                             ->join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
@@ -478,9 +478,9 @@ class FinancialController extends Controller
                             ->where('td_mutual_fund.trans_id',$trans_id)
                             ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
                             ->orderByRaw($rawOrderBy)
-                            ->get(); 
+                            ->get();
                     }
-                    
+
                 } elseif (($from_date && $to_date) || $tin_no || $client_code || $amc_name || $scheme_name || $rnt_name) {
                     $rawQuery='';
                     if ($from_date && $to_date) {
@@ -559,7 +559,7 @@ class FinancialController extends Controller
                         ->where('md_trans.trans_type_id',$trans_type_id)
                         ->where('td_mutual_fund.trans_id',$trans_id)
                         ->whereRaw($rawQuery)
-                        ->get();  
+                        ->get();
                     // dd(\DB::getQueryLog());
                 }else{
                     $data=MutualFund::join('td_form_received','td_form_received.temp_tin_no','=','td_mutual_fund.temp_tin_no')
@@ -588,7 +588,7 @@ class FinancialController extends Controller
                         ->where('md_trans.trans_type_id',$trans_type_id)
                         ->where('td_mutual_fund.trans_id',$trans_id)
                         ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
-                        ->get(); 
+                        ->get();
                 }
             }
         } catch (\Throwable $th) {
@@ -599,7 +599,7 @@ class FinancialController extends Controller
     }
     public function index(Request $request)
     {
-        try {  
+        try {
             $search=$request->search;
             $trans_type_id=$request->trans_type_id;
             $trans_id=$request->trans_id;
@@ -612,7 +612,7 @@ class FinancialController extends Controller
                     ->where('md_trans.trans_type_id',$trans_type_id)
                     ->where('td_mutual_fund.tin_no',$search)
                     // ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
-                    ->get();     
+                    ->get();
             }elseif ($tin_no && $trans_type_id && $trans_id) {
                 $data=MutualFund::join('td_form_received','td_form_received.temp_tin_no','=','td_mutual_fund.temp_tin_no')
                     ->join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
@@ -640,14 +640,14 @@ class FinancialController extends Controller
                     ->where('md_trans.trans_type_id',$trans_type_id)
                     ->where('td_mutual_fund.trans_id',$trans_id)
                     ->where('td_mutual_fund.tin_no','like', '%' . $tin_no . '%')
-                    ->get();   
+                    ->get();
             }elseif ($paginate!='' && $trans_id!='') {
                 $data=MutualFund::join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
                     ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_mutual_fund.chq_bank')
                     ->select('td_mutual_fund.*','md_trans.trans_type_id as trans_type_id')
                     ->where('td_mutual_fund.trans_id',$trans_id)
                     ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
-                    ->paginate($paginate);   
+                    ->paginate($paginate);
             }elseif ($paginate!='') {
                 $data=MutualFund::join('td_form_received','td_form_received.temp_tin_no','=','td_mutual_fund.temp_tin_no')
                     ->join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
@@ -674,7 +674,7 @@ class FinancialController extends Controller
                     'md_employee.emp_name as emp_name')
                     ->where('md_trans.trans_type_id',$trans_type_id)
                     // ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
-                    ->paginate($paginate);   
+                    ->paginate($paginate);
             }elseif ($tin_no!='') {
                 $data=MutualFund::join('td_form_received','td_form_received.temp_tin_no','=','td_mutual_fund.temp_tin_no')
                     ->join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
@@ -700,7 +700,7 @@ class FinancialController extends Controller
                     'md_deposit_bank.bank_name as bank_name','md_deposit_bank.ifs_code as ifs_code','md_deposit_bank.micr_code as micr_code','md_deposit_bank.branch_name as chq_branch_name','md_deposit_bank.branch_addr as chq_branch_addr',
                     'md_employee.emp_name as emp_name')
                     ->where('td_mutual_fund.tin_no','like', '%' . $tin_no . '%')
-                    ->get();   
+                    ->get();
             } else{
                 $data=MutualFund::join('td_form_received','td_form_received.temp_tin_no','=','td_mutual_fund.temp_tin_no')
                     ->join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
@@ -727,7 +727,7 @@ class FinancialController extends Controller
                     'md_employee.emp_name as emp_name')
                     ->where('md_trans.trans_type_id',$trans_type_id)
                     ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
-                    ->get();      
+                    ->get();
             }
         } catch (\Throwable $th) {
             // throw $th;
@@ -745,8 +745,8 @@ class FinancialController extends Controller
                     ->where('td_mutual_fund.delete_flag','N')
                     ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
                     ->where('md_trans.trans_type_id',$request->trans_type_id)
-                    ->get(); 
-            
+                    ->get();
+
             $data=[];
             $trans_id_1_count=0;
             $trans_id_2_count=0;
@@ -754,11 +754,11 @@ class FinancialController extends Controller
             if ($request->trans_type_id==4) {
                 foreach($datas as $dd){
                     if($dd->trans_id==4){
-                        $trans_id_1_count=$trans_id_1_count+1; 
+                        $trans_id_1_count=$trans_id_1_count+1;
                     }elseif ($dd->trans_id==5) {
-                        $trans_id_2_count=$trans_id_2_count+1; 
+                        $trans_id_2_count=$trans_id_2_count+1;
                     }elseif ($dd->trans_id==6) {
-                        $trans_id_3_count=$trans_id_3_count+1; 
+                        $trans_id_3_count=$trans_id_3_count+1;
                     }
                 }
                 $trans_data_1['id']=4;
@@ -778,11 +778,11 @@ class FinancialController extends Controller
             } else {
                 foreach($datas as $dd){
                     if($dd->trans_id==1){
-                        $trans_id_1_count=$trans_id_1_count+1; 
+                        $trans_id_1_count=$trans_id_1_count+1;
                     }elseif ($dd->trans_id==2) {
-                        $trans_id_2_count=$trans_id_2_count+1; 
+                        $trans_id_2_count=$trans_id_2_count+1;
                     }elseif ($dd->trans_id==3) {
-                        $trans_id_3_count=$trans_id_3_count+1; 
+                        $trans_id_3_count=$trans_id_3_count+1;
                     }
                 }
                 $trans_data_1['id']=1;
@@ -819,7 +819,7 @@ class FinancialController extends Controller
         //     'mobile'=>'required',
         //     'email'=>'required',
         // ]);
-    
+
         // if($validator->fails()) {
         //     $errors = $validator->errors();
         //     return Helper::ErrorResponse(parent::VALIDATION_ERROR);
@@ -836,7 +836,7 @@ class FinancialController extends Controller
                     ->select('td_mutual_fund.*','md_trans.trans_type_id as trans_type_id')
                     ->where('md_trans.trans_type_id',$trans_type_id)
                     ->get();
-                // return $is_has; 
+                // return $is_has;
                 if (count($is_has)>0) {
                     $tin_no=Helper::GenTIN($product_id,$trans_type_id,(count($is_has)+1));
                 } else {
@@ -848,7 +848,7 @@ class FinancialController extends Controller
                     ->select('td_mutual_fund.*','md_trans.trans_type_id as trans_type_id')
                     ->where('md_trans.trans_type_id',$trans_type_id)
                     ->get();
-                // return $is_has; 
+                // return $is_has;
                 if (count($is_has)>0) {
                     $tin_no=Helper::GenTIN($product_id,$trans_type_id,(count($is_has)+1));
                 } else {
@@ -860,7 +860,7 @@ class FinancialController extends Controller
                     ->select('td_mutual_fund.*','md_trans.trans_type_id as trans_type_id')
                     ->where('md_trans.trans_type_id',$trans_type_id)
                     ->get();
-                // return $is_has; 
+                // return $is_has;
                 if (count($is_has)>0) {
                     $tin_no=Helper::GenTIN($product_id,$trans_type_id,(count($is_has)+1));
                 } else {
@@ -869,7 +869,7 @@ class FinancialController extends Controller
             }
             // return $tin_no;
             // return $request;
-            
+
             if($request->temp_tin_no!='' && $request->tin_status=='Y'){  // with TTIN NO
                 // return $request;
                 $has=MutualFund::where('temp_tin_no',$request->temp_tin_no)->get();
@@ -886,7 +886,7 @@ class FinancialController extends Controller
                             'pan'=>$second_client_pan,
                             'client_type'=>'E',
                             // 'created_by'=>'',
-                        ));  
+                        ));
                         $second_client_id=$s_c_data->id;
                     }
 
@@ -899,7 +899,7 @@ class FinancialController extends Controller
                             'pan'=>$third_client_pan,
                             'client_type'=>'E',
                             // 'created_by'=>'',
-                        ));  
+                        ));
                         $third_client_id=$t_c_data->id;
                     }
 
@@ -922,7 +922,7 @@ class FinancialController extends Controller
                         'inv_type'=>isset($request->inv_type)?$request->inv_type:'N',
                         'application_no'=>isset($request->application_no)?$request->application_no:NULL,
                         'folio_no'=>isset($request->folio_no)?$request->folio_no:NULL,
-                    ));      
+                    ));
                     $data=MutualFund::create(array(
                         'temp_tin_no' =>$request->temp_tin_no,
                         'tin_no'=> $tin_no,
@@ -931,7 +931,7 @@ class FinancialController extends Controller
                         'first_client_id'=>$request->first_client_id,
                         'first_kyc'=>$request->first_kyc,
                         'mode_of_holding'=>(($request->mode_of_holding)?$request->mode_of_holding:(($request->change_existing_mode_of_holding)?$request->change_existing_mode_of_holding:NULL)),
-                        
+
                         'second_client_id'=>isset($second_client_id)?$second_client_id:NULL,
                         'second_kyc'=>isset($request->second_kyc)?$request->second_kyc:NULL,
                         'third_client_id'=>isset($third_client_id)?$third_client_id:NULL,
@@ -953,9 +953,9 @@ class FinancialController extends Controller
                         'sip_swp_stp_duration_type'=>((isset($request->sip_duration_type))?$request->sip_duration_type:((isset($request->swp_stp_duration_type))?$request->swp_stp_duration_type:NULL)),
                         'sip_swp_stp_duration'=>(($request->sip_duration)?$request->sip_duration:(($request->swp_stp_duration)?$request->swp_stp_duration:NULL)),
                         'sip_swp_stp_frequency'=>(($request->sip_frequency)?$request->sip_frequency:(($request->swp_stp_frequency)?$request->swp_stp_frequency:NULL)),
-                        
+
                         'sip_swp_stp_inst_date'=>(($request->sip_date)?$request->sip_date:(($request->installment_dt)?$request->installment_dt:NULL)),
-                        
+
                         // 'sip_swp_stp_start_date'=>isset($request->sip_start_date)?date('Y-m-d',strtotime($request->sip_start_date)):isset($request->swp_stp_start_date)?date('Y-m-d',strtotime($request->swp_stp_start_date)):NULL,
                         'sip_swp_stp_start_date'=>(($request->sip_start_date) ? date('Y-m-d',strtotime($request->sip_start_date)):(($request->swp_stp_start_date)? date('Y-m-d',strtotime($request->swp_stp_start_date)):NULL)),
                         'sip_swp_stp_end_date'=>(($request->sip_end_date)?date('Y-m-d',strtotime($request->sip_end_date)):(($request->swp_stp_end_date)?date('Y-m-d',strtotime($request->swp_stp_end_date)):NULL)),
@@ -980,7 +980,7 @@ class FinancialController extends Controller
                         'stp_type'=>isset($request->stp_type)?$request->stp_type:NULL,
                         'kyc_status'=>isset($request->kyc_status)?$request->kyc_status:NULL,
                         'transmission_type'=>isset($request->transmission_type)?$request->transmission_type:NULL,
-                        
+
                         'change_new_mode_of_holding'=>isset($request->change_new_mode_of_holding)?$request->change_new_mode_of_holding:NULL,
                         'mob_declaration_flag'=>isset($request->mob_dec)?$request->mob_dec:NULL,
                         'email_declaration_flag'=>isset($request->email_dec)?$request->email_dec:NULL,
@@ -998,7 +998,7 @@ class FinancialController extends Controller
                         'step_up_amount'=>isset($request->step_up_amount)?$request->step_up_amount:NULL,
                         'step_up_percentage'=>isset($request->step_up_percentage)?$request->step_up_percentage:NULL,
                         // 'created_by'=>'',
-                    ));    
+                    ));
 
                     // START only for non financial changes
                     if ($request->change_contact_type!='') {  // client update
@@ -1034,7 +1034,7 @@ class FinancialController extends Controller
                         $words = explode(" ",$client_name);
                         $client_code="";
                         $client_code_1 = mb_substr($words[0], 0, 1).mb_substr($words[(count($words)-1)], 0, 1);;
-                        
+
                         $is_has=Client::where('client_code',$client_code_1)->get();
                         if (count($is_has)>0) {
                             $client_code=$client_code_1.date('dmy',strtotime($up_data->dob)).count($is_has);
@@ -1046,30 +1046,30 @@ class FinancialController extends Controller
                         $up_data->save();
                     }
 
-                    if ($data->trans_id==24) {  // change status 
+                    if ($data->trans_id==24) {  // change status
                         $first_client_id=$data->first_client_id;
                         $up_data=Client::find($first_client_id);
                         $up_data->client_type_mode=$request->change_status;
                         $up_data->save();
                     }
 
-                    if ($data->trans_id==25) {  // Nominee Opt-Out  
+                    if ($data->trans_id==25) {  // Nominee Opt-Out
 
                         # code...
                     }
 
-                    if ($data->trans_id==28) {  // Folio PAN Updation  
+                    if ($data->trans_id==28) {  // Folio PAN Updation
                         $first_client_id=$data->first_client_id;
                         $up_data=Client::find($first_client_id);
                         $up_data->pan=$request->folio_pan;
                         $up_data->client_type='P';
                         $up_data->save();
                     }
-                    if ($data->trans_id==29) {  // Redemption 
+                    if ($data->trans_id==29) {  // Redemption
 
                         # code...
                     }
-                    if ($data->trans_id==20) {  // minor to major 
+                    if ($data->trans_id==20) {  // minor to major
                         $first_client_id=$data->first_client_id;
                         $up_data=Client::find($first_client_id);
                         $up_data->pan=$request->minor_to_major_pan;
@@ -1080,7 +1080,7 @@ class FinancialController extends Controller
                     if ($request->transmission_type!='' && $data->trans_id==19) {
                         $fetch_data=MutualFund::where('folio_no',$data->folio_no)
                         ->orderBy('td_mutual_fund.created_at','ASC')
-                        ->get();   
+                        ->get();
                         // return $fetch_data;
                         if ($request->transmission_type==1) {
                             # code...
@@ -1094,7 +1094,7 @@ class FinancialController extends Controller
                     if ($data->trans_id==32) {  // change mode of holding
                         $fetch_folio_data=MutualFund::where('folio_no',$data->folio_no)
                             ->orderBy('td_mutual_fund.created_at','ASC')
-                            ->get(); 
+                            ->get();
 
                     }
 
@@ -1138,7 +1138,7 @@ class FinancialController extends Controller
                     'kyc_status'=>isset($request->kyc_status)?$request->kyc_status:'A',
                     'branch_code'=>Helper::getBranchCode(),
                     // 'created_by'=>'',
-                ));   
+                ));
                 // return $fr_data;
                 $ttin_no=$fr_data->temp_tin_no;
 
@@ -1151,7 +1151,7 @@ class FinancialController extends Controller
                             'pan'=>$second_client_pan,
                             'client_type'=>'E',
                             // 'created_by'=>'',
-                        ));  
+                        ));
                         $second_client_id=$s_c_data->id;
                     }
 
@@ -1164,7 +1164,7 @@ class FinancialController extends Controller
                             'pan'=>$third_client_pan,
                             'client_type'=>'E',
                             // 'created_by'=>'',
-                        ));  
+                        ));
                         $third_client_id=$t_c_data->id;
                     }
 
@@ -1183,7 +1183,7 @@ class FinancialController extends Controller
                         'first_client_id'=>$request->first_client_id,
                         'first_kyc'=>isset($request->first_kyc)?$request->first_kyc:NULL,
                         'mode_of_holding'=>(($request->mode_of_holding)?$request->mode_of_holding:(($request->change_existing_mode_of_holding)?$request->change_existing_mode_of_holding:NULL)),
-                        
+
                         'second_client_id'=>isset($second_client_id)?$second_client_id:NULL,
                         'second_kyc'=>isset($request->second_kyc)?$request->second_kyc:NULL,
                         'third_client_id'=>isset($third_client_id)?$third_client_id:NULL,
@@ -1205,9 +1205,9 @@ class FinancialController extends Controller
                         'sip_swp_stp_duration_type'=>((isset($request->sip_duration_type))?$request->sip_duration_type:((isset($request->swp_stp_duration_type))?$request->swp_stp_duration_type:NULL)),
                         'sip_swp_stp_duration'=>(($request->sip_duration)?$request->sip_duration:(($request->swp_stp_duration)?$request->swp_stp_duration:NULL)),
                         'sip_swp_stp_frequency'=>(($request->sip_frequency)?$request->sip_frequency:(($request->swp_stp_frequency)?$request->swp_stp_frequency:NULL)),
-                        
+
                         'sip_swp_stp_inst_date'=>(($request->sip_date)?$request->sip_date:(($request->installment_dt)?$request->installment_dt:NULL)),
-                        
+
                         // 'sip_swp_stp_start_date'=>isset($request->sip_start_date)?date('Y-m-d',strtotime($request->sip_start_date)):isset($request->swp_stp_start_date)?date('Y-m-d',strtotime($request->swp_stp_start_date)):NULL,
                         'sip_swp_stp_start_date'=>(($request->sip_start_date) ? date('Y-m-d',strtotime($request->sip_start_date)):(($request->swp_stp_start_date)? date('Y-m-d',strtotime($request->swp_stp_start_date)):NULL)),
                         'sip_swp_stp_end_date'=>(($request->sip_end_date)?date('Y-m-d',strtotime($request->sip_end_date)):(($request->swp_stp_end_date)?date('Y-m-d',strtotime($request->swp_stp_end_date)):NULL)),
@@ -1232,7 +1232,7 @@ class FinancialController extends Controller
                         'stp_type'=>isset($request->stp_type)?$request->stp_type:NULL,
                         'kyc_status'=>isset($request->kyc_status)?$request->kyc_status:NULL,
                         'transmission_type'=>isset($request->transmission_type)?$request->transmission_type:NULL,
-                        
+
                         'change_new_mode_of_holding'=>isset($request->change_new_mode_of_holding)?$request->change_new_mode_of_holding:NULL,
                         'mob_declaration_flag'=>isset($request->mob_dec)?$request->mob_dec:NULL,
                         'email_declaration_flag'=>isset($request->email_dec)?$request->email_dec:NULL,
@@ -1249,8 +1249,8 @@ class FinancialController extends Controller
                         'step_up_by'=>isset($request->step_up_by)?$request->step_up_by:'N',
                         'step_up_amount'=>isset($request->step_up_amount)?$request->step_up_amount:NULL,
                         'step_up_percentage'=>isset($request->step_up_percentage)?$request->step_up_percentage:NULL,
-                        
-                    )); 
+
+                    ));
 
                 // START only for non financial changes
                 if ($request->change_contact_type!='') {  // client update
@@ -1286,7 +1286,7 @@ class FinancialController extends Controller
                     $words = explode(" ",$client_name);
                     $client_code="";
                     $client_code_1 = mb_substr($words[0], 0, 1).mb_substr($words[(count($words)-1)], 0, 1);;
-                    
+
                     $is_has=Client::where('client_code',$client_code_1)->get();
                     if (count($is_has)>0) {
                         $client_code=$client_code_1.date('dmy',strtotime($up_data->dob)).count($is_has);
@@ -1298,30 +1298,30 @@ class FinancialController extends Controller
                     $up_data->save();
                 }
 
-                if ($data->trans_id==24) {  // change status 
+                if ($data->trans_id==24) {  // change status
                     $first_client_id=$data->first_client_id;
                     $up_data=Client::find($first_client_id);
                     $up_data->client_type_mode=$request->change_status;
                     $up_data->save();
                 }
 
-                if ($data->trans_id==25) {  // Nominee Opt-Out  
+                if ($data->trans_id==25) {  // Nominee Opt-Out
 
                     # code...
                 }
 
-                if ($data->trans_id==28) {  // Folio PAN Updation  
+                if ($data->trans_id==28) {  // Folio PAN Updation
                     $first_client_id=$data->first_client_id;
                     $up_data=Client::find($first_client_id);
                     $up_data->pan=$request->folio_pan;
                     $up_data->client_type='P';
                     $up_data->save();
                 }
-                if ($data->trans_id==29) {  // Redemption 
+                if ($data->trans_id==29) {  // Redemption
 
                     # code...
                 }
-                if ($data->trans_id==20) {  // minor to major 
+                if ($data->trans_id==20) {  // minor to major
                     $first_client_id=$data->first_client_id;
                     $up_data=Client::find($first_client_id);
                     $up_data->pan=$request->minor_to_major_pan;
@@ -1331,7 +1331,7 @@ class FinancialController extends Controller
                 if ($request->transmission_type!='' && $data->trans_id==19) {
                     $fetch_data=MutualFund::where('folio_no',$data->folio_no)
                     ->orderBy('td_mutual_fund.created_at','ASC')
-                    ->get();   
+                    ->get();
                     // return $fetch_data;
                     if ($request->transmission_type==1) {
                         # code...
@@ -1345,7 +1345,7 @@ class FinancialController extends Controller
                 if ($data->trans_id==32) {  // change mode of holding
                     $fetch_folio_data=MutualFund::where('folio_no',$data->folio_no)
                         ->orderBy('td_mutual_fund.created_at','ASC')
-                        ->get(); 
+                        ->get();
 
                 }
 
@@ -1395,7 +1395,7 @@ class FinancialController extends Controller
                         'md_employee.emp_name as emp_name')
                         ->where('td_mutual_fund.folio_no',$folio_no)
                         // ->orderBy('td_mutual_fund.created_at','ASC')
-                        ->get();   
+                        ->get();
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_SAVE_ERROR);
@@ -1426,7 +1426,7 @@ class FinancialController extends Controller
                     'rnt_login_cutt_off'=>Carbon::parse($request->rnt_login_cutt_off)->format('Y-m-d H:i:s'),
                     'ack_copy_scan'=>$ack_copy_scan_name,
                     'form_status'=>'A',
-                ));   
+                ));
             // return $data1;
             $data=MutualFund::where('tin_no',$request->tin_no)->first();
         } catch (\Throwable $th) {
@@ -1483,7 +1483,7 @@ class FinancialController extends Controller
                     'form_scan_status'=>$request->form_scan_status,
                     'remarks'=>$request->remarks,
                     // 'created_by'=>'',
-                ));   
+                ));
             // return $data1;
             $data=MutualFund::where('tin_no',$request->tin_no)->first();
         } catch (\Throwable $th) {

@@ -53,11 +53,11 @@ class RNTController extends Controller
                     $data=RNT::where('delete_flag','N')
                         ->whereRaw($rawQuery)
                         ->orderByRaw($rawOrderBy)
-                        ->paginate($paginate);      
+                        ->paginate($paginate);
                 }else {
                     $data=RNT::where('delete_flag','N')
                         ->orderByRaw($raw)
-                        ->paginate($paginate);  
+                        ->paginate($paginate);
                 }
             }elseif (!empty($rnt_id) || $contact_person) {
                 $rawQuery='';
@@ -77,17 +77,17 @@ class RNTController extends Controller
                     }
                     $rawQuery.=" OR head_ofc_contact_per LIKE'%".$contact_person."%'";
                 }
-                 
+
                 $data=RNT::where('delete_flag','N')
                     ->whereRaw($rawQuery)
                     ->orderBy('updated_at','DESC')
-                    ->paginate($paginate);      
+                    ->paginate($paginate);
             } else {
                 $data=RNT::where('delete_flag','N')
                     ->orderBy('updated_at','DESC')
-                    ->paginate($paginate);      
+                    ->paginate($paginate);
             }
-            
+
         } catch (\Throwable $th) {
             // throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
@@ -101,7 +101,7 @@ class RNTController extends Controller
             $order=$request->order;
             $field=$request->field;
             $rnt_id=json_decode($request->rnt_id);
-           
+
             if ($order && $field) {
                 $rawOrderBy='';
                 if ($order > 0) {
@@ -131,11 +131,11 @@ class RNTController extends Controller
                     $data=RNT::where('delete_flag','N')
                         ->whereRaw($rawQuery)
                         ->orderByRaw($rawOrderBy)
-                        ->get();      
+                        ->get();
                 }else {
                     $data=RNT::where('delete_flag','N')
                         ->orderByRaw($raw)
-                        ->get();  
+                        ->get();
                 }
             }elseif (!empty($rnt_id) || $contact_person) {
                 $rawQuery='';
@@ -155,17 +155,17 @@ class RNTController extends Controller
                     }
                     $rawQuery.=" OR head_ofc_contact_per LIKE'%".$contact_person."%'";
                 }
-                 
+
                 $data=RNT::where('delete_flag','N')
                     ->whereRaw($rawQuery)
                     ->orderBy('updated_at','DESC')
-                    ->get();      
+                    ->get();
             } else {
                 $data=RNT::where('delete_flag','N')
                     ->orderBy('updated_at','DESC')
-                    ->get();      
+                    ->get();
             }
-            
+
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
@@ -182,16 +182,16 @@ class RNTController extends Controller
                 $paginate=999999999;
             }
             if ($search!='') {
-                $data=RNT::where('delete_flag','N')->where('rnt_name','like', '%' . $search . '%')->get();      
+                $data=RNT::where('delete_flag','N')->where('rnt_name','like', '%' . $search . '%')->get();
             }else if ($id!='') {
-                $data=RNT::where('delete_flag','N')->where('id',$id)->get();      
+                $data=RNT::where('delete_flag','N')->where('id',$id)->get();
             }else if ($paginate!='') {
-                $data=RNT::where('delete_flag','N')->orderBy('updated_at','DESC')->paginate($paginate);      
+                $data=RNT::where('delete_flag','N')->orderBy('updated_at','DESC')->paginate($paginate);
             } else {
-                $data=RNT::where('delete_flag','N')->orderBy('updated_at','DESC')->get();      
+                $data=RNT::where('delete_flag','N')->orderBy('updated_at','DESC')->get();
             }
         } catch (\Throwable $th) {
-            //throw $th;
+            // throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
         return Helper::SuccessResponse($data);
@@ -202,7 +202,7 @@ class RNTController extends Controller
         $validator = Validator::make(request()->all(),[
             'rnt_name' =>'required',
         ]);
-    
+
         if($validator->fails()) {
             $errors = $validator->errors();
             return Helper::ErrorResponse(parent::VALIDATION_ERROR);
@@ -326,8 +326,8 @@ class RNTController extends Controller
                         'logo'=>$logo,
                         // 'created_by'=>'',
                     ));
-                }      
-            }    
+                }
+            }
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_SAVE_ERROR);
@@ -450,7 +450,7 @@ class RNTController extends Controller
                         return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
                     }
                 }
-               
+
             }
             // return gettype($data[0][0]) ;
             // if ($data[0][0] == "R&T Full Name") {
@@ -490,5 +490,5 @@ class RNTController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
-    
+
 }

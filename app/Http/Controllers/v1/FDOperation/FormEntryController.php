@@ -26,7 +26,7 @@ class FormEntryController extends Controller
             $brn_cd=json_decode($request->brn_cd);
             $rm_id=json_decode($request->rm_id);
             $sub_brk_cd=json_decode($request->sub_brk_cd);
-            
+
             $tin_no=$request->tin_no;
             $option=$request->option;
             $investor_name=$request->investor_name;
@@ -72,12 +72,37 @@ class FormEntryController extends Controller
                             ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_fixed_deposit.chq_bank')
                             ->leftJoin('md_employee','md_employee.euin_no','=','td_fd_form_received.euin_no')
                             ->leftJoin('md_branch','md_branch.id','=','td_fd_form_received.branch_code')
-                            ->select('td_fixed_deposit.*','td_fd_form_received.bu_type as bu_type','td_fd_form_received.arn_no as arn_no','td_fd_form_received.euin_no as euin_no','td_fd_form_received.fd_bu_type as fd_bu_type','td_fd_form_received.sub_brk_cd as sub_brk_cd','md_employee.emp_name as emp_name',
-                            'md_fd_scheme.scheme_name as scheme_name','md_fd_type_of_company.comp_type as comp_type_name','md_fd_company.comp_short_name as comp_short_name','md_fd_company.comp_full_name as comp_full_name',
-                            'md_client.client_code as investor_code','md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.dob as investor_dob',
-                            'md_client_2.client_code as investor_code_2','md_client_2.client_name as investor_name_2','md_client_2.pan as investor_pan_2','md_client_2.dob as investor_dob_2',
-                            'md_client_3.client_code as investor_code_3','md_client_3.client_name as investor_name_3','md_client_3.pan as investor_pan_3','md_client_3.dob as investor_dob_3',
-                            'md_deposit_bank.bank_name as chq_bank','md_fd_company_2.comp_short_name as comp_login_name','md_branch.brn_name as branch_name')
+                            ->select('td_fixed_deposit.*','td_fd_form_received.bu_type as bu_type',
+                            'td_fd_form_received.arn_no as arn_no',
+                            'td_fd_form_received.euin_no as euin_no',
+                            'td_fd_form_received.fd_bu_type as fd_bu_type',
+                            'td_fd_form_received.sub_brk_cd as sub_brk_cd',
+                            'md_employee.emp_name as emp_name',
+                            'md_fd_scheme.scheme_name as scheme_name','md_fd_type_of_company.comp_type as comp_type_name',
+                            'md_fd_type_of_company.id as comp_type_id',
+                            'md_fd_company.id as comp_id',
+                            'md_fd_company.comp_short_name as comp_short_name','md_fd_company.comp_full_name as comp_full_name',
+                            'md_client.id as investor_id',
+                            'md_client.client_code as investor_code',
+                            'md_client.client_name as investor_name',
+                            'md_client.pan as investor_pan',
+                            'md_client.dob as investor_dob',
+                            'md_client_2.client_code as investor_code_2',
+                            'md_client_2.client_name as investor_name_2',
+                            'md_client_2.pan as investor_pan_2',
+                            'md_client_2.dob as investor_dob_2',
+                            'md_client_3.client_code as investor_code_3',
+                            'md_client_3.client_name as investor_name_3',
+                            'md_client_3.pan as investor_pan_3',
+                            'md_client_3.dob as investor_dob_3',
+                            'md_deposit_bank.bank_name as bank_name',
+                            'md_deposit_bank.id as chq_bank',
+                            'md_deposit_bank.micr_code as micr_code',
+                            'md_deposit_bank.branch_addr as chq_branch_addr',
+                            'md_deposit_bank.branch_name as chq_branch_name',
+                            'md_deposit_bank.ifs_code as ifs_code',
+                            'md_fd_company_2.comp_short_name as comp_login_name',
+                            'md_branch.brn_name as branch_name')
                             ->where('td_fixed_deposit.delete_flag','N')
                             ->whereDate('td_fixed_deposit.entry_date',date('Y-m-d'))
                             ->where('td_fixed_deposit.comp_login_dt',$login_status,NULL)
@@ -97,11 +122,20 @@ class FormEntryController extends Controller
                             ->leftJoin('md_employee','md_employee.euin_no','=','td_fd_form_received.euin_no')
                             ->leftJoin('md_branch','md_branch.id','=','td_fd_form_received.branch_code')
                             ->select('td_fixed_deposit.*','td_fd_form_received.bu_type as bu_type','td_fd_form_received.arn_no as arn_no','td_fd_form_received.euin_no as euin_no','td_fd_form_received.fd_bu_type as fd_bu_type','td_fd_form_received.sub_brk_cd as sub_brk_cd','md_employee.emp_name as emp_name',
-                            'md_fd_scheme.scheme_name as scheme_name','md_fd_type_of_company.comp_type as comp_type_name','md_fd_company.comp_short_name as comp_short_name','md_fd_company.comp_full_name as comp_full_name',
-                            'md_client.client_code as investor_code','md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.dob as investor_dob',
+                            'md_fd_scheme.scheme_name as scheme_name','md_fd_type_of_company.comp_type as comp_type_name',
+                            'md_fd_type_of_company.id as comp_type_id','md_fd_company.id as comp_id',
+                            'md_fd_company.comp_short_name as comp_short_name','md_fd_company.comp_full_name as comp_full_name',
+                            'md_client.client_code as investor_code',
+                            'md_client.id as investor_id',
+                            'md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.dob as investor_dob',
                             'md_client_2.client_code as investor_code_2','md_client_2.client_name as investor_name_2','md_client_2.pan as investor_pan_2','md_client_2.dob as investor_dob_2',
                             'md_client_3.client_code as investor_code_3','md_client_3.client_name as investor_name_3','md_client_3.pan as investor_pan_3','md_client_3.dob as investor_dob_3',
-                            'md_deposit_bank.bank_name as chq_bank','md_fd_company_2.comp_short_name as comp_login_name','md_branch.brn_name as branch_name')
+                            'md_deposit_bank.bank_name as bank_name',
+                            'md_deposit_bank.id as chq_bank',
+                            'md_deposit_bank.micr_code as micr_code',
+                            'md_deposit_bank.branch_addr as chq_branch_addr',
+                            'md_deposit_bank.branch_name as chq_branch_name',
+                            'md_deposit_bank.ifs_code as ifs_code','md_fd_company_2.comp_short_name as comp_login_name','md_branch.brn_name as branch_name')
                             ->where('td_fixed_deposit.delete_flag','N')
                             ->whereDate('td_fixed_deposit.entry_date',date('Y-m-d'))
                             ->where('td_fixed_deposit.comp_login_dt',$login_status,NULL)
@@ -129,11 +163,19 @@ class FormEntryController extends Controller
                             ->leftJoin('md_employee','md_employee.euin_no','=','td_fd_form_received.euin_no')
                             ->leftJoin('md_branch','md_branch.id','=','td_fd_form_received.branch_code')
                             ->select('td_fixed_deposit.*','td_fd_form_received.bu_type as bu_type','td_fd_form_received.arn_no as arn_no','td_fd_form_received.euin_no as euin_no','td_fd_form_received.fd_bu_type as fd_bu_type','td_fd_form_received.sub_brk_cd as sub_brk_cd','md_employee.emp_name as emp_name',
-                            'md_fd_scheme.scheme_name as scheme_name','md_fd_type_of_company.comp_type as comp_type_name','md_fd_company.comp_short_name as comp_short_name','md_fd_company.comp_full_name as comp_full_name',
+                            'md_fd_scheme.scheme_name as scheme_name','md_fd_type_of_company.comp_type as comp_type_name',
+                            'md_fd_type_of_company.id as comp_type_id','md_fd_company.id as comp_id',
+                            'md_client.id as investor_id',
+                            'md_fd_company.comp_short_name as comp_short_name','md_fd_company.comp_full_name as comp_full_name',
                             'md_client.client_code as investor_code','md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.dob as investor_dob',
                             'md_client_2.client_code as investor_code_2','md_client_2.client_name as investor_name_2','md_client_2.pan as investor_pan_2','md_client_2.dob as investor_dob_2',
                             'md_client_3.client_code as investor_code_3','md_client_3.client_name as investor_name_3','md_client_3.pan as investor_pan_3','md_client_3.dob as investor_dob_3',
-                            'md_deposit_bank.bank_name as chq_bank','md_fd_company_2.comp_short_name as comp_login_name','md_branch.brn_name as branch_name')
+                            'md_deposit_bank.bank_name as bank_name',
+                            'md_deposit_bank.id as chq_bank',
+                            'md_deposit_bank.micr_code as micr_code',
+                            'md_deposit_bank.branch_addr as chq_branch_addr',
+                            'md_deposit_bank.branch_name as chq_branch_name',
+                            'md_deposit_bank.ifs_code as ifs_code','md_fd_company_2.comp_short_name as comp_login_name','md_branch.brn_name as branch_name')
                             ->where('td_fixed_deposit.delete_flag','N')
                             ->whereDate('td_fixed_deposit.entry_date','>=',date('Y-m-d',strtotime($start_date)))
                             ->whereDate('td_fixed_deposit.entry_date','<=',date('Y-m-d',strtotime($end_date)))
@@ -154,11 +196,19 @@ class FormEntryController extends Controller
                             ->leftJoin('md_employee','md_employee.euin_no','=','td_fd_form_received.euin_no')
                             ->leftJoin('md_branch','md_branch.id','=','td_fd_form_received.branch_code')
                             ->select('td_fixed_deposit.*','td_fd_form_received.bu_type as bu_type','td_fd_form_received.arn_no as arn_no','td_fd_form_received.euin_no as euin_no','td_fd_form_received.fd_bu_type as fd_bu_type','td_fd_form_received.sub_brk_cd as sub_brk_cd','md_employee.emp_name as emp_name',
-                            'md_fd_scheme.scheme_name as scheme_name','md_fd_type_of_company.comp_type as comp_type_name','md_fd_company.comp_short_name as comp_short_name','md_fd_company.comp_full_name as comp_full_name',
+                            'md_fd_scheme.scheme_name as scheme_name','md_fd_type_of_company.comp_type as comp_type_name',
+                            'md_fd_type_of_company.id as comp_type_id','md_fd_company.id as comp_id',
+                            'md_client.id as investor_id',
+                            'md_fd_company.comp_short_name as comp_short_name','md_fd_company.comp_full_name as comp_full_name',
                             'md_client.client_code as investor_code','md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.dob as investor_dob',
                             'md_client_2.client_code as investor_code_2','md_client_2.client_name as investor_name_2','md_client_2.pan as investor_pan_2','md_client_2.dob as investor_dob_2',
                             'md_client_3.client_code as investor_code_3','md_client_3.client_name as investor_name_3','md_client_3.pan as investor_pan_3','md_client_3.dob as investor_dob_3',
-                            'md_deposit_bank.bank_name as chq_bank','md_fd_company_2.comp_short_name as comp_login_name','md_branch.brn_name as branch_name')
+                            'md_deposit_bank.bank_name as bank_name',
+                            'md_deposit_bank.id as chq_bank',
+                            'md_deposit_bank.micr_code as micr_code',
+                            'md_deposit_bank.branch_addr as chq_branch_addr',
+                            'md_deposit_bank.branch_name as chq_branch_name',
+                            'md_deposit_bank.ifs_code as ifs_code','md_fd_company_2.comp_short_name as comp_login_name','md_branch.brn_name as branch_name')
                             ->where('td_fixed_deposit.delete_flag','N')
                             ->whereDate('td_fixed_deposit.entry_date','>=',date('Y-m-d',strtotime($start_date)))
                             ->whereDate('td_fixed_deposit.entry_date','<=',date('Y-m-d',strtotime($end_date)))
@@ -191,7 +241,7 @@ class FormEntryController extends Controller
                         $rawQuery.=Helper::WhereRawQuery($comp_type_id,$rawQuery,$queryString4);
                         $queryString5='td_fixed_deposit.scheme_id';
                         $rawQuery.=Helper::WhereRawQuery($scheme_id,$rawQuery,$queryString5);
-    
+
                         $data=FixedDeposit::join('td_fd_form_received','td_fd_form_received.temp_tin_no','=','td_fixed_deposit.temp_tin_no')
                             ->leftJoin('md_fd_scheme','md_fd_scheme.id','=','td_fixed_deposit.scheme_id')
                             ->leftJoin('md_fd_type_of_company','md_fd_type_of_company.id','=','md_fd_scheme.comp_type_id')
@@ -204,11 +254,19 @@ class FormEntryController extends Controller
                             ->leftJoin('md_employee','md_employee.euin_no','=','td_fd_form_received.euin_no')
                             ->leftJoin('md_branch','md_branch.id','=','td_fd_form_received.branch_code')
                             ->select('td_fixed_deposit.*','td_fd_form_received.bu_type as bu_type','td_fd_form_received.arn_no as arn_no','td_fd_form_received.euin_no as euin_no','td_fd_form_received.fd_bu_type as fd_bu_type','td_fd_form_received.sub_brk_cd as sub_brk_cd','md_employee.emp_name as emp_name',
-                            'md_fd_scheme.scheme_name as scheme_name','md_fd_type_of_company.comp_type as comp_type_name','md_fd_company.comp_short_name as comp_short_name','md_fd_company.comp_full_name as comp_full_name',
+                            'md_fd_scheme.scheme_name as scheme_name','md_fd_type_of_company.comp_type as comp_type_name',
+                            'md_fd_type_of_company.id as comp_type_id','md_fd_company.id as comp_id',
+                            'md_fd_company.comp_short_name as comp_short_name','md_fd_company.comp_full_name as comp_full_name',
+                            'md_client.id as investor_id',
                             'md_client.client_code as investor_code','md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.dob as investor_dob',
                             'md_client_2.client_code as investor_code_2','md_client_2.client_name as investor_name_2','md_client_2.pan as investor_pan_2','md_client_2.dob as investor_dob_2',
                             'md_client_3.client_code as investor_code_3','md_client_3.client_name as investor_name_3','md_client_3.pan as investor_pan_3','md_client_3.dob as investor_dob_3',
-                            'md_deposit_bank.bank_name as chq_bank','md_fd_company_2.comp_short_name as comp_login_name','md_branch.brn_name as branch_name')
+                            'md_deposit_bank.bank_name as bank_name',
+                            'md_deposit_bank.id as chq_bank',
+                            'md_deposit_bank.micr_code as micr_code',
+                            'md_deposit_bank.branch_addr as chq_branch_addr',
+                            'md_deposit_bank.branch_name as chq_branch_name',
+                            'md_deposit_bank.ifs_code as ifs_code','md_fd_company_2.comp_short_name as comp_login_name','md_branch.brn_name as branch_name')
                             ->where('td_fixed_deposit.delete_flag','N')
                             ->whereRaw($rawQuery)
                             ->orderByRaw($rawOrderBy)
@@ -226,11 +284,19 @@ class FormEntryController extends Controller
                             ->leftJoin('md_employee','md_employee.euin_no','=','td_fd_form_received.euin_no')
                             ->leftJoin('md_branch','md_branch.id','=','td_fd_form_received.branch_code')
                             ->select('td_fixed_deposit.*','td_fd_form_received.bu_type as bu_type','td_fd_form_received.arn_no as arn_no','td_fd_form_received.euin_no as euin_no','td_fd_form_received.fd_bu_type as fd_bu_type','td_fd_form_received.sub_brk_cd as sub_brk_cd','md_employee.emp_name as emp_name',
-                            'md_fd_scheme.scheme_name as scheme_name','md_fd_type_of_company.comp_type as comp_type_name','md_fd_company.comp_short_name as comp_short_name','md_fd_company.comp_full_name as comp_full_name',
+                            'md_fd_scheme.scheme_name as scheme_name','md_fd_type_of_company.comp_type as comp_type_name',
+                            'md_fd_type_of_company.id as comp_type_id','md_fd_company.id as comp_id',
+                            'md_fd_company.comp_short_name as comp_short_name','md_fd_company.comp_full_name as comp_full_name',
+                            'md_client.id as investor_id',
                             'md_client.client_code as investor_code','md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.dob as investor_dob',
                             'md_client_2.client_code as investor_code_2','md_client_2.client_name as investor_name_2','md_client_2.pan as investor_pan_2','md_client_2.dob as investor_dob_2',
                             'md_client_3.client_code as investor_code_3','md_client_3.client_name as investor_name_3','md_client_3.pan as investor_pan_3','md_client_3.dob as investor_dob_3',
-                            'md_deposit_bank.bank_name as chq_bank','md_fd_company_2.comp_short_name as comp_login_name','md_branch.brn_name as branch_name')
+                            'md_deposit_bank.bank_name as bank_name',
+                            'md_deposit_bank.id as chq_bank',
+                            'md_deposit_bank.micr_code as micr_code',
+                            'md_deposit_bank.branch_addr as chq_branch_addr',
+                            'md_deposit_bank.branch_name as chq_branch_name',
+                            'md_deposit_bank.ifs_code as ifs_code','md_fd_company_2.comp_short_name as comp_login_name','md_branch.brn_name as branch_name')
                             ->where('td_fixed_deposit.delete_flag','N')
                             ->orderByRaw($rawOrderBy)
                             ->paginate($paginate);
@@ -263,11 +329,19 @@ class FormEntryController extends Controller
                         ->leftJoin('md_employee','md_employee.euin_no','=','td_fd_form_received.euin_no')
                         ->leftJoin('md_branch','md_branch.id','=','td_fd_form_received.branch_code')
                         ->select('td_fixed_deposit.*','td_fd_form_received.bu_type as bu_type','td_fd_form_received.arn_no as arn_no','td_fd_form_received.euin_no as euin_no','td_fd_form_received.fd_bu_type as fd_bu_type','td_fd_form_received.sub_brk_cd as sub_brk_cd','md_employee.emp_name as emp_name',
-                        'md_fd_scheme.scheme_name as scheme_name','md_fd_type_of_company.comp_type as comp_type_name','md_fd_company.comp_short_name as comp_short_name','md_fd_company.comp_full_name as comp_full_name',
+                        'md_fd_scheme.scheme_name as scheme_name','md_fd_type_of_company.comp_type as comp_type_name',
+                        'md_fd_type_of_company.id as comp_type_id','md_fd_company.id as comp_id',
+                        'md_fd_company.comp_short_name as comp_short_name','md_fd_company.comp_full_name as comp_full_name',
+                        'md_client.id as investor_id',
                         'md_client.client_code as investor_code','md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.dob as investor_dob',
                         'md_client_2.client_code as investor_code_2','md_client_2.client_name as investor_name_2','md_client_2.pan as investor_pan_2','md_client_2.dob as investor_dob_2',
                         'md_client_3.client_code as investor_code_3','md_client_3.client_name as investor_name_3','md_client_3.pan as investor_pan_3','md_client_3.dob as investor_dob_3',
-                        'md_deposit_bank.bank_name as chq_bank','md_fd_company_2.comp_short_name as comp_login_name','md_branch.brn_name as branch_name')
+                        'md_deposit_bank.bank_name as bank_name',
+                        'md_deposit_bank.id as chq_bank',
+                        'md_deposit_bank.micr_code as micr_code',
+                        'md_deposit_bank.branch_addr as chq_branch_addr',
+                        'md_deposit_bank.branch_name as chq_branch_name',
+                        'md_deposit_bank.ifs_code as ifs_code','md_fd_company_2.comp_short_name as comp_login_name','md_branch.brn_name as branch_name')
                         ->where('td_fixed_deposit.delete_flag','N')
                         ->whereRaw($rawQuery)
                         ->orderBy('td_fixed_deposit.updated_at','desc')
@@ -285,11 +359,19 @@ class FormEntryController extends Controller
                         ->leftJoin('md_employee','md_employee.euin_no','=','td_fd_form_received.euin_no')
                         ->leftJoin('md_branch','md_branch.id','=','td_fd_form_received.branch_code')
                         ->select('td_fixed_deposit.*','td_fd_form_received.bu_type as bu_type','td_fd_form_received.arn_no as arn_no','td_fd_form_received.euin_no as euin_no','td_fd_form_received.fd_bu_type as fd_bu_type','td_fd_form_received.sub_brk_cd as sub_brk_cd','md_employee.emp_name as emp_name',
-                        'md_fd_scheme.scheme_name as scheme_name','md_fd_type_of_company.comp_type as comp_type_name','md_fd_company.comp_short_name as comp_short_name','md_fd_company.comp_full_name as comp_full_name',
+                        'md_fd_scheme.scheme_name as scheme_name','md_fd_type_of_company.comp_type as comp_type_name',
+                        'md_fd_type_of_company.id as comp_type_id','md_fd_company.id as comp_id',
+                        'md_fd_company.comp_short_name as comp_short_name','md_fd_company.comp_full_name as comp_full_name',
+                        'md_client.id as investor_id',
                         'md_client.client_code as investor_code','md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.dob as investor_dob',
                         'md_client_2.client_code as investor_code_2','md_client_2.client_name as investor_name_2','md_client_2.pan as investor_pan_2','md_client_2.dob as investor_dob_2',
                         'md_client_3.client_code as investor_code_3','md_client_3.client_name as investor_name_3','md_client_3.pan as investor_pan_3','md_client_3.dob as investor_dob_3',
-                        'md_deposit_bank.bank_name as chq_bank','md_fd_company_2.comp_short_name as comp_login_name','md_branch.brn_name as branch_name')
+                        'md_deposit_bank.bank_name as bank_name',
+                        'md_deposit_bank.id as chq_bank',
+                        'md_deposit_bank.micr_code as micr_code',
+                        'md_deposit_bank.branch_addr as chq_branch_addr',
+                        'md_deposit_bank.branch_name as chq_branch_name',
+                        'md_deposit_bank.ifs_code as ifs_code','md_fd_company_2.comp_short_name as comp_login_name','md_branch.brn_name as branch_name')
                         ->where('td_fixed_deposit.delete_flag','N')
                         ->orderBy('td_fixed_deposit.updated_at','desc')
                         ->paginate($paginate);
@@ -317,7 +399,7 @@ class FormEntryController extends Controller
             $brn_cd=json_decode($request->brn_cd);
             $rm_id=json_decode($request->rm_id);
             $sub_brk_cd=json_decode($request->sub_brk_cd);
-            
+
             $tin_no=$request->tin_no;
             $option=$request->option;
             $investor_name=$request->investor_name;
@@ -368,7 +450,14 @@ class FormEntryController extends Controller
                             'md_client.client_code as investor_code','md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.dob as investor_dob',
                             'md_client_2.client_code as investor_code_2','md_client_2.client_name as investor_name_2','md_client_2.pan as investor_pan_2','md_client_2.dob as investor_dob_2',
                             'md_client_3.client_code as investor_code_3','md_client_3.client_name as investor_name_3','md_client_3.pan as investor_pan_3','md_client_3.dob as investor_dob_3',
-                            'md_deposit_bank.bank_name as chq_bank','md_fd_company_2.comp_short_name as comp_login_name','md_branch.brn_name as branch_name')
+                            'md_deposit_bank.bank_name as bank_name',
+                            'md_deposit_bank.id as chq_bank',
+                            'md_deposit_bank.micr_code as micr_code',
+                            'md_deposit_bank.branch_addr as chq_branch_addr',
+                            'md_deposit_bank.branch_name as chq_branch_name',
+                            'md_deposit_bank.ifs_code as ifs_code',
+                            'md_fd_company_2.comp_short_name as comp_login_name',
+                            'md_branch.brn_name as branch_name')
                             ->where('td_fixed_deposit.delete_flag','N')
                             ->whereDate('td_fixed_deposit.entry_date',date('Y-m-d'))
                             ->where('td_fixed_deposit.comp_login_dt',$login_status,NULL)
@@ -392,7 +481,13 @@ class FormEntryController extends Controller
                             'md_client.client_code as investor_code','md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.dob as investor_dob',
                             'md_client_2.client_code as investor_code_2','md_client_2.client_name as investor_name_2','md_client_2.pan as investor_pan_2','md_client_2.dob as investor_dob_2',
                             'md_client_3.client_code as investor_code_3','md_client_3.client_name as investor_name_3','md_client_3.pan as investor_pan_3','md_client_3.dob as investor_dob_3',
-                            'md_deposit_bank.bank_name as chq_bank','md_fd_company_2.comp_short_name as comp_login_name','md_branch.brn_name as branch_name')
+                            'md_deposit_bank.bank_name as bank_name',
+                            'md_deposit_bank.id as chq_bank',
+                            'md_deposit_bank.micr_code as micr_code',
+                            'md_deposit_bank.branch_addr as chq_branch_addr',
+                            'md_deposit_bank.branch_name as chq_branch_name',
+                            'md_deposit_bank.ifs_code as ifs_code',
+                            'md_fd_company_2.comp_short_name as comp_login_name','md_branch.brn_name as branch_name')
                             ->where('td_fixed_deposit.delete_flag','N')
                             ->whereDate('td_fixed_deposit.entry_date',date('Y-m-d'))
                             ->where('td_fixed_deposit.comp_login_dt',$login_status,NULL)
@@ -424,7 +519,14 @@ class FormEntryController extends Controller
                             'md_client.client_code as investor_code','md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.dob as investor_dob',
                             'md_client_2.client_code as investor_code_2','md_client_2.client_name as investor_name_2','md_client_2.pan as investor_pan_2','md_client_2.dob as investor_dob_2',
                             'md_client_3.client_code as investor_code_3','md_client_3.client_name as investor_name_3','md_client_3.pan as investor_pan_3','md_client_3.dob as investor_dob_3',
-                            'md_deposit_bank.bank_name as chq_bank','md_fd_company_2.comp_short_name as comp_login_name','md_branch.brn_name as branch_name')
+                            'md_deposit_bank.bank_name as bank_name',
+                            'md_deposit_bank.id as chq_bank',
+                            'md_deposit_bank.micr_code as micr_code',
+                            'md_deposit_bank.branch_addr as chq_branch_addr',
+                            'md_deposit_bank.branch_name as chq_branch_name',
+                            'md_deposit_bank.ifs_code as ifs_code',
+
+                            'md_fd_company_2.comp_short_name as comp_login_name','md_branch.brn_name as branch_name')
                             ->where('td_fixed_deposit.delete_flag','N')
                             ->whereDate('td_fixed_deposit.entry_date','>=',date('Y-m-d',strtotime($start_date)))
                             ->whereDate('td_fixed_deposit.entry_date','<=',date('Y-m-d',strtotime($end_date)))
@@ -449,7 +551,13 @@ class FormEntryController extends Controller
                             'md_client.client_code as investor_code','md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.dob as investor_dob',
                             'md_client_2.client_code as investor_code_2','md_client_2.client_name as investor_name_2','md_client_2.pan as investor_pan_2','md_client_2.dob as investor_dob_2',
                             'md_client_3.client_code as investor_code_3','md_client_3.client_name as investor_name_3','md_client_3.pan as investor_pan_3','md_client_3.dob as investor_dob_3',
-                            'md_deposit_bank.bank_name as chq_bank','md_fd_company_2.comp_short_name as comp_login_name','md_branch.brn_name as branch_name')
+                            'md_deposit_bank.bank_name as bank_name',
+                            'md_deposit_bank.id as chq_bank',
+                            'md_deposit_bank.micr_code as micr_code',
+                            'md_deposit_bank.branch_addr as chq_branch_addr',
+                            'md_deposit_bank.branch_name as chq_branch_name',
+                            'md_deposit_bank.ifs_code as ifs_code',
+                            'md_fd_company_2.comp_short_name as comp_login_name','md_branch.brn_name as branch_name')
                             ->where('td_fixed_deposit.delete_flag','N')
                             ->whereDate('td_fixed_deposit.entry_date','>=',date('Y-m-d',strtotime($start_date)))
                             ->whereDate('td_fixed_deposit.entry_date','<=',date('Y-m-d',strtotime($end_date)))
@@ -482,7 +590,7 @@ class FormEntryController extends Controller
                         $rawQuery.=Helper::WhereRawQuery($comp_type_id,$rawQuery,$queryString4);
                         $queryString5='td_fixed_deposit.scheme_id';
                         $rawQuery.=Helper::WhereRawQuery($scheme_id,$rawQuery,$queryString5);
-    
+
                         $data=FixedDeposit::join('td_fd_form_received','td_fd_form_received.temp_tin_no','=','td_fixed_deposit.temp_tin_no')
                             ->leftJoin('md_fd_scheme','md_fd_scheme.id','=','td_fixed_deposit.scheme_id')
                             ->leftJoin('md_fd_type_of_company','md_fd_type_of_company.id','=','md_fd_scheme.comp_type_id')
@@ -499,7 +607,13 @@ class FormEntryController extends Controller
                             'md_client.client_code as investor_code','md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.dob as investor_dob',
                             'md_client_2.client_code as investor_code_2','md_client_2.client_name as investor_name_2','md_client_2.pan as investor_pan_2','md_client_2.dob as investor_dob_2',
                             'md_client_3.client_code as investor_code_3','md_client_3.client_name as investor_name_3','md_client_3.pan as investor_pan_3','md_client_3.dob as investor_dob_3',
-                            'md_deposit_bank.bank_name as chq_bank','md_fd_company_2.comp_short_name as comp_login_name','md_branch.brn_name as branch_name')
+                            'md_deposit_bank.bank_name as bank_name',
+                            'md_deposit_bank.id as chq_bank',
+                            'md_deposit_bank.micr_code as micr_code',
+                            'md_deposit_bank.branch_addr as chq_branch_addr',
+                            'md_deposit_bank.branch_name as chq_branch_name',
+                            'md_deposit_bank.ifs_code as ifs_code',
+                            'md_fd_company_2.comp_short_name as comp_login_name','md_branch.brn_name as branch_name')
                             ->where('td_fixed_deposit.delete_flag','N')
                             ->whereRaw($rawQuery)
                             ->orderByRaw($rawOrderBy)
@@ -521,7 +635,13 @@ class FormEntryController extends Controller
                             'md_client.client_code as investor_code','md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.dob as investor_dob',
                             'md_client_2.client_code as investor_code_2','md_client_2.client_name as investor_name_2','md_client_2.pan as investor_pan_2','md_client_2.dob as investor_dob_2',
                             'md_client_3.client_code as investor_code_3','md_client_3.client_name as investor_name_3','md_client_3.pan as investor_pan_3','md_client_3.dob as investor_dob_3',
-                            'md_deposit_bank.bank_name as chq_bank','md_fd_company_2.comp_short_name as comp_login_name','md_branch.brn_name as branch_name')
+                            'md_deposit_bank.bank_name as bank_name',
+                            'md_deposit_bank.id as chq_bank',
+                            'md_deposit_bank.micr_code as micr_code',
+                            'md_deposit_bank.branch_addr as chq_branch_addr',
+                            'md_deposit_bank.branch_name as chq_branch_name',
+                            'md_deposit_bank.ifs_code as ifs_code',
+                            'md_fd_company_2.comp_short_name as comp_login_name','md_branch.brn_name as branch_name')
                             ->where('td_fixed_deposit.delete_flag','N')
                             ->orderByRaw($rawOrderBy)
                             ->get();
@@ -558,7 +678,13 @@ class FormEntryController extends Controller
                         'md_client.client_code as investor_code','md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.dob as investor_dob',
                         'md_client_2.client_code as investor_code_2','md_client_2.client_name as investor_name_2','md_client_2.pan as investor_pan_2','md_client_2.dob as investor_dob_2',
                         'md_client_3.client_code as investor_code_3','md_client_3.client_name as investor_name_3','md_client_3.pan as investor_pan_3','md_client_3.dob as investor_dob_3',
-                        'md_deposit_bank.bank_name as chq_bank','md_fd_company_2.comp_short_name as comp_login_name','md_branch.brn_name as branch_name')
+                        'md_deposit_bank.bank_name as bank_name',
+                            'md_deposit_bank.id as chq_bank',
+                            'md_deposit_bank.micr_code as micr_code',
+                            'md_deposit_bank.branch_addr as chq_branch_addr',
+                            'md_deposit_bank.branch_name as chq_branch_name',
+                            'md_deposit_bank.ifs_code as ifs_code',
+                        'md_fd_company_2.comp_short_name as comp_login_name','md_branch.brn_name as branch_name')
                         ->where('td_fixed_deposit.delete_flag','N')
                         ->whereRaw($rawQuery)
                         ->orderBy('td_fixed_deposit.updated_at','desc')
@@ -580,7 +706,13 @@ class FormEntryController extends Controller
                         'md_client.client_code as investor_code','md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.dob as investor_dob',
                         'md_client_2.client_code as investor_code_2','md_client_2.client_name as investor_name_2','md_client_2.pan as investor_pan_2','md_client_2.dob as investor_dob_2',
                         'md_client_3.client_code as investor_code_3','md_client_3.client_name as investor_name_3','md_client_3.pan as investor_pan_3','md_client_3.dob as investor_dob_3',
-                        'md_deposit_bank.bank_name as chq_bank','md_fd_company_2.comp_short_name as comp_login_name','md_branch.brn_name as branch_name')
+                        'md_deposit_bank.bank_name as bank_name',
+                        'md_deposit_bank.id as chq_bank',
+                        'md_deposit_bank.micr_code as micr_code',
+                        'md_deposit_bank.branch_addr as chq_branch_addr',
+                        'md_deposit_bank.branch_name as chq_branch_name',
+                        'md_deposit_bank.ifs_code as ifs_code',
+                        'md_fd_company_2.comp_short_name as comp_login_name','md_branch.brn_name as branch_name')
                         ->where('td_fixed_deposit.delete_flag','N')
                         ->orderBy('td_fixed_deposit.updated_at','desc')
                         ->get();
@@ -639,7 +771,7 @@ class FormEntryController extends Controller
                         ->orderBy('td_fixed_deposit.updated_at','desc')
                         ->get();
             }
-            
+
         } catch (\Throwable $th) {
             // throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
@@ -661,7 +793,7 @@ class FormEntryController extends Controller
         //     'mobile'=>'required',
         //     'email'=>'required',
         // ]);
-    
+
         // if($validator->fails()) {
         //     $errors = $validator->errors();
         //     return Helper::ErrorResponse(parent::VALIDATION_ERROR);
@@ -672,7 +804,7 @@ class FormEntryController extends Controller
             $tin_no='';
             $trans_type_id='';
             $is_has=FixedDeposit::get();
-            // return $is_has; 
+            // return $is_has;
             if (count($is_has)>0) {
                 $tin_no=Helper::GenTIN($product_id,$trans_type_id,(count($is_has)+1));
             } else {
@@ -680,7 +812,7 @@ class FormEntryController extends Controller
             }
             // return $tin_no;
             // return $request;
-            
+
             if($request->temp_tin_no!='' && $request->tin_status=='Y'){  // with TTIN NO
                 // return $request;
                 $has=FixedDeposit::where('temp_tin_no',$request->temp_tin_no)->get();
@@ -688,7 +820,7 @@ class FormEntryController extends Controller
                     $error='Temporary TIN no already exist.';
                     return Helper::ErrorResponse($error);
                 }else {
-                    
+
                     FDFormReceived::where('temp_tin_no',$request->temp_tin_no)->update(array(
                         'bu_type'=>$request->bu_type,
                         'euin_no'=>$request->euin_no,
@@ -700,8 +832,8 @@ class FormEntryController extends Controller
                         'scheme_id'=>$request->scheme_id,
                         // 'branch_code'=>$branch_code,
                         // 'created_by'=>'',
-                    ));       
-                    
+                    ));
+
                     $second_client_id=$request->second_client_id;
                     $second_client_name=$request->second_client_name;
                     $second_client_pan=$request->second_client_pan;
@@ -713,7 +845,7 @@ class FormEntryController extends Controller
                             'dob'=>date('Y-m-d',strtotime($second_client_dob)),
                             'client_type'=>'E',
                             // 'created_by'=>'',
-                        ));  
+                        ));
                         $second_client_id=$s_c_data->id;
                     }
 
@@ -728,7 +860,7 @@ class FormEntryController extends Controller
                             'dob'=>date('Y-m-d',strtotime($third_client_dob)),
                             'client_type'=>'E',
                             // 'created_by'=>'',
-                        ));  
+                        ));
                         $third_client_id=$t_c_data->id;
                     }
 
@@ -777,7 +909,7 @@ class FormEntryController extends Controller
                         'remarks'=>isset($request->remarks)?$request->remarks:NULL,
                         'form_status'=>'P',
                         // 'created_by'=>'',
-                    ));    
+                    ));
 
                 }
             } else {  // Without TTIN not exist
@@ -809,7 +941,7 @@ class FormEntryController extends Controller
                     'proposal_no'=>isset($request->proposal_no)?$request->proposal_no:NULL,
                     'branch_code'=>$branch_code,
                     // 'created_by'=>'',
-                ));      
+                ));
                 // return $fr_data;
                 $ttin_no=$fr_data->temp_tin_no;
 
@@ -824,7 +956,7 @@ class FormEntryController extends Controller
                         'dob'=>date('Y-m-d',strtotime($second_client_dob)),
                         'client_type'=>'E',
                         // 'created_by'=>'',
-                    ));  
+                    ));
                     $second_client_id=$s_c_data->id;
                 }
 
@@ -839,7 +971,7 @@ class FormEntryController extends Controller
                         'dob'=>date('Y-m-d',strtotime($third_client_dob)),
                         'client_type'=>'E',
                         // 'created_by'=>'',
-                    ));  
+                    ));
                     $third_client_id=$t_c_data->id;
                 }
 
@@ -887,7 +1019,7 @@ class FormEntryController extends Controller
                     'remarks'=>isset($request->remarks)?$request->remarks:NULL,
                     'form_status'=>'P',
                     // 'created_by'=>'',
-                ));   
+                ));
             }
         } catch (\Throwable $th) {
             throw $th;
