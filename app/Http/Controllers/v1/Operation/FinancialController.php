@@ -181,7 +181,7 @@ class FinancialController extends Controller
                             'md_employee.emp_name as emp_name')
                             ->where('md_trans.trans_type_id',$trans_type_id)
                             ->where('td_mutual_fund.trans_id',$trans_id)
-                            // ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
+                            ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
                             ->orderByRaw($rawOrderBy)
                             ->paginate($paginate);
                     }
@@ -255,7 +255,7 @@ class FinancialController extends Controller
                         'md_employee.emp_name as emp_name')
                         ->where('md_trans.trans_type_id',$trans_type_id)
                         ->where('td_mutual_fund.trans_id',$trans_id)
-                        // ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
+                        ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
                         ->paginate($paginate);
                 }
             }
