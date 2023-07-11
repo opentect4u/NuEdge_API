@@ -1244,9 +1244,6 @@ class FinancialController extends Controller
                             ->get();
                     }
 
-
-
-
                     // END only for non financial changes
                 }
             } else {  // Without TTIN not exist
