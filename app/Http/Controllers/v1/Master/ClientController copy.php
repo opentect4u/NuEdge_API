@@ -34,7 +34,7 @@ class ClientController extends Controller
                     ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name')
                     ->where('md_client.client_type',$client_type)
                     ->orderBy('md_client.'.$column_name,$sort_by)
-                    ->paginate($paginate);    
+                    ->paginate($paginate);
             }else {
                 $data=Client::with('ClientDoc')
                     ->leftJoin('md_city','md_city.id','=','md_client.city')
@@ -44,8 +44,8 @@ class ClientController extends Controller
                     ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name')
                     ->where('md_client.client_type',$client_type)
                     // ->get();
-                    ->paginate($paginate);    
-            }  
+                    ->paginate($paginate);
+            }
         } catch (\Throwable $th) {
             throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
@@ -68,7 +68,7 @@ class ClientController extends Controller
                     ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name')
                     ->where('md_client.client_type',$client_type)
                     ->orderBy('md_client.'.$column_name,$sort_by)
-                    ->get();    
+                    ->get();
             }else {
                 $data=Client::with('ClientDoc')
                     ->leftJoin('md_city','md_city.id','=','md_client.city')
@@ -78,8 +78,8 @@ class ClientController extends Controller
                     ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name')
                     ->where('md_client.client_type',$client_type)
                     // ->get();
-                    ->get();    
-            }  
+                    ->get();
+            }
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
@@ -88,7 +88,7 @@ class ClientController extends Controller
     }
     public function index(Request $request)
     {
-        try {  
+        try {
             $search=$request->search;
             $client_code=$request->client_code;
             $client_type=$request->client_type;
@@ -104,12 +104,12 @@ class ClientController extends Controller
                     ->orWhere('pan','like', '%' . $search . '%')
                     ->orWhere('mobile','like', '%' . $search . '%')
                     ->orWhere('email','like', '%' . $search . '%')
-                    ->paginate($paginate);      
+                    ->paginate($paginate);
             }else if ($client_code!='') {
                 $data=Client::leftJoin('td_kyc','td_kyc.client_code','=','md_client.client_code')
                     ->select('md_client.*','td_kyc.final_kyc_status as final_kyc_status')
                     ->where('md_client.client_code',$client_code)
-                    ->get();      
+                    ->get();
             }else if ($client_type!='') {
                 $data=Client::with('ClientDoc')->where('client_type',$client_type)
                     ->orderBy('updated_at','DESC')->paginate($paginate);
@@ -126,11 +126,11 @@ class ClientController extends Controller
                     ->where('md_client.id',$client_id)
                     ->get();
             // }else if ($paginate!='') {
-            //     $data=Client::with('ClientDoc')->paginate($paginate);    
+            //     $data=Client::with('ClientDoc')->paginate($paginate);
             } else{
                 $data=Client::with('ClientDoc')->
                 // whereDate('updated_at',date('Y-m-d'))->
-                get();      
+                get();
             }
         } catch (\Throwable $th) {
             //throw $th;
@@ -153,7 +153,7 @@ class ClientController extends Controller
             // 'mobile'=>'required',
             // 'email'=>'required',
         ]);
-    
+
         if($validator->fails()) {
             $errors = $validator->errors();
             return Helper::ErrorResponse(parent::VALIDATION_ERROR);
@@ -169,7 +169,7 @@ class ClientController extends Controller
                     $words = explode(" ",$client_name);
                     $client_code="";
                     $client_code_1 = mb_substr($words[0], 0, 1).mb_substr($words[(count($words)-1)], 0, 1);;
-                    
+
                     $is_has=Client::where('client_code',$client_code)->get();
                     if (count($is_has)>0) {
                         $client_code=$client_code_1.date('dmy',strtotime($request->dob)).count($is_has);
@@ -210,10 +210,10 @@ class ClientController extends Controller
                                     'doc_type_id'=>$request->doc_type_id[$key],
                                     'doc_name'=>$doc_name,
                                     // 'created_by'=>'',
-                                ));      
+                                ));
                             }
                         }
-                    $data=Client::with('ClientDoc')->where('id',$datas->id)->first();    
+                    $data=Client::with('ClientDoc')->where('id',$datas->id)->first();
                 }else {
                     if ($request->client_type=='P') {
 
@@ -236,22 +236,22 @@ class ClientController extends Controller
                             'pan'=>$request->pan,
                             'client_type'=>$request->client_type,
                             // 'created_by'=>'',
-                        ));  
+                        ));
                     }
-                    $data=Client::with('ClientDoc')->where('id',$u_data->id)->first();    
+                    $data=Client::with('ClientDoc')->where('id',$u_data->id)->first();
                 }else {
                     $client_name=ucwords($request->client_name);
                     $words = explode(" ",$client_name);
                     $client_code="";
                     $client_code_1 = mb_substr($words[0], 0, 1).mb_substr($words[(count($words)-1)], 0, 1);;
-                    
+
                     $is_has=Client::where('client_code',$client_code_1)->get();
                     if (count($is_has)>0) {
                         $client_code=$client_code_1.date('dmy',strtotime($request->dob)).count($is_has);
                     }else {
                         $client_code=$client_code_1.date('dmy',strtotime($request->dob));
                     }
-                    
+
                     if ($request->client_type=='P') {
                         // return $request;
                         $already=Client::where('pan',$request->pan)->get();
@@ -279,7 +279,7 @@ class ClientController extends Controller
                                 'sec_email'=>$request->sec_email,
                                 'client_type'=>$request->client_type,
                                 'client_type_mode'=>$request->client_type_mode,
-                            )); 
+                            ));
                             $doc_name='';
                             $files=$request->file;
                             // return $files;
@@ -296,15 +296,15 @@ class ClientController extends Controller
                                         'doc_type_id'=>$request->doc_type_id[$key],
                                         'doc_name'=>$doc_name,
                                         // 'created_by'=>'',
-                                    ));      
+                                    ));
                                 }
                             }
 
                             $email=Email::find(1);
                             // Mail::to($request->email)->send(new CreatClientEmail($client_name,$email->subject,$email->body));
 
-                            $data=Client::with('ClientDoc')->where('id',$u_data->id)->first();  
-                        }  
+                            $data=Client::with('ClientDoc')->where('id',$u_data->id)->first();
+                        }
                     }else {
                         // return $request;
                         $u_data=Client::create(array(
@@ -346,16 +346,16 @@ class ClientController extends Controller
                                     'doc_type_id'=>$request->doc_type_id[$key],
                                     'doc_name'=>$doc_name,
                                     // 'created_by'=>'',
-                                ));      
+                                ));
                             }
                         }
                         $email=Email::find(1);
                         // Mail::to($request->email)->send(new CreatClientEmail($client_name,$email->subject,$email->body));
 
-                        $data=Client::with('ClientDoc')->where('id',$u_data->id)->first();    
+                        $data=Client::with('ClientDoc')->where('id',$u_data->id)->first();
                     }
                 }
-            }  
+            }
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_SAVE_ERROR);
@@ -384,7 +384,7 @@ class ClientController extends Controller
                             'pan'=>$value[1],
                             'client_type'=>'E',
                             // 'created_by'=>'',
-                        ));  
+                        ));
                 }
             }
             // return gettype($data[0][0]) ;
@@ -425,5 +425,5 @@ class ClientController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
-    
+
 }

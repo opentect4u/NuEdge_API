@@ -70,7 +70,20 @@ class FinancialController extends Controller
                         ->leftJoin('md_branch','md_branch.id','=','td_form_received.branch_code')
                         ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','td_form_received.application_no as application_no',
                         'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme.id as scheme_id','md_scheme_2.scheme_name as scheme_name_to','md_scheme_2.id as scheme_id_to',
-                        'md_client.client_code as first_client_code','md_client.client_name as first_client_name','md_client.pan as first_client_pan','md_client.client_type as first_client_type',
+                        'md_client.client_code as first_client_code',
+                        'md_client.mobile as first_client_mob',
+                        'md_client.email as first_client_email',
+                        'md_client.client_type_mode as change_status_id',
+                        'md_client.client_name as first_client_name',
+                        'md_client.country_id as first_client_country_id',
+                        'md_client.state as first_client_state_id',
+                        'md_client.dist as first_client_district_id',
+                        'md_client.city as first_client_city_id',
+                        'md_client.pincode as first_client_pincode',
+                        'md_client.mobile as first_client_mob',
+                        'md_client.add_line_1 as first_client_add_line_1',
+                        'md_client.add_line_2 as first_client_add_line_2',
+                        'md_client.pan as first_client_pan','md_client.client_type as first_client_type',
                         'md_client_2.client_code as second_client_code','md_client_2.client_name as second_client_name','md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
                         'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to',
                         'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_branch.brn_name as branch_name',
@@ -100,7 +113,18 @@ class FinancialController extends Controller
                         ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','td_form_received.application_no as application_no',
                         'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme.id as scheme_id','md_scheme_2.scheme_name as scheme_name_to','md_scheme_2.id as scheme_id_to',
                         'md_client.client_code as first_client_code','md_client.client_name as first_client_name','md_client.pan as first_client_pan','md_client.client_type as first_client_type',
-                        'md_client_2.client_code as second_client_code','md_client_2.client_name as second_client_name','md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
+                        'md_client_2.client_code as second_client_code',
+                        'md_client.country_id as first_client_country_id',
+                        'md_client.state as first_client_state_id',
+                        'md_client.dist as first_client_district_id',
+                        'md_client.client_type_mode as change_status_id',
+                        'md_client.city as first_client_city_id',
+                        'md_client.pincode as first_client_pincode',
+                        'md_client.mobile as first_client_mob',
+                        'md_client.email as first_client_email',
+                        'md_client.add_line_1 as first_client_add_line_1',
+                        'md_client.add_line_2 as first_client_add_line_2',
+                        'md_client_2.client_name as second_client_name','md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
                         'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to',
                         'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_branch.brn_name as branch_name',
                         'md_deposit_bank.bank_name as bank_name','md_deposit_bank.ifs_code as ifs_code','md_deposit_bank.micr_code as micr_code','md_deposit_bank.branch_name as chq_branch_name','md_deposit_bank.branch_addr as chq_branch_addr',
@@ -144,7 +168,18 @@ class FinancialController extends Controller
                             ->leftJoin('md_branch','md_branch.id','=','td_form_received.branch_code')
                             ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','td_form_received.application_no as application_no',
                             'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme.id as scheme_id','md_scheme_2.scheme_name as scheme_name_to','md_scheme_2.id as scheme_id_to',
-                            'md_client.client_code as first_client_code','md_client.client_name as first_client_name','md_client.pan as first_client_pan','md_client.client_type as first_client_type',
+                            'md_client.client_code as first_client_code','md_client.client_name as first_client_name',
+                            'md_client.pan as first_client_pan','md_client.client_type as first_client_type',
+                            'md_client.country_id as first_client_country_id',
+                            'md_client.state as first_client_state_id',
+                            'md_client.dist as first_client_district_id',
+                        'md_client.client_type_mode as change_status_id',
+                        'md_client.city as first_client_city_id',
+                            'md_client.pincode as first_client_pincode',
+                            'md_client.mobile as first_client_mob',
+                            'md_client.email as first_client_email',
+                            'md_client.add_line_1 as first_client_add_line_1',
+                            'md_client.add_line_2 as first_client_add_line_2',
                             'md_client_2.client_code as second_client_code','md_client_2.client_name as second_client_name','md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
                             'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to',
                             'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_branch.brn_name as branch_name',
@@ -173,7 +208,18 @@ class FinancialController extends Controller
                             ->leftJoin('md_branch','md_branch.id','=','td_form_received.branch_code')
                             ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','td_form_received.application_no as application_no',
                             'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme.id as scheme_id','md_scheme_2.scheme_name as scheme_name_to','md_scheme_2.id as scheme_id_to',
-                            'md_client.client_code as first_client_code','md_client.client_name as first_client_name','md_client.pan as first_client_pan','md_client.client_type as first_client_type',
+                            'md_client.client_code as first_client_code','md_client.client_name as first_client_name',
+                            'md_client.pan as first_client_pan','md_client.client_type as first_client_type',
+                            'md_client.country_id as first_client_country_id',
+                            'md_client.state as first_client_state_id',
+                            'md_client.dist as first_client_district_id',
+                            'md_client.city as first_client_city_id',
+                        'md_client.client_type_mode as change_status_id',
+                        'md_client.mobile as first_client_mob',
+                            'md_client.email as first_client_email',
+                            'md_client.pincode as first_client_pincode',
+                            'md_client.add_line_1 as first_client_add_line_1',
+                            'md_client.add_line_2 as first_client_add_line_2',
                             'md_client_2.client_code as second_client_code','md_client_2.client_name as second_client_name','md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
                             'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to',
                             'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_branch.brn_name as branch_name',
@@ -181,7 +227,7 @@ class FinancialController extends Controller
                             'md_employee.emp_name as emp_name')
                             ->where('md_trans.trans_type_id',$trans_type_id)
                             ->where('td_mutual_fund.trans_id',$trans_id)
-                            ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
+                            // ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
                             ->orderByRaw($rawOrderBy)
                             ->paginate($paginate);
                     }
@@ -218,7 +264,18 @@ class FinancialController extends Controller
                         ->leftJoin('md_branch','md_branch.id','=','td_form_received.branch_code')
                         ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','td_form_received.application_no as application_no',
                         'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme.id as scheme_id','md_scheme_2.scheme_name as scheme_name_to','md_scheme_2.id as scheme_id_to',
-                        'md_client.client_code as first_client_code','md_client.client_name as first_client_name','md_client.pan as first_client_pan','md_client.client_type as first_client_type',
+                        'md_client.client_code as first_client_code','md_client.client_name as first_client_name',
+                        'md_client.pan as first_client_pan','md_client.client_type as first_client_type',
+                        'md_client.country_id as first_client_country_id',
+                        'md_client.state as first_client_state_id',
+                        'md_client.dist as first_client_district_id',
+                        'md_client.client_type_mode as change_status_id',
+                        'md_client.city as first_client_city_id',
+                        'md_client.mobile as first_client_mob',
+                        'md_client.email as first_client_email',
+                        'md_client.pincode as first_client_pincode',
+                        'md_client.add_line_1 as first_client_add_line_1',
+                        'md_client.add_line_2 as first_client_add_line_2',
                         'md_client_2.client_code as second_client_code','md_client_2.client_name as second_client_name','md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
                         'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to',
                         'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_branch.brn_name as branch_name',
@@ -247,7 +304,18 @@ class FinancialController extends Controller
                         ->leftJoin('md_branch','md_branch.id','=','td_form_received.branch_code')
                         ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','td_form_received.application_no as application_no',
                         'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme.id as scheme_id','md_scheme_2.scheme_name as scheme_name_to','md_scheme_2.id as scheme_id_to',
-                        'md_client.client_code as first_client_code','md_client.client_name as first_client_name','md_client.pan as first_client_pan','md_client.client_type as first_client_type',
+                        'md_client.client_code as first_client_code','md_client.client_name as first_client_name',
+                        'md_client.pan as first_client_pan','md_client.client_type as first_client_type',
+                        'md_client.country_id as first_client_country_id',
+                        'md_client.state as first_client_state_id',
+                        'md_client.dist as first_client_district_id',
+                        'md_client.client_type_mode as change_status_id',
+                        'md_client.city as first_client_city_id',
+                        'md_client.mobile as first_client_mob',
+                        'md_client.email as first_client_email',
+                        'md_client.pincode as first_client_pincode',
+                        'md_client.add_line_1 as first_client_add_line_1',
+                        'md_client.add_line_2 as first_client_add_line_2',
                         'md_client_2.client_code as second_client_code','md_client_2.client_name as second_client_name','md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
                         'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to',
                         'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_branch.brn_name as branch_name',
@@ -255,7 +323,7 @@ class FinancialController extends Controller
                         'md_employee.emp_name as emp_name')
                         ->where('md_trans.trans_type_id',$trans_type_id)
                         ->where('td_mutual_fund.trans_id',$trans_id)
-                        ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
+                        // ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
                         ->paginate($paginate);
                 }
             }
@@ -319,7 +387,18 @@ class FinancialController extends Controller
                         ->leftJoin('md_branch','md_branch.id','=','td_form_received.branch_code')
                         ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','td_form_received.application_no as application_no',
                         'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme.id as scheme_id','md_scheme_2.scheme_name as scheme_name_to','md_scheme_2.id as scheme_id_to',
-                        'md_client.client_code as first_client_code','md_client.client_name as first_client_name','md_client.pan as first_client_pan','md_client.client_type as first_client_type',
+                        'md_client.client_code as first_client_code','md_client.client_name as first_client_name',
+                        'md_client.country_id as first_client_country_id',
+                        'md_client.state as first_client_state_id',
+                        'md_client.dist as first_client_district_id',
+                        'md_client.city as first_client_city_id',
+                        'md_client.client_type_mode as change_status_id',
+                        'md_client.pincode as first_client_pincode',
+                        'md_client.add_line_1 as first_client_add_line_1',
+                        'md_client.add_line_2 as first_client_add_line_2',
+                        'md_client.mobile as first_client_mob',
+                        'md_client.email as first_client_email',
+                        'md_client.pan as first_client_pan','md_client.client_type as first_client_type',
                         'md_client_2.client_code as second_client_code','md_client_2.client_name as second_client_name','md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
                         'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to',
                         'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_branch.brn_name as branch_name',
@@ -348,7 +427,18 @@ class FinancialController extends Controller
                         ->leftJoin('md_branch','md_branch.id','=','td_form_received.branch_code')
                         ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','td_form_received.application_no as application_no',
                         'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme.id as scheme_id','md_scheme_2.scheme_name as scheme_name_to','md_scheme_2.id as scheme_id_to',
-                        'md_client.client_code as first_client_code','md_client.client_name as first_client_name','md_client.pan as first_client_pan','md_client.client_type as first_client_type',
+                        'md_client.client_code as first_client_code',
+                        'md_client.country_id as first_client_country_id',
+                        'md_client.state as first_client_state_id',
+                        'md_client.dist as first_client_district_id',
+                        'md_client.city as first_client_city_id',
+                        'md_client.client_type_mode as change_status_id',
+                        'md_client.mobile as first_client_mob',
+                        'md_client.email as first_client_email',
+                        'md_client.pincode as first_client_pincode',
+                        'md_client.add_line_1 as first_client_add_line_1',
+                        'md_client.add_line_2 as first_client_add_line_2',
+                        'md_client.client_name as first_client_name','md_client.pan as first_client_pan','md_client.client_type as first_client_type',
                         'md_client_2.client_code as second_client_code','md_client_2.client_name as second_client_name','md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
                         'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to',
                         'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_branch.brn_name as branch_name',
@@ -438,7 +528,18 @@ class FinancialController extends Controller
                             ->leftJoin('md_branch','md_branch.id','=','td_form_received.branch_code')
                             ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','td_form_received.application_no as application_no',
                             'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme.id as scheme_id','md_scheme_2.scheme_name as scheme_name_to','md_scheme_2.id as scheme_id_to',
-                            'md_client.client_code as first_client_code','md_client.client_name as first_client_name','md_client.pan as first_client_pan','md_client.client_type as first_client_type',
+                            'md_client.client_code as first_client_code',
+                            'md_client.country_id as first_client_country_id',
+                            'md_client.state as first_client_state_id',
+                        'md_client.client_type_mode as change_status_id',
+                        'md_client.dist as first_client_district_id',
+                            'md_client.city as first_client_city_id',
+                            'md_client.pincode as first_client_pincode',
+                            'md_client.mobile as first_client_mob',
+                            'md_client.email as first_client_email',
+                            'md_client.add_line_1 as first_client_add_line_1',
+                            'md_client.add_line_2 as first_client_add_line_2',
+                            'md_client.client_name as first_client_name','md_client.pan as first_client_pan','md_client.client_type as first_client_type',
                             'md_client_2.client_code as second_client_code','md_client_2.client_name as second_client_name','md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
                             'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to',
                             'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_branch.brn_name as branch_name',
@@ -468,7 +569,18 @@ class FinancialController extends Controller
                             ->leftJoin('md_branch','md_branch.id','=','td_form_received.branch_code')
                             ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','td_form_received.application_no as application_no',
                             'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme.id as scheme_id','md_scheme_2.scheme_name as scheme_name_to','md_scheme_2.id as scheme_id_to',
-                            'md_client.client_code as first_client_code','md_client.client_name as first_client_name','md_client.pan as first_client_pan','md_client.client_type as first_client_type',
+                            'md_client.client_code as first_client_code',
+                            'md_client.country_id as first_client_country_id',
+                            'md_client.state as first_client_state_id',
+                            'md_client.dist as first_client_district_id',
+                            'md_client.city as first_client_city_id',
+                        'md_client.client_type_mode as change_status_id',
+                        'md_client.pincode as first_client_pincode',
+                            'md_client.mobile as first_client_mob',
+                            'md_client.email as first_client_email',
+                            'md_client.add_line_1 as first_client_add_line_1',
+                            'md_client.add_line_2 as first_client_add_line_2',
+                            'md_client.client_name as first_client_name','md_client.pan as first_client_pan','md_client.client_type as first_client_type',
                             'md_client_2.client_code as second_client_code','md_client_2.client_name as second_client_name','md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
                             'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to',
                             'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_branch.brn_name as branch_name',
@@ -550,7 +662,18 @@ class FinancialController extends Controller
                         ->leftJoin('md_branch','md_branch.id','=','td_form_received.branch_code')
                         ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','td_form_received.application_no as application_no',
                         'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme.id as scheme_id','md_scheme_2.scheme_name as scheme_name_to','md_scheme_2.id as scheme_id_to',
-                        'md_client.client_code as first_client_code','md_client.client_name as first_client_name','md_client.pan as first_client_pan','md_client.client_type as first_client_type',
+                        'md_client.client_code as first_client_code',
+                        'md_client.country_id as first_client_country_id',
+                        'md_client.state as first_client_state_id',
+                        'md_client.client_type_mode as change_status_id',
+                        'md_client.dist as first_client_district_id',
+                        'md_client.city as first_client_city_id',
+                        'md_client.pincode as first_client_pincode',
+                        'md_client.mobile as first_client_mob',
+                        'md_client.email as first_client_email',
+                        'md_client.add_line_1 as first_client_add_line_1',
+                        'md_client.add_line_2 as first_client_add_line_2',
+                        'md_client.client_name as first_client_name','md_client.pan as first_client_pan','md_client.client_type as first_client_type',
                         'md_client_2.client_code as second_client_code','md_client_2.client_name as second_client_name','md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
                         'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to',
                         'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_branch.brn_name as branch_name',
@@ -579,7 +702,18 @@ class FinancialController extends Controller
                         ->leftJoin('md_branch','md_branch.id','=','td_form_received.branch_code')
                         ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','td_form_received.application_no as application_no',
                         'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme.id as scheme_id','md_scheme_2.scheme_name as scheme_name_to','md_scheme_2.id as scheme_id_to',
-                        'md_client.client_code as first_client_code','md_client.client_name as first_client_name','md_client.pan as first_client_pan','md_client.client_type as first_client_type',
+                        'md_client.client_code as first_client_code',
+                        'md_client.country_id as first_client_country_id',
+                        'md_client.state as first_client_state_id',
+                        'md_client.dist as first_client_district_id',
+                        'md_client.city as first_client_city_id',
+                        'md_client.client_type_mode as change_status_id',
+                        'md_client.mobile as first_client_mob',
+                        'md_client.email as first_client_email',
+                        'md_client.pincode as first_client_pincode',
+                        'md_client.add_line_1 as first_client_add_line_1',
+                        'md_client.add_line_2 as first_client_add_line_2',
+                        'md_client.client_name as first_client_name','md_client.pan as first_client_pan','md_client.client_type as first_client_type',
                         'md_client_2.client_code as second_client_code','md_client_2.client_name as second_client_name','md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
                         'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to',
                         'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_branch.brn_name as branch_name',
@@ -631,7 +765,8 @@ class FinancialController extends Controller
                     ->leftJoin('md_branch','md_branch.id','=','td_form_received.branch_code')
                     ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','td_form_received.application_no as application_no',
                     'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme.id as scheme_id','md_scheme_2.scheme_name as scheme_name_to','md_scheme_2.id as scheme_id_to',
-                    'md_client.client_code as first_client_code','md_client.client_name as first_client_name','md_client.pan as first_client_pan','md_client.client_type as first_client_type',
+                    'md_client.client_code as first_client_code','md_client.client_name as first_client_name',
+                    'md_client.pan as first_client_pan','md_client.client_type as first_client_type',
                     'md_client_2.client_code as second_client_code','md_client_2.client_name as second_client_name','md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
                     'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to',
                     'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_branch.brn_name as branch_name',
@@ -666,7 +801,8 @@ class FinancialController extends Controller
                     ->leftJoin('md_branch','md_branch.id','=','td_form_received.branch_code')
                     ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','td_form_received.application_no as application_no',
                     'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme.id as scheme_id','md_scheme_2.scheme_name as scheme_name_to','md_scheme_2.id as scheme_id_to',
-                    'md_client.client_code as first_client_code','md_client.client_name as first_client_name','md_client.pan as first_client_pan','md_client.client_type as first_client_type',
+                    'md_client.client_code as first_client_code','md_client.client_name as first_client_name',
+                    'md_client.pan as first_client_pan','md_client.client_type as first_client_type',
                     'md_client_2.client_code as second_client_code','md_client_2.client_name as second_client_name','md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
                     'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to',
                     'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_branch.brn_name as branch_name',
@@ -694,7 +830,9 @@ class FinancialController extends Controller
                     ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','td_form_received.application_no as application_no',
                     'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme.id as scheme_id','md_scheme_2.scheme_name as scheme_name_to','md_scheme_2.id as scheme_id_to',
                     'md_client.client_code as first_client_code','md_client.client_name as first_client_name','md_client.pan as first_client_pan','md_client.client_type as first_client_type',
-                    'md_client_2.client_code as second_client_code','md_client_2.client_name as second_client_name','md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
+                    'md_client_2.client_code as second_client_code','md_client_2.client_name as second_client_name',
+                    'md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
+
                     'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to',
                     'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_branch.brn_name as branch_name',
                     'md_deposit_bank.bank_name as bank_name','md_deposit_bank.ifs_code as ifs_code','md_deposit_bank.micr_code as micr_code','md_deposit_bank.branch_name as chq_branch_name','md_deposit_bank.branch_addr as chq_branch_addr',
@@ -720,7 +858,8 @@ class FinancialController extends Controller
                     ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','td_form_received.application_no as application_no',
                     'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme.id as scheme_id','md_scheme_2.scheme_name as scheme_name_to','md_scheme_2.id as scheme_id_to',
                     'md_client.client_code as first_client_code','md_client.client_name as first_client_name','md_client.pan as first_client_pan','md_client.client_type as first_client_type',
-                    'md_client_2.client_code as second_client_code','md_client_2.client_name as second_client_name','md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
+                    'md_client_2.client_code as second_client_code','md_client_2.client_name as second_client_name',
+                    'md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
                     'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to',
                     'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_branch.brn_name as branch_name',
                     'md_deposit_bank.bank_name as bank_name','md_deposit_bank.ifs_code as ifs_code','md_deposit_bank.micr_code as micr_code','md_deposit_bank.branch_name as chq_branch_name','md_deposit_bank.branch_addr as chq_branch_addr',
@@ -1023,6 +1162,7 @@ class FinancialController extends Controller
                         $up_data->dist=$request->dist;
                         $up_data->state=$request->state;
                         $up_data->pincode=$request->pincode;
+                        $up_data->country_id=$request->country_id;
                         $up_data->save();
                     }
 
@@ -1103,6 +1243,9 @@ class FinancialController extends Controller
                             ->orderBy('td_mutual_fund.created_at','ASC')
                             ->get();
                     }
+
+
+
 
                     // END only for non financial changes
                 }
@@ -1275,18 +1418,17 @@ class FinancialController extends Controller
                     $up_data->dist=$request->dist;
                     $up_data->state=$request->state;
                     $up_data->pincode=$request->pincode;
+                    $up_data->country_id=$request->country_id;
                     $up_data->save();
                 }
 
                 if ($data->trans_id==23) {  // name change
                     $first_client_id=$data->first_client_id;
                     $up_data=Client::find($first_client_id);
-
                     $client_name=ucwords($request->new_name);
                     $words = explode(" ",$client_name);
                     $client_code="";
                     $client_code_1 = mb_substr($words[0], 0, 1).mb_substr($words[(count($words)-1)], 0, 1);;
-
                     $is_has=Client::where('client_code',$client_code_1)->get();
                     if (count($is_has)>0) {
                         $client_code=$client_code_1.date('dmy',strtotime($up_data->dob)).count($is_has);
@@ -1354,6 +1496,14 @@ class FinancialController extends Controller
                         ->orderBy('td_mutual_fund.created_at','ASC')
                         ->get();
                 }
+
+                if($data->trans_id == 18){
+                    $up_data=Client::find($first_client_id);
+                    $up_data->email = ($request->change_contact_type == 'B' || $request->change_contact_type == 'E') ? $request->email : $up_data->email;
+                    $up_data->mobile = ($request->change_contact_type == 'B' || $request->change_contact_type == 'M') ? $request->mobile : $up_data->mobile;
+                    $up_data->save();
+                }
+
 
 
 
