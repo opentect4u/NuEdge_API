@@ -324,5 +324,17 @@ Route::prefix('v1')->group(function () {
         Route::get('nfoTOongoing',[App\Http\Controllers\v1\Cron\SchemeController::class,'nfoTOongoing']);
 
         
+        /*********************************** start Mail Back Process ************************ */
+        // Route::post('uploadTransDetails',[App\Http\Controllers\v1\Operation\TransactionDetailsController::class,'upload']);
+        Route::post('mailbackProcess',[App\Http\Controllers\v1\Master\MailBackController::class,'upload']);
+        Route::any('mailbackProcessDetails',[App\Http\Controllers\v1\Master\MailBackController::class,'Details']);
+        Route::post('showTransDetails',[App\Http\Controllers\v1\Operation\TransactionDetailsController::class,'search']);
+        
+        /*********************************** start Mail Back Process ************************ */
+
+        Route::prefix('client')->group(function () {
+
+        });
+
     // });
 });

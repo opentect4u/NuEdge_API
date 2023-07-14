@@ -180,6 +180,7 @@ class SchemeISINController extends Controller
                         'plan_id'=>$value->plan_id,
                         'option_id'=>$value->option_id,
                         'isin_no'=>$value->isin_no,
+                        'product_code'=>$value->product_code,
                         // 'created_by'=>'',
                     ));
                 }else {
@@ -188,6 +189,7 @@ class SchemeISINController extends Controller
                     $dt->plan_id=$value->plan_id;
                     $dt->option_id=$value->option_id;
                     $dt->isin_no=$value->isin_no;
+                    $dt->product_code=$value->product_code;
                     $dt->save();
                 }  
                 $sc_data=SchemeISIN::leftjoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')

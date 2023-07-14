@@ -257,6 +257,7 @@ class AMCController extends Controller
 
                 $data->rnt_id=$request->rnt_id;
                 $data->product_id=$request->product_id;
+                $data->amc_code=$request->amc_code;
                 $data->amc_name=$request->amc_name;
                 $data->gstin=$request->gstin;
                 $data->website=$request->website;
@@ -316,6 +317,7 @@ class AMCController extends Controller
                     $data=AMC::create(array(
                         'rnt_id'=>$request->rnt_id,
                         'product_id'=>$request->product_id,
+                        'amc_code'=>$request->amc_code,
                         'amc_name'=>$request->amc_name,
                         'gstin'=>$request->gstin,
                         'website'=>$request->website,

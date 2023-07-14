@@ -14,6 +14,7 @@ class SchemeISIN extends Model
         'plan_id',
         'option_id',
         'isin_no',
+        'product_code',
         'delete_flag',
         'deleted_date',
         'deleted_by',

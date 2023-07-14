@@ -12,6 +12,7 @@ class AMC extends Model
     protected $fillable = [
         'rnt_id',
         'product_id',
+        'amc_code',
         'amc_name',
         'gstin',
         'website',
