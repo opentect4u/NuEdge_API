@@ -83,68 +83,188 @@ class MailBackController extends Controller
                     'process_date'=>date('Y-m-d H:i:s'),
                     'process_type'=>'M',
                 ));
+                $id=$create_dt->id;
+            }else {
+                $id=$request->row_id;
+                $upload_file_name=$request->upload_file_name;
             }
+            
             $upload_data=MailbackProcess::leftJoin('md_rnt','md_rnt.id','=','md_mailback_process.rnt_id')
                     ->select('md_mailback_process.*','md_rnt.rnt_name')
                     ->where('md_mailback_process.process_type','M')
-                    ->where('md_mailback_process.id',$create_dt->id)
+                    ->where('md_mailback_process.id',$id)
                     ->orderBy('process_date','DESC')
                     ->first();
             
             $file_name=public_path('mailback/manual/'.$upload_file_name);
-            $datas = Excel::toArray([],  $file_name);
-            // $datas = Excel::toArray([],  $upload_file);
-            // return $datas;
-            $data=$datas[0];
+
+
+            // $file = fopen($file_name, 'r');
+            // $myarray=[];
+            // for ($i=0; $i < ($line = fgetcsv($file)); $i++) { 
+            //     return $line;
+            // }
+            // while (($line = fgetcsv($file)) !== FALSE) {
+            //     //$line is an array of the csv elements
+               
+            //     return $line;
+            //     print_r($line);
+            //     array_push($myarray,$line);
+            // }
+            // fclose($file);
+            // return $myarray;
+            // return $arrayFromCSV;
+
+            // $datas = Excel::toArray([],  $file_name);
+            // // return $datas;
+            // $data=$datas[0];
             // return $data[0];
+            $start_count=$request->start_count;
+            $end_count=$request->end_count;
+            // $end_count=500;
+            $data =  array_map('str_getcsv', file($file_name));
+            
             foreach ($data as $key => $value) {
-                // return $data;
+                // return $value;
                 if ($key > 0) {
                     // return $value;
                     // return str_replace("'","", $value[11]);
                     // return Carbon::parse(str_replace("'","",$value[11]))->format('Y-m-d H:i:s');
-                    MutualFundTransaction::create(array(
-                        'arn_no'=>str_replace("'","",$value[16]),
-                        'sub_brk_cd'=>str_replace("'","",$value[17]),
-                        'euin_no'=>str_replace("'","",$value[56]),
-                        'first_client_name'=>str_replace("'","",$value[4]),
-                        'first_client_pan'=>str_replace("'","",$value[42]),
-                        'amc_code'=>str_replace("'","",$value[0]),
-                        'folio_no'=>str_replace("'","",$value[1]),
-                        'product_code'=>str_replace("'","",$value[2]),
-                        'trans_no'=>str_replace("'","",$value[6]),
-                        'trans_mode'=>str_replace("'","",$value[7]),
-                        'trans_status'=>str_replace("'","",$value[8]),
-                        'user_trans_no'=>str_replace("'","",$value[10]),
-                        'trans_date'=>Carbon::parse(str_replace("'","",$value[11]))->format('Y-m-d H:i:s'),
-                        'post_date'=>Carbon::parse(str_replace("'","",$value[12]))->format('Y-m-d H:i:s'),
-                        'pur_price'=>str_replace("'","",$value[13]),
-                        'units'=>str_replace("'","",$value[14]),
-                        'amount'=>str_replace("'","",$value[15]),
-                        'rec_date'=>Carbon::parse(str_replace("'","",$value[21]))->format('Y-m-d H:i:s'),
-                        'trans_type'=>str_replace("'","",$value[5]),
-                        'trans_sub_type'=>str_replace("'","",$value[23]),
-                        'trans_nature'=>str_replace("'","",$value[25]),
-                        'te_15h'=>str_replace("'","",$value[28]),
-                        'micr_code'=>str_replace("'","",$value[29]),
-                        'remarks'=>str_replace("'","",$value[30]),
-                        'sw_flag'=>str_replace("'","",$value[31]),
-                        'old_folio'=>str_replace("'","",$value[32]),
-                        'seq_no'=>str_replace("'","",$value[33]),
-                        'reinvest_flag'=>str_replace("'","",$value[34]),
-                        'stt'=>str_replace("'","",$value[36]),
-                        'stamp_duty'=>str_replace("'","",$value[74]),
-                        'tds'=>' ',
-                        'acc_no'=>str_replace("'","",$value[63]),
-                        'bank_name'=>str_replace("'","",$value[64]),
-                    ));
+                    if ($key>=$start_count && $key<=$end_count) {
+
+                        if ($rnt_id==1) { // cams
+                            if ($file_type_id==1 && $file_id=1) {  // transction  WBR2
+                                MutualFundTransaction::create(array(
+                                    'arn_no'=>str_replace("'","",$value[16]),
+                                    'sub_brk_cd'=>str_replace("'","",$value[17]),
+                                    'euin_no'=>str_replace("'","",$value[56]),
+                                    'first_client_name'=>str_replace("'","",$value[4]),
+                                    'first_client_pan'=>str_replace("'","",$value[42]),
+                                    'amc_code'=>str_replace("'","",$value[0]),
+                                    'folio_no'=>str_replace("'","",$value[1]),
+                                    'product_code'=>str_replace("'","",$value[2]),
+                                    'trans_no'=>str_replace("'","",$value[6]),
+                                    'trans_mode'=>str_replace("'","",$value[7]),
+                                    'trans_status'=>str_replace("'","",$value[8]),
+                                    'user_trans_no'=>str_replace("'","",$value[10]),
+                                    'trans_date'=>Carbon::parse(str_replace("'","",$value[11]))->format('Y-m-d H:i:s'),
+                                    'post_date'=>Carbon::parse(str_replace("'","",$value[12]))->format('Y-m-d H:i:s'),
+                                    'pur_price'=>str_replace("'","",$value[13]),
+                                    'units'=>str_replace("'","",$value[14]),
+                                    'amount'=>str_replace("'","",$value[15]),
+                                    'rec_date'=>Carbon::parse(str_replace("'","",$value[21]))->format('Y-m-d H:i:s'),
+                                    'trans_type'=>str_replace("'","",$value[5]),
+                                    'trans_sub_type'=>str_replace("'","",$value[23]),
+                                    'trans_nature'=>str_replace("'","",$value[25]),
+                                    'te_15h'=>str_replace("'","",$value[28]),
+                                    'micr_code'=>str_replace("'","",$value[29]),
+                                    'remarks'=>str_replace("'","",$value[30]),
+                                    'sw_flag'=>str_replace("'","",$value[31]),
+                                    'old_folio'=>str_replace("'","",$value[32]),
+                                    'seq_no'=>str_replace("'","",$value[33]),
+                                    'reinvest_flag'=>str_replace("'","",$value[34]),
+                                    'stt'=>str_replace("'","",$value[36]),
+                                    'stamp_duty'=>str_replace("'","",$value[74]),
+                                    'tds'=>' ',
+                                    'acc_no'=>str_replace("'","",$value[63]),
+                                    'bank_name'=>str_replace("'","",$value[64]),
+                                ));
+                            }
+                        }else if($rnt_id==2){  // Kafe
+                            if ($file_type_id==1 && $file_id=3) {  // transction MFSD201
+                                // return Carbon::parse(str_replace("/","-",$value[49]))->format('Y-m-d H:i:s');
+                                MutualFundTransaction::create(array(
+                                    'arn_no'=>$value[19],
+                                    'sub_brk_cd'=>$value[20],
+                                    'euin_no'=>$value[70],
+                                    'first_client_name'=>$value[9],
+                                    'first_client_pan'=>$value[47],
+                                    'amc_code'=>$value[1],
+                                    'folio_no'=>$value[2],
+                                    'product_code'=>$value[0],
+                                    'trans_no'=>$value[6],
+                                    'trans_mode'=>$value[10],
+                                    'trans_status'=>$value[11],
+                                    'user_trans_no'=>$value[39],
+                                    'trans_date'=>Carbon::parse(str_replace("/","-",$value[49]))->format('Y-m-d H:i:s'),
+                                    'post_date'=>Carbon::parse(str_replace("/","-",$value[15]))->format('Y-m-d H:i:s'),
+                                    'pur_price'=>$value[16],
+                                    'units'=>$value[17],
+                                    'amount'=>$value[18],
+                                    'rec_date'=>Carbon::parse(str_replace("/","-",$value[24]))->format('Y-m-d H:i:s'),
+                                    'trans_type'=>' ',
+                                    'trans_sub_type'=>'',
+                                    'trans_nature'=>$value[29],
+                                    'te_15h'=>' ',
+                                    'micr_code'=>' ',
+                                    'remarks'=>$value[48],
+                                    'sw_flag'=>' ',
+                                    'old_folio'=>' ',
+                                    'seq_no'=>' ',
+                                    'reinvest_flag'=>' ',
+                                    'stt'=>$value[40],
+                                    'stamp_duty'=>$value[85],
+                                    'tds'=>$value[52],
+                                    'acc_no'=>$value[78],
+                                    'bank_name'=>$value[64],
+                                ));
+                            }
+                        }
+                    }
                 }
             }
-            // $data=[];
+            
+            $dataArray=[];
+            $dataArray['upload_data']=$upload_data;
+            $dataArray['start_count']=$start_count;
+            $dataArray['end_count']=$end_count;
+            $dataArray['upload_file_name']=$upload_file_name;
+            $dataArray['row_id']=$id;
+            $dataArray['total_count']=count($data);
+
         } catch (\Throwable $th) {
             throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
-        return Helper::SuccessResponse($upload_data);
+        return Helper::SuccessResponse($dataArray);
+    }
+
+    public function createData($value)
+    {
+        MutualFundTransaction::create(array(
+            'arn_no'=>str_replace("'","",$value[16]),
+            'sub_brk_cd'=>str_replace("'","",$value[17]),
+            'euin_no'=>str_replace("'","",$value[56]),
+            'first_client_name'=>str_replace("'","",$value[4]),
+            'first_client_pan'=>str_replace("'","",$value[42]),
+            'amc_code'=>str_replace("'","",$value[0]),
+            'folio_no'=>str_replace("'","",$value[1]),
+            'product_code'=>str_replace("'","",$value[2]),
+            'trans_no'=>str_replace("'","",$value[6]),
+            'trans_mode'=>str_replace("'","",$value[7]),
+            'trans_status'=>str_replace("'","",$value[8]),
+            'user_trans_no'=>str_replace("'","",$value[10]),
+            'trans_date'=>Carbon::parse(str_replace("'","",$value[11]))->format('Y-m-d H:i:s'),
+            'post_date'=>Carbon::parse(str_replace("'","",$value[12]))->format('Y-m-d H:i:s'),
+            'pur_price'=>str_replace("'","",$value[13]),
+            'units'=>str_replace("'","",$value[14]),
+            'amount'=>str_replace("'","",$value[15]),
+            'rec_date'=>Carbon::parse(str_replace("'","",$value[21]))->format('Y-m-d H:i:s'),
+            'trans_type'=>str_replace("'","",$value[5]),
+            'trans_sub_type'=>str_replace("'","",$value[23]),
+            'trans_nature'=>str_replace("'","",$value[25]),
+            'te_15h'=>str_replace("'","",$value[28]),
+            'micr_code'=>str_replace("'","",$value[29]),
+            'remarks'=>str_replace("'","",$value[30]),
+            'sw_flag'=>str_replace("'","",$value[31]),
+            'old_folio'=>str_replace("'","",$value[32]),
+            'seq_no'=>str_replace("'","",$value[33]),
+            'reinvest_flag'=>str_replace("'","",$value[34]),
+            'stt'=>str_replace("'","",$value[36]),
+            'stamp_duty'=>str_replace("'","",$value[74]),
+            'tds'=>' ',
+            'acc_no'=>str_replace("'","",$value[63]),
+            'bank_name'=>str_replace("'","",$value[64]),
+        ));
     }
 }
