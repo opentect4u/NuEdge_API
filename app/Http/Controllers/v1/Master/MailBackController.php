@@ -125,7 +125,7 @@ class MailBackController extends Controller
             $data =  array_map('str_getcsv', file($file_name));
             
             foreach ($data as $key => $value) {
-                // return $value;
+                return $value;
                 if ($key > 0) {
                     // return $value;
                     // return str_replace("'","", $value[11]);
@@ -175,8 +175,8 @@ class MailBackController extends Controller
                                 // return Carbon::parse(str_replace("/","-",$value[49]))->format('Y-m-d H:i:s');
                                 MutualFundTransaction::create(array(
                                     'arn_no'=>$value[19],
-                                    'sub_brk_cd'=>$value[20],
-                                    'euin_no'=>$value[70],
+                                    'sub_brk_cd'=>isset($value[20])?$value[20]:NULL,
+                                    'euin_no'=>isset($value[70])?$value[70]:NULL,
                                     'first_client_name'=>$value[9],
                                     'first_client_pan'=>$value[47],
                                     'amc_code'=>$value[1],
@@ -192,21 +192,23 @@ class MailBackController extends Controller
                                     'units'=>$value[17],
                                     'amount'=>$value[18],
                                     'rec_date'=>Carbon::parse(str_replace("/","-",$value[24]))->format('Y-m-d H:i:s'),
-                                    'trans_type'=>' ',
-                                    'trans_sub_type'=>'',
+                                    'trans_desc'=>$value[29],
+                                    'trans_type'=>$value[30],
+                                    'trans_sub_type'=>NULL,
+                                    'trans_flag'=>$value[37],
                                     'trans_nature'=>$value[29],
-                                    'te_15h'=>' ',
-                                    'micr_code'=>' ',
-                                    'remarks'=>$value[48],
-                                    'sw_flag'=>' ',
-                                    'old_folio'=>' ',
-                                    'seq_no'=>' ',
-                                    'reinvest_flag'=>' ',
-                                    'stt'=>$value[40],
-                                    'stamp_duty'=>$value[85],
-                                    'tds'=>$value[52],
-                                    'acc_no'=>$value[78],
-                                    'bank_name'=>$value[64],
+                                    'te_15h'=>NULL,
+                                    'micr_code'=>NULL,
+                                    'sw_flag'=>NULL,
+                                    'old_folio'=>NULL,
+                                    'seq_no'=>NULL,
+                                    'reinvest_flag'=>NULL,
+                                    'stt'=>isset($value[40])?$value[40]:NULL,
+                                    'stamp_duty'=>isset($value[85])?$value[85]:NULL,
+                                    'tds'=>isset($value[52])?$value[52]:NULL,
+                                    'acc_no'=>isset($value[78])?$value[78]:NULL,
+                                    'bank_name'=>isset($value[64])?$value[64]:NULL,
+                                    'remarks'=>isset($value[48])?$value[48]:NULL,
                                 ));
                             }
                         }
@@ -221,6 +223,7 @@ class MailBackController extends Controller
             $dataArray['upload_file_name']=$upload_file_name;
             $dataArray['row_id']=$id;
             $dataArray['total_count']=count($data);
+            $dataArray['upload_progressDtls']=json_decode($request->upload_progressDtls);
 
         } catch (\Throwable $th) {
             throw $th;

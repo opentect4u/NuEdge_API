@@ -29,12 +29,13 @@ class MutualFundTransaction extends Model
         'units',
         'amount',
         'rec_date',
+        'trans_desc',
         'trans_type',
         'trans_sub_type',
+        'trans_flag',
         'trans_nature',
         'te_15h',
         'micr_code',
-        'remarks',
         'sw_flag',
         'old_folio',
         'seq_no',
@@ -44,6 +45,6 @@ class MutualFundTransaction extends Model
         'tds',
         'acc_no',
         'bank_name',
-        
+        'remarks',
     ];
 }
