@@ -97,7 +97,7 @@ class MailBackController extends Controller
                     ->first();
             
             $file_name=public_path('mailback/manual/'.$upload_file_name);
-
+            // return  $file_name;
 
             // $file = fopen($file_name, 'r');
             // $myarray=[];
@@ -123,9 +123,9 @@ class MailBackController extends Controller
             $end_count=$request->end_count;
             // $end_count=500;
             $data =  array_map('str_getcsv', file($file_name));
-            
+            // return $data;
             foreach ($data as $key => $value) {
-                return $value;
+                // return $value;
                 if ($key > 0) {
                     // return $value;
                     // return str_replace("'","", $value[11]);
@@ -153,9 +153,9 @@ class MailBackController extends Controller
                                     'units'=>str_replace("'","",$value[14]),
                                     'amount'=>str_replace("'","",$value[15]),
                                     'rec_date'=>Carbon::parse(str_replace("'","",$value[21]))->format('Y-m-d H:i:s'),
-                                    'trans_type'=>str_replace("'","",$value[5]),
-                                    'trans_sub_type'=>str_replace("'","",$value[23]),
-                                    'trans_nature'=>str_replace("'","",$value[25]),
+                                    'trxn_type'=>str_replace("'","",$value[5]),
+                                    'trxn_type_flag'=>str_replace("'","",$value[45]),
+                                    'trxn_nature'=>str_replace("'","",$value[25]),
                                     'te_15h'=>str_replace("'","",$value[28]),
                                     'micr_code'=>str_replace("'","",$value[29]),
                                     'remarks'=>str_replace("'","",$value[30]),
@@ -192,11 +192,11 @@ class MailBackController extends Controller
                                     'units'=>$value[17],
                                     'amount'=>$value[18],
                                     'rec_date'=>Carbon::parse(str_replace("/","-",$value[24]))->format('Y-m-d H:i:s'),
-                                    'trans_desc'=>$value[29],
-                                    'trans_type'=>$value[30],
-                                    'trans_sub_type'=>NULL,
+                                    'kf_trans_type'=>$value[30],
                                     'trans_flag'=>$value[37],
-                                    'trans_nature'=>$value[29],
+                                    'trans_desc'=>$value[29], // Transction Description
+
+
                                     'te_15h'=>NULL,
                                     'micr_code'=>NULL,
                                     'sw_flag'=>NULL,
