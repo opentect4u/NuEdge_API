@@ -5,7 +5,7 @@ use DB;
 
 class TransHelper{
 
-    public function transSubTypeKFIN($trans_sub_type_code,$trans_flag)
+    public static function transSubTypeKFIN($trans_sub_type_code,$trans_flag)
     {
         $sub_type_name="";
         switch ($trans_sub_type_code) {
@@ -164,7 +164,7 @@ class TransHelper{
         return $sub_type_name;
     }
 
-    public function transTypeToCodeCAMS($trxn_type)
+    public static function transTypeToCodeCAMS($trxn_type)
     {
         $trxn_type_code="";
         if (str_starts_with($trxn_type, 'P')) {
@@ -189,7 +189,7 @@ class TransHelper{
         return $trxn_type_code;
     }
 
-    public function trxnNatureCodeCAMS($trxn_nature)
+    public static function trxnNatureCodeCAMS($trxn_nature)
     {
         $trxn_nature_code="";
         if (str_starts_with($trxn_nature, 'Systematic')) {
