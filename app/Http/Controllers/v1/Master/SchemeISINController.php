@@ -324,7 +324,7 @@ class SchemeISINController extends Controller
             $scheme_type=$request->scheme_type;
             $path = $request->file('file')->getRealPath();
             $data = array_map('str_getcsv', file($path));
-            // return $data;
+            return $data;
             // $datas = Excel::toArray([],  $request->file('file'));
             // $data=$datas[0];
             // return $datas[0];
