@@ -5,7 +5,7 @@ use DB;
 
 class Helper{
 
-    public function SuccessResponse($data)
+    public static function SuccessResponse($data)
     {
         return response()->json([
             'suc'=>1,
@@ -14,7 +14,7 @@ class Helper{
         ],200);
     }
 
-    public function ErrorResponse($msg)
+    public static function ErrorResponse($msg)
     {
         return response()->json([
             'suc'=>0,
@@ -22,7 +22,7 @@ class Helper{
             'data'=>[]
         ],400);
     }
-    public function WarningResponse($msg)
+    public static function WarningResponse($msg)
     {
         return response()->json([
             'suc'=>0,
@@ -30,7 +30,7 @@ class Helper{
             'data'=>[]
         ],201);
     }
-    public function ipWhitelist($ip)
+    public static function ipWhitelist($ip)
     {
         return response()->json([
             'suc'=>10,
@@ -39,12 +39,12 @@ class Helper{
         ],400);
     }
 
-    public function CommonParamValue($id)
+    public static function CommonParamValue($id)
     {
         return DB::table('md_parameters')->where('sl_no',$id)->value('param_value');
     }
 
-    public function TempTINGen($val,$product_id)
+    public static function TempTINGen($val,$product_id)
     {
         if ($product_id==1) {  // MUTUAL FUND
             $tin='MFT00'.$val;
@@ -56,7 +56,7 @@ class Helper{
         return $tin;
     }
 
-    public function GenTIN($product_id,$trans_type_id,$val)
+    public static function GenTIN($product_id,$trans_type_id,$val)
     {
         if ($product_id==1) {  // MUTUAL FUND
             if ($trans_type_id==1) {  // Financial
@@ -76,7 +76,7 @@ class Helper{
         return $tin;
     }
 
-    public function encrypt($inputFile, $outputFile, $password, $ownerPassword = null)
+    public static function encrypt($inputFile, $outputFile, $password, $ownerPassword = null)
     {
         $mpdf = new \Mpdf\Mpdf();
 
@@ -104,14 +104,14 @@ class Helper{
         $mpdf->Output($outputFile, \Mpdf\Output\Destination::FILE, );
     }
 
-    public function getBranchCode()
+    public static function getBranchCode()
     {
         $branch_cd=1;
         return $branch_cd;
     }
 
     // seatch from date to to date 
-    public function FrmToDateRawQuery($from_date,$to_date,$rawQuery,$queryString)
+    public static function FrmToDateRawQuery($from_date,$to_date,$rawQuery,$queryString)
     {
         $Query='';
         if ($from_date && $to_date) {
@@ -122,7 +122,7 @@ class Helper{
         return $Query;
     }
 
-    public function WhereRawQuery($row_name,$rawQuery,$queryString)
+    public static function WhereRawQuery($row_name,$rawQuery,$queryString)
     {
 
         $Query='';
@@ -137,7 +137,7 @@ class Helper{
         return $Query;
     }
 
-    public function RawQueryLike($row_name,$rawQuery,$queryString)
+    public static function RawQueryLike($row_name,$rawQuery,$queryString)
     {
         $Query='';
         if ($row_name) {
@@ -147,7 +147,7 @@ class Helper{
         return $Query;
     }
 
-    public function RawQueryOnlyMonth($row_name,$rawQuery,$queryString)
+    public static function RawQueryOnlyMonth($row_name,$rawQuery,$queryString)
     {
         $Query='';
         if ($row_name) {
@@ -157,7 +157,7 @@ class Helper{
         return $Query;
     }
 
-    public function RawQueryOnlyYear($row_name,$rawQuery,$queryString)
+    public static function RawQueryOnlyYear($row_name,$rawQuery,$queryString)
     {
         $Query='';
         if ($row_name) {
