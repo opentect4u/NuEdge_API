@@ -607,42 +607,44 @@ class SchemeController extends Controller
                 $data->stp_date=$stp_date;
                 $data->ava_special_sip=$request->ava_special_sip;
                 $data->special_sip_name=$request->special_sip_name;
+                $data->benchmark=isset($request->benchmark)?$request->benchmark:NULL;
                 $data->save();
 
-
-                $doc_names='';
-                $file=$request->form_upload;
-                if (count($request->row_id)>0) {
-                    foreach ($request->row_id as $key => $row_id) {
-                        if ($row_id!=null) {
-                            if ($row_id==0) {
-                                if ($file[$key]) {
-                                    $cv_path_extension=$file[$key]->getClientOriginalExtension();
-                                    $doc_names=microtime(true).".".$cv_path_extension;
-                                    $file[$key]->move(public_path('application-forms/'),$doc_names);
-                                }
-                                SchemeOtherForm::create(array(
-                                    'scheme_id'=>$data->id,
-                                    'form_name'=>$request->form_name[$key],
-                                    'form_upload'=>$doc_names,
-                                    // 'created_by'=>'',
-                                ));      
-                            } else {
-                                if ($file[$key]) {
-                                    $cv_path_extension=$file[$key]->getClientOriginalExtension();
-                                    $doc_names=microtime(true).".".$cv_path_extension;
-                                    $file[$key]->move(public_path('application-forms/'),$doc_names);
-                                }
-                                $data=SchemeOtherForm::find($row_id);
-                                if($data->doc_names!=null){
-                                    $filecv = public_path('application-forms/') . $data->doc_names;
-                                    if (file_exists($filecv) != null) {
-                                        unlink($filecv);
+                if ($request->scheme_type=='N') {
+                    $doc_names='';
+                    $file=$request->form_upload;
+                    if (count($request->row_id)>0) {
+                        foreach ($request->row_id as $key => $row_id) {
+                            if ($row_id!=null) {
+                                if ($row_id==0) {
+                                    if ($file[$key]) {
+                                        $cv_path_extension=$file[$key]->getClientOriginalExtension();
+                                        $doc_names=microtime(true).".".$cv_path_extension;
+                                        $file[$key]->move(public_path('application-forms/'),$doc_names);
                                     }
-                                } 
-                                $data->form_name=$request->form_name[$key];
-                                $data->form_upload=$doc_names;
-                                $data->save();
+                                    SchemeOtherForm::create(array(
+                                        'scheme_id'=>$data->id,
+                                        'form_name'=>$request->form_name[$key],
+                                        'form_upload'=>$doc_names,
+                                        // 'created_by'=>'',
+                                    ));      
+                                } else {
+                                    if ($file[$key]) {
+                                        $cv_path_extension=$file[$key]->getClientOriginalExtension();
+                                        $doc_names=microtime(true).".".$cv_path_extension;
+                                        $file[$key]->move(public_path('application-forms/'),$doc_names);
+                                    }
+                                    $data=SchemeOtherForm::find($row_id);
+                                    if($data->doc_names!=null){
+                                        $filecv = public_path('application-forms/') . $data->doc_names;
+                                        if (file_exists($filecv) != null) {
+                                            unlink($filecv);
+                                        }
+                                    } 
+                                    $data->form_name=$request->form_name[$key];
+                                    $data->form_upload=$doc_names;
+                                    $data->save();
+                                }
                             }
                         }
                     }
@@ -673,6 +675,7 @@ class SchemeController extends Controller
                             'stp_date'=>$stp_date,
                             'ava_special_sip'=>$request->ava_special_sip,
                             'special_sip_name'=>$request->special_sip_name,
+                            'benchmark'=>isset($request->benchmark)?$request->benchmark:NULL,
                             // 'created_by'=>'',
                         ));    
                     }elseif ($request->scheme_type=='N') {
@@ -760,6 +763,7 @@ class SchemeController extends Controller
                             'sip_registration'=>$doc_name_5,
                             'swp_registration'=>$doc_name_6,
                             'stp_registration'=>$doc_name_7,
+                            'benchmark'=>isset($request->benchmark)?$request->benchmark:NULL,
                             // 'growth_isin'=>$request->growth_isin,
                             // 'idcw_payout_isin'=>$request->idcw_payout_isin,
                             // 'idcw_reinvestment_isin'=>$request->idcw_reinvestment_isin,

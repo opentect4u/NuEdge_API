@@ -5,7 +5,18 @@ namespace App\Http\Controllers\v1\Master;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Helpers\Helper;
-use App\Models\{Scheme,MutualFund,FormReceived,AMC,Category,SubCategory,SchemeOtherForm,SchemeISIN};
+use App\Models\{
+    Scheme,
+    MutualFund,
+    FormReceived,
+    AMC,
+    Category,
+    SubCategory,
+    SchemeOtherForm,
+    SchemeISIN,
+    Plan,
+    Option
+};
 use Validator;
 use Excel;
 use App\Imports\SchemeImport;
@@ -38,6 +49,79 @@ class SchemeISINController extends Controller
                 } else {
                     $rawOrderBy=$field.' DESC';
                 }
+                if ($amc_id || $cat_id || $sub_cat_id || $scheme_id || $search_scheme_id || $plan_id || $opt_id) {
+                    $rawQuery='';
+                    if (!empty($amc_id)) {
+                        $amc_id_string= implode(',', $amc_id);
+                        if (strlen($rawQuery) > 0) {
+                            $rawQuery.=" AND md_scheme.amc_id IN (".$amc_id_string.")";
+                        }else {
+                            $rawQuery.=" md_scheme.amc_id IN (".$amc_id_string.")";
+                        }
+                    }
+                    if (!empty($cat_id)) {
+                        $cat_id_string= implode(',', $cat_id);
+                        if (strlen($rawQuery) > 0) {
+                            $rawQuery.=" AND md_scheme.category_id IN (".$cat_id_string.")";
+                        }else {
+                            $rawQuery.=" md_scheme.category_id IN (".$cat_id_string.")";
+                        }
+                    }
+                    if (!empty($sub_cat_id)) {
+                        $sub_cat_id_string= implode(',', $sub_cat_id);
+                        if (strlen($rawQuery) > 0) {
+                            $rawQuery.=" AND md_scheme.subcategory_id IN (".$sub_cat_id_string.")";
+                        }else {
+                            $rawQuery.=" md_scheme.subcategory_id IN (".$sub_cat_id_string.")";
+                        }
+                    }
+                    if ($search_scheme_id) {
+                        if (strlen($rawQuery) > 0) {
+                            $rawQuery.=" AND md_scheme_isin.scheme_id=".$search_scheme_id;
+                        }else {
+                            $rawQuery.=" md_scheme_isin.scheme_id=".$search_scheme_id;
+                        }
+                    }
+                    if (!empty($plan_id)) {
+                        $plan_id_string= implode(',', $plan_id);
+                        if (strlen($rawQuery) > 0) {
+                            $rawQuery.=" AND md_scheme_isin.plan_id IN (".$plan_id_string.")";
+                        }else {
+                            $rawQuery.=" md_scheme_isin.plan_id IN (".$plan_id_string.")";
+                        }
+                    }
+                    if (!empty($opt_id)) {
+                        $opt_id_string= implode(',', $opt_id);
+                        if (strlen($rawQuery) > 0) {
+                            $rawQuery.=" AND md_scheme_isin.option_id IN (".$opt_id_string.")";
+                        }else {
+                            $rawQuery.=" md_scheme_isin.option_id IN (".$opt_id_string.")";
+                        }
+                    }
+                    $data=SchemeISIN::leftjoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
+                        ->leftjoin('md_amc','md_amc.id','=','md_scheme.amc_id')
+                        ->leftjoin('md_category','md_category.id','=','md_scheme.category_id')
+                        ->leftjoin('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
+                        ->leftjoin('md_plan','md_plan.id','=','md_scheme_isin.plan_id')
+                        ->leftjoin('md_option','md_option.id','=','md_scheme_isin.option_id')
+                        ->select('md_scheme_isin.*','md_scheme.scheme_name as scheme_name','md_amc.amc_short_name as amc_short_name','md_amc.id as amc_id','md_category.cat_name as cat_name',
+                        'md_subcategory.subcategory_name as subcategory_name','md_plan.plan_name as plan_name','md_option.opt_name as opt_name')
+                        ->where('md_scheme_isin.delete_flag','N')
+                        ->whereRaw($rawQuery)
+                        ->paginate($paginate); 
+                }else {
+                    $data=SchemeISIN::leftjoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
+                        ->leftjoin('md_amc','md_amc.id','=','md_scheme.amc_id')
+                        ->leftjoin('md_category','md_category.id','=','md_scheme.category_id')
+                        ->leftjoin('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
+                        ->leftjoin('md_plan','md_plan.id','=','md_scheme_isin.plan_id')
+                        ->leftjoin('md_option','md_option.id','=','md_scheme_isin.option_id')
+                        ->select('md_scheme_isin.*','md_scheme.scheme_name as scheme_name','md_amc.amc_short_name as amc_short_name','md_amc.id as amc_id','md_category.cat_name as cat_name',
+                        'md_subcategory.subcategory_name as subcategory_name','md_plan.plan_name as plan_name','md_option.opt_name as opt_name')
+                        ->where('md_scheme_isin.delete_flag','N')
+                        ->orderByRaw($rawOrderBy)
+                        ->paginate($paginate); 
+                }
             }elseif ($amc_id || $cat_id || $sub_cat_id || $scheme_id || $search_scheme_id || $plan_id || $opt_id) {
                 $rawQuery='';
                 if (!empty($amc_id)) {
@@ -59,9 +143,9 @@ class SchemeISINController extends Controller
                 if (!empty($sub_cat_id)) {
                     $sub_cat_id_string= implode(',', $sub_cat_id);
                     if (strlen($rawQuery) > 0) {
-                        $rawQuery.=" AND md_scheme.category_id IN (".$sub_cat_id_string.")";
+                        $rawQuery.=" AND md_scheme.subcategory_id IN (".$sub_cat_id_string.")";
                     }else {
-                        $rawQuery.=" md_scheme.category_id IN (".$sub_cat_id_string.")";
+                        $rawQuery.=" md_scheme.subcategory_id IN (".$sub_cat_id_string.")";
                     }
                 }
                 if ($search_scheme_id) {
@@ -87,6 +171,7 @@ class SchemeISINController extends Controller
                         $rawQuery.=" md_scheme_isin.option_id IN (".$opt_id_string.")";
                     }
                 }
+                // return $rawQuery;
                 $data=SchemeISIN::leftjoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
                     ->leftjoin('md_amc','md_amc.id','=','md_scheme.amc_id')
                     ->leftjoin('md_category','md_category.id','=','md_scheme.category_id')
@@ -108,6 +193,7 @@ class SchemeISINController extends Controller
                     ->select('md_scheme_isin.*','md_scheme.scheme_name as scheme_name','md_amc.amc_short_name as amc_short_name','md_amc.id as amc_id','md_category.cat_name as cat_name',
                     'md_subcategory.subcategory_name as subcategory_name','md_plan.plan_name as plan_name','md_option.opt_name as opt_name')
                     ->where('md_scheme_isin.delete_flag','N')
+                    ->orderBy('md_scheme_isin.created_at','desc')
                     ->paginate($paginate); 
             }
 
@@ -236,10 +322,6 @@ class SchemeISINController extends Controller
         try {
             // return $request;
             $scheme_type=$request->scheme_type;
-            $amc_id=$request->amc_id;
-            $category_id=$request->category_id;
-            $subcategory_id=$request->subcategory_id;
-            $product_id=$request->product_id;
             // $path = $request->file('file')->getRealPath();
             // $data = array_map('str_getcsv', file($path));
             // return $data;
@@ -247,16 +329,41 @@ class SchemeISINController extends Controller
             // return $datas[0];
             $data=$datas[0];
 
-            if ($scheme_type=='O') {
-                
-            }else {
-                // return 'hii';
-               
+            foreach ($data as $key => $value) {
+                // return $value;
+                if ($key==0) {
+                    if (str_replace(" ","_",$value[0])!="Scheme_Name" && $value[1]!="Option" && $value[2]!="Plan" && $value[3]!="ISIN" && str_replace(" ","_",$value[4])!="Product_Code") {
+                        return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
+                    }
+                    // return $value;
+                }else {
+                    // return $value;
+                    $scheme_id=Scheme::where('scheme_name',$value[0])->value('id');
+                    $plan_id=Plan::where('plan_name',$value[1])->value('id');
+                    $option_id=Option::where('opt_name',$value[2])->value('id');
+
+                    $is_has=SchemeISIN::where('scheme_id',$scheme_id)
+                        ->where('plan_id',$plan_id)->where('option_id',$option_id)
+                        ->get();
+                    if (count($is_has) > 0) {
+                        $data=SchemeISIN::find($is_has[0]->id);
+                        $data->scheme_id=$scheme_id;
+                        $data->plan_id=$plan_id;
+                        $data->option_id=$option_id;
+                        $data->isin_no=$value[3];
+                        $data->product_code=$value[4];
+                        $data->save();
+                    }else {
+                        SchemeISIN::create(array(
+                            'scheme_id'=>$scheme_id,
+                            'plan_id'=>$plan_id,
+                            'option_id'=>$option_id,
+                            'isin_no'=>$value[3],
+                            'product_code'=>$value[4],
+                        ));
+                    }
+                }
             }
-
-
-
-
 
             // return gettype($data[0][0]) ;
             // if (in_array("rnt_id", $data)) {
@@ -270,7 +377,7 @@ class SchemeISINController extends Controller
             //     return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
             // }
         } catch (\Throwable $th) {
-            // throw $th;
+            throw $th;
             //return $value;
             return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
         }
