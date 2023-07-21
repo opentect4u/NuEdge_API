@@ -322,12 +322,12 @@ class SchemeISINController extends Controller
         try {
             // return $request;
             $scheme_type=$request->scheme_type;
-            // $path = $request->file('file')->getRealPath();
-            // $data = array_map('str_getcsv', file($path));
-            // return $data;
-            $datas = Excel::toArray([],  $request->file('file'));
-            $data=$datas[0];
-            return $datas[0];
+            $path = $request->file('file')->getRealPath();
+            $data = array_map('str_getcsv', file($path));
+            return $data;
+            // $datas = Excel::toArray([],  $request->file('file'));
+            // $data=$datas[0];
+            // return $datas[0];
 
             foreach ($data as $key => $value) {
                 return $value;
