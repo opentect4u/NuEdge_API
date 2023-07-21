@@ -330,7 +330,7 @@ class SchemeISINController extends Controller
             // return $datas[0];
 
             foreach ($data as $key => $value) {
-                return $value;
+                // return $value;
                 if ($key==0) {
                     if (str_replace(" ","_",$value[0])!="Scheme_Name" && $value[1]!="Option" && $value[2]!="Plan" && $value[3]!="ISIN" && str_replace(" ","_",$value[4])!="Product_Code") {
                         return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
