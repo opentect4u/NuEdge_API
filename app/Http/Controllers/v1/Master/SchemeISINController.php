@@ -339,8 +339,8 @@ class SchemeISINController extends Controller
                 }else {
                     // return $value;
                     $scheme_id=Scheme::where('scheme_name',$value[0])->value('id');
-                    $plan_id=Plan::where('plan_name',$value[1])->value('id');
-                    $option_id=Option::where('opt_name',$value[2])->value('id');
+                    $option_id=Option::where('opt_name',$value[1])->value('id');
+                    $plan_id=Plan::where('plan_name',$value[2])->value('id');
 
                     $is_has=SchemeISIN::where('scheme_id',$scheme_id)
                         ->where('plan_id',$plan_id)->where('option_id',$option_id)
