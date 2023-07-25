@@ -115,16 +115,53 @@ class TransactionDetailsController extends Controller
     public function search(Request $request)
     {
         try {
-            if ($request->folio_no) {
+            $date_range=$request->date_range;
+            $folio_no=$request->folio_no;
+            $client_id=$request->client_id;
+            $pan_no=$request->pan_no;
+            $amc_id=json_decode($request->amc_id);
+            $cat_id=json_decode($request->cat_id);
+            $sub_cat_id=json_decode($request->sub_cat_id);
+            $scheme_id=json_decode($request->scheme_id);
+            $trans_type_id=json_decode($request->trans_type_id);
+            $trans_sub_type_id=json_decode($request->trans_sub_type_id);
+
+            if ($date_range || $folio_no || $pan_no || !empty($amc_id) || !empty($cat_id) || !empty($sub_cat_id) || !empty($scheme_id)) {
+                $rawQuery='';
+                if ($date_range) {
+                    $from_date=Carbon::parse(str_replace('/','-',explode("-",$date_range)[0]))->format('Y-m-d') ;
+                    $to_date=Carbon::parse(str_replace('/','-',explode("-",$date_range)[1]))->format('Y-m-d') ;
+                    // return $to_date;
+                    $queryString='td_mutual_fund_trans.trans_date';
+                    $rawQuery.=Helper::FrmToDateRawQuery($from_date,$to_date,$rawQuery,$queryString);
+                }
+
+                
+                $queryString='td_mutual_fund_trans.folio_no';
+                $rawQuery.=Helper::WhereRawQuery($folio_no,$rawQuery,$queryString);
+                $queryString='td_mutual_fund_trans.first_client_pan';
+                $rawQuery.=Helper::WhereRawQuery($pan_no,$rawQuery,$queryString);
+                $queryString='md_scheme.amc_id';
+                $rawQuery.=Helper::WhereRawQuery($amc_id,$rawQuery,$queryString);
+                $queryString='md_scheme.category_id';
+                $rawQuery.=Helper::WhereRawQuery($cat_id,$rawQuery,$queryString);
+                $queryString='md_scheme.subcategory_id';
+                $rawQuery.=Helper::WhereRawQuery($sub_cat_id,$rawQuery,$queryString);
+                $queryString='md_scheme_isin.scheme_id';
+                $rawQuery.=Helper::WhereRawQuery($scheme_id,$rawQuery,$queryString);
+                // return $rawQuery;
+                // $rawQuery=$this->filterCriteria($rawQuery,$from_date,$to_date,$tin_no,$proposer_name,$ins_type_id,$company_id,$product_type_id,$product_id,$insured_bu_type,$ack_status);
+
                 $all_data=MutualFundTransaction::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_mutual_fund_trans.product_code')
                     ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
                     ->leftJoin('md_category','md_category.id','=','md_scheme.category_id')
                     ->leftJoin('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
                     ->leftJoin('md_amc','md_amc.amc_code','=','td_mutual_fund_trans.amc_code')
                     ->select('td_mutual_fund_trans.*','md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name','md_amc.amc_short_name as amc_name')
-                    ->where('td_mutual_fund_trans.folio_no',$request->folio_no)
+                    // ->where('td_mutual_fund_trans.folio_no',$folio_no)
+                    ->whereRaw($rawQuery)
                     ->get();
-            } else {
+            }else {
                 $all_data=MutualFundTransaction::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_mutual_fund_trans.product_code')
                     ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
                     ->leftJoin('md_category','md_category.id','=','md_scheme.category_id')
@@ -133,9 +170,10 @@ class TransactionDetailsController extends Controller
                     ->select('td_mutual_fund_trans.*','md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name','md_amc.amc_short_name as amc_name')
                     ->orderBy('td_mutual_fund_trans.created_at','desc')
                     ->inRandomOrder()
-                    // ->take(50)
+                    ->take(200)
                     ->get();
             }
+            // return $all_data;
                 $data=[];
                 foreach ($all_data as $key => $value) {
                     $trxn_type=$value->trxn_type;
@@ -170,7 +208,7 @@ class TransactionDetailsController extends Controller
                             $get_type_subtype=MFTransTypeSubType::where('c_k_trans_sub_type',$kf_trans_type)
                                 ->where('k_divident_flag',$trans_flag)
                                 ->first();
-                        }else {
+                        } else {
                             $get_type_subtype=MFTransTypeSubType::where('c_k_trans_sub_type',$kf_trans_type)
                                 ->first();
                         }
@@ -180,9 +218,19 @@ class TransactionDetailsController extends Controller
                             $transaction_subtype=$get_type_subtype->trans_sub_type;
                         }
                     }
+                    $value->gross_amount= ((float)$amount + (float)$value->stamp_duty + (float)$value->tds);
                     $value->transaction_type=$transaction_type;
                     $value->transaction_subtype=$transaction_subtype;
-                    array_push($data,$value);
+
+                    if (!empty($trans_type_id) && in_array($transaction_type ,$trans_type_id) && !empty($trans_sub_type_id) && in_array($transaction_subtype ,$trans_sub_type_id)) {
+                        array_push($data,$value);
+                    }else if (!empty($trans_type_id) && in_array($transaction_type ,$trans_type_id)) {
+                        array_push($data,$value);
+                    }else if (!empty($transaction_subtype) && in_array($transaction_subtype ,$trans_sub_type_id)) {
+                        array_push($data,$value);
+                    }else{
+                        array_push($data,$value);
+                    }
                 }
         } catch (\Throwable $th) {
             throw $th;
@@ -221,5 +269,26 @@ class TransactionDetailsController extends Controller
     }
 
 
-
+    public function filterCriteria($rawQuery,$from_date,$to_date,$tin_no,$proposer_name,$ins_type_id,$company_id,$product_type_id,$product_id,$insured_bu_type,$ack_status)
+    {
+        $queryString='td_insurance.entry_date';
+        $rawQuery.=Helper::FrmToDateRawQuery($from_date,$to_date,$rawQuery,$queryString);
+        $queryString1='td_insurance.tin_no';
+        $rawQuery.=Helper::WhereRawQuery($tin_no,$rawQuery,$queryString1);
+        $queryString2='td_insurance.proposer_id';
+        $rawQuery.=Helper::WhereRawQuery($proposer_name,$rawQuery,$queryString2);
+        $queryString3='md_ins_products.ins_type_id';
+        $rawQuery.=Helper::WhereRawQuery($ins_type_id,$rawQuery,$queryString3);
+        $queryString4='td_insurance.company_id';
+        $rawQuery.=Helper::WhereRawQuery($company_id,$rawQuery,$queryString4);
+        $queryString5='td_insurance.product_type_id';
+        $rawQuery.=Helper::WhereRawQuery($product_type_id,$rawQuery,$queryString5);
+        $queryString6='td_insurance.product_id';
+        $rawQuery.=Helper::WhereRawQuery($product_id,$rawQuery,$queryString6);
+        $queryString7='td_ins_form_received.insure_bu_type';
+        $rawQuery.=Helper::WhereRawQuery($insured_bu_type,$rawQuery,$queryString7);
+        $queryString8='td_insurance.form_status';
+        $rawQuery.=Helper::WhereRawQuery($ack_status,$rawQuery,$queryString8);
+        return $rawQuery;
+    }
 }

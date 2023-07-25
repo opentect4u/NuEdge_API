@@ -331,6 +331,7 @@ Route::prefix('v1')->group(function () {
         Route::any('showTransDetails',[App\Http\Controllers\v1\Operation\TransactionDetailsController::class,'search']);
         
         Route::any('rntTransTypeSubtype',[App\Http\Controllers\v1\Master\MFTransTypeSubTypeController::class,'Details']);
+        Route::any('rntTransTypeSubtypeShow',[App\Http\Controllers\v1\Master\MFTransTypeSubTypeController::class,'index']);
         Route::post('rntTransTypeSubtypeAddEdit',[App\Http\Controllers\v1\Master\MFTransTypeSubTypeController::class,'CreateUpdate']);
 
         /*********************************** start Mail Back Process ************************ */

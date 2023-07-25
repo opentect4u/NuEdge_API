@@ -39,6 +39,33 @@ class MFTransTypeSubTypeController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
+
+    public function index(Request $request)
+    {
+        try {
+            $trans_sub_type=json_decode($request->arr_trans_type_id);
+            if (!empty($trans_sub_type)) {
+                $data=MFTransTypeSubType::leftJoin('md_rnt','md_rnt.id','=','md_mf_trans_type_subtype.rnt_id')
+                    ->select('md_mf_trans_type_subtype.*','md_rnt.rnt_name as rnt_name')
+                    ->orderBy('md_mf_trans_type_subtype.created_at','desc')
+                    ->whereIn('md_mf_trans_type_subtype.id',$trans_sub_type)
+                    ->get();
+            }else {
+                $data=MFTransTypeSubType::leftJoin('md_rnt','md_rnt.id','=','md_mf_trans_type_subtype.rnt_id')
+                    ->select('md_mf_trans_type_subtype.*','md_rnt.rnt_name as rnt_name')
+                    ->orderBy('md_mf_trans_type_subtype.created_at','desc')
+                    ->groupBy('md_mf_trans_type_subtype.trans_type')
+                    ->groupBy('md_mf_trans_type_subtype.trans_sub_type')
+                    ->get();
+            }
+            
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($data);
+    }
+
     public function CreateUpdate(Request $request)
     {
         try {
