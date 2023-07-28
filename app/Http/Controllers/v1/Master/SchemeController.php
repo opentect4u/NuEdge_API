@@ -24,6 +24,9 @@ class SchemeController extends Controller
             $column_name=$request->column_name;
 
             $scheme_type=$request->scheme_type;
+            $search_scheme_id=$request->search_scheme_id;
+
+            
             // return $request;
             if ($paginate=='A') {
                 $paginate=999999999;
@@ -139,15 +142,16 @@ class SchemeController extends Controller
                     ->where('md_scheme.scheme_type',$scheme_type)
                     ->where('md_scheme.scheme_name','like', '%' . $scheme_name . '%')
                     ->paginate($paginate);  
-            }elseif ($amc_name) {
+            }elseif ($search_scheme_id) {
                 $data=Scheme::join('md_amc','md_amc.id','=','md_scheme.amc_id')
                     ->join('md_category','md_category.id','=','md_scheme.category_id')
                     ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
                     ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
                     ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
                     ->where('md_scheme.delete_flag','N')
-                    ->where('md_scheme.scheme_type',$scheme_type)
-                    ->where('md_amc.amc_name','like', '%' . $amc_name . '%')
+                    ->where('md_scheme.id',$search_scheme_id)
+                    // ->where('md_scheme.scheme_type',$scheme_type)
+                    // ->where('md_amc.amc_name','like', '%' . $amc_name . '%')
                     ->paginate($paginate);  
             } else {
                 $data=Scheme::join('md_amc','md_amc.id','=','md_scheme.amc_id')
