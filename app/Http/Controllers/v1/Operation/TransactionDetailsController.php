@@ -123,8 +123,8 @@ class TransactionDetailsController extends Controller
             $cat_id=json_decode($request->cat_id);
             $sub_cat_id=json_decode($request->sub_cat_id);
             $scheme_id=json_decode($request->scheme_id);
-            $trans_type_id=json_decode($request->trans_type_id);
-            $trans_sub_type_id=json_decode($request->trans_sub_type_id);
+            $trans_type=json_decode($request->trans_type);
+            $trans_sub_type=json_decode($request->trans_sub_type);
 
             if ($date_range || $folio_no || $pan_no || !empty($amc_id) || !empty($cat_id) || !empty($sub_cat_id) || !empty($scheme_id)) {
                 $rawQuery='';
@@ -141,6 +141,8 @@ class TransactionDetailsController extends Controller
                 $rawQuery.=Helper::WhereRawQuery($folio_no,$rawQuery,$queryString);
                 $queryString='td_mutual_fund_trans.first_client_pan';
                 $rawQuery.=Helper::WhereRawQuery($pan_no,$rawQuery,$queryString);
+                $queryString='td_mutual_fund_trans.first_client_name';
+                $rawQuery.=Helper::RawQueryOR($pan_no,$rawQuery,$queryString);
                 $queryString='md_scheme.amc_id';
                 $rawQuery.=Helper::WhereRawQuery($amc_id,$rawQuery,$queryString);
                 $queryString='md_scheme.category_id';
@@ -157,7 +159,14 @@ class TransactionDetailsController extends Controller
                     ->leftJoin('md_category','md_category.id','=','md_scheme.category_id')
                     ->leftJoin('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
                     ->leftJoin('md_amc','md_amc.amc_code','=','td_mutual_fund_trans.amc_code')
-                    ->select('td_mutual_fund_trans.*','md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name','md_amc.amc_short_name as amc_name')
+                    ->leftJoin('md_plan','md_plan.id','=','md_scheme_isin.plan_id')
+                    ->leftJoin('md_option','md_option.id','=','md_scheme_isin.option_id')
+                    ->leftJoin('md_employee','md_employee.euin_no','=','td_mutual_fund_trans.euin_no')
+                    ->leftJoin('md_branch','md_branch.id','=','md_employee.branch_id')
+                    ->leftJoin('md_business_type','md_business_type.bu_code','=','md_employee.bu_type_id')
+                    ->select('td_mutual_fund_trans.*','md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name','md_amc.amc_short_name as amc_name',
+                    'md_plan.plan_name as plan_name','md_option.opt_name as option_name',
+                    'md_employee.emp_name as rm_name','md_branch.brn_name as branch','md_business_type.bu_type as bu_type')
                     // ->where('td_mutual_fund_trans.folio_no',$folio_no)
                     ->whereRaw($rawQuery)
                     ->get();
@@ -167,10 +176,17 @@ class TransactionDetailsController extends Controller
                     ->leftJoin('md_category','md_category.id','=','md_scheme.category_id')
                     ->leftJoin('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
                     ->leftJoin('md_amc','md_amc.amc_code','=','td_mutual_fund_trans.amc_code')
-                    ->select('td_mutual_fund_trans.*','md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name','md_amc.amc_short_name as amc_name')
+                    ->leftJoin('md_plan','md_plan.id','=','md_scheme_isin.plan_id')
+                    ->leftJoin('md_option','md_option.id','=','md_scheme_isin.option_id')
+                    ->leftJoin('md_employee','md_employee.euin_no','=','td_mutual_fund_trans.euin_no')
+                    ->leftJoin('md_branch','md_branch.id','=','md_employee.branch_id')
+                    ->leftJoin('md_business_type','md_business_type.bu_code','=','md_employee.bu_type_id')
+                    ->select('td_mutual_fund_trans.*','md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name','md_amc.amc_short_name as amc_name',
+                    'md_plan.plan_name as plan_name','md_option.opt_name as option_name',
+                    'md_employee.emp_name as rm_name','md_branch.brn_name as branch','md_business_type.bu_type as bu_type')
                     ->orderBy('td_mutual_fund_trans.created_at','desc')
-                    ->inRandomOrder()
-                    ->take(200)
+                    // ->inRandomOrder()
+                    ->take(500)
                     ->get();
             }
             // return $all_data;
@@ -222,18 +238,18 @@ class TransactionDetailsController extends Controller
                     $value->transaction_type=$transaction_type;
                     $value->transaction_subtype=$transaction_subtype;
 
-                    if (!empty($trans_type_id) && in_array($transaction_type ,$trans_type_id) && !empty($trans_sub_type_id) && in_array($transaction_subtype ,$trans_sub_type_id)) {
+                    if (!empty($trans_type) && in_array($transaction_type ,$trans_type) && !empty($trans_sub_type) && in_array($transaction_subtype ,$trans_sub_type)) {
                         array_push($data,$value);
-                    }else if (!empty($trans_type_id) && in_array($transaction_type ,$trans_type_id)) {
+                    }else if (!empty($trans_type) && in_array($transaction_type ,$trans_type)) {
                         array_push($data,$value);
-                    }else if (!empty($transaction_subtype) && in_array($transaction_subtype ,$trans_sub_type_id)) {
+                    }else if (!empty($transaction_subtype) && in_array($transaction_subtype ,$trans_sub_type)) {
                         array_push($data,$value);
                     }else{
                         array_push($data,$value);
                     }
                 }
         } catch (\Throwable $th) {
-            throw $th;
+            // throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
         return Helper::SuccessResponse($data);

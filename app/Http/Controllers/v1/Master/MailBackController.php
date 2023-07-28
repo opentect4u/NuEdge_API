@@ -147,12 +147,12 @@ class MailBackController extends Controller
                                     'trans_mode'=>str_replace("'","",$value[7]),
                                     'trans_status'=>str_replace("'","",$value[8]),
                                     'user_trans_no'=>str_replace("'","",$value[10]),
-                                    'trans_date'=>Carbon::parse(str_replace("'","",$value[11]))->format('Y-m-d H:i:s'),
-                                    'post_date'=>Carbon::parse(str_replace("'","",$value[12]))->format('Y-m-d H:i:s'),
+                                    'trans_date'=>Carbon::parse(str_replace("/","-",str_replace("'","",$value[11])))->format('Y-m-d H:i:s'),
+                                    'post_date'=>Carbon::parse(str_replace("/","-",str_replace("'","",$value[12])))->format('Y-m-d H:i:s'),
                                     'pur_price'=>str_replace("'","",$value[13]),
                                     'units'=>str_replace("'","",$value[14]),
                                     'amount'=>str_replace("'","",$value[15]),
-                                    'rec_date'=>Carbon::parse(str_replace("'","",$value[21]))->format('Y-m-d H:i:s'),
+                                    'rec_date'=>Carbon::parse(str_replace("/","-",str_replace("'","",$value[21])))->format('Y-m-d H:i:s'),
                                     'trxn_type'=>str_replace("'","",$value[5]),
                                     'trxn_type_flag'=>str_replace("'","",$value[45]),
                                     'trxn_nature'=>str_replace("'","",$value[25]),
@@ -165,10 +165,12 @@ class MailBackController extends Controller
                                     'reinvest_flag'=>str_replace("'","",$value[34]),
                                     'stt'=>str_replace("'","",$value[36]),
                                     'stamp_duty'=>str_replace("'","",$value[74]),
-                                    'tds'=>' ',
+                                    'tds'=>NULL,
                                     'acc_no'=>str_replace("'","",$value[63]),
                                     'bank_name'=>str_replace("'","",$value[64]),
                                 ));
+                            }else {
+                                # code...
                             }
                         }else if($rnt_id==2){  // Kafe
                             if ($file_type_id==1 && $file_id=3) {  // transction MFSD201
@@ -195,8 +197,6 @@ class MailBackController extends Controller
                                     'kf_trans_type'=>$value[30],
                                     'trans_flag'=>$value[37],
                                     'trans_desc'=>$value[29], // Transction Description
-
-
                                     'te_15h'=>NULL,
                                     'micr_code'=>NULL,
                                     'sw_flag'=>NULL,
@@ -210,6 +210,8 @@ class MailBackController extends Controller
                                     'bank_name'=>isset($value[64])?$value[64]:NULL,
                                     'remarks'=>isset($value[48])?$value[48]:NULL,
                                 ));
+                            }else {
+                                # code...
                             }
                         }
                     }

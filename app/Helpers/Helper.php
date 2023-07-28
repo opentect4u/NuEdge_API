@@ -147,6 +147,16 @@ class Helper{
         return $Query;
     }
 
+    public static function RawQueryOR($row_name,$rawQuery,$queryString)
+    {
+        $Query='';
+        if ($row_name) {
+            $condition=(strlen($rawQuery) > 0)? " OR ":" ";
+            $Query.=$condition.$queryString." LIKE '%".$row_name."%'";
+        }
+        return $Query;
+    }
+
     public static function RawQueryOnlyMonth($row_name,$rawQuery,$queryString)
     {
         $Query='';

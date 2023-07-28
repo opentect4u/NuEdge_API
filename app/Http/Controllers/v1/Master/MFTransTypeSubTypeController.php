@@ -43,19 +43,20 @@ class MFTransTypeSubTypeController extends Controller
     public function index(Request $request)
     {
         try {
-            $trans_sub_type=json_decode($request->arr_trans_type_id);
-            if (!empty($trans_sub_type)) {
+            $arr_trans_type=json_decode($request->arr_trans_type);
+            if (!empty($arr_trans_type)) {
                 $data=MFTransTypeSubType::leftJoin('md_rnt','md_rnt.id','=','md_mf_trans_type_subtype.rnt_id')
                     ->select('md_mf_trans_type_subtype.*','md_rnt.rnt_name as rnt_name')
                     ->orderBy('md_mf_trans_type_subtype.created_at','desc')
-                    ->whereIn('md_mf_trans_type_subtype.id',$trans_sub_type)
+                    ->whereIn('md_mf_trans_type_subtype.trans_type',$arr_trans_type)
+                    ->groupBy('md_mf_trans_type_subtype.trans_sub_type')
                     ->get();
             }else {
                 $data=MFTransTypeSubType::leftJoin('md_rnt','md_rnt.id','=','md_mf_trans_type_subtype.rnt_id')
                     ->select('md_mf_trans_type_subtype.*','md_rnt.rnt_name as rnt_name')
                     ->orderBy('md_mf_trans_type_subtype.created_at','desc')
                     ->groupBy('md_mf_trans_type_subtype.trans_type')
-                    ->groupBy('md_mf_trans_type_subtype.trans_sub_type')
+                    // ->groupBy('md_mf_trans_type_subtype.trans_sub_type')
                     ->get();
             }
             
@@ -82,15 +83,37 @@ class MFTransTypeSubTypeController extends Controller
                 $c_data->k_divident_flag=$request->k_divident_flag;
                 $c_data->save();
             }else {
-                $c_data=MFTransTypeSubType::create(array(
-                    'trans_type'=>$request->trans_type,
-                    'trans_sub_type'=>$request->trans_sub_type,
-                    'rnt_id'=>$request->rnt_id,
-                    'c_trans_type_code'=>isset($request->c_trans_type_code)?$request->c_trans_type_code:NULL,
-                    'c_k_trans_type'=>isset($request->c_k_trans_type)?$request->c_k_trans_type:NULL,
-                    'c_k_trans_sub_type'=>isset($request->c_k_trans_sub_type)?$request->c_k_trans_sub_type:NULL,
-                    'k_divident_flag'=>isset($request->k_divident_flag)?$request->k_divident_flag:NULL,
-                ));
+                // return $request;
+                if ($request->rnt_id == 1) {  // cams
+                    $is_has=MFTransTypeSubType::where('trans_type',$request->trans_type)
+                        ->where('trans_sub_type',$request->trans_sub_type)
+                        ->where('rnt_id',$request->rnt_id)
+                        ->where('c_trans_type_code',$request->c_trans_type_code)
+                        ->where('c_k_trans_type',$request->c_k_trans_type)
+                        ->where('c_k_trans_sub_type',$request->c_k_trans_sub_type)
+                        ->get();
+                }else {
+                    $is_has=MFTransTypeSubType::where('trans_type',$request->trans_type)
+                        ->where('trans_sub_type',$request->trans_sub_type)
+                        ->where('rnt_id',$request->rnt_id)
+                        ->where('c_k_trans_type',$request->c_k_trans_type)
+                        ->where('c_k_trans_sub_type',$request->c_k_trans_sub_type)
+                        ->where('k_divident_flag',$request->k_divident_flag)
+                        ->get();
+                }
+                if (count($is_has) > 0) {
+                    return Helper::WarningResponse(parent::ALREADY_EXIST);
+                }else{
+                    $c_data=MFTransTypeSubType::create(array(
+                        'trans_type'=>$request->trans_type,
+                        'trans_sub_type'=>$request->trans_sub_type,
+                        'rnt_id'=>$request->rnt_id,
+                        'c_trans_type_code'=>isset($request->c_trans_type_code)?$request->c_trans_type_code:NULL,
+                        'c_k_trans_type'=>isset($request->c_k_trans_type)?$request->c_k_trans_type:NULL,
+                        'c_k_trans_sub_type'=>isset($request->c_k_trans_sub_type)?$request->c_k_trans_sub_type:NULL,
+                        'k_divident_flag'=>isset($request->k_divident_flag)?$request->k_divident_flag:NULL,
+                    ));
+                }
             }
             $data=MFTransTypeSubType::leftJoin('md_rnt','md_rnt.id','=','md_mf_trans_type_subtype.rnt_id')
                     ->select('md_mf_trans_type_subtype.*','md_rnt.rnt_name as rnt_name')
