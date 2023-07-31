@@ -69,56 +69,39 @@ class MailBackController extends Controller
             $file_id=$request->file_id;
             $upload_file=$request->upload_file;
             
-            if ($upload_file) {
-                $path_extension=$upload_file->getClientOriginalExtension();
-                $original_file_name=$upload_file->getClientOriginalName();
-                $upload_file_name=(microtime(true) * 10000).".".$path_extension;
-                $upload_file->move(public_path('mailback/manual/'),$upload_file_name);
-                $create_dt=MailbackProcess::create(array(
-                    'rnt_id'=>$rnt_id,
-                    'file_type_id'=>$file_type_id,
-                    'file_id'=>$file_id,
-                    'original_file_name'=>$original_file_name,
-                    'upload_file'=>$upload_file_name,
-                    'process_date'=>date('Y-m-d H:i:s'),
-                    'process_type'=>'M',
-                ));
-                $id=$create_dt->id;
-            }else {
-                $id=$request->row_id;
-                $upload_file_name=$request->upload_file_name;
-            }
+            // if ($upload_file) {
+            //     $path_extension=$upload_file->getClientOriginalExtension();
+            //     $original_file_name=$upload_file->getClientOriginalName();
+            //     $upload_file_name=(microtime(true) * 10000).".".$path_extension;
+            //     $upload_file->move(public_path('mailback/manual/'),$upload_file_name);
+            //     $create_dt=MailbackProcess::create(array(
+            //         'rnt_id'=>$rnt_id,
+            //         'file_type_id'=>$file_type_id,
+            //         'file_id'=>$file_id,
+            //         'original_file_name'=>$original_file_name,
+            //         'upload_file'=>$upload_file_name,
+            //         'process_date'=>date('Y-m-d H:i:s'),
+            //         'process_type'=>'M',
+            //     ));
+            //     $id=$create_dt->id;
+            // }else {
+            //     $id=$request->row_id;
+            //     $upload_file_name=$request->upload_file_name;
+            // }
             
-            $upload_data=MailbackProcess::leftJoin('md_rnt','md_rnt.id','=','md_mailback_process.rnt_id')
-                    ->select('md_mailback_process.*','md_rnt.rnt_name')
-                    ->where('md_mailback_process.process_type','M')
-                    ->where('md_mailback_process.id',$id)
-                    ->orderBy('process_date','DESC')
-                    ->first();
+            // $upload_data=MailbackProcess::leftJoin('md_rnt','md_rnt.id','=','md_mailback_process.rnt_id')
+            //         ->select('md_mailback_process.*','md_rnt.rnt_name')
+            //         ->where('md_mailback_process.process_type','M')
+            //         ->where('md_mailback_process.id',$id)
+            //         ->orderBy('process_date','DESC')
+            //         ->first();
             
-            $file_name=public_path('mailback/manual/'.$upload_file_name);
+            // $file_name=public_path('mailback/manual/'.$upload_file_name);
+
             // return  $file_name;
-
-            // $file = fopen($file_name, 'r');
-            // $myarray=[];
-            // for ($i=0; $i < ($line = fgetcsv($file)); $i++) { 
-            //     return $line;
-            // }
-            // while (($line = fgetcsv($file)) !== FALSE) {
-            //     //$line is an array of the csv elements
-               
-            //     return $line;
-            //     print_r($line);
-            //     array_push($myarray,$line);
-            // }
-            // fclose($file);
-            // return $myarray;
-            // return $arrayFromCSV;
-
-            // $datas = Excel::toArray([],  $file_name);
-            // // return $datas;
-            // $data=$datas[0];
-            // return $data[0];
+            $aArray = file($upload_file,FILE_IGNORE_NEW_LINES);
+            return $aArray;
+           
             $start_count=$request->start_count;
             $end_count=$request->end_count;
             // $end_count=500;
