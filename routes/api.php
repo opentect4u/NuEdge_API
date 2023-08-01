@@ -329,6 +329,7 @@ Route::prefix('v1')->group(function () {
         Route::post('mailbackProcess',[App\Http\Controllers\v1\Master\MailBackController::class,'upload']);
         Route::any('mailbackProcessDetails',[App\Http\Controllers\v1\Master\MailBackController::class,'Details']);
         Route::any('showTransDetails',[App\Http\Controllers\v1\Operation\TransactionDetailsController::class,'search']);
+        Route::any('searchClient',[App\Http\Controllers\v1\Operation\TransactionDetailsController::class,'searchClient']);
         
         Route::any('rntTransTypeSubtype',[App\Http\Controllers\v1\Master\MFTransTypeSubTypeController::class,'Details']);
         Route::any('rntTransTypeSubtypeShow',[App\Http\Controllers\v1\Master\MFTransTypeSubTypeController::class,'index']);

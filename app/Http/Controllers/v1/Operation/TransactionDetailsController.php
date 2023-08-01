@@ -118,7 +118,8 @@ class TransactionDetailsController extends Controller
             $date_range=$request->date_range;
             $folio_no=$request->folio_no;
             $client_id=$request->client_id;
-            $pan_no=$request->pan_no;
+            // $pan_no=$request->pan_no;
+            $pan_no=json_decode($request->pan_no);
             $amc_id=json_decode($request->amc_id);
             $cat_id=json_decode($request->cat_id);
             $sub_cat_id=json_decode($request->sub_cat_id);
@@ -126,7 +127,7 @@ class TransactionDetailsController extends Controller
             $trans_type=json_decode($request->trans_type);
             $trans_sub_type=json_decode($request->trans_sub_type);
 
-            if ($date_range || $folio_no || $pan_no || !empty($amc_id) || !empty($cat_id) || !empty($sub_cat_id) || !empty($scheme_id)) {
+            if ($date_range || $folio_no || !empty($pan_no) || !empty($amc_id) || !empty($cat_id) || !empty($sub_cat_id) || !empty($scheme_id)) {
                 $rawQuery='';
                 if ($date_range) {
                     $from_date=Carbon::parse(str_replace('/','-',explode("-",$date_range)[0]))->format('Y-m-d') ;
@@ -141,8 +142,8 @@ class TransactionDetailsController extends Controller
                 $rawQuery.=Helper::WhereRawQuery($folio_no,$rawQuery,$queryString);
                 $queryString='td_mutual_fund_trans.first_client_pan';
                 $rawQuery.=Helper::WhereRawQuery($pan_no,$rawQuery,$queryString);
-                $queryString='td_mutual_fund_trans.first_client_name';
-                $rawQuery.=Helper::RawQueryOR($pan_no,$rawQuery,$queryString);
+                // $queryString='td_mutual_fund_trans.first_client_name';
+                // $rawQuery.=Helper::RawQueryOR($pan_no,$rawQuery,$queryString);
                 $queryString='md_scheme.amc_id';
                 $rawQuery.=Helper::WhereRawQuery($amc_id,$rawQuery,$queryString);
                 $queryString='md_scheme.category_id';
@@ -277,6 +278,17 @@ class TransactionDetailsController extends Controller
                     ->take(10)
                     ->get();
             }
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($data);
+    }
+
+    public function searchClient(Request $request)
+    {
+        try {
+            $data=MutualFundTransaction::groupBy('first_client_pan')->get();
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);

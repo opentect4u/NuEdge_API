@@ -70,7 +70,7 @@ class CategoryController extends Controller
             }else if ($paginate!='') {
                 $data=Category::where('delete_flag','N')->paginate($paginate);      
             }else {
-                $data=Category::where('delete_flag','N')->get();      
+                $data=Category::where('delete_flag','N')->orderBy('cat_name','asc')->get();      
             }
         } catch (\Throwable $th) {
             //throw $th;

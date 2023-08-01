@@ -204,6 +204,7 @@ class SubcategoryController extends Controller
                 $data=SubCategory::where('delete_flag','N')
                     ->whereIn('category_id',$arr_cat_id)
                     // ->where('subcategory_name','like', '%' . $search . '%')
+                    ->orderBy('subcategory_name','asc')
                     ->get();      
             }else if ($category_id!='') {
                 $data=SubCategory::where('delete_flag','N')->where('category_id',$category_id)->paginate($paginate);      
