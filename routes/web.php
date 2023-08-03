@@ -19,3 +19,4 @@ Route::get('/', function () {
 
 
 Route::get('stringPosition',[App\Http\Controllers\TestController::class,'index']);
+Route::get('test',[App\Http\Controllers\TestController::class,'test']);
