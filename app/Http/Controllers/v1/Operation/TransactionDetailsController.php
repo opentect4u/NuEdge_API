@@ -291,7 +291,7 @@ class TransactionDetailsController extends Controller
     {
         try {
             $data=MutualFundTransaction::groupBy('first_client_pan')
-                ->oderby('first_client_name','asc')->get();
+                ->orderBy('first_client_name','asc')->get();
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
