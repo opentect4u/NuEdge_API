@@ -170,6 +170,7 @@ class TransactionDetailsController extends Controller
                     'md_employee.emp_name as rm_name','md_branch.brn_name as branch','md_business_type.bu_type as bu_type')
                     // ->where('td_mutual_fund_trans.folio_no',$folio_no)
                     ->whereRaw($rawQuery)
+                    ->groupBy('td_mutual_fund_trans.trans_no')
                     ->get();
             }else {
                 $all_data=MutualFundTransaction::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_mutual_fund_trans.product_code')
@@ -186,6 +187,7 @@ class TransactionDetailsController extends Controller
                     'md_plan.plan_name as plan_name','md_option.opt_name as option_name',
                     'md_employee.emp_name as rm_name','md_branch.brn_name as branch','md_business_type.bu_type as bu_type')
                     ->orderBy('td_mutual_fund_trans.created_at','desc')
+                    ->groupBy('td_mutual_fund_trans.trans_no')
                     // ->inRandomOrder()
                     ->take(500)
                     ->get();
