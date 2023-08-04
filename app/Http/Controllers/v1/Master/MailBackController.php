@@ -297,7 +297,7 @@ class MailBackController extends Controller
             $dataArray=[];
             $dataArray['upload_data']=$upload_data;
             $dataArray['start_count']=$start_count;
-            $dataArray['end_count']=$end_count;
+            $dataArray['end_count']=$request->end_count;
             $dataArray['upload_file_name']=$upload_file_name;
             $dataArray['row_id']=$id;
             $dataArray['total_count']=count($TotalArray);
