@@ -290,7 +290,8 @@ class TransactionDetailsController extends Controller
     public function searchClient(Request $request)
     {
         try {
-            $data=MutualFundTransaction::groupBy('first_client_pan')->get();
+            $data=MutualFundTransaction::groupBy('first_client_pan')
+                ->oderby('first_client_name','asc')->get();
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
