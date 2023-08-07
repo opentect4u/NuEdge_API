@@ -308,6 +308,7 @@ class AMCController extends Controller
                     return Helper::WarningResponse(parent::ALREADY_EXIST);
                 }else {
                     $logo=$request->logo;
+                    $logo_name='';
                     if ($logo) {
                         $logo_path_extension=$logo->getClientOriginalExtension();
                         $logo_name=microtime(true).".".$logo_path_extension;

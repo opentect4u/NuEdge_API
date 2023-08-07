@@ -168,6 +168,10 @@ class TransactionDetailsController extends Controller
                     ->select('td_mutual_fund_trans.*','md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name','md_amc.amc_short_name as amc_name',
                     'md_plan.plan_name as plan_name','md_option.opt_name as option_name',
                     'md_employee.emp_name as rm_name','md_branch.brn_name as branch','md_business_type.bu_type as bu_type')
+                    ->selectRaw('sum(amount) as amount')
+                    ->selectRaw('sum(stamp_duty) as stamp_duty')
+                    ->selectRaw('sum(tds) as tds')
+                    // ->select(DB::raw("(sum(amount)) as total_click"))
                     // ->where('td_mutual_fund_trans.folio_no',$folio_no)
                     ->whereRaw($rawQuery)
                     ->groupBy('td_mutual_fund_trans.trans_no')
@@ -186,15 +190,27 @@ class TransactionDetailsController extends Controller
                     ->select('td_mutual_fund_trans.*','md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name','md_amc.amc_short_name as amc_name',
                     'md_plan.plan_name as plan_name','md_option.opt_name as option_name',
                     'md_employee.emp_name as rm_name','md_branch.brn_name as branch','md_business_type.bu_type as bu_type')
+                    ->selectRaw('sum(amount) as amount')
+                    ->selectRaw('sum(stamp_duty) as stamp_duty')
+                    ->selectRaw('sum(tds) as tds')
                     ->orderBy('td_mutual_fund_trans.created_at','desc')
                     ->groupBy('td_mutual_fund_trans.trans_no')
                     // ->inRandomOrder()
-                    ->take(500)
+                    ->take(10)
                     ->get();
             }
             // return $all_data;
                 $data=[];
                 foreach ($all_data as $key => $value) {
+                    $euin=$value->euin;
+                    $trans_no=$value->trans_no;
+                    $trans_date=$value->trans_date;
+                    // MutualFundTransaction::
+                    // if($euin==''){
+                    //     return $value;
+                    // }
+                    
+                    // ====================start trans type & sub type=========================
                     $trxn_type=$value->trxn_type;
                     $trxn_type_flag=$value->trxn_type_flag;
                     $trxn_nature=$value->trxn_nature;
