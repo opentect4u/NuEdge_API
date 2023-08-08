@@ -168,13 +168,15 @@ class TransactionDetailsController extends Controller
                     ->select('td_mutual_fund_trans.*','md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name','md_amc.amc_short_name as amc_name',
                     'md_plan.plan_name as plan_name','md_option.opt_name as option_name',
                     'md_employee.emp_name as rm_name','md_branch.brn_name as branch','md_business_type.bu_type as bu_type')
-                    ->selectRaw('sum(amount) as amount')
-                    ->selectRaw('sum(stamp_duty) as stamp_duty')
-                    ->selectRaw('sum(tds) as tds')
+                    ->selectRaw('sum(amount) as tot_amount')
+                    ->selectRaw('sum(stamp_duty) as tot_stamp_duty')
+                    ->selectRaw('sum(tds) as tot_tds')
                     // ->select(DB::raw("(sum(amount)) as total_click"))
                     // ->where('td_mutual_fund_trans.folio_no',$folio_no)
                     ->whereRaw($rawQuery)
                     ->groupBy('td_mutual_fund_trans.trans_no')
+                    ->groupBy('td_mutual_fund_trans.trxn_type_flag')
+                    ->groupByRaw('IF(substr(trxn_nature,1,19)="Systematic-Reversed","Systematic-Reversed",trxn_nature)')
                     ->get();
             }else {
                 $all_data=MutualFundTransaction::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_mutual_fund_trans.product_code')
@@ -190,13 +192,15 @@ class TransactionDetailsController extends Controller
                     ->select('td_mutual_fund_trans.*','md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name','md_amc.amc_short_name as amc_name',
                     'md_plan.plan_name as plan_name','md_option.opt_name as option_name',
                     'md_employee.emp_name as rm_name','md_branch.brn_name as branch','md_business_type.bu_type as bu_type')
-                    ->selectRaw('sum(amount) as amount')
-                    ->selectRaw('sum(stamp_duty) as stamp_duty')
-                    ->selectRaw('sum(tds) as tds')
+                    ->selectRaw('sum(amount) as tot_amount')
+                    ->selectRaw('sum(stamp_duty) as tot_stamp_duty')
+                    ->selectRaw('sum(tds) as tot_tds')
                     ->orderBy('td_mutual_fund_trans.created_at','desc')
                     ->groupBy('td_mutual_fund_trans.trans_no')
+                    ->groupBy('td_mutual_fund_trans.trxn_type_flag')
+                    ->groupByRaw('IF(substr(trxn_nature,1,19)="Systematic-Reversed","Systematic-Reversed",trxn_nature)')
                     // ->inRandomOrder()
-                    ->take(10)
+                    ->take(100)
                     ->get();
             }
             // return $all_data;
@@ -220,6 +224,11 @@ class TransactionDetailsController extends Controller
                     if ($trxn_type && $trxn_type_flag && $trxn_nature) {  //for cams
                         $trxn_code=TransHelper::transTypeToCodeCAMS($trxn_type);
                         $trxn_nature_code=TransHelper::trxnNatureCodeCAMS($trxn_nature);
+
+                        $value->trxn_code=$trxn_code;
+                        $value->trxn_type_flag_code=$trxn_type_flag;
+                        $value->trxn_nature_code=$trxn_nature_code;
+                        
                         $get_type_subtype=MFTransTypeSubType::where('c_trans_type_code',$trxn_code)
                             ->where('c_k_trans_type',$trxn_type_flag)
                             ->where('c_k_trans_sub_type',$trxn_nature_code)
