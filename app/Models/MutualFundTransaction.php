@@ -52,5 +52,9 @@ class MutualFundTransaction extends Model
         'acc_no',
         'bank_name',
         'remarks',
+
+        'delete_flag',
+        'deleted_at',
+        'deleted_date',
     ];
 }
