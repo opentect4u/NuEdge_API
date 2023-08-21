@@ -191,6 +191,8 @@ class MailBackController extends Controller
                             'acc_no'=>isset($value[78])?$value[78]:NULL,
                             'bank_name'=>isset($value[64])?$value[64]:NULL,
                             'remarks'=>isset($value[48])?$value[48]:NULL,
+                            'dividend_option'=>isset($value[33])?$value[33]:NULL,
+                            'isin_no'=>isset($value[66])?$value[66]:NULL,
                         ));
                     }
                 }else {

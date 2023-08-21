@@ -52,6 +52,9 @@ class MutualFundTransaction extends Model
         'acc_no',
         'bank_name',
         'remarks',
+        'dividend_option',
+        'isin_no',
+        'mismatch_flag',
 
         'delete_flag',
         'deleted_at',
