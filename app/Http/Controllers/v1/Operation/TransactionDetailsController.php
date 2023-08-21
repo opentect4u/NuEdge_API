@@ -118,8 +118,8 @@ class TransactionDetailsController extends Controller
             $date_range=$request->date_range;
             $folio_no=$request->folio_no;
             $client_id=$request->client_id;
-            // $pan_no=$request->pan_no;
-            $pan_no=json_decode($request->pan_no);
+            $pan_no=$request->pan_no;
+            // $pan_no=json_decode($request->pan_no);
             $amc_id=json_decode($request->amc_id);
             $cat_id=json_decode($request->cat_id);
             $sub_cat_id=json_decode($request->sub_cat_id);
@@ -127,7 +127,7 @@ class TransactionDetailsController extends Controller
             $trans_type=json_decode($request->trans_type);
             $trans_sub_type=json_decode($request->trans_sub_type);
 
-            if ($date_range || $folio_no || !empty($pan_no) || !empty($amc_id) || !empty($cat_id) || !empty($sub_cat_id) || !empty($scheme_id)) {
+            if ($date_range || $folio_no || $pan_no || !empty($amc_id) || !empty($cat_id) || !empty($sub_cat_id) || !empty($scheme_id)) {
                 $rawQuery='';
                 if ($date_range) {
                     $from_date=Carbon::parse(str_replace('/','-',explode("-",$date_range)[0]))->format('Y-m-d') ;
@@ -343,8 +343,26 @@ class TransactionDetailsController extends Controller
     public function searchClient(Request $request)
     {
         try {
-            $data=MutualFundTransaction::groupBy('first_client_pan')
-                ->orderBy('first_client_name','asc')->get();
+            $view_type=$request->view_type;
+            $search=$request->search;
+            $paginate=$request->paginate;
+            if ($view_type=='C') {
+                if ($search) {
+                    $data=MutualFundTransaction::where('first_client_name','LIKE', '%' . $search . '%')
+                        ->orWhere('first_client_pan','LIKE', '%' . $search . '%')
+                        ->groupBy('first_client_pan')
+                        ->orderBy('first_client_name','asc')
+                        ->get();
+                }else {
+                    $data=MutualFundTransaction::groupBy('first_client_pan')
+                        ->orderBy('first_client_name','asc')
+                        ->paginate(20);
+                }
+            }else {
+                $data=MutualFundTransaction::groupBy('first_client_pan')
+                    ->orderBy('first_client_name','asc')->get();
+                $data=[];
+            }
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
@@ -479,4 +497,6 @@ class TransactionDetailsController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
+
+    
 }
