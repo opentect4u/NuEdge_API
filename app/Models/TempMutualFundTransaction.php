@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class MutualFundTransaction extends Model
+class TempMutualFundTransaction extends Model
 {
     use HasFactory;
-    protected $table="td_mutual_fund_trans";
+    protected $table="tt_mutual_fund_trans";
     // protected $primaryKey = 'tin_no';
     protected $fillable = [
         'rnt_id',
@@ -37,10 +37,6 @@ class MutualFundTransaction extends Model
         'kf_trans_type',
         'trans_flag',
 
-        // 'trans_type_code_flag',
-        // 'trans_type',
-        // 'trans_sub_type',
-
         'te_15h',
         'micr_code',
         'sw_flag',
@@ -55,7 +51,7 @@ class MutualFundTransaction extends Model
         'remarks',
         'dividend_option',
         'isin_no',
-
+        
         'bu_type_flag',
         'amc_flag',
         'scheme_flag',

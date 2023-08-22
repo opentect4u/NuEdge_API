@@ -154,6 +154,20 @@ Route::prefix('v1')->group(function () {
         Route::post('documenttypeAddEdit',[App\Http\Controllers\v1\Master\DocumentTypeController::class,'createUpdate']);
         Route::post('documenttypeimport',[App\Http\Controllers\v1\Master\DocumentTypeController::class,'import']);
 
+
+        Route::get('exchange',[App\Http\Controllers\v1\Master\ExchangeController::class,'index']);
+        Route::any('exchangeDetailSearch',[App\Http\Controllers\v1\Master\ExchangeController::class,'searchDetails']);
+        Route::post('exchangeExport',[App\Http\Controllers\v1\Master\ExchangeController::class,'export']);
+        Route::post('exchangeAddEdit',[App\Http\Controllers\v1\Master\ExchangeController::class,'createUpdate']);
+        Route::post('exchangeimport', [App\Http\Controllers\v1\Master\ExchangeController::class,'import']);
+        Route::post('exchangeDelete', [App\Http\Controllers\v1\Master\ExchangeController::class,'delete']);
+
+        Route::get('benchmark',[App\Http\Controllers\v1\Master\BenchmarkController::class,'index']);
+        Route::any('benchmarkDetailSearch',[App\Http\Controllers\v1\Master\BenchmarkController::class,'searchDetails']);
+        Route::post('benchmarkExport',[App\Http\Controllers\v1\Master\BenchmarkController::class,'export']);
+        Route::post('benchmarkAddEdit',[App\Http\Controllers\v1\Master\BenchmarkController::class,'createUpdate']);
+        Route::post('benchmarkimport', [App\Http\Controllers\v1\Master\BenchmarkController::class,'import']);
+        Route::post('benchmarkDelete', [App\Http\Controllers\v1\Master\BenchmarkController::class,'delete']);
         
         // =============================geography masters start=================================
         Route::get('country',[App\Http\Controllers\v1\Master\CountryController::class,'index']);

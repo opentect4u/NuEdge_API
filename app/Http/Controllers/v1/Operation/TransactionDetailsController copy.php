@@ -164,20 +164,24 @@ class TransactionDetailsController extends Controller
                     ->leftJoin('md_option','md_option.id','=','md_scheme_isin.option_id')
                     ->leftJoin('md_employee','md_employee.euin_no','=','td_mutual_fund_trans.euin_no')
                     ->leftJoin('md_branch','md_branch.id','=','md_employee.branch_id')
+                    ->leftJoin('md_business_type','md_business_type.bu_code','=','md_employee.bu_type_id')
                     ->select('td_mutual_fund_trans.*','md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name','md_amc.amc_short_name as amc_name',
                     'md_plan.plan_name as plan_name','md_option.opt_name as option_name',
-                    'md_employee.emp_name as rm_name','md_branch.brn_name as branch','md_employee.bu_type_id as bu_type_id','md_employee.branch_id as branch_id')
+                    'md_employee.emp_name as rm_name','md_branch.brn_name as branch','md_business_type.bu_type as bu_type')
                     ->selectRaw('sum(amount) as tot_amount')
                     ->selectRaw('sum(stamp_duty) as tot_stamp_duty')
                     ->selectRaw('sum(tds) as tot_tds')
-                    ->selectRaw('count(*) as tot_rows')
+                    // ->select(DB::raw("(sum(amount)) as total_click"))
+                    // ->where('td_mutual_fund_trans.folio_no',$folio_no)
                     ->where('td_mutual_fund_trans.delete_flag','N')
                     ->whereRaw($rawQuery)
                     ->groupBy('td_mutual_fund_trans.trans_no')
                     ->groupBy('td_mutual_fund_trans.trxn_type_flag')
                     ->groupByRaw('IF(substr(trxn_nature,1,19)="Systematic-Reversed","Systematic-Reversed",trxn_nature)')
+                    
                     ->groupBy('td_mutual_fund_trans.trans_desc')
                     ->groupBy('td_mutual_fund_trans.kf_trans_type')
+
                     ->get();
             }else {
                 $all_data=MutualFundTransaction::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_mutual_fund_trans.product_code')
@@ -189,13 +193,13 @@ class TransactionDetailsController extends Controller
                     ->leftJoin('md_option','md_option.id','=','md_scheme_isin.option_id')
                     ->leftJoin('md_employee','md_employee.euin_no','=','td_mutual_fund_trans.euin_no')
                     ->leftJoin('md_branch','md_branch.id','=','md_employee.branch_id')
+                    ->leftJoin('md_business_type','md_business_type.bu_code','=','md_employee.bu_type_id')
                     ->select('td_mutual_fund_trans.*','md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name','md_amc.amc_short_name as amc_name',
                     'md_plan.plan_name as plan_name','md_option.opt_name as option_name',
-                    'md_employee.emp_name as rm_name','md_branch.brn_name as branch','md_employee.bu_type_id as bu_type_id','md_employee.branch_id as branch_id')
+                    'md_employee.emp_name as rm_name','md_branch.brn_name as branch','md_business_type.bu_type as bu_type')
                     ->selectRaw('sum(amount) as tot_amount')
                     ->selectRaw('sum(stamp_duty) as tot_stamp_duty')
                     ->selectRaw('sum(tds) as tot_tds')
-                    ->selectRaw('count(*) as tot_rows')
                     ->where('td_mutual_fund_trans.delete_flag','N')
                     ->orderBy('td_mutual_fund_trans.created_at','desc')
                     ->groupBy('td_mutual_fund_trans.trans_no')
@@ -235,11 +239,6 @@ class TransactionDetailsController extends Controller
                                 $value->euin_no=$rm_data->euin_no;
                             }
                         }
-                    }else{
-                        $value->bu_type=DB::table('md_business_type')
-                            ->where('bu_code',$value->bu_type_id)
-                            ->where('branch_id',$value->branch_id)
-                            ->value('bu_type');
                     }
                     
                     // ====================start trans type & sub type=========================

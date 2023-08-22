@@ -114,7 +114,8 @@ class MailBackController extends Controller
                 if ($file_type_id==1 && $file_id=1) {  // transction  WBR2
                     for ($i=$start_count; $i <= $end_count; $i++) { 
                         $value=explode("\t",$TotalArray[$i]);
-                        MutualFundTransaction::create(array(
+                        TempMutualFundTransaction::create(array(
+                            'rnt_id'=>$rnt_id,
                             'arn_no'=>str_replace("'","",$value[16]),
                             'sub_brk_cd'=>str_replace("'","",$value[17]),
                             'euin_no'=>str_replace("'","",$value[56]),
@@ -157,7 +158,8 @@ class MailBackController extends Controller
                 if ($file_type_id==1 && $file_id=3) {  // transction MFSD201
                     for ($i=$start_count; $i <= $end_count; $i++) { 
                         $value=explode("~",$TotalArray[$i]);
-                        MutualFundTransaction::create(array(
+                        TempMutualFundTransaction::create(array(
+                            'rnt_id'=>$rnt_id,
                             'arn_no'=>$value[19],
                             'sub_brk_cd'=>isset($value[20])?$value[20]:NULL,
                             'euin_no'=>isset($value[70])?$value[70]:NULL,
