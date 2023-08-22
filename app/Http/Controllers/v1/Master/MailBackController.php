@@ -10,7 +10,8 @@ use App\Models\{
     Client,
     FormReceived,
     MutualFundTransaction,
-    MailbackProcess
+    MailbackProcess,
+    TempMutualFundTransaction
 };
 use Validator;
 use Illuminate\Support\Carbon;
