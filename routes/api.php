@@ -342,6 +342,10 @@ Route::prefix('v1')->group(function () {
         // Route::post('uploadTransDetails',[App\Http\Controllers\v1\Operation\TransactionDetailsController::class,'upload']);
         Route::post('mailbackProcess',[App\Http\Controllers\v1\Master\MailBackController::class,'upload']);
         Route::any('mailbackProcessDetails',[App\Http\Controllers\v1\Master\MailBackController::class,'Details']);
+
+        Route::any('mailbackMismatch',[App\Http\Controllers\v1\Master\MailBackController::class,'misMatch']);
+
+
         Route::any('showTransDetails',[App\Http\Controllers\v1\Operation\TransactionDetailsController::class,'search']);
         Route::any('showDeleteTransDetails',[App\Http\Controllers\v1\Operation\TransactionDetailsController::class,'searchDelete']);
         Route::post('DeleteTransDetails',[App\Http\Controllers\v1\Operation\TransactionDetailsController::class,'delete']);

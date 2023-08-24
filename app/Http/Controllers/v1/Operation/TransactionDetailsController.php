@@ -172,6 +172,13 @@ class TransactionDetailsController extends Controller
                     ->selectRaw('sum(tds) as tot_tds')
                     ->selectRaw('count(*) as tot_rows')
                     ->where('td_mutual_fund_trans.delete_flag','N')
+
+                    ->where('td_mutual_fund_trans.amc_flag','N')
+                    ->where('td_mutual_fund_trans.scheme_flag','N')
+                    ->where('td_mutual_fund_trans.plan_option_flag','N')
+                    // ->where('td_mutual_fund_trans.bu_type_flag','N')
+                    // ->where('td_mutual_fund_trans.divi_mismatch_flag','N')
+
                     ->whereRaw($rawQuery)
                     ->groupBy('td_mutual_fund_trans.trans_no')
                     ->groupBy('td_mutual_fund_trans.trxn_type_flag')
@@ -468,6 +475,7 @@ class TransactionDetailsController extends Controller
                         }
                         $value->transaction_type=$transaction_type;
                         $value->transaction_subtype=$transaction_subtype;
+                        $value->gross_amount= ((float)$amount + (float)$value->stamp_duty + (float)$value->tds);
 
                         array_push($data,$value);
                     }
