@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Http\Controllers\v1\Master;
+namespace App\Http\Controllers\v1\Operation;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Helpers\Helper;
-use App\Models\{Benchmark,MutualFund};
+use App\Models\{Benchmark,MutualFund,BenchmarkScheme};
 use Validator;
 use Excel;
 use App\Imports\BenchmarkImport;
 
-class BenchmarkController extends Controller
+class BenchmarkSchemeController extends Controller
 {
     public function searchDetails(Request $request)
     {
@@ -29,21 +29,17 @@ class BenchmarkController extends Controller
                 } else {
                     $rawOrderBy=$field.' DESC';
                 }
-                $data=Benchmark::leftJoin('md_exchange','md_exchange.id','=','md_benchmark.ex_id')
-                    ->leftJoin('md_category','md_category.id','=','md_benchmark.category_id')
-                    ->leftJoin('md_subcategory','md_subcategory.id','=','md_benchmark.subcat_id')
-                    ->select('md_benchmark.*','md_exchange.ex_name as exchange_name','md_category.cat_name as category_name','md_subcategory.subcategory_name as subcategory_name')
-                    ->where('md_benchmark.delete_flag','N')
+                
+                $data=BenchmarkScheme::leftJoin('md_exchange','md_exchange.id','=','td_benchmark_scheme.ex_id')
+                    ->leftJoin('md_benchmark','md_benchmark.id','=','td_benchmark_scheme.benchmark')
+                    ->select('td_benchmark_scheme.*','md_exchange.ex_name as exchange_name','md_benchmark.benchmark as benchmark')
                     ->orderByRaw($rawOrderBy)
                     ->paginate($paginate);
-               
             }else {
-                $data=Benchmark::leftJoin('md_exchange','md_exchange.id','=','md_benchmark.ex_id')
-                    ->leftJoin('md_category','md_category.id','=','md_benchmark.category_id')
-                    ->leftJoin('md_subcategory','md_subcategory.id','=','md_benchmark.subcat_id')
-                    ->select('md_benchmark.*','md_exchange.ex_name as exchange_name','md_category.cat_name as category_name','md_subcategory.subcategory_name as subcategory_name')
-                    ->where('md_benchmark.delete_flag','N')
-                    ->orderBy('md_benchmark.created_at','desc')
+                $data=BenchmarkScheme::leftJoin('md_exchange','md_exchange.id','=','td_benchmark_scheme.ex_id')
+                    ->leftJoin('md_benchmark','md_benchmark.id','=','td_benchmark_scheme.benchmark')
+                    ->select('td_benchmark_scheme.*','md_exchange.ex_name as exchange_name','md_benchmark.benchmark as benchmark')
+                    ->orderBy('td_benchmark_scheme.created_at','desc')
                     ->paginate($paginate);
             }
         } catch (\Throwable $th) {
@@ -75,13 +71,13 @@ class BenchmarkController extends Controller
                 $paginate=999999999;
             }
             if ($search) {
-                $data=Benchmark::where('benchmark','like', '%' . $search . '%')->get();      
+                $data=BenchmarkScheme::where('benchmark','like', '%' . $search . '%')->get();      
             }else if ($category_id && $subcategory_id) {
-                $data=Benchmark::where('category_id',$category_id)->where('subcat_id',$subcategory_id)->get();      
+                $data=BenchmarkScheme::where('category_id',$category_id)->where('subcat_id',$subcategory_id)->get();      
             }else if ($id) {
-                $data=Benchmark::where('id',$id)->get();      
+                $data=BenchmarkScheme::where('id',$id)->get();      
             }else {
-                $data=Benchmark::get();      
+                $data=BenchmarkScheme::get();      
             }
         } catch (\Throwable $th) {
             //throw $th;
@@ -95,10 +91,11 @@ class BenchmarkController extends Controller
         $validator = Validator::make(request()->all(),[
             'ex_id' =>'required',
             'benchmark' =>'required',
-            'category_id' =>'required',
-            'subcat_id' =>'required',
-            'launch_date' =>'required',
-            'launch_price' =>'required',
+            'date'=>'required',
+            'open'=>'required',
+            'high'=>'required',
+            'low'=>'required',
+            'close'=>'required',
         ]);
     
         if($validator->fails()) {
@@ -107,7 +104,7 @@ class BenchmarkController extends Controller
         }
         try {
             if ($request->id > 0) {
-                $data=Benchmark::find($request->id);
+                $data=BenchmarkScheme::find($request->id);
                 $data->ex_id=$request->ex_id;
                 $data->benchmark=$request->benchmark;
                 $data->category_id=$request->category_id;
@@ -116,33 +113,32 @@ class BenchmarkController extends Controller
                 $data->launch_price=$request->launch_price;
                 $data->save();
             }else{
-                $is_has=Benchmark::where('benchmark',$request->benchmark)
+                $is_has=BenchmarkScheme::where('benchmark',$request->benchmark)
                     ->where('ex_id',$request->ex_id)
-                    ->where('category_id',$request->category_id)
-                    ->where('subcat_id',$request->subcat_id)
+                    ->where('date',$request->date)
                     ->where('delete_flag','N')
                     ->get();
                 // return $is_has;
                 if (count($is_has) > 0) {
                     return Helper::WarningResponse(parent::ALREADY_EXIST);
                 }else {
-                    $data=Benchmark::create(array(
+                    $data=BenchmarkScheme::create(array(
                         'ex_id'=>$request->ex_id,
                         'benchmark'=>$request->benchmark,
-                        'category_id'=>$request->category_id,
-                        'subcat_id'=>$request->subcat_id,
-                        'launch_date'=>$request->launch_date,
-                        'launch_price'=>$request->launch_price,
+                        'date'=>$request->date,
+                        'open'=>$request->open,
+                        'high'=>$request->high,
+                        'low'=>$request->low,
+                        'close'=>$request->close,
                         // 'created_by'=>'',
                     ));    
                 }
             } 
-            
-            $mydata=Benchmark::leftJoin('md_exchange','md_exchange.id','=','md_benchmark.ex_id')
-                ->leftJoin('md_category','md_category.id','=','md_benchmark.category_id')
-                ->leftJoin('md_subcategory','md_subcategory.id','=','md_benchmark.subcat_id')
-                ->select('md_benchmark.*','md_exchange.ex_name as exchange_name','md_category.cat_name as category_name','md_subcategory.subcategory_name as subcategory_name')
-                ->where('md_benchmark.id',$data->id)
+            $mydata=[];
+            $mydata=BenchmarkScheme::leftJoin('md_exchange','md_exchange.id','=','td_benchmark_scheme.ex_id')
+                ->leftJoin('md_benchmark','md_benchmark.id','=','td_benchmark_scheme.benchmark')
+                ->select('td_benchmark_scheme.*','md_exchange.ex_name as exchange_name','md_benchmark.benchmark as benchmark')
+                ->where('td_benchmark_scheme.id',$data->id)
                 ->first();
         } catch (\Throwable $th) {
             // throw $th;
@@ -159,7 +155,7 @@ class BenchmarkController extends Controller
             if (count($is_has)>0) {
                 return Helper::WarningResponse(parent::DELETE_NOT_ALLOW_ERROR);
             }else {
-                $data=Benchmark::find($id);
+                $data=BenchmarkScheme::find($id);
                 $data->delete_flag='Y';
                 $data->deleted_date=date('Y-m-d H:i:s');
                 $data->deleted_by=1;
@@ -189,7 +185,7 @@ class BenchmarkController extends Controller
                 }else {
                     // return $value;
                     // return $value[0];
-                    Benchmark::create(array(
+                    BenchmarkScheme::create(array(
                         'Benchmark_name'=>$value[0],
                         // 'created_by'=>'',
                     ));    
@@ -215,3 +211,4 @@ class BenchmarkController extends Controller
         return Helper::SuccessResponse($data1);
     }
 }
+

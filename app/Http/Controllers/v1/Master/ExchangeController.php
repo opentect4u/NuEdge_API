@@ -29,9 +29,9 @@ class ExchangeController extends Controller
             }elseif ($ex_name) {
                 $data=Exchange::where('ex_name','like', '%' . $ex_name . '%')
                     ->orderBy('updated_at','DESC')
-                    ->paginate($paginate);  
+                    ->get();  
             } else {
-                $data=Exchange::orderBy('updated_at','DESC')->paginate($paginate);  
+                $data=Exchange::orderBy('updated_at','DESC')->get();  
             }
         } catch (\Throwable $th) {
             //throw $th;
@@ -42,14 +42,7 @@ class ExchangeController extends Controller
     public function export(Request $request)
     {
         try {
-            $ex_name=$request->ex_name;
-            if ($ex_name) {
-                $data=Exchange::where('ex_name','like', '%' . $ex_name . '%')
-                    ->orderBy('updated_at','DESC')
-                    ->get();  
-            } else {
-                $data=Exchange::orderBy('updated_at','DESC')->get();  
-            }      
+            $data='';
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
@@ -69,8 +62,6 @@ class ExchangeController extends Controller
                 $data=Exchange::where('ex_name','like', '%' . $search . '%')->get();      
             }else if ($id!='') {
                 $data=Exchange::where('id',$id)->get();      
-            }elseif ($paginate!='') {
-                $data=Exchange::paginate($paginate);      
             } else {
                 $data=Exchange::get();      
             }
@@ -98,15 +89,14 @@ class ExchangeController extends Controller
                 $data->ex_name=$request->ex_name;
                 $data->save();
             }else{
-                // $is_has=Exchange::where('ex_name',$request->ex_name)->where('delete_flag','N')->get();
-                // if (count($is_has) > 0) {
-                //     return Helper::WarningResponse(parent::ALREADY_EXIST);
-                // }else {
-                //     $data=Exchange::create(array(
-                //         'ex_name'=>$request->ex_name,
-                //         // 'created_by'=>'',
-                //     ));    
-                // }
+                $is_has=Exchange::where('ex_name',$request->ex_name)->where('delete_flag','N')->get();
+                if (count($is_has) > 0) {
+                    return Helper::WarningResponse(parent::ALREADY_EXIST);
+                }else {
+                    $data=Exchange::create(array(
+                        'ex_name'=>$request->ex_name,
+                    ));    
+                }
             }  
         } catch (\Throwable $th) {
             //throw $th;

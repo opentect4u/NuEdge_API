@@ -171,6 +171,9 @@ class TransactionDetailsController extends Controller
                     ->selectRaw('sum(stamp_duty) as tot_stamp_duty')
                     ->selectRaw('sum(tds) as tot_tds')
                     ->selectRaw('count(*) as tot_rows')
+
+                    ->selectRaw('IF(td_mutual_fund_trans.euin_no="",(select euin_no from td_mutual_fund_trans where folio_no=td_mutual_fund_trans.folio_no and euin_no!="" limit 1),td_mutual_fund_trans.euin_no) as my_euin_no')
+
                     ->where('td_mutual_fund_trans.delete_flag','N')
 
                     ->where('td_mutual_fund_trans.amc_flag','N')

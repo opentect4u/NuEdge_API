@@ -5,17 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Benchmark extends Model
+class BenchmarkScheme extends Model
 {
     use HasFactory;
-    protected $table="md_benchmark";
+    protected $table="td_benchmark_scheme";
     protected $fillable = [
         'ex_id',
         'benchmark',
-        'category_id',
-        'subcat_id',
-        'launch_date',
-        'launch_price',
+        'date',
+        'open',
+        'high',
+        'low',
+        'close',
         'delete_flag',
         'delete_date',
         'delete_by',

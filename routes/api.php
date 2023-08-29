@@ -168,6 +168,13 @@ Route::prefix('v1')->group(function () {
         Route::post('benchmarkAddEdit',[App\Http\Controllers\v1\Master\BenchmarkController::class,'createUpdate']);
         Route::post('benchmarkimport', [App\Http\Controllers\v1\Master\BenchmarkController::class,'import']);
         Route::post('benchmarkDelete', [App\Http\Controllers\v1\Master\BenchmarkController::class,'delete']);
+
+        Route::get('benchmarkScheme',[App\Http\Controllers\v1\Operation\BenchmarkSchemeController::class,'index']);
+        Route::any('benchmarkSchemeDetailSearch',[App\Http\Controllers\v1\Operation\BenchmarkSchemeController::class,'searchDetails']);
+        Route::post('benchmarkSchemeExport',[App\Http\Controllers\v1\Operation\BenchmarkSchemeController::class,'export']);
+        Route::post('benchmarkSchemeAddEdit',[App\Http\Controllers\v1\Operation\BenchmarkSchemeController::class,'createUpdate']);
+        Route::post('benchmarkSchemeimport', [App\Http\Controllers\v1\Operation\BenchmarkSchemeController::class,'import']);
+        Route::post('benchmarkSchemeDelete', [App\Http\Controllers\v1\Operation\BenchmarkSchemeController::class,'delete']);
         
         // =============================geography masters start=================================
         Route::get('country',[App\Http\Controllers\v1\Master\CountryController::class,'index']);

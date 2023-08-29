@@ -11,6 +11,9 @@ class Exchange extends Model
     protected $table="md_exchange";
     protected $fillable = [
         'ex_name',
+        'delete_flag',
+        'delete_date',
+        'delete_by',
         'created_by',
         'updated_by',
     ];

@@ -47,7 +47,7 @@ class Scheme extends Model
         // 'growth_isin',
         // 'idcw_payout_isin',
         // 'idcw_reinvestment_isin',
-        'benchmark',
+        'benchmark_id',
         'delete_flag',
         'deleted_date',
         'deleted_by',

@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use DB;
-use App\Models\Scheme;
+use App\Models\{Scheme,MutualFundTransaction};
 
 class TestController extends Controller
 {
@@ -52,7 +52,7 @@ class TestController extends Controller
         // return $val;
     }
 
-    public function test()
+    public function test111()
     {
         $scheme_type='O';
         DB::enableQueryLog();
@@ -115,5 +115,15 @@ class TestController extends Controller
         // dd($data);
 
         return $data;
+    }
+
+    public function test(){
+        // DB::enableQueryLog();
+
+                        $euin_no=MutualFundTransaction::where('folio_no',6017105704)
+                        ->where('euin_no','!=','')->first(['euin_no'])->value('euin_no');
+
+                        // dd(DB::getQueryLog());
+                        return $euin_no;
     }
 }
