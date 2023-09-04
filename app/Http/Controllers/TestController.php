@@ -118,12 +118,12 @@ class TestController extends Controller
     }
 
     public function test(){
-        // DB::enableQueryLog();
+        DB::enableQueryLog();
+        $euin_no=MutualFundTransaction::where('folio_no',6017105704)->first();
+                        // $euin_no=MutualFundTransaction::where('folio_no',6017105704)
+                        // ->where('euin_no','!=','')->first(['euin_no'])->value('euin_no');
 
-                        $euin_no=MutualFundTransaction::where('folio_no',6017105704)
-                        ->where('euin_no','!=','')->first(['euin_no'])->value('euin_no');
-
-                        // dd(DB::getQueryLog());
-                        return $euin_no;
+        // dd(DB::getQueryLog());
+        return $euin_no;
     }
 }

@@ -69,6 +69,12 @@ Route::prefix('v1')->group(function () {
         Route::post('amcimport', [App\Http\Controllers\v1\Master\AMCController::class,'import']);
         Route::post('amcDelete', [App\Http\Controllers\v1\Master\AMCController::class,'delete']);
 
+
+        Route::post('amcMerge',[App\Http\Controllers\v1\Master\AMCController::class,'merge']);
+        Route::post('amcReplace',[App\Http\Controllers\v1\Master\AMCController::class,'replace']);
+        Route::post('amcAcquisition',[App\Http\Controllers\v1\Master\AMCController::class,'acquisition']);
+
+
         
         Route::get('plan',[App\Http\Controllers\v1\Master\PlanController::class,'index']);
         Route::get('planDetailSearch',[App\Http\Controllers\v1\Master\PlanController::class,'searchDetails']);

@@ -198,7 +198,12 @@ class AMCController extends Controller
                 $paginate=999999999;
             }
             if ($search!='') {
-                $data=AMC::where('delete_flag','N')->where('amc_name','like', '%' . $search . '%')->get();      
+                $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                    ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+                    ->where('md_amc.delete_flag','N')
+                    ->where('md_amc.amc_name','like', '%' . $search . '%')
+                    ->orderBy('md_amc.amc_short_name','ASC')
+                    ->get();      
             } elseif ($product_id!='') {
                 $data=AMC::where('delete_flag','N')->where('product_id',$product_id)->get();      
             } elseif ($rnt_id!='') {
@@ -583,4 +588,189 @@ class AMCController extends Controller
         return Helper::SuccessResponse($data1);
     }
   
+    public function merge(Request $request)
+    {
+        try {
+            // return $request;
+            $amc_ids=json_decode($request->amc_ids);
+            $is_has=AMC::where('amc_name',$request->amc_name)->where('delete_flag','N')->get();
+            if (count($is_has) > 0) {
+                return Helper::WarningResponse(parent::ALREADY_EXIST);
+            }else {
+                $logo=$request->logo;
+                $logo_name='';
+                if ($logo) {
+                    $logo_path_extension=$logo->getClientOriginalExtension();
+                    $logo_name=microtime(true).".".$logo_path_extension;
+                    $logo->move(public_path('amc-logo/'),$logo_name);
+                }
+
+                $data=AMC::create(array(
+                    'rnt_id'=>$request->rnt_id,
+                    'product_id'=>$request->product_id,
+                    'amc_code'=>$request->amc_code,
+                    'amc_name'=>$request->amc_full_name,
+                    'amc_short_name'=>$request->amc_short_name,
+                    'gstin'=>$request->gstin,
+                    'website'=>$request->website,
+                    'head_ofc_addr'=>$request->head_ofc_addr,
+                    'head_ofc_contact_per'=>$request->head_ofc_contact_per,
+                    'head_contact_per_mob'=>$request->head_contact_per_mob,
+                    'head_contact_per_email'=>$request->head_contact_per_email,
+                    'local_ofc_addr'=>$request->local_ofc_addr,
+                    'local_ofc_contact_per'=>$request->local_ofc_contact_per,
+                    'local_contact_per_mob'=>$request->local_contact_per_mob,
+                    'local_contact_per_email'=>$request->local_contact_per_email,
+                    'cus_care_no'=>$request->cus_care_no,
+                    'cus_care_email'=>$request->cus_care_email,
+                    'l1_name'=>$request->l1_name,
+                    'l1_contact_no'=>$request->l1_contact_no,
+                    'l1_email'=>$request->l1_email,
+                    'l2_name'=>$request->l2_name,
+                    'l2_contact_no'=>$request->l2_contact_no,
+                    'l2_email'=>$request->l2_email,
+                    'l3_name'=>$request->l3_name,
+                    'l3_contact_no'=>$request->l3_contact_no,
+                    'l3_email'=>$request->l3_email,
+                    'l4_name'=>$request->l4_name,
+                    'l4_contact_no'=>$request->l4_contact_no,
+                    'l4_email'=>$request->l4_email,
+                    'l5_name'=>$request->l5_name,
+                    'l5_contact_no'=>$request->l5_contact_no,
+                    'l5_email'=>$request->l5_email,
+                    'l6_name'=>$request->l6_name,
+                    'l6_contact_no'=>$request->l6_contact_no,
+                    'l6_email'=>$request->l6_email,
+                    'l7_name'=>$request->l7_name,
+                    'l7_contact_no'=>$request->l7_contact_no,
+                    'l7_email'=>$request->l7_email,
+                    'login_url'=>$request->login_url,
+                    'login_id'=>$request->login_id,
+                    'login_pass'=>$request->login_pass,
+                    'security_qus_ans'=>$request->security_qus_ans,
+                    'cus_care_whatsapp_no'=>$request->cus_care_whatsapp_no,
+                    'distributor_care_no'=>$request->distributor_care_no,
+                    'distributor_care_email'=>$request->distributor_care_email,
+                    'logo'=>$logo_name,
+                    'delete_flag'=>'N',
+                    // 'created_by'=>'',
+                ));
+
+                foreach ($amc_ids as $key => $amc_id) {
+                    $data1=AMC::find($amc_id);
+                    $data1->merge_flag='M';
+                    $data1->merge_id=$data->id;
+                    $data1->effective_date=$request->effective_date;
+                    $data1->save();
+                }
+            }  
+        } catch (\Throwable $th) {
+            throw $th;
+            return Helper::ErrorResponse(parent::DATA_SAVE_ERROR);
+        }
+        return Helper::SuccessResponse($data);
+    }
+
+    public function replace(Request $request)
+    {
+        try {
+            // return $request;
+            $amc_id=json_decode($request->amc_ids)[0];
+            $is_has=AMC::where('amc_name',$request->amc_name)->where('delete_flag','N')->get();
+            if (count($is_has) > 0) {
+                return Helper::WarningResponse(parent::ALREADY_EXIST);
+            }else {
+                $logo=$request->logo;
+                $logo_name='';
+                if ($logo) {
+                    $logo_path_extension=$logo->getClientOriginalExtension();
+                    $logo_name=microtime(true).".".$logo_path_extension;
+                    $logo->move(public_path('amc-logo/'),$logo_name);
+                }
+
+                $data=AMC::create(array(
+                    'rnt_id'=>$request->rnt_id,
+                    'product_id'=>$request->product_id,
+                    'amc_code'=>$request->amc_code,
+                    'amc_name'=>$request->amc_full_name,
+                    'amc_short_name'=>$request->amc_short_name,
+                    'gstin'=>$request->gstin,
+                    'website'=>$request->website,
+                    'head_ofc_addr'=>$request->head_ofc_addr,
+                    'head_ofc_contact_per'=>$request->head_ofc_contact_per,
+                    'head_contact_per_mob'=>$request->head_contact_per_mob,
+                    'head_contact_per_email'=>$request->head_contact_per_email,
+                    'local_ofc_addr'=>$request->local_ofc_addr,
+                    'local_ofc_contact_per'=>$request->local_ofc_contact_per,
+                    'local_contact_per_mob'=>$request->local_contact_per_mob,
+                    'local_contact_per_email'=>$request->local_contact_per_email,
+                    'cus_care_no'=>$request->cus_care_no,
+                    'cus_care_email'=>$request->cus_care_email,
+                    'l1_name'=>$request->l1_name,
+                    'l1_contact_no'=>$request->l1_contact_no,
+                    'l1_email'=>$request->l1_email,
+                    'l2_name'=>$request->l2_name,
+                    'l2_contact_no'=>$request->l2_contact_no,
+                    'l2_email'=>$request->l2_email,
+                    'l3_name'=>$request->l3_name,
+                    'l3_contact_no'=>$request->l3_contact_no,
+                    'l3_email'=>$request->l3_email,
+                    'l4_name'=>$request->l4_name,
+                    'l4_contact_no'=>$request->l4_contact_no,
+                    'l4_email'=>$request->l4_email,
+                    'l5_name'=>$request->l5_name,
+                    'l5_contact_no'=>$request->l5_contact_no,
+                    'l5_email'=>$request->l5_email,
+                    'l6_name'=>$request->l6_name,
+                    'l6_contact_no'=>$request->l6_contact_no,
+                    'l6_email'=>$request->l6_email,
+                    'l7_name'=>$request->l7_name,
+                    'l7_contact_no'=>$request->l7_contact_no,
+                    'l7_email'=>$request->l7_email,
+                    'login_url'=>$request->login_url,
+                    'login_id'=>$request->login_id,
+                    'login_pass'=>$request->login_pass,
+                    'security_qus_ans'=>$request->security_qus_ans,
+                    'cus_care_whatsapp_no'=>$request->cus_care_whatsapp_no,
+                    'distributor_care_no'=>$request->distributor_care_no,
+                    'distributor_care_email'=>$request->distributor_care_email,
+                    'logo'=>$logo_name,
+                    'delete_flag'=>'N',
+                    // 'created_by'=>'',
+                ));
+
+                $data1=AMC::find($amc_id);
+                $data1->merge_flag='R';
+                $data1->merge_id=$data->id;
+                $data1->effective_date=$request->effective_date;
+                $data1->save();
+            }  
+        } catch (\Throwable $th) {
+            throw $th;
+            return Helper::ErrorResponse(parent::DATA_SAVE_ERROR);
+        }
+    }
+
+    public function acquisition(Request $request)
+    {
+        try {
+            // return $request;
+            $amc_id=json_decode($request->amc_ids)[0];
+            $acquisition_to_id=$request->acquisition_to_id;
+            $is_has=AMC::where('amc_name',$request->amc_name)->where('delete_flag','N')->get();
+            if (count($is_has) > 0) {
+                return Helper::WarningResponse(parent::ALREADY_EXIST);
+            }else {
+
+                $data1=AMC::find($amc_id);
+                $data1->merge_flag='A';
+                $data1->merge_id=$acquisition_to_id;
+                $data1->effective_date=$request->effective_date;
+                $data1->save();
+            }  
+        } catch (\Throwable $th) {
+            throw $th;
+            return Helper::ErrorResponse(parent::DATA_SAVE_ERROR);
+        }
+    }
 }
