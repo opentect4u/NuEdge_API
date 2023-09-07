@@ -137,6 +137,10 @@ Route::prefix('v1')->group(function () {
         Route::post('schemeimport', [App\Http\Controllers\v1\Master\SchemeController::class,'import']);
         Route::post('schemeDelete', [App\Http\Controllers\v1\Master\SchemeController::class,'delete']);
 
+        Route::post('schemeMerge',[App\Http\Controllers\v1\Master\SchemeController::class,'merge']);
+        Route::post('schemeReplace',[App\Http\Controllers\v1\Master\SchemeController::class,'replace']);
+        Route::post('schemeAcquisition',[App\Http\Controllers\v1\Master\SchemeController::class,'acquisition']);
+
         Route::get('schemeISIN',[App\Http\Controllers\v1\Master\SchemeISINController::class,'index']);
         Route::get('schemeISINDetailSearch',[App\Http\Controllers\v1\Master\SchemeISINController::class,'searchDetails']);
         Route::post('schemeISINDetailSearch',[App\Http\Controllers\v1\Master\SchemeISINController::class,'searchDetails']);

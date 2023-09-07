@@ -749,6 +749,7 @@ class AMCController extends Controller
             throw $th;
             return Helper::ErrorResponse(parent::DATA_SAVE_ERROR);
         }
+        return Helper::SuccessResponse($data);
     }
 
     public function acquisition(Request $request)
@@ -772,5 +773,6 @@ class AMCController extends Controller
             throw $th;
             return Helper::ErrorResponse(parent::DATA_SAVE_ERROR);
         }
+        return Helper::SuccessResponse($data);
     }
 }

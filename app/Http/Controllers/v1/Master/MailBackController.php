@@ -76,7 +76,7 @@ class MailBackController extends Controller
             if ($upload_file) {
                 $path_extension=$upload_file->getClientOriginalExtension();
                 $original_file_name=$upload_file->getClientOriginalName();
-                $upload_file_name=(microtime(true) * 10000).".".$path_extension;
+                $upload_file_name=(microtime(true) * 10000)."_".$rnt_id.".".$path_extension;
                 $upload_file->move(public_path('mailback/manual/'),$upload_file_name);
                 $create_dt=MailbackProcess::create(array(
                     'rnt_id'=>$rnt_id,
@@ -114,6 +114,8 @@ class MailBackController extends Controller
                 $end_count=count($TotalArray)-1;
             }
 
+
+            // 'TRUNCATE TABLE `admin_nuedge`.`tt_mutual_fund_trans`'
             if ($rnt_id==1) { // CAMS
                 if ($file_type_id==1 && $file_id=1) {  // transction  WBR2
                     for ($i=$start_count; $i <= $end_count; $i++) { 
@@ -162,6 +164,8 @@ class MailBackController extends Controller
                 if ($file_type_id==1 && $file_id=3) {  // transction MFSD201
                     for ($i=$start_count; $i <= $end_count; $i++) { 
                         $value=explode("~",$TotalArray[$i]);
+                        // $value=explode("~",$TotalArray[0]);
+                        // return $value;
                         TempMutualFundTransaction::create(array(
                             'rnt_id'=>$rnt_id,
                             'arn_no'=>$value[19],
@@ -176,7 +180,7 @@ class MailBackController extends Controller
                             'trans_mode'=>$value[10],
                             'trans_status'=>$value[11],
                             'user_trans_no'=>$value[39],
-                            'trans_date'=>Carbon::parse(str_replace("/","-",$value[49]))->format('Y-m-d H:i:s'),
+                            'trans_date'=>Carbon::parse(str_replace("/","-",$value[14]))->format('Y-m-d H:i:s'),
                             'post_date'=>Carbon::parse(str_replace("/","-",$value[15]))->format('Y-m-d H:i:s'),
                             'pur_price'=>$value[16],
                             'units'=>$value[17],

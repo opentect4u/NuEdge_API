@@ -478,10 +478,16 @@ class SchemeController extends Controller
                 $paginate=999999999;
             }
             if (!empty($arr_amc_id) && !empty($arr_cat_id) && !empty($arr_subcat_id)) {
-                $data=Scheme::where('delete_flag','N')
-                    ->whereIn('amc_id',$arr_amc_id)
-                    ->whereIn('category_id',$arr_cat_id)
-                    ->whereIn('subcategory_id',$arr_subcat_id)
+                // return 'hii';
+                $data=Scheme::join('md_amc','md_amc.id','=','md_scheme.amc_id')
+                    ->join('md_category','md_category.id','=','md_scheme.category_id')
+                    ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
+                    ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+                    ->select('md_scheme.*','md_amc.amc_short_name as amc_short_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
+                    ->where('md_scheme.delete_flag','N')
+                    ->whereIn('md_scheme.amc_id',$arr_amc_id)
+                    ->whereIn('md_scheme.category_id',$arr_cat_id)
+                    ->whereIn('md_scheme.subcategory_id',$arr_subcat_id)
                     ->get();      
             } elseif ($search!='' && $amc_id!='' && $scheme_type!='') {
                 $data=Scheme::where('scheme_type',$scheme_type)
@@ -515,7 +521,7 @@ class SchemeController extends Controller
                     ->join('md_category','md_category.id','=','md_scheme.category_id')
                     ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
                     ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
-                    ->select('md_scheme.*','md_amc.amc_name as amc_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
+                    ->select('md_scheme.*','md_amc.amc_name as amc_name','md_amc.amc_short_name as amc_short_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
                     ->where('md_scheme.delete_flag','N')
                     ->where('md_scheme.id',$scheme_id)
                     ->get();      
@@ -535,7 +541,7 @@ class SchemeController extends Controller
             }
             // $data=Scheme::whereDate('updated_at',date('Y-m-d'))->get();      
         } catch (\Throwable $th) {
-            //throw $th;
+            throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
         return Helper::SuccessResponse($data);
@@ -1571,5 +1577,152 @@ class SchemeController extends Controller
         $queryString1='md_scheme.id';
         $rawQuery.=Helper::WhereRawQuery($search_scheme_id,$rawQuery,$queryString1);
         return $rawQuery;
+    }
+
+
+    public function merge(Request $request)
+    {
+        try {
+            // return $request;
+            $data=[];
+            $scheme_ids=json_decode($request->scheme_ids);
+            $is_has=Scheme::where('scheme_name',$request->scheme_name)->where('delete_flag','N')->get();
+            if (count($is_has) > 0) {
+                return Helper::WarningResponse(parent::ALREADY_EXIST);
+            }else {
+                if ($request->sip_date!='') {
+                    $sip_date=json_decode($request->sip_date);
+                    sort($sip_date);
+                    $sip_date=json_encode($sip_date);
+                }
+                if ($request->swp_date!='') {
+                    $swp_date=json_decode($request->swp_date);
+                    sort($swp_date);
+                    $swp_date=json_encode($swp_date);
+                }
+                if ($request->stp_date!='') {
+                    $stp_date=json_decode($request->stp_date);
+                    sort($stp_date);
+                    $stp_date=json_encode($stp_date);
+                }
+                $data=Scheme::create(array(
+                    'product_id'=>$request->product_id,
+                    'amc_id'=>$request->amc_id,
+                    'category_id'=>$request->category_id,
+                    'subcategory_id'=>$request->subcategory_id,
+                    'scheme_name'=>$request->scheme_name,
+                    'scheme_type'=>$request->scheme_type,
+                    'pip_fresh_min_amt'=>$request->pip_fresh_min_amt,
+                    'pip_add_min_amt'=>$request->pip_add_min_amt,
+                    'sip_freq_wise_amt'=>$request->frequency,
+                    'sip_date'=>$sip_date,
+                    'swp_freq_wise_amt'=>$request->swp_freq_wise_amt,
+                    'swp_date'=>$swp_date,
+                    'stp_freq_wise_amt'=>$request->stp_freq_wise_amt,
+                    'stp_date'=>$stp_date,
+                    'ava_special_sip'=>$request->ava_special_sip,
+                    'special_sip_name'=>$request->special_sip_name,
+                    'benchmark_id'=>isset($request->benchmark_id)?$request->benchmark_id:NULL,
+                    // 'created_by'=>'',
+                ));  
+                
+                foreach ($scheme_ids as $key => $scheme_id) {
+                    $data1=Scheme::find($scheme_id);
+                    $data1->merge_flag='M';
+                    $data1->merge_id=$data->id;
+                    $data1->effective_date=$request->effective_date;
+                    $data1->save();
+                }
+            } 
+        } catch (\Throwable $th) {
+            throw $th;
+            return Helper::ErrorResponse(parent::DATA_SAVE_ERROR);
+        }
+        return Helper::SuccessResponse($data);
+    }
+
+    public function replace(Request $request)
+    {
+        try {
+            return $request;
+            $data=[];
+            $scheme_id=json_decode($request->scheme_ids)[0];
+            $is_has=Scheme::where('scheme_name',$request->scheme_name)->where('delete_flag','N')->get();
+            if (count($is_has) > 0) {
+                return Helper::WarningResponse(parent::ALREADY_EXIST);
+            }else {
+                if ($request->sip_date!='') {
+                    $sip_date=json_decode($request->sip_date);
+                    sort($sip_date);
+                    $sip_date=json_encode($sip_date);
+                }
+                if ($request->swp_date!='') {
+                    $swp_date=json_decode($request->swp_date);
+                    sort($swp_date);
+                    $swp_date=json_encode($swp_date);
+                }
+                if ($request->stp_date!='') {
+                    $stp_date=json_decode($request->stp_date);
+                    sort($stp_date);
+                    $stp_date=json_encode($stp_date);
+                }
+                $data=Scheme::create(array(
+                    'product_id'=>$request->product_id,
+                    'amc_id'=>$request->amc_id,
+                    'category_id'=>$request->category_id,
+                    'subcategory_id'=>$request->subcategory_id,
+                    'scheme_name'=>$request->scheme_name,
+                    'scheme_type'=>$request->scheme_type,
+                    'pip_fresh_min_amt'=>$request->pip_fresh_min_amt,
+                    'pip_add_min_amt'=>$request->pip_add_min_amt,
+                    'sip_freq_wise_amt'=>$request->frequency,
+                    'sip_date'=>$sip_date,
+                    'swp_freq_wise_amt'=>$request->swp_freq_wise_amt,
+                    'swp_date'=>$swp_date,
+                    'stp_freq_wise_amt'=>$request->stp_freq_wise_amt,
+                    'stp_date'=>$stp_date,
+                    'ava_special_sip'=>$request->ava_special_sip,
+                    'special_sip_name'=>$request->special_sip_name,
+                    'benchmark_id'=>isset($request->benchmark_id)?$request->benchmark_id:NULL,
+                    // 'created_by'=>'',
+                ));  
+                
+                $data1=Scheme::find($scheme_id);
+                $data1->merge_flag='R';
+                $data1->merge_id=$data->id;
+                $data1->effective_date=$request->effective_date;
+                $data1->save();
+            } 
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::DATA_SAVE_ERROR);
+        }
+        return Helper::SuccessResponse($data);
+    }
+
+    public function acquisition(Request $request)
+    {
+        try {
+            $data=[];
+
+            $amc_id=json_decode($request->scheme_ids)[0];
+            $acquisition_to_id=$request->acquisition_to_id;
+            $is_has=Scheme::where('scheme_name',$request->scheme_name)->where('delete_flag','N')->get();
+            if (count($is_has) > 0) {
+                return Helper::WarningResponse(parent::ALREADY_EXIST);
+            }else {
+
+                $data1=Scheme::find($amc_id);
+                $data1->merge_flag='A';
+                $data1->merge_id=$acquisition_to_id;
+                $data1->effective_date=$request->effective_date;
+                $data1->save();
+            }  
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::DATA_SAVE_ERROR);
+        }
+        return Helper::SuccessResponse($data);
     }
 }

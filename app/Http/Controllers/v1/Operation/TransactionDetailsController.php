@@ -300,8 +300,9 @@ class TransactionDetailsController extends Controller
                             $transaction_subtype=$get_type_subtype->trans_sub_type;
                         }
                     }
-                    $value->gross_amount= ((float)$amount + (float)$value->stamp_duty + (float)$value->tds);
-                    $value->tot_gross_amount= ((float)$value->tot_amount + (float)$value->tot_stamp_duty + (float)$value->tot_tds);
+                    $value->gross_amount= number_format((float)((float)$amount + (float)$value->stamp_duty + (float)$value->tds), 2, '.', '');
+                    // number_format((float)$foo, 2, '.', '')
+                    $value->tot_gross_amount= number_format((float)((float)$value->tot_amount + (float)$value->tot_stamp_duty + (float)$value->tot_tds), 2, '.', '');
                     $value->transaction_type=$transaction_type;
                     $value->transaction_subtype=$transaction_subtype;
 
