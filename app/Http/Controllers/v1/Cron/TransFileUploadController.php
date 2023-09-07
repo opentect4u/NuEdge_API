@@ -35,8 +35,8 @@ class TransFileUploadController extends Controller
 
             $upload_file_name=(microtime(true) * 10000)."_".$rnt_id.".csv";
             // $filecv='C:\Users\Chitta\OneDrive\Documents\KF\MFSD201_200.csv';
-            $filecv='C:\Users\Administrator\Documents\KF\MFSD201_200.csv';
-            $original_file_name='MFSD201_200.csv';
+            $filecv='C:\Users\Administrator\Documents\KF\MFSD201_500.csv';
+            $original_file_name='MFSD201_500.csv';
             if (file_exists($filecv) != null) {
                 File::copy($filecv, public_path('mailback/autoupload/'.$upload_file_name));
                 // unlink($filecv);
