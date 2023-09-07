@@ -35,8 +35,9 @@ class TransFileUploadController extends Controller
 
             $upload_file_name=(microtime(true) * 10000)."_".$rnt_id.".csv";
             // $filecv='C:\Users\Chitta\OneDrive\Documents\KF\MFSD201_200.csv';
-            $filecv='C:\Users\Administrator\Documents\KF\MFSD201_500.csv';
-            $original_file_name='MFSD201_500.csv';
+            // $filecv='C:\Users\Chitta\Documents\Nuedge-Online\MFSD201_WBTRN11215159_1749006538766RN1121515984\1749006538766RN1121515984.csv';
+            $filecv='C:\Users\Administrator\Documents\KF\1749006538766RN1121515984.csv';
+            $original_file_name='1749006538766RN1121515984.csv';
             if (file_exists($filecv) != null) {
                 File::copy($filecv, public_path('mailback/autoupload/'.$upload_file_name));
                 // unlink($filecv);
@@ -56,8 +57,8 @@ class TransFileUploadController extends Controller
             $file_name=public_path('mailback/autoupload/'.$upload_file_name);
             // return  $file_name;
 
-            // $TotalArray =  array_map('str_getcsv', $file_name);
-            $TotalArray =  array_map('str_getcsv', file($file_name));
+            // $TotalArray =  array_map('str_getcsv', file($file_name));
+            $TotalArray = array_map(function($v){return str_getcsv($v, ";");}, file($file_name));
 
             // return $TotalArray;
             return count($TotalArray);
