@@ -18,5 +18,7 @@ class MailbackProcess extends Model
         'upload_file',
         'process_date',
         'process_type',
+        'total_count',
+        'process_count',
     ];
 }

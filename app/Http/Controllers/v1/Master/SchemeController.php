@@ -483,7 +483,8 @@ class SchemeController extends Controller
                     ->join('md_category','md_category.id','=','md_scheme.category_id')
                     ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
                     ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
-                    ->select('md_scheme.*','md_amc.amc_short_name as amc_short_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name')
+                    ->leftJoin('md_benchmark','md_benchmark.id','=','md_scheme.benchmark_id')
+                    ->select('md_scheme.*','md_amc.amc_short_name as amc_short_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name','md_benchmark.benchmark as benchmark')
                     ->where('md_scheme.delete_flag','N')
                     ->whereIn('md_scheme.amc_id',$arr_amc_id)
                     ->whereIn('md_scheme.category_id',$arr_cat_id)
@@ -1644,7 +1645,7 @@ class SchemeController extends Controller
     public function replace(Request $request)
     {
         try {
-            return $request;
+            // return $request;
             $data=[];
             $scheme_id=json_decode($request->scheme_ids)[0];
             $is_has=Scheme::where('scheme_name',$request->scheme_name)->where('delete_flag','N')->get();
