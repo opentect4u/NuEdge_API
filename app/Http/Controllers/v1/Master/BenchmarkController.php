@@ -5,7 +5,7 @@ namespace App\Http\Controllers\v1\Master;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Helpers\Helper;
-use App\Models\{Benchmark,MutualFund};
+use App\Models\{Benchmark,MutualFund,Exchange};
 use Validator;
 use Excel;
 use App\Imports\BenchmarkImport;
@@ -70,6 +70,7 @@ class BenchmarkController extends Controller
             $paginate=$request->paginate;
             $category_id=$request->category_id;
             $subcategory_id=$request->subcat_id;
+            $ex_id=$request->ex_id;
 
             if ($paginate=='A') {
                 $paginate=999999999;
@@ -80,8 +81,14 @@ class BenchmarkController extends Controller
                 $data=Benchmark::where('category_id',$category_id)->where('subcat_id',$subcategory_id)->get();      
             }else if ($id) {
                 $data=Benchmark::where('id',$id)->get();      
+            }else if ($ex_id) {
+                $data=Benchmark::leftjoin('md_exchange','md_exchange.id','=','md_benchmark.ex_id')
+                    ->select('md_benchmark.*','md_exchange.ex_name as ex_name')
+                    ->where('md_benchmark.ex_id',$ex_id)
+                    ->groupBy('md_benchmark.benchmark')
+                    ->get();      
             }else {
-                $data=Benchmark::get();      
+                $data=Benchmark::groupBy('md_benchmark.benchmark')->get();      
             }
         } catch (\Throwable $th) {
             //throw $th;
@@ -106,6 +113,7 @@ class BenchmarkController extends Controller
             return Helper::ErrorResponse(parent::VALIDATION_ERROR);
         }
         try {
+            // return $request;
             if ($request->id > 0) {
                 $data=Benchmark::find($request->id);
                 $data->ex_id=$request->ex_id;
@@ -116,26 +124,32 @@ class BenchmarkController extends Controller
                 $data->launch_price=$request->launch_price;
                 $data->save();
             }else{
-                $is_has=Benchmark::where('benchmark',$request->benchmark)
-                    ->where('ex_id',$request->ex_id)
-                    ->where('category_id',$request->category_id)
-                    ->where('subcat_id',$request->subcat_id)
-                    ->where('delete_flag','N')
-                    ->get();
-                // return $is_has;
-                if (count($is_has) > 0) {
-                    return Helper::WarningResponse(parent::ALREADY_EXIST);
-                }else {
+                // $is_has=Benchmark::where('benchmark',$request->benchmark)
+                //     ->where('ex_id',$request->ex_id)
+                //     ->where('category_id',$request->category_id)
+                //     ->where('subcat_id',$request->subcat_id)
+                //     ->where('delete_flag','N')
+                //     ->get();
+                // // return $is_has;
+                // if (count($is_has) > 0) {
+                //     return Helper::WarningResponse(parent::ALREADY_EXIST);
+                // }else {
+                
+                $subcat_id=json_decode($request->subcat_id);
+                foreach ($subcat_id as $key => $value) {
+                    // return $value;
                     $data=Benchmark::create(array(
                         'ex_id'=>$request->ex_id,
                         'benchmark'=>$request->benchmark,
                         'category_id'=>$request->category_id,
-                        'subcat_id'=>$request->subcat_id,
+                        'subcat_id'=>$value,
                         'launch_date'=>$request->launch_date,
                         'launch_price'=>$request->launch_price,
                         // 'created_by'=>'',
-                    ));    
+                    )); 
                 }
+                    
+                // }
             } 
             
             $mydata=Benchmark::leftJoin('md_exchange','md_exchange.id','=','md_benchmark.ex_id')
@@ -176,23 +190,34 @@ class BenchmarkController extends Controller
     {
         try {
             // return $request;
-            $path = $request->file('file')->getRealPath();
-            $data = array_map('str_getcsv', file($path));
+            // $path = $request->file('file')->getRealPath();
+            // $data = array_map('str_getcsv', file($path));
             // return $data[0][0];
+
+            $datas = Excel::toArray([],  $request->file('file'));
+            return $datas;
+            $data=$datas[0];
 
             foreach ($data as $key => $value) {
                 if ($key==0) {
-                    if ($value[0]=="Benchmark") {
+                    if ($value[0]=="Exchange" && $value[1]=="Benchmark" && str_replace(" ","_",$value[2])!="Launch_Date" && str_replace(" ","_",$value[3])!="Launch_Price" && str_replace(" ","_",$value[4])=="Category" && str_replace(" ","_",$value[5])!="Sub_Category") {
                         return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
                     }
                     // return $value;
                 }else {
-                    // return $value;
+                    return $value;
                     // return $value[0];
-                    Benchmark::create(array(
-                        'Benchmark_name'=>$value[0],
+                    $ex_id=Exchange::where('ex_name',$value[0])->value('id');
+                    $category_id=Exchange::where('',$value[0])->value('id');
+                    $data=Benchmark::create(array(
+                        'ex_id'=>$ex_id,
+                        'benchmark'=>$request->benchmark,
+                        'category_id'=>$category_id,
+                        'subcat_id'=>$value,
+                        'launch_date'=>$request->launch_date,
+                        'launch_price'=>$request->launch_price,
                         // 'created_by'=>'',
-                    ));    
+                    )); 
                 }
                
             }

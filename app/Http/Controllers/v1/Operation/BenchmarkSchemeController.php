@@ -5,7 +5,7 @@ namespace App\Http\Controllers\v1\Operation;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Helpers\Helper;
-use App\Models\{Benchmark,MutualFund,BenchmarkScheme};
+use App\Models\{Benchmark,MutualFund,BenchmarkScheme,Exchange};
 use Validator;
 use Excel;
 use App\Imports\BenchmarkImport;
@@ -172,23 +172,53 @@ class BenchmarkSchemeController extends Controller
     {
         try {
             // return $request;
-            $path = $request->file('file')->getRealPath();
-            $data = array_map('str_getcsv', file($path));
+            // $path = $request->file('file')->getRealPath();
+            // $data = array_map('str_getcsv', file($path));
             // return $data[0][0];
+
+            $datas = Excel::toArray([],  $request->file('file'));
+            // return $datas;
+            $data=$datas[0];
 
             foreach ($data as $key => $value) {
                 if ($key==0) {
-                    if ($value[0]=="Benchmark") {
+                    // return $value;
+                    if ($value[0]!="Exchange" && $value[1]!="Benchmark" && $value[2]!="Date") {
                         return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
                     }
                     // return $value;
                 }else {
                     // return $value;
                     // return $value[0];
-                    BenchmarkScheme::create(array(
-                        'Benchmark_name'=>$value[0],
-                        // 'created_by'=>'',
-                    ));    
+                    $ex_id=Exchange::where('ex_name',$value[0])->value('id');
+                    $benchmark_id=Benchmark::where('benchmark',$value[1])->value('id');
+
+                    $is_has=BenchmarkScheme::where('benchmark',$benchmark_id)
+                        ->where('ex_id',$ex_id)
+                        ->where('date',$value[2])
+                        ->where('delete_flag','N')
+                        ->get();
+                    if (count($is_has) > 0) {
+                        // return $is_has[0]->id;
+                        $up_data=BenchmarkScheme::find($is_has[0]->id);
+                        $up_data->date=$value[2];
+                        $up_data->open=$value[3];
+                        $up_data->high=$value[4];
+                        $up_data->low=$value[5];
+                        $up_data->close=$value[6];
+                        $up_data->save();
+                    } else {
+                        BenchmarkScheme::create(array(
+                            'ex_id'=>$ex_id,
+                            'benchmark'=>$benchmark_id,
+                            'date'=>$value[2],
+                            'open'=>$value[3],
+                            'high'=>$value[4],
+                            'low'=>$value[5],
+                            'close'=>$value[6],
+                            // 'created_by'=>'',
+                        ));   
+                    } 
                 }
                
             }
