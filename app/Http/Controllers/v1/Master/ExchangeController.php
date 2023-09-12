@@ -5,7 +5,7 @@ namespace App\Http\Controllers\v1\Master;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Helpers\Helper;
-use App\Models\{Exchange,MutualFund};
+use App\Models\{Exchange,MutualFund,Benchmark};
 use Validator;
 use Excel;
 use App\Imports\ExchangeImport;
@@ -24,14 +24,18 @@ class ExchangeController extends Controller
             }
             if ($sort_by && $column_name) {
                 $data=Exchange::where('ex_name','like', '%' . $ex_name . '%')
+                    ->where('delete_flag','N')
                     ->orderBy($column_name,$sort_by)
                     ->paginate($paginate); 
             }elseif ($ex_name) {
                 $data=Exchange::where('ex_name','like', '%' . $ex_name . '%')
+                    ->where('delete_flag','N')
                     ->orderBy('updated_at','DESC')
                     ->get();  
             } else {
-                $data=Exchange::orderBy('updated_at','DESC')->get();  
+                $data=Exchange::where('delete_flag','N')
+                    ->orderBy('updated_at','DESC')
+                    ->get();  
             }
         } catch (\Throwable $th) {
             //throw $th;
@@ -63,7 +67,7 @@ class ExchangeController extends Controller
             }else if ($id!='') {
                 $data=Exchange::where('id',$id)->get();      
             } else {
-                $data=Exchange::get();      
+                $data=Exchange::where('delete_flag','N')->get();      
             }
         } catch (\Throwable $th) {
             //throw $th;
@@ -108,19 +112,20 @@ class ExchangeController extends Controller
     public function delete(Request $request)
     {
         try {
+            // return $request;
             $id=$request->id;
-            $is_has=MutualFund::where('Exchange_id',$id)->orWhere('Exchange_id_to',$id)->get();
+            $is_has=Benchmark::where('ex_id',$id)->get();
             if (count($is_has)>0) {
                 return Helper::WarningResponse(parent::DELETE_NOT_ALLOW_ERROR);
             }else {
                 $data=Exchange::find($id);
                 $data->delete_flag='Y';
-                $data->deleted_date=date('Y-m-d H:i:s');
-                $data->deleted_by=1;
+                $data->delete_date=date('Y-m-d H:i:s');
+                $data->delete_by=1;
                 $data->save();
             }
         } catch (\Throwable $th) {
-            //throw $th;
+            throw $th;
             return Helper::ErrorResponse(parent::DELETE_FAIL_ERROR);
         }
         return Helper::SuccessResponse($data);

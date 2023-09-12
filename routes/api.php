@@ -176,7 +176,7 @@ Route::prefix('v1')->group(function () {
         Route::any('benchmarkDetailSearch',[App\Http\Controllers\v1\Master\BenchmarkController::class,'searchDetails']);
         Route::post('benchmarkExport',[App\Http\Controllers\v1\Master\BenchmarkController::class,'export']);
         Route::post('benchmarkAddEdit',[App\Http\Controllers\v1\Master\BenchmarkController::class,'createUpdate']);
-        Route::post('benchmarkimport', [App\Http\Controllers\v1\Master\BenchmarkController::class,'import']);
+        Route::post('benchmarkImport', [App\Http\Controllers\v1\Master\BenchmarkController::class,'import']);
         Route::post('benchmarkDelete', [App\Http\Controllers\v1\Master\BenchmarkController::class,'delete']);
 
         Route::get('benchmarkScheme',[App\Http\Controllers\v1\Operation\BenchmarkSchemeController::class,'index']);

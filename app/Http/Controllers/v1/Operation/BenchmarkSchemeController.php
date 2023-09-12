@@ -16,7 +16,7 @@ class BenchmarkSchemeController extends Controller
     {
         try {
             $paginate=$request->paginate;
-            $Benchmark_name=$request->Benchmark_name;
+            $benchmark=json_decode($request->benchmark);
             $order=$request->order;
             $field=$request->field;
             if ($paginate=='A') {
@@ -30,20 +30,46 @@ class BenchmarkSchemeController extends Controller
                     $rawOrderBy=$field.' DESC';
                 }
                 
-                $data=BenchmarkScheme::leftJoin('md_exchange','md_exchange.id','=','td_benchmark_scheme.ex_id')
+                $my_data=BenchmarkScheme::leftJoin('md_exchange','md_exchange.id','=','td_benchmark_scheme.ex_id')
                     ->leftJoin('md_benchmark','md_benchmark.id','=','td_benchmark_scheme.benchmark')
                     ->select('td_benchmark_scheme.*','md_exchange.ex_name as exchange_name','md_benchmark.benchmark as benchmark')
                     ->orderByRaw($rawOrderBy)
                     ->paginate($paginate);
             }else {
-                $data=BenchmarkScheme::leftJoin('md_exchange','md_exchange.id','=','td_benchmark_scheme.ex_id')
+                $my_data=BenchmarkScheme::leftJoin('md_exchange','md_exchange.id','=','td_benchmark_scheme.ex_id')
                     ->leftJoin('md_benchmark','md_benchmark.id','=','td_benchmark_scheme.benchmark')
                     ->select('td_benchmark_scheme.*','md_exchange.ex_name as exchange_name','md_benchmark.benchmark as benchmark')
-                    ->orderBy('td_benchmark_scheme.created_at','desc')
-                    ->paginate($paginate);
+                    // ->selectRaw('DATE_FORMAT(td_benchmark_scheme.date, "%b %e") AS Week ')
+                    // ->selectRaw('WEEK(td_benchmark_scheme.date) AS Week')
+                    // ->selectRaw('YEAR(td_benchmark_scheme.date) AS Year')
+                    ->whereIn('td_benchmark_scheme.benchmark',$benchmark)
+                    ->orderBy('td_benchmark_scheme.date','desc')
+                    // ->groupByRaw('Week')
+                    // ->groupByRaw('Year')
+                    // ->paginate($paginate);
+                    ->get();
+            }
+            // return $my_data;
+            $data=[];
+            foreach ($my_data as $key => $value) {
+                // return $value;
+                // return $key;
+                $close_price=$value->close;
+                $old_close_price=0;
+                $change_price=0;
+                $change_percentage_format=0.00;
+                if (isset($my_data[$key+1]['close']) && $my_data[$key+1]['close']) {
+                    $old_close_price=$my_data[$key+1]['close'];
+                    $change_price=$close_price-$old_close_price;
+                    $change_percentage=(($change_price/$old_close_price)*100);
+                    $change_percentage_format=number_format((float)round($change_percentage, 0, PHP_ROUND_HALF_UP), 2, '.', '');
+                }
+                $value->change_price=number_format((float)$change_price, 2, '.', '');
+                $value->change_percentage=$change_percentage_format;
+                array_push($data,$value);
             }
         } catch (\Throwable $th) {
-            //throw $th;
+            throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
         return Helper::SuccessResponse($data);
@@ -179,43 +205,123 @@ class BenchmarkSchemeController extends Controller
             $datas = Excel::toArray([],  $request->file('file'));
             // return $datas;
             $data=$datas[0];
+            // return count($data);
+            // return $data[0];
 
+
+            $start_count=$request->start_count;
+            $end_count=$request->end_count;
+            if ($end_count==count($data) || $end_count >= count($data)) {
+                $end_count=count($data)-1;
+            }
+
+            if ($data[0][0]!="Benchmark" && $data[0][1]!="Date" && $data[0][2]!="Open" && $data[0][3]!="High") {
+                return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
+            }else {
+                // return $data[1];
+                for ($i=$start_count; $i <= $end_count; $i++) { 
+                    // return $data[$i];
+                    $benchmark=Benchmark::where('benchmark',$data[$i][0])->first();
+                    // return $benchmark;
+                    $benchmark_id=$benchmark->id;
+                    $ex_id=$benchmark->ex_id;
+                    $date=date('Y-m-d',strtotime(str_replace('/','-',$data[$i][1])));
+                    // return $date;
+                    $is_has=BenchmarkScheme::where('benchmark',$benchmark_id)
+                        ->where('ex_id',$ex_id)
+                        ->where('date',$date)
+                        ->where('delete_flag','N')
+                        ->get();
+
+                    if (count($is_has) > 0) {
+                        // return $is_has[0]->id;
+                        $up_data=BenchmarkScheme::find($is_has[0]->id);
+                        $up_data->date=$date;
+                        $up_data->open=isset($data[$i][2])?$data[$i][2]:0;
+                        $up_data->high=isset($data[$i][3])?$data[$i][3]:0;
+                        $up_data->low=isset($data[$i][4])?$data[$i][4]:0;
+                        $up_data->close=isset($data[$i][5])?$data[$i][5]:0;
+                        $up_data->save();
+                    } else {
+                        BenchmarkScheme::create(array(
+                            'ex_id'=>$ex_id,
+                            'benchmark'=>$benchmark_id,
+                            'date'=>$date,
+                            'open'=>isset($data[$i][2])?$data[$i][2]:0,
+                            'high'=>isset($data[$i][3])?$data[$i][3]:0,
+                            'low'=>isset($data[$i][4])?$data[$i][4]:0,
+                            'close'=>isset($data[$i][5])?$data[$i][5]:0,
+                            // 'created_by'=>'',
+                        ));   
+                    } 
+                }
+            }
+            
+            $scc_res=[
+                'start_count'=>$start_count,
+                'end_count'=>$end_count,
+                'total_count'=>count($data),
+            ];
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
+        }
+        return Helper::SuccessResponse($scc_res);
+    }
+
+    public function import_old(Request $request)
+    {
+        try {
+            // return $request;
+            // $path = $request->file('file')->getRealPath();
+            // $data = array_map('str_getcsv', file($path));
+            // return $data[0][0];
+
+            $datas = Excel::toArray([],  $request->file('file'));
+            // return $datas;
+            $data=$datas[0];
+            return count($data);
             foreach ($data as $key => $value) {
                 if ($key==0) {
                     // return $value;
-                    if ($value[0]!="Exchange" && $value[1]!="Benchmark" && $value[2]!="Date") {
+                    if ($value[0]!="Benchmark" && $value[1]!="Date") {
                         return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
                     }
                     // return $value;
                 }else {
                     // return $value;
                     // return $value[0];
-                    $ex_id=Exchange::where('ex_name',$value[0])->value('id');
-                    $benchmark_id=Benchmark::where('benchmark',$value[1])->value('id');
-
+                    // $ex_id=Exchange::where('ex_name',$value[0])->value('id');
+                    $benchmark=Benchmark::where('benchmark',$value[0])->first();
+                    // return $benchmark;
+                    $benchmark_id=$benchmark->id;
+                    $ex_id=$benchmark->ex_id;
+                    $date=date('Y-m-d',strtotime(str_replace('/','-',$value[1])));
+                    // return $date;
                     $is_has=BenchmarkScheme::where('benchmark',$benchmark_id)
                         ->where('ex_id',$ex_id)
-                        ->where('date',$value[2])
+                        ->where('date',$date)
                         ->where('delete_flag','N')
                         ->get();
+
                     if (count($is_has) > 0) {
                         // return $is_has[0]->id;
                         $up_data=BenchmarkScheme::find($is_has[0]->id);
-                        $up_data->date=$value[2];
-                        $up_data->open=$value[3];
-                        $up_data->high=$value[4];
-                        $up_data->low=$value[5];
-                        $up_data->close=$value[6];
+                        $up_data->date=$date;
+                        $up_data->open=isset($value[2])?$value[2]:0;
+                        $up_data->high=isset($value[3])?$value[3]:0;
+                        $up_data->low=isset($value[4])?$value[4]:0;
+                        $up_data->close=isset($value[5])?$value[5]:0;
                         $up_data->save();
                     } else {
                         BenchmarkScheme::create(array(
                             'ex_id'=>$ex_id,
                             'benchmark'=>$benchmark_id,
-                            'date'=>$value[2],
-                            'open'=>$value[3],
-                            'high'=>$value[4],
-                            'low'=>$value[5],
-                            'close'=>$value[6],
+                            'date'=>$date,
+                            'open'=>isset($value[2])?$value[2]:0,
+                            'high'=>isset($value[3])?$value[3]:0,
+                            'low'=>isset($value[4])?$value[4]:0,
+                            'close'=>isset($value[5])?$value[5]:0,
                             // 'created_by'=>'',
                         ));   
                     } 

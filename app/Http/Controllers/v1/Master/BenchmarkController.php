@@ -9,6 +9,7 @@ use App\Models\{Benchmark,MutualFund,Exchange};
 use Validator;
 use Excel;
 use App\Imports\BenchmarkImport;
+use Illuminate\Support\Carbon;
 
 class BenchmarkController extends Controller
 {
@@ -114,12 +115,13 @@ class BenchmarkController extends Controller
         }
         try {
             // return $request;
+            $subcat_id=json_decode($request->subcat_id);
             if ($request->id > 0) {
                 $data=Benchmark::find($request->id);
                 $data->ex_id=$request->ex_id;
                 $data->benchmark=$request->benchmark;
                 $data->category_id=$request->category_id;
-                $data->subcat_id=$request->subcat_id;
+                $data->subcat_id=$subcat_id[0];
                 $data->launch_date=$request->launch_date;
                 $data->launch_price=$request->launch_price;
                 $data->save();
@@ -135,7 +137,6 @@ class BenchmarkController extends Controller
                 //     return Helper::WarningResponse(parent::ALREADY_EXIST);
                 // }else {
                 
-                $subcat_id=json_decode($request->subcat_id);
                 foreach ($subcat_id as $key => $value) {
                     // return $value;
                     $data=Benchmark::create(array(
@@ -156,6 +157,7 @@ class BenchmarkController extends Controller
                 ->leftJoin('md_category','md_category.id','=','md_benchmark.category_id')
                 ->leftJoin('md_subcategory','md_subcategory.id','=','md_benchmark.subcat_id')
                 ->select('md_benchmark.*','md_exchange.ex_name as exchange_name','md_category.cat_name as category_name','md_subcategory.subcategory_name as subcategory_name')
+                ->where('md_benchmark.delete_flag','N')
                 ->where('md_benchmark.id',$data->id)
                 ->first();
         } catch (\Throwable $th) {
@@ -192,10 +194,13 @@ class BenchmarkController extends Controller
             // return $request;
             // $path = $request->file('file')->getRealPath();
             // $data = array_map('str_getcsv', file($path));
-            // return $data[0][0];
+            // $path = $request->file('file');
+            // $data = array_map(function($v){return str_getcsv($v, ";");}, file($path));
+
+            // return $data;
 
             $datas = Excel::toArray([],  $request->file('file'));
-            return $datas;
+            // return $datas;
             $data=$datas[0];
 
             foreach ($data as $key => $value) {
@@ -207,6 +212,9 @@ class BenchmarkController extends Controller
                 }else {
                     return $value;
                     // return $value[0];
+
+                    return Carbon::parse($value[2])->format('Y-m-d');;
+                    
                     $ex_id=Exchange::where('ex_name',$value[0])->value('id');
                     $category_id=Exchange::where('',$value[0])->value('id');
                     $data=Benchmark::create(array(
@@ -234,7 +242,7 @@ class BenchmarkController extends Controller
             //     return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
             // }
         } catch (\Throwable $th) {
-            //throw $th;
+            throw $th;
             return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
         }
         return Helper::SuccessResponse($data1);
