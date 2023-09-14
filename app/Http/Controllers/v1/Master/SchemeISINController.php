@@ -15,7 +15,8 @@ use App\Models\{
     SchemeOtherForm,
     SchemeISIN,
     Plan,
-    Option
+    Option,
+    MutualFundTransaction
 };
 use Validator;
 use Excel;
@@ -290,6 +291,42 @@ class SchemeISINController extends Controller
                     ->where('md_scheme_isin.id',$dt->id)
                     ->first(); 
                 array_push($data,$sc_data);
+
+                // Start insert and update scheme ISIN, update table td_mutual_fund_trans 
+
+                $trans_up_data=MutualFundTransaction::leftjoin('md_amc','md_amc.amc_code','=','td_mutual_fund_trans.amc_code')
+                    ->select('td_mutual_fund_trans.*','md_amc.amc_short_name as amc_short_name','md_amc.rnt_id as rnt_id')
+                    ->where('td_mutual_fund_trans.product_code',$value->product_code)
+                    ->get();
+                // return $trans_up_data;
+                if (count($trans_up_data)>0) {
+                    foreach ($trans_up_data as $key => $update_data) {
+                        if ($update_data->rnt_id==1) {
+                            $rnt_up_data=MutualFundTransaction::find($update_data->id);
+                            $rnt_up_data->scheme_flag='N';
+                            $rnt_up_data->plan_option_flag='N';
+                            $rnt_up_data->save();
+                        }elseif ($update_data->rnt_id==2) {
+                            $rnt_up_data2=MutualFundTransaction::find($update_data->id);
+                            $rnt_up_data2->scheme_flag='N';
+                            $rnt_up_data2->save();
+                        }
+                    }
+                }
+                $trans_up_data2=MutualFundTransaction::leftjoin('md_amc','md_amc.amc_code','=','td_mutual_fund_trans.amc_code')
+                    ->select('td_mutual_fund_trans.*','md_amc.amc_short_name as amc_short_name','md_amc.rnt_id as rnt_id')
+                    ->where('td_mutual_fund_trans.product_code',$value->product_code)
+                    ->where('td_mutual_fund_trans.isin_no',$value->isin_no)
+                    ->get();
+                // return $trans_up_data2;
+                foreach ($trans_up_data2 as $key => $update_data2) {
+                    if ($update_data2->rnt_id==2) {
+                        $rnt2_up_data2=MutualFundTransaction::find($update_data2->id);
+                        $rnt2_up_data2->plan_option_flag='N';
+                        $rnt2_up_data2->save();
+                    }
+                }
+                // End insert and update scheme ISIN, update table td_mutual_fund_trans 
             }
           
         } catch (\Throwable $th) {

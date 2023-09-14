@@ -180,7 +180,7 @@ class TransactionDetailsController extends Controller
                     ->where('td_mutual_fund_trans.scheme_flag','N')
                     ->where('td_mutual_fund_trans.plan_option_flag','N')
                     // ->where('td_mutual_fund_trans.bu_type_flag','N')
-                    // ->where('td_mutual_fund_trans.divi_mismatch_flag','N')
+                    ->where('td_mutual_fund_trans.divi_mismatch_flag','N')
 
                     ->whereRaw($rawQuery)
                     ->groupBy('td_mutual_fund_trans.trans_no')

@@ -56,6 +56,7 @@ class TempMutualFundTransaction extends Model
         'amc_flag',
         'scheme_flag',
         'plan_option_flag',
+        'divi_mismatch_flag',
 
         'delete_flag',
         'deleted_at',

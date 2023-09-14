@@ -46,7 +46,9 @@ class MailBackController extends Controller
                     ->paginate($paginate);
             }elseif ($rnt_id) {
                 $data=MailbackProcess::leftJoin('md_rnt','md_rnt.id','=','md_mailback_process.rnt_id')
-                    ->select('md_mailback_process.*','md_rnt.rnt_name')
+                    ->leftJoin('md_mailback_filetype','md_mailback_filetype.id','=','md_mailback_process.file_type_id')
+                    ->leftJoin('md_mailback_filename','md_mailback_filename.id','=','md_mailback_process.file_id')
+                    ->select('md_mailback_process.*','md_rnt.rnt_name','md_mailback_filetype.name as file_type_name','md_mailback_filename.name as file_name')
                     ->where('md_mailback_process.rnt_id',$rnt_id)
                     ->where('md_mailback_process.process_type','M')
                     ->orderBy('process_date','DESC')
@@ -470,6 +472,46 @@ class MailBackController extends Controller
     }
 
 
-    function FunctionName() : Returntype {
+    public function lockTransaction(Request $request)
+    {
+        try {
+            // return $request;
+            $id=$request->id;
+            // return $id;
+            $up_data=MutualFundTransaction::find($id);
+            $up_data->divi_mismatch_flag='N';
+            $up_data->divi_lock_flag='L';
+            $up_data->save();
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($up_data);
+    }
+
+
+    public function fileType(Request $request)
+    {
+        try {
+            $data=DB::table('md_mailback_filetype')->get();
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($data);
+    }
+
+    public function fileName(Request $request)
+    {
+        try {
+            $data=DB::table('md_mailback_filename')
+                ->where('rnt_id',$request->rnt_id)
+                ->where('file_type_id',$request->file_type_id)
+                ->get();
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($data);
     }
 }

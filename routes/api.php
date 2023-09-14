@@ -356,11 +356,16 @@ Route::prefix('v1')->group(function () {
 
         
         /*********************************** start Mail Back Process ************************ */
+
+        Route::get('mailbackFileType',[App\Http\Controllers\v1\Master\MailBackController::class,'fileType']);
+        Route::get('mailbackFileName',[App\Http\Controllers\v1\Master\MailBackController::class,'fileName']);
+
         // Route::post('uploadTransDetails',[App\Http\Controllers\v1\Operation\TransactionDetailsController::class,'upload']);
         Route::post('mailbackProcess',[App\Http\Controllers\v1\Master\MailBackController::class,'upload']);
         Route::any('mailbackProcessDetails',[App\Http\Controllers\v1\Master\MailBackController::class,'Details']);
 
         Route::any('mailbackMismatch',[App\Http\Controllers\v1\Master\MailBackController::class,'misMatch']);
+        Route::post('mailbackMismatchLock',[App\Http\Controllers\v1\Master\MailBackController::class,'lockTransaction']);
 
 
         Route::any('showTransDetails',[App\Http\Controllers\v1\Operation\TransactionDetailsController::class,'search']);
