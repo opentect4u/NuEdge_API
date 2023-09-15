@@ -13,7 +13,9 @@ use App\Models\{
     MutualFundTransaction,
     MailbackProcess,
     TempMutualFundTransaction,
-    MFTransTypeSubType
+    MFTransTypeSubType,
+    TempNAVDetails,
+    NAVDetails
 };
 use Validator;
 use Illuminate\Support\Carbon;
@@ -106,7 +108,10 @@ class MailBackController extends Controller
             // return  $file_name;
 
             // $aArray = file($upload_file,FILE_IGNORE_NEW_LINES);
-            $TotalArray = file($file_name,FILE_IGNORE_NEW_LINES);
+            // $TotalArray = file($file_name,FILE_IGNORE_NEW_LINES);  // for txt file
+
+            $TotalArray = array_map(function($v){return str_getcsv($v, ";");}, file($file_name));  //for csv file
+
             // return $TotalArray;
             // return count($TotalArray);
             // return $TotalArray[0];
@@ -159,6 +164,24 @@ class MailBackController extends Controller
                             'bank_name'=>str_replace("'","",$value[64]),
                         ));
                     }
+                }else if ($file_type_id==4 && $file_id=8) {  // historical nav WBR1
+                    // return $TotalArray[0];
+                    $value=explode(",",$TotalArray[0][0]);
+                    // return $value;
+                    // return count($TotalArray);
+                    for ($i=$start_count; $i <= $end_count; $i++) {
+                        $value=explode(",",$TotalArray[$i][0]);
+                        TempNAVDetails::create(array(
+                            'rnt_id' =>$rnt_id,
+                            'amc_code'=>NULL,
+                            'product_code'=>str_replace("'","",$value[0]),
+                            'nav_date'=>Carbon::parse(explode("/",str_replace("'","",$value[2]))[1].'-'.explode("/",str_replace("'","",$value[2]))[0].'-'.explode("/",str_replace("'","",$value[2]))[2])->format('Y-m-d H:i:s'),
+                            'nav'=>str_replace("'","",$value[3]),
+                            'isin_no'=>str_replace("'","",$value[7]),
+                            'amc_flag'=>'N',
+                            'scheme_flag'=>'N',
+                        ));
+                    }
                 }else {
                     # code...
                 }
@@ -205,6 +228,24 @@ class MailBackController extends Controller
                             'remarks'=>isset($value[48])?$value[48]:NULL,
                             'dividend_option'=>isset($value[33])?$value[33]:NULL,
                             'isin_no'=>isset($value[66])?$value[66]:NULL,
+                        ));
+                    }
+                }else if ($file_type_id==4 && $file_id=9) {  // historical nav MFSD217
+                    // return $TotalArray[0];
+                    // $value=explode(",",$TotalArray[0][0]);
+                    // return $value;
+                    // return count($TotalArray);
+                    for ($i=$start_count; $i <= $end_count; $i++) {
+                        $value=explode(",",$TotalArray[$i][0]);
+                        TempNAVDetails::create(array(
+                            'rnt_id' =>$rnt_id,
+                            'amc_code'=>$value[0],
+                            'product_code'=>$value[3],
+                            'nav_date'=>Carbon::parse(str_replace("/","-",$value[4]))->format('Y-m-d H:i:s'),
+                            'nav'=>$value[5],
+                            'isin_no'=>$value[10],
+                            'amc_flag'=>'N',
+                            'scheme_flag'=>'N',
                         ));
                     }
                 }else {
