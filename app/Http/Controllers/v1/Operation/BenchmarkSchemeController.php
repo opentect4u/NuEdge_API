@@ -142,7 +142,8 @@ class BenchmarkSchemeController extends Controller
                     $old_close_price=$my_data[$key+1]->close;
                     $change_price=$close_price-$old_close_price;
                     $change_percentage=(($change_price/$old_close_price)*100);
-                    $change_percentage_format=number_format((float)round($change_percentage, 0, PHP_ROUND_HALF_UP), 2, '.', '');
+                    $change_percentage_format=number_format((float)$change_percentage, 2, '.', '');
+                    // $change_percentage_format=number_format((float)round($change_percentage, 0, PHP_ROUND_HALF_UP), 2, '.', '');
                 }
                 $value->change_price=number_format((float)$change_price, 2, '.', '');
                 $value->change_percentage=$change_percentage_format;

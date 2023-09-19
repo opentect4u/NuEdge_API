@@ -182,7 +182,9 @@ class MailBackController extends Controller
                             'scheme_flag'=>'N',
                         ));
                     }
-                }else {
+                }elseif ($file_type_id==2 && $file_id=3) {  // sip stp report
+                    # code...
+                } else {
                     # code...
                 }
             }else if($rnt_id==2){  // KFINTECH
