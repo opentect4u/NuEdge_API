@@ -32,34 +32,34 @@ class NAVDetailsController extends Controller
             $date_range=$request->date_range;
             $plan_type=$request->plan_type;
 
-            if ($date_periods=='D') {
-                $from_date=Carbon::parse(str_replace('/','-',explode("-",$date_range)[0]))->format('Y-m-d') ;
-                $to_date=Carbon::parse(str_replace('/','-',explode("-",$date_range)[1]))->format('Y-m-d') ;  
-                $queryString='td_benchmark_scheme.date';
-                $rawQuery.=Helper::FrmToDateRawQuery($from_date,$to_date,$rawQuery,$queryString);
+            // if ($date_periods=='D') {
+            //     $from_date=Carbon::parse(str_replace('/','-',explode("-",$date_range)[0]))->format('Y-m-d') ;
+            //     $to_date=Carbon::parse(str_replace('/','-',explode("-",$date_range)[1]))->format('Y-m-d') ;  
+            //     $queryString='td_benchmark_scheme.date';
+            //     $rawQuery.=Helper::FrmToDateRawQuery($from_date,$to_date,$rawQuery,$queryString);
 
-            }elseif ($date_periods=='M') {
-                $f_date="01-".str_replace('/','-',explode("-",$date_range)[0]);
-                $t_date=date('d')."-".str_replace('/','-',explode("-",$date_range)[1]);
-                $from_date=Carbon::parse(str_replace(' ','',$f_date))->format('Y-m-d');
-                $to_date=Carbon::parse(str_replace(' ','',$t_date))->format('Y-m-d');
-                // return  $t_date;
-                $queryString='r.date';
-                $rawQuery.=Helper::FrmToDateRawQuery($from_date,$to_date,$rawQuery,$queryString);
+            // }elseif ($date_periods=='M') {
+            //     $f_date="01-".str_replace('/','-',explode("-",$date_range)[0]);
+            //     $t_date=date('d')."-".str_replace('/','-',explode("-",$date_range)[1]);
+            //     $from_date=Carbon::parse(str_replace(' ','',$f_date))->format('Y-m-d');
+            //     $to_date=Carbon::parse(str_replace(' ','',$t_date))->format('Y-m-d');
+            //     // return  $t_date;
+            //     $queryString='r.date';
+            //     $rawQuery.=Helper::FrmToDateRawQuery($from_date,$to_date,$rawQuery,$queryString);
 
-                $row_name_string=  "'" .implode("','", $benchmark). "'";
+            //     $row_name_string=  "'" .implode("','", $benchmark). "'";
 
-            }elseif ($date_periods=='Y') {
-                $f_date="01-01-".str_replace('/','-',explode("-",$date_range)[0]);
-                $t_date=date('d-m')."-".str_replace('/','-',explode("-",$date_range)[1]);
-                $from_date=Carbon::parse(str_replace(' ','',$f_date))->format('Y-m-d');
-                $to_date=Carbon::parse(str_replace(' ','',$t_date))->format('Y-m-d');
-                // return  $t_date;
-                $queryString='r.date';
-                $rawQuery.=Helper::FrmToDateRawQuery($from_date,$to_date,$rawQuery,$queryString);
+            // }elseif ($date_periods=='Y') {
+            //     $f_date="01-01-".str_replace('/','-',explode("-",$date_range)[0]);
+            //     $t_date=date('d-m')."-".str_replace('/','-',explode("-",$date_range)[1]);
+            //     $from_date=Carbon::parse(str_replace(' ','',$f_date))->format('Y-m-d');
+            //     $to_date=Carbon::parse(str_replace(' ','',$t_date))->format('Y-m-d');
+            //     // return  $t_date;
+            //     $queryString='r.date';
+            //     $rawQuery.=Helper::FrmToDateRawQuery($from_date,$to_date,$rawQuery,$queryString);
                 
-                $row_name_string=  "'" .implode("','", $benchmark). "'";
-            }
+            //     $row_name_string=  "'" .implode("','", $benchmark). "'";
+            // }
 
 
             $data=NAVDetails::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_nav_details.product_code')
