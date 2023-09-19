@@ -47,6 +47,16 @@ class BenchmarkSchemeController extends Controller
                     $to_date=Carbon::parse(str_replace('/','-',explode("-",$date_range)[1]))->format('Y-m-d') ;  
                     $queryString='td_benchmark_scheme.date';
                     $rawQuery.=Helper::FrmToDateRawQuery($from_date,$to_date,$rawQuery,$queryString);
+
+                    $my_data=BenchmarkScheme::leftJoin('md_exchange','md_exchange.id','=','td_benchmark_scheme.ex_id')
+                        ->leftJoin('md_benchmark','md_benchmark.id','=','td_benchmark_scheme.benchmark')
+                        ->select('td_benchmark_scheme.*','md_exchange.ex_name as exchange_name','md_benchmark.benchmark as benchmark')
+                        ->selectRaw('YEAR(td_benchmark_scheme.date) AS Year')
+                        ->selectRaw('MONTH(td_benchmark_scheme.date) AS Month')
+                        ->whereIn('td_benchmark_scheme.benchmark',$benchmark)
+                        ->whereRaw($rawQuery)
+                        ->orderBy('td_benchmark_scheme.date','desc')
+                        ->get();
                 }elseif ($periods=='M') {
                     $f_date="01-".str_replace('/','-',explode("-",$date_range)[0]);
                     $t_date=date('d')."-".str_replace('/','-',explode("-",$date_range)[1]);
@@ -55,53 +65,59 @@ class BenchmarkSchemeController extends Controller
                     // return  $t_date;
                     $queryString='r.date';
                     $rawQuery.=Helper::FrmToDateRawQuery($from_date,$to_date,$rawQuery,$queryString);
+
+
+                    $row_name_string=  "'" .implode("','", $benchmark). "'";
+
+                    $my_data=DB::select('SELECT r.*,e.ex_name,b.benchmark
+                        FROM td_benchmark_scheme AS r
+                            LEFT JOIN md_exchange AS e ON r.ex_id=e.id
+                            LEFT JOIN md_benchmark AS b ON r.benchmark=b.id
+                            JOIN (
+                                SELECT MAX(t.date) AS mydate
+                                FROM td_benchmark_scheme AS t
+                                GROUP BY YEAR(t.date), MONTH(t.date)
+                            ) AS x ON r.date=x.mydate
+                            where r.benchmark IN ('.$row_name_string.') AND '.$rawQuery.' order BY r.date DESC');
+                    // return $my_data;
+                }elseif ($periods=='Y') {
+                    $my_data=DB::select('SELECT r.*,e.ex_name,b.benchmark
+                        FROM td_benchmark_scheme AS r
+                            LEFT JOIN md_exchange AS e ON r.ex_id=e.id
+                            LEFT JOIN md_benchmark AS b ON r.benchmark=b.id
+                            JOIN (
+                                SELECT MAX(t.date) AS mydate
+                                FROM td_benchmark_scheme AS t
+                                GROUP BY YEAR(t.date)
+                            ) AS x ON r.date=x.mydate
+                            where r.benchmark IN ('.$row_name_string.') AND '.$rawQuery.' order BY r.date DESC');
+                    // return $my_data;
                 }
                 
                 // return $rawQuery;
-                $row_name_string=  "'" .implode("','", $benchmark). "'";
-
-                $my_data=DB::select('SELECT r.*,e.ex_name,b.benchmark
-                FROM td_benchmark_scheme AS r
-                    LEFT JOIN md_exchange AS e ON r.ex_id=e.id
-                    LEFT JOIN md_benchmark AS b ON r.benchmark=b.id
-                    JOIN (
-                        SELECT MAX(t.date) AS mydate
-                        FROM td_benchmark_scheme AS t
-                        GROUP BY YEAR(t.date), MONTH(t.date)
-                    ) AS x ON r.date=x.mydate
-                    where r.benchmark IN ('.$row_name_string.') AND '.$rawQuery.' order BY r.date DESC');
-                return $my_data;
-                $my_data=BenchmarkScheme::leftJoin('md_exchange','md_exchange.id','=','td_benchmark_scheme.ex_id')
-                    ->leftJoin('md_benchmark','md_benchmark.id','=','td_benchmark_scheme.benchmark')
-                    ->select('td_benchmark_scheme.*','md_exchange.ex_name as exchange_name','md_benchmark.benchmark as benchmark')
-                    // ->selectRaw('DATE_FORMAT(td_benchmark_scheme.date, "%b %e") AS Week ')
-                    // ->selectRaw('WEEK(td_benchmark_scheme.date) AS Week')
-                    // ->orderBy('td_benchmark_scheme.date','desc')
-                    ->selectRaw('YEAR(td_benchmark_scheme.date) AS Year')
-                    ->selectRaw('MONTH(td_benchmark_scheme.date) AS Month')
-                    // ->selectRaw('MAX(td_benchmark_scheme.date) AS MAX_date')
-                    ->whereIn('td_benchmark_scheme.benchmark',$benchmark)
-                    // ->whereRaw('td_benchmark_scheme.date=MAX_date')
-                    ->whereRaw($rawQuery)
-                    ->orderBy('td_benchmark_scheme.date','desc')
-                    // ->groupByRaw('Week')
-                    // ->groupByRaw('Year')
-                    // ->groupByRaw('Month')
-                    // ->orderBy('td_benchmark_scheme.date','desc')
-                    // ->orderByRaw('MAX_date desc')
-                    // ->paginate($paginate);
-                    // ->take(100)
-                    ->get();
-
+                
                 // $my_data=BenchmarkScheme::leftJoin('md_exchange','md_exchange.id','=','td_benchmark_scheme.ex_id')
                 //     ->leftJoin('md_benchmark','md_benchmark.id','=','td_benchmark_scheme.benchmark')
                 //     ->select('td_benchmark_scheme.*','md_exchange.ex_name as exchange_name','md_benchmark.benchmark as benchmark')
+                //     // ->selectRaw('DATE_FORMAT(td_benchmark_scheme.date, "%b %e") AS Week ')
+                //     // ->selectRaw('WEEK(td_benchmark_scheme.date) AS Week')
+                //     // ->orderBy('td_benchmark_scheme.date','desc')
                 //     ->selectRaw('YEAR(td_benchmark_scheme.date) AS Year')
                 //     ->selectRaw('MONTH(td_benchmark_scheme.date) AS Month')
+                //     // ->selectRaw('MAX(td_benchmark_scheme.date) AS MAX_date')
                 //     ->whereIn('td_benchmark_scheme.benchmark',$benchmark)
+                //     // ->whereRaw('td_benchmark_scheme.date=MAX_date')
                 //     ->whereRaw($rawQuery)
                 //     ->orderBy('td_benchmark_scheme.date','desc')
+                //     // ->groupByRaw('Week')
+                //     // ->groupByRaw('Year')
+                //     // ->groupByRaw('Month')
+                //     // ->orderBy('td_benchmark_scheme.date','desc')
+                //     // ->orderByRaw('MAX_date desc')
+                //     // ->paginate($paginate);
+                //     // ->take(100)
                 //     ->get();
+
             }
             // return $my_data;
             $data=[];
@@ -123,7 +139,7 @@ class BenchmarkSchemeController extends Controller
                 array_push($data,$value);
             }
         } catch (\Throwable $th) {
-            throw $th;
+            // throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
         return Helper::SuccessResponse($data);
