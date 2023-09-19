@@ -27,6 +27,7 @@ class BenchmarkSchemeController extends Controller
             if ($paginate=='A') {
                 $paginate=999999999;
             }
+            $my_data=[];
             if ($order && $field) {
                 $rawOrderBy='';
                 if ($order > 0) {
@@ -81,8 +82,8 @@ class BenchmarkSchemeController extends Controller
                             where r.benchmark IN ('.$row_name_string.') AND '.$rawQuery.' order BY r.date DESC');
                     // return $my_data;
                 }elseif ($periods=='Y') {
-                    $f_date="01-".str_replace('/','-',explode("-",$date_range)[0]);
-                    $t_date=date('d')."-".str_replace('/','-',explode("-",$date_range)[1]);
+                    $f_date="01-01-".str_replace('/','-',explode("-",$date_range)[0]);
+                    $t_date=date('d-m')."-".str_replace('/','-',explode("-",$date_range)[1]);
                     $from_date=Carbon::parse(str_replace(' ','',$f_date))->format('Y-m-d');
                     $to_date=Carbon::parse(str_replace(' ','',$t_date))->format('Y-m-d');
                     // return  $t_date;
@@ -137,8 +138,8 @@ class BenchmarkSchemeController extends Controller
                 $old_close_price=0;
                 $change_price=0;
                 $change_percentage_format=0.00;
-                if (isset($my_data[$key+1]['close']) && $my_data[$key+1]['close']) {
-                    $old_close_price=$my_data[$key+1]['close'];
+                if (isset($my_data[$key+1]->close) && $my_data[$key+1]->close) {
+                    $old_close_price=$my_data[$key+1]->close;
                     $change_price=$close_price-$old_close_price;
                     $change_percentage=(($change_price/$old_close_price)*100);
                     $change_percentage_format=number_format((float)round($change_percentage, 0, PHP_ROUND_HALF_UP), 2, '.', '');
