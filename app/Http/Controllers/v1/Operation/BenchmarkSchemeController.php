@@ -70,7 +70,7 @@ class BenchmarkSchemeController extends Controller
 
                     $row_name_string=  "'" .implode("','", $benchmark). "'";
 
-                    $my_data=DB::select('SELECT r.*,e.ex_name,b.benchmark
+                    $my_data=DB::select('SELECT r.*,e.ex_name as exchange_name,b.benchmark
                         FROM td_benchmark_scheme AS r
                             LEFT JOIN md_exchange AS e ON r.ex_id=e.id
                             LEFT JOIN md_benchmark AS b ON r.benchmark=b.id
@@ -91,7 +91,7 @@ class BenchmarkSchemeController extends Controller
                     $rawQuery.=Helper::FrmToDateRawQuery($from_date,$to_date,$rawQuery,$queryString);
                     
                     $row_name_string=  "'" .implode("','", $benchmark). "'";
-                    $my_data=DB::select('SELECT r.*,e.ex_name,b.benchmark
+                    $my_data=DB::select('SELECT r.*,e.ex_name as exchange_name,b.benchmark
                         FROM td_benchmark_scheme AS r
                             LEFT JOIN md_exchange AS e ON r.ex_id=e.id
                             LEFT JOIN md_benchmark AS b ON r.benchmark=b.id
