@@ -555,4 +555,35 @@ class MailBackController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
+
+
+    public function misMatchNAV(Request $request)
+    {
+        try {
+            $mismatch_flag=$request->mismatch_flag;
+            // return $mismatch_flag;
+            $rawQuery='';
+            if ($mismatch_flag=='A') {
+                $rawQuery="amc_flag='Y'";
+            }elseif ($mismatch_flag=='S') {
+                $rawQuery="scheme_flag='Y'";
+            }
+            $data=[];
+            $data=NAVDetails::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_nav_details.product_code')
+                ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
+                ->leftJoin('md_category','md_category.id','=','md_scheme.category_id')
+                ->leftJoin('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
+                ->leftJoin('md_amc','md_amc.id','=','md_scheme.amc_id')
+                ->leftJoin('md_amc as md_amc_1','md_amc_1.amc_code','=','td_nav_details.amc_code')
+                ->select('td_nav_details.*','md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name',
+                'md_amc.amc_short_name as amc_name','md_amc_1.amc_short_name as amc_short_name')
+                ->whereRaw($rawQuery)
+                ->orderBy('td_nav_details.nav_date','desc')
+                ->get();
+        } catch (\Throwable $th) {
+            throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($data);
+    }
 }

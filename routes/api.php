@@ -366,6 +366,7 @@ Route::prefix('v1')->group(function () {
 
         Route::any('mailbackMismatch',[App\Http\Controllers\v1\Master\MailBackController::class,'misMatch']);
         Route::post('mailbackMismatchLock',[App\Http\Controllers\v1\Master\MailBackController::class,'lockTransaction']);
+        Route::any('mailbackMismatchNAV',[App\Http\Controllers\v1\Master\MailBackController::class,'misMatchNAV']);  // NAV mismatch details
 
 
         Route::any('showTransDetails',[App\Http\Controllers\v1\Operation\TransactionDetailsController::class,'search']);
@@ -376,6 +377,9 @@ Route::prefix('v1')->group(function () {
         Route::any('rntTransTypeSubtype',[App\Http\Controllers\v1\Master\MFTransTypeSubTypeController::class,'Details']);
         Route::any('rntTransTypeSubtypeShow',[App\Http\Controllers\v1\Master\MFTransTypeSubTypeController::class,'index']);
         Route::post('rntTransTypeSubtypeAddEdit',[App\Http\Controllers\v1\Master\MFTransTypeSubTypeController::class,'CreateUpdate']);
+
+
+        Route::any('showNAVDetails',[App\Http\Controllers\v1\Operation\NAVDetailsController::class,'search']);  // Search NAV details
 
         /*********************************** start Mail Back Process ************************ */
 
