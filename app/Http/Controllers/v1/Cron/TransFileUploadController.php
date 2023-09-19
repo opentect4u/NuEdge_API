@@ -28,6 +28,116 @@ class TransFileUploadController extends Controller
         try {
             // KFINTECH transction file MFSD201  for CSV file
             // return $request;
+           
+            
+
+            $file_name='C:\Users\Chitta\Documents\Nuedge-Online\Mailback_file\Historical_NAV_Report\15_09_2023\4171025632029053B_4FDNLF7W0YFBDIMK7H1MIJFD1P659625451417BMB154520936R1\15092023170037_154520936R1.csv';
+            // $file_name='C:\Users\Chitta\Documents\Nuedge-Online\Mailback_file\Historical_NAV_Report\15_09_2023\4171025632029053B_4FDNLF7W0YFBDIMK7H1MIJFD1P659625451417BMB154520936R1\15092023170037_154520936R1 - Copy.csv';
+            // $file_name=public_path('mailback/autoupload/'.$upload_file_name);
+            // return  $file_name;
+            // $handle = fopen($file_name, "r");
+            // $raw_string = fgets($handle);
+            // $row = str_getcsv($raw_string);
+            // return count($row);
+            $datas = Excel::toArray([],  $file_name);
+            return $datas[0];
+            // $TotalArray =  array_map('str_getcsv', file($file_name));
+            $TotalArray = array_map(function($v){return str_getcsv($v, ";");}, file($file_name));
+
+            // return $TotalArray;
+            return count($TotalArray);
+            // return $TotalArray[0];
+            $start_count=1;
+            $end_count=count($TotalArray);
+            if ($end_count==count($TotalArray) || $end_count >= count($TotalArray)) {
+                $end_count=count($TotalArray)-1;
+            }
+            // return  $end_count;
+
+            $up_data=MailbackProcess::find($id);
+            $up_data->total_count=count($TotalArray);
+            $up_data->save();
+
+
+            // 'TRUNCATE TABLE `admin_nuedge`.`tt_mutual_fund_trans`'
+
+                // if ($file_type_id==1 && $file_id=3) {  // transction MFSD201
+                    for ($i=$start_count; $i <= $end_count; $i++) { 
+                        // return $TotalArray[$i];
+                        // return $TotalArray[$i][0];
+                        // return $TotalArray[0][0];
+                        // if ($i >100) {
+                        //     break;
+                        // }
+                        TempMutualFundTransaction::create(array(
+                            'rnt_id'=>$rnt_id,
+                            'arn_no'=>$TotalArray[$i][19],
+                            'sub_brk_cd'=>isset($TotalArray[$i][20])?$TotalArray[$i][20]:NULL,
+                            'euin_no'=>isset($TotalArray[$i][70])?$TotalArray[$i][70]:NULL,
+                            'first_client_name'=>$TotalArray[$i][9],
+                            'first_client_pan'=>$TotalArray[$i][47],
+                            'amc_code'=>$TotalArray[$i][1],
+                            'folio_no'=>$TotalArray[$i][2],
+                            'product_code'=>$TotalArray[$i][0],
+                            'trans_no'=>$TotalArray[$i][6],
+                            'trans_mode'=>$TotalArray[$i][10],
+                            'trans_status'=>$TotalArray[$i][11],
+                            'user_trans_no'=>$TotalArray[$i][39],
+                            'trans_date'=>Carbon::parse(str_replace("/","-",$TotalArray[$i][14]))->format('Y-m-d H:i:s'),
+                            'post_date'=>Carbon::parse(str_replace("/","-",$TotalArray[$i][15]))->format('Y-m-d H:i:s'),
+                            'pur_price'=>$TotalArray[$i][16],
+                            'units'=>$TotalArray[$i][17],
+                            'amount'=>$TotalArray[$i][18],
+                            'rec_date'=>Carbon::parse(str_replace("/","-",$TotalArray[$i][24]))->format('Y-m-d H:i:s'),
+                            'kf_trans_type'=>$TotalArray[$i][30],
+                            'trans_flag'=>$TotalArray[$i][37],
+                            'trans_desc'=>$TotalArray[$i][29], // Transction Description
+                            'te_15h'=>NULL,
+                            'micr_code'=>NULL,
+                            'sw_flag'=>NULL,
+                            'old_folio'=>NULL,
+                            'seq_no'=>NULL,
+                            'reinvest_flag'=>NULL,
+                            'stt'=>isset($TotalArray[$i][40])?$TotalArray[$i][40]:NULL,
+                            'stamp_duty'=>isset($TotalArray[$i][85])?$TotalArray[$i][85]:NULL,
+                            'tds'=>isset($TotalArray[$i][52])?$TotalArray[$i][52]:NULL,
+                            'acc_no'=>isset($TotalArray[$i][78])?$TotalArray[$i][78]:NULL,
+                            'bank_name'=>isset($TotalArray[$i][64])?$TotalArray[$i][64]:NULL,
+                            'remarks'=>isset($TotalArray[$i][48])?$TotalArray[$i][48]:NULL,
+                            'dividend_option'=>isset($TotalArray[$i][33])?$TotalArray[$i][33]:NULL,
+                            'isin_no'=>isset($TotalArray[$i][66])?$TotalArray[$i][66]:NULL,
+                        ));
+
+                        $up_data=MailbackProcess::find($id);
+                        $up_data->process_count=$i;
+                        $up_data->save();
+                    }
+                // }else {
+                //     # code...
+                // }
+
+            
+            $dataArray=[];
+            // $dataArray['upload_data']=$upload_data;
+            $dataArray['start_count']=$start_count;
+            $dataArray['end_count']=$end_count;
+            $dataArray['upload_file_name']=$upload_file_name;
+            $dataArray['row_id']=$id;
+            $dataArray['total_count']=count($TotalArray);
+            $dataArray['upload_progressDtls']=json_decode($request->upload_progressDtls);
+
+        } catch (\Throwable $th) {
+            throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($dataArray);
+    }
+
+    public function upload___(Request $request)
+    {
+        try {
+            // KFINTECH transction file MFSD201  for CSV file
+            // return $request;
             $rnt_id=2;
             $file_type_id=1;
             $file_id=3;

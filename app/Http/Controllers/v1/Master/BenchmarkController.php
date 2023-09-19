@@ -106,7 +106,8 @@ class BenchmarkController extends Controller
             'category_id' =>'required',
             'subcat_id' =>'required',
             'launch_date' =>'required',
-            'launch_price' =>'required',
+            'base_date' =>'required',
+            'base_value' =>'required',
         ]);
     
         if($validator->fails()) {
@@ -123,7 +124,8 @@ class BenchmarkController extends Controller
                 $data->category_id=$request->category_id;
                 $data->subcat_id=$subcat_id[0];
                 $data->launch_date=$request->launch_date;
-                $data->launch_price=$request->launch_price;
+                $data->base_date=$request->base_date;
+                $data->base_value=$request->base_value;
                 $data->save();
             }else{
                 // $is_has=Benchmark::where('benchmark',$request->benchmark)
@@ -145,7 +147,8 @@ class BenchmarkController extends Controller
                         'category_id'=>$request->category_id,
                         'subcat_id'=>$value,
                         'launch_date'=>$request->launch_date,
-                        'launch_price'=>$request->launch_price,
+                        'base_date'=>$request->base_date,
+                        'base_value'=>$request->base_value,
                         // 'created_by'=>'',
                     )); 
                 }
@@ -205,7 +208,7 @@ class BenchmarkController extends Controller
 
             foreach ($data as $key => $value) {
                 if ($key==0) {
-                    if ($value[0]=="Exchange" && $value[1]=="Benchmark" && str_replace(" ","_",$value[2])!="Launch_Date" && str_replace(" ","_",$value[3])!="Launch_Price" && str_replace(" ","_",$value[4])=="Category" && str_replace(" ","_",$value[5])!="Sub_Category") {
+                    if ($value[0]=="Exchange" && $value[1]=="Benchmark" && str_replace(" ","_",$value[2])!="Launch_Date" && str_replace(" ","_",$value[3])!="Base_Value" && str_replace(" ","_",$value[4])=="Category" && str_replace(" ","_",$value[5])!="Sub_Category") {
                         return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
                     }
                     // return $value;
@@ -223,7 +226,7 @@ class BenchmarkController extends Controller
                         'category_id'=>$category_id,
                         'subcat_id'=>$value,
                         'launch_date'=>$request->launch_date,
-                        'launch_price'=>$request->launch_price,
+                        'base_value'=>$request->base_value,
                         // 'created_by'=>'',
                     )); 
                 }

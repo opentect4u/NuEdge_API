@@ -122,7 +122,7 @@ class MailBackController extends Controller
             }
 
 
-            // 'TRUNCATE TABLE `admin_nuedge`.`tt_mutual_fund_trans`'
+            TempMutualFundTransaction::truncate();
             if ($rnt_id==1) { // CAMS
                 if ($file_type_id==1 && $file_id=1) {  // transction  WBR2
                     for ($i=$start_count; $i <= $end_count; $i++) { 
