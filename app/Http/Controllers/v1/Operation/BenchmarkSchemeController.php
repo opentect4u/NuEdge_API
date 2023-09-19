@@ -81,6 +81,15 @@ class BenchmarkSchemeController extends Controller
                             where r.benchmark IN ('.$row_name_string.') AND '.$rawQuery.' order BY r.date DESC');
                     // return $my_data;
                 }elseif ($periods=='Y') {
+                    $f_date="01-".str_replace('/','-',explode("-",$date_range)[0]);
+                    $t_date=date('d')."-".str_replace('/','-',explode("-",$date_range)[1]);
+                    $from_date=Carbon::parse(str_replace(' ','',$f_date))->format('Y-m-d');
+                    $to_date=Carbon::parse(str_replace(' ','',$t_date))->format('Y-m-d');
+                    // return  $t_date;
+                    $queryString='r.date';
+                    $rawQuery.=Helper::FrmToDateRawQuery($from_date,$to_date,$rawQuery,$queryString);
+                    
+                    $row_name_string=  "'" .implode("','", $benchmark). "'";
                     $my_data=DB::select('SELECT r.*,e.ex_name,b.benchmark
                         FROM td_benchmark_scheme AS r
                             LEFT JOIN md_exchange AS e ON r.ex_id=e.id
@@ -139,7 +148,7 @@ class BenchmarkSchemeController extends Controller
                 array_push($data,$value);
             }
         } catch (\Throwable $th) {
-            // throw $th;
+            throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
         return Helper::SuccessResponse($data);
