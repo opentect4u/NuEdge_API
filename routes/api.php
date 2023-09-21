@@ -380,6 +380,8 @@ Route::prefix('v1')->group(function () {
 
 
         Route::any('showNAVDetails',[App\Http\Controllers\v1\Operation\NAVDetailsController::class,'search']);  // Search NAV details
+        Route::any('showSipStpDetails',[App\Http\Controllers\v1\Operation\SipStpTransController::class,'search']);  // Search sip stp details
+        Route::any('showFolioDetails',[App\Http\Controllers\v1\Operation\FolioDetailsController::class,'search']);  // Search sip stp details
 
         /*********************************** start Mail Back Process ************************ */
 
