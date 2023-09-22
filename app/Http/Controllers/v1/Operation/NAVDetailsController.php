@@ -85,7 +85,7 @@ class NAVDetailsController extends Controller
                     ->where('td_nav_details.scheme_flag','N')
                     ->where('md_scheme_isin.plan_id',$plan_type)
                     ->orderBy('td_nav_details.nav_date','desc')
-                    // ->take(100)
+                    ->take(100)
                     ->get();
             }
             

@@ -367,6 +367,8 @@ Route::prefix('v1')->group(function () {
         Route::any('mailbackMismatch',[App\Http\Controllers\v1\Master\MailBackController::class,'misMatch']);
         Route::post('mailbackMismatchLock',[App\Http\Controllers\v1\Master\MailBackController::class,'lockTransaction']);
         Route::any('mailbackMismatchNAV',[App\Http\Controllers\v1\Master\MailBackController::class,'misMatchNAV']);  // NAV mismatch details
+        Route::any('mailbackMismatchSipStp',[App\Http\Controllers\v1\Master\MailBackController::class,'misMatchSipStp']);  // NAV mismatch details
+        Route::any('mailbackMismatchFolio',[App\Http\Controllers\v1\Master\MailBackController::class,'misMatchFolio']);  // NAV mismatch details
 
 
         Route::any('showTransDetails',[App\Http\Controllers\v1\Operation\TransactionDetailsController::class,'search']);

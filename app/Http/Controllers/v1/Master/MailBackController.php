@@ -130,7 +130,7 @@ class MailBackController extends Controller
 
             // TempMutualFundTransaction::truncate();
             if ($rnt_id==1) { // CAMS
-                if ($file_type_id==1 && $file_id=1) {  // transction  WBR2
+                if ($file_type_id=='1' && $file_id=='1') {  // transction  WBR2
                     for ($i=$start_count; $i <= $end_count; $i++) { 
                         $value=explode("\t",$TotalArray[$i]);
                         TempMutualFundTransaction::create(array(
@@ -170,7 +170,7 @@ class MailBackController extends Controller
                             'bank_name'=>str_replace("'","",$value[64]),
                         ));
                     }
-                }else if ($file_type_id==4 && $file_id=8) {  // historical nav WBR1
+                }else if ($file_type_id=='4' && $file_id=='8') {  // historical nav WBR1
                     TempNAVDetails::truncate();
                     // return $TotalArray[0];
                     $value=explode(",",$TotalArray[0][0]);
@@ -189,7 +189,7 @@ class MailBackController extends Controller
                             'scheme_flag'=>'N',
                         ));
                     }
-                }elseif ($file_type_id==2 && $file_id=3) {  // sip stp report WBR49
+                }elseif ($file_type_id=='2' && $file_id=='3') {  // sip stp report WBR49
                     // return $TotalArray[0];
                     // $value=explode("\t",$TotalArray[0]);
                     // return $value;
@@ -228,33 +228,61 @@ class MailBackController extends Controller
                             'f_status'=>NULL,
                         ));
                     }
-                }elseif ($file_type_id==3 && $file_id=4) {  // folio master report WBR9C
+                }elseif ($file_type_id=='3' && $file_id=='4') {  // folio master report WBR9C
                     TempFolioDetails::truncate();
                     // return $TotalArray[0];
-                    $value=explode("\t",$TotalArray[0]);
+                    $value=explode("\t",$TotalArray[1]);
                     // return $value;
                     for ($i=$start_count; $i <= $end_count; $i++) { 
                         $value=explode("\t",$TotalArray[$i]);
                         // return $value[31];
-                        if (isset($value[1]) && isset($value[31]) && isset($value[47])) {
-                            $dob=str_replace("'","",$value[31]);
+                        if (isset($value[1]) && isset($value[31]) && isset($value[47]) && isset($value[74])) {
                             $folio_date=str_replace("'","",$value[47]);
+                            $folio_dtt=explode("/",str_replace("'","",$folio_date));
+                            if (!isset($folio_dtt[1])) {
+                                $folio_dt=NULL;
+                            }else {
+                                $folio_dt=Carbon::parse(explode("/",str_replace("'","",$folio_date))[1].'-'.explode("/",str_replace("'","",$folio_date))[0].'-'.explode("/",str_replace("'","",$folio_date))[2])->format('Y-m-d');
+                            }
+
+                            $dob=str_replace("'","",$value[31]);
                             $dd=explode("/",str_replace("'","",$dob));
                             if (!isset($dd[1])) {
-                                // $mydob=Carbon::parse(explode("/",str_replace("'","",$dob))[1].'-'.explode("/",str_replace("'","",$dob))[0].'-'.explode("/",str_replace("'","",$dob))[2])->format('Y-m-d');
                                 $mydob=NULL;
-                                // return $value;
-                                // return strlen($dob).' - '.$dob;
                             }else {
-                                // $mydob=NULL;
                                 $mydob=Carbon::parse(explode("/",str_replace("'","",$dob))[1].'-'.explode("/",str_replace("'","",$dob))[0].'-'.explode("/",str_replace("'","",$dob))[2])->format('Y-m-d');
                             }
+
+                            $dob_2nd_holder=str_replace("'","",$value[52]);
+                            $dd2=explode("/",str_replace("'","",$dob_2nd_holder));
+                            if (!isset($dd2[1])) {
+                                $mydob2=NULL;
+                            }else {
+                                $mydob2=Carbon::parse(explode("/",str_replace("'","",$dob_2nd_holder))[1].'-'.explode("/",str_replace("'","",$dob_2nd_holder))[0].'-'.explode("/",str_replace("'","",$dob_2nd_holder))[2])->format('Y-m-d');
+                            }
+
+                            $dob_3rd_holder=str_replace("'","",$value[53]);
+                            $dd3=explode("/",str_replace("'","",$dob_3rd_holder));
+                            if (!isset($dd3[1])) {
+                                $mydob3=NULL;
+                            }else {
+                                $mydob3=Carbon::parse(explode("/",str_replace("'","",$dob_3rd_holder))[1].'-'.explode("/",str_replace("'","",$dob_3rd_holder))[0].'-'.explode("/",str_replace("'","",$dob_3rd_holder))[2])->format('Y-m-d');
+                            }
+
+                            $guardian_dob=str_replace("'","",$value[54]);
+                            $dd4=explode("/",str_replace("'","",$guardian_dob));
+                            if (!isset($dd4[1])) {
+                                $mydob4=NULL;
+                            }else {
+                                $mydob4=Carbon::parse(explode("/",str_replace("'","",$guardian_dob))[1].'-'.explode("/",str_replace("'","",$guardian_dob))[0].'-'.explode("/",str_replace("'","",$guardian_dob))[2])->format('Y-m-d');
+                            }
+                            
                             TempFolioDetails::create(array(
                                 'rnt_id'=>$rnt_id,
                                 'product_code'=>str_replace("'","",$value[1]),
                                 'amc_code'=>str_replace("'","",$value[0]),
                                 'folio_no'=>str_replace("'","",$value[2]),
-                                'folio_date'=>(isset($folio_date) && strlen($folio_date) > 0)?Carbon::parse(explode("/",str_replace("'","",$value[47]))[1].'-'.explode("/",str_replace("'","",$value[47]))[0].'-'.explode("/",str_replace("'","",$value[47]))[2])->format('Y-m-d'):NULL,
+                                'folio_date'=>$folio_dt,
                                 'dividend_option'=>NULL,
                                 'first_client_name'=>str_replace("'","",$value[3]),
                                 'joint_name_1'=>str_replace("'","",$value[9]),
@@ -269,6 +297,8 @@ class MailBackController extends Controller
                                 'tpin'=>NULL,
                                 'f_name'=>NULL,
                                 'dob'=>$mydob,
+                                'dob_2nd_holder'=>$mydob2,
+                                'dob_3rd_holder'=>$mydob3,
                                 'm_name'=>NULL,
                                 'phone_residence'=>str_replace("'","",$value[12]),
                                 'phone_res_1'=>NULL,
@@ -279,33 +309,51 @@ class MailBackController extends Controller
                                 'fax_residence'=>NULL,
                                 'fax_ofc'=>NULL,
                                 'tax_status'=>str_replace("'","",$value[19]),
-                                // 'occ_code'=>NULL,
+                                'tax_status_2_holder'=>NULL,
+                                'tax_status_3_holder'=>NULL,
+                                'occ_code'=>NULL,
                                 'email'=>str_replace("'","",$value[13]),
+                                'email_2nd_holder'=>str_replace("'","",$value[59]),
+                                'email_3rd_holder'=>str_replace("'","",$value[61]),
                                 'bank_acc_no'=>str_replace("'","",$value[24]),
                                 'bank_name'=>str_replace("'","",$value[21]),
                                 'bank_ifsc'=>str_replace("'","",$value[25]),
+                                'bank_micr'=>NULL,
                                 'acc_type'=>str_replace("'","",$value[23]),
-                                'branch'=>str_replace("'","",$value[22]),
+                                'bank_branch'=>str_replace("'","",$value[22]),
                                 'bank_add_1'=>str_replace("'","",$value[26]),
                                 'bank_add_2'=>str_replace("'","",$value[27]),
                                 'bank_add_3'=>str_replace("'","",$value[28]),
                                 'bank_city'=>str_replace("'","",$value[29]),
-
-                                // 'bank_pincode'=>str_replace("'","",$value[30]),
-                                // 'INV_IIN'=>str_replace("'","",$value[34]),
-                                
                                 'bank_phone'=>NULL,
                                 'bank_state'=>NULL,
                                 'bank_country'=>NULL,
+                                'bank_pincode'=>str_replace("'","",$value[30]),
                                 'invs_id'=>NULL,
                                 'arn_no'=>NULL,
                                 'pan'=>str_replace("'","",$value[15]),
                                 'pan_2_holder'=>str_replace("'","",$value[16]),
                                 'pan_3_holder'=>str_replace("'","",$value[17]),
                                 'mobile'=>str_replace("'","",$value[32]),
+                                'mobile_2nd_holder'=>str_replace("'","",$value[58]),
+                                'mobile_3rd_holder'=>str_replace("'","",$value[60]),
                                 'report_date'=>NULL,
                                 'report_time'=>NULL,
                                 'occupation_des'=>str_replace("'","",$value[33]),
+
+                                // 'INV_IIN'=>str_replace("'","",$value[34]), to be add if required
+                                // 'GST_STATE_CODE'=>str_replace("'","",$value[55]),
+                                // 'FOLIO_OLD'=>str_replace("'","",$value[56]),
+                                // 'SCHEME_FOLIO_NUMBER'=>str_replace("'","",$value[57]),
+                                // 'FH_MOBILE_FD'=>str_replace("'","",$value[62]),
+                                // 'FH_EMAIL_FD'=>str_replace("'","",$value[63]),
+                                // 'JH1_MOBILE_FD'=>str_replace("'","",$value[64]),
+                                // 'JH1_EMAIL_FD'=>str_replace("'","",$value[65]),
+                                // 'JH2_MOBILE_FD'=>str_replace("'","",$value[66]),
+                                // 'JH2_EMAIL_FD'=>str_replace("'","",$value[67]),
+
+                                'occupation_des_2nd'=>NULL,
+                                'occupation_des_3rd'=>NULL,
                                 'mode_of_holding'=>str_replace("'","",$value[14]),
                                 'mode_of_holding_des'=>NULL,
                                 'mapin_id'=>NULL,
@@ -313,9 +361,16 @@ class MailBackController extends Controller
                                 'aadhaar_2_holder'=>NULL,
                                 'aadhaar_3_holder'=>NULL,
                                 'guardian_name'=>str_replace("'","",$value[45]),
+                                'guardian_dob'=>$mydob4,
                                 'guardian_aadhaar'=>NULL,
                                 'guardian_pan'=>str_replace("'","",$value[18]),
+                                'guardian_mobile'=>NULL,
+                                'guardian_email'=>NULL,
                                 'guardian_relation'=>str_replace("'","",$value[46]),
+                                'guardian_ckyc_no'=>str_replace("'","",$value[51]),
+                                'guardian_tax_status'=>NULL,
+                                'guardian_occu_des'=>NULL,
+                                'guardian_pa_link_ststus'=>NULL,
                                 'reinvest_flag'=>str_replace("'","",$value[20]),
                                 'nom_optout_status'=>str_replace("'","",$value[35]),
                                 'nom_name_1'=>str_replace("'","",$value[36]),
@@ -327,15 +382,187 @@ class MailBackController extends Controller
                                 'nom_name_3'=>str_replace("'","",$value[42]),
                                 'nom_relation_3'=>str_replace("'","",$value[43]),
                                 'nom_per_3'=>str_replace("'","",$value[44]),
+                                'nom_pan_1'=>NULL,
+                                'nom_pan_2'=>NULL,
+                                'nom_pan_3'=>NULL,
+                                'ckyc_no_1st'=>str_replace("'","",$value[48]),
+                                'ckyc_no_2nd'=>str_replace("'","",$value[49]),
+                                'ckyc_no_3rd'=>str_replace("'","",$value[50]),
+                                'pa_link_ststus_1st'=>str_replace("'","",$value[72]),
+                                'pa_link_ststus_2nd'=>str_replace("'","",$value[73]),
+                                'pa_link_ststus_3rd'=>str_replace("'","",$value[74]),
                             ));
                         }
-                        // upto 47  add
+                    }
+                }elseif ($file_type_id=='3' && $file_id=='10') {  // folio master report WBR9
+                    TempFolioDetails::truncate();
+                    // $value=explode("\t",$TotalArray[1]);
+                    // return $value;
+                    for ($i=$start_count; $i <= $end_count; $i++) { 
+                        $value=explode("\t",$TotalArray[$i]);
+                        // return $value[31];
+                        if (isset($value[1]) && isset($value[31]) && isset($value[47]) && isset($value[74])) {
+                            $folio_date=str_replace("'","",$value[81]);
+                            $folio_dd=explode("/",str_replace("'","",$folio_date));
+                            if (!isset($folio_dd[1])) {
+                                $folio_dt=NULL;
+                            }else {
+                                $folio_dt=Carbon::parse(explode("/",str_replace("'","",$folio_date))[1].'-'.explode("/",str_replace("'","",$folio_date))[0].'-'.explode("/",str_replace("'","",$folio_date))[2])->format('Y-m-d');
+                            }
+
+                            $report_date=str_replace("'","",$value[9]);
+                            $report_dd=explode("/",str_replace("'","",$report_date));
+                            if (!isset($report_dd[1])) {
+                                $report_dt=NULL;
+                            }else {
+                                $report_dt=Carbon::parse(explode("/",str_replace("'","",$report_date))[1].'-'.explode("/",str_replace("'","",$report_date))[0].'-'.explode("/",str_replace("'","",$report_date))[2])->format('Y-m-d');
+                            }
+                            
+                            $dob=str_replace("'","",$value[36]);
+                            $dd=explode("/",str_replace("'","",$dob));
+                            if (!isset($dd[1])) {
+                                $mydob=NULL;
+                            }else {
+                                $mydob=Carbon::parse(explode("/",str_replace("'","",$dob))[1].'-'.explode("/",str_replace("'","",$dob))[0].'-'.explode("/",str_replace("'","",$dob))[2])->format('Y-m-d');
+                            }
+
+                            $dob1=str_replace("'","",$value[88]);
+                            $dd1=explode("/",str_replace("'","",$dob1));
+                            if (!isset($dd1[1])) {
+                                $mydob1=NULL;
+                            }else {
+                                $mydob1=Carbon::parse(explode("/",str_replace("'","",$dob1))[1].'-'.explode("/",str_replace("'","",$dob1))[0].'-'.explode("/",str_replace("'","",$dob1))[2])->format('Y-m-d');
+                            }
+
+                            $dob2=str_replace("'","",$value[89]);
+                            $dd2=explode("/",str_replace("'","",$dob2));
+                            if (!isset($dd2[1])) {
+                                $mydob2=NULL;
+                            }else {
+                                $mydob2=Carbon::parse(explode("/",str_replace("'","",$dob2))[1].'-'.explode("/",str_replace("'","",$dob2))[0].'-'.explode("/",str_replace("'","",$dob2))[2])->format('Y-m-d');
+                            }
+
+                            $dob3=str_replace("'","",$value[90]);
+                            $dd3=explode("/",str_replace("'","",$dob3));
+                            if (!isset($dd3[1])) {
+                                $mydob3=NULL;
+                            }else {
+                                $mydob3=Carbon::parse(explode("/",str_replace("'","",$dob3))[1].'-'.explode("/",str_replace("'","",$dob3))[0].'-'.explode("/",str_replace("'","",$dob3))[2])->format('Y-m-d');
+                            }
+
+                            TempFolioDetails::create(array(
+                                'rnt_id'=>$rnt_id,
+                                'product_code'=>str_replace("'","",$value[7]),
+                                'amc_code'=>str_replace("'","",$value[91]),
+                                'folio_no'=>str_replace("'","",$value[0]),
+                                'folio_date'=>$folio_dt,
+                                'dividend_option'=>NULL,
+                                'first_client_name'=>str_replace("'","",$value[1]),
+                                'joint_name_1'=>str_replace("'","",$value[12]),
+                                'joint_name_2'=>str_replace("'","",$value[13]),
+                                'add_1'=>str_replace("'","",$value[2]),
+                                'add_2'=>str_replace("'","",$value[3]),
+                                'add_3'=>str_replace("'","",$value[4]),
+                                'city'=>str_replace("'","",$value[5]),
+                                'pincode'=>str_replace("'","",$value[6]),
+                                'state'=>NULL,
+                                'country'=>NULL,
+                                'tpin'=>NULL,
+                                'f_name'=>NULL,
+                                'dob'=>$mydob,
+                                'dob_2nd_holder'=>$mydob1,
+                                'dob_3rd_holder'=>$mydob2,
+                                'm_name'=>NULL,
+                                'phone_residence'=>str_replace("'","",$value[15]),
+                                'phone_res_1'=>NULL,
+                                'phone_res_2'=>NULL,
+                                'phone_ofc'=>str_replace("'","",$value[14]),
+                                'phone_ofc_1'=>NULL,
+                                'phone_ofc_2'=>NULL,
+                                'fax_residence'=>NULL,
+                                'fax_ofc'=>NULL,
+                                'tax_status'=>str_replace("'","",$value[23]),
+                                'tax_status_2_holder'=>NULL,
+                                'tax_status_3_holder'=>NULL,
+                                'occ_code'=>NULL,
+                                'email'=>str_replace("'","",$value[16]),
+                                'email_2nd_holder'=>NULL,
+                                'email_3rd_holder'=>NULL,
+                                'bank_acc_no'=>str_replace("'","",$value[30]),
+                                'bank_name'=>str_replace("'","",$value[27]),
+                                'bank_ifsc'=>str_replace("'","",$value[76]),
+                                'bank_micr'=>NULL,
+                                'acc_type'=>str_replace("'","",$value[29]),
+                                'bank_branch'=>str_replace("'","",$value[28]),
+                                'bank_add_1'=>str_replace("'","",$value[31]),
+                                'bank_add_2'=>str_replace("'","",$value[32]),
+                                'bank_add_3'=>str_replace("'","",$value[33]),
+                                'bank_city'=>str_replace("'","",$value[34]),
+                                'bank_phone'=>NULL,
+                                'bank_state'=>NULL,
+                                'bank_country'=>NULL,
+                                'bank_pincode'=>str_replace("'","",$value[35]),
+                                'invs_id'=>NULL,
+                                'arn_no'=>str_replace("'","",$value[24]),
+                                'pan'=>str_replace("'","",$value[19]),
+                                'pan_2_holder'=>str_replace("'","",$value[20]),
+                                'pan_3_holder'=>str_replace("'","",$value[21]),
+                                'mobile'=>str_replace("'","",$value[37]),
+                                'mobile_2nd_holder'=>NULL,
+                                'mobile_3rd_holder'=>NULL,
+                                'report_date'=>$report_dt,
+                                'report_time'=>NULL,
+                                'occupation_des'=>str_replace("'","",$value[38]),
+
+                                // 'INV_IIN'=>str_replace("'","",$value[39]), to be add if required
+
+                                'occupation_des_2nd'=>NULL,
+                                'occupation_des_3rd'=>NULL,
+                                'mode_of_holding'=>str_replace("'","",$value[17]),
+                                'mode_of_holding_des'=>NULL,
+                                'mapin_id'=>NULL,
+                                'aadhaar_1_holder'=>NULL,
+                                'aadhaar_2_holder'=>NULL,
+                                'aadhaar_3_holder'=>NULL,
+                                'guardian_name'=>str_replace("'","",$value[79]),
+                                'guardian_dob'=>$mydob3,
+                                'guardian_aadhaar'=>NULL,
+                                'guardian_pan'=>str_replace("'","",$value[22]),
+                                'guardian_mobile'=>NULL,
+                                'guardian_email'=>NULL,
+                                'guardian_relation'=>NULL,
+                                'guardian_ckyc_no'=>str_replace("'","",$value[87]),
+                                'guardian_tax_status'=>NULL,
+                                'guardian_occu_des'=>NULL,
+                                'guardian_pa_link_ststus'=>NULL,
+                                'reinvest_flag'=>str_replace("'","",$value[26]),
+                                'nom_optout_status'=>NULL,
+                                'nom_name_1'=>str_replace("'","",$value[40]),
+                                'nom_relation_1'=>str_replace("'","",$value[41]),
+                                'nom_per_1'=>str_replace("'","",$value[51]),
+                                'nom_name_2'=>str_replace("'","",$value[52]),
+                                'nom_relation_2'=>str_replace("'","",$value[53]),
+                                'nom_per_2'=>str_replace("'","",$value[63]),
+                                'nom_name_3'=>str_replace("'","",$value[64]),
+                                'nom_relation_3'=>str_replace("'","",$value[65]),
+                                'nom_per_3'=>str_replace("'","",$value[75]),
+                                'nom_pan_1'=>NULL,
+                                'nom_pan_2'=>NULL,
+                                'nom_pan_3'=>NULL,
+                                'ckyc_no_1st'=>str_replace("'","",$value[84]),
+                                'ckyc_no_2nd'=>str_replace("'","",$value[85]),
+                                'ckyc_no_3rd'=>str_replace("'","",$value[86]),
+                                'pa_link_ststus_1st'=>str_replace("'","",$value[82]),
+                                'pa_link_ststus_2nd'=>NULL,
+                                'pa_link_ststus_3rd'=>NULL,
+                            ));
+                        }
                     }
                 } else {
                     # code...
                 }
             }else if($rnt_id==2){  // KFINTECH
-                if ($file_type_id==1 && $file_id=3) {  // transction MFSD201
+                if ($file_type_id==1 && $file_id==3) {  // transction MFSD201
                     for ($i=$start_count; $i <= $end_count; $i++) { 
                         $value=explode("~",$TotalArray[$i]);
                         // $value=explode("~",$TotalArray[0]);
@@ -379,7 +606,7 @@ class MailBackController extends Controller
                             'isin_no'=>isset($value[66])?$value[66]:NULL,
                         ));
                     }
-                }else if ($file_type_id==4 && $file_id=9) {  // historical nav MFSD217
+                }else if ($file_type_id==4 && $file_id==9) {  // historical nav MFSD217
                     TempNAVDetails::truncate();
                     // return $TotalArray[0];
                     // $value=explode(",",$TotalArray[0][0]);
@@ -398,7 +625,7 @@ class MailBackController extends Controller
                             'scheme_flag'=>'N',
                         ));
                     }
-                }elseif ($file_type_id==2 && $file_id=6) {  // sip stp report MFSD243
+                }elseif ($file_type_id==2 && $file_id==6) {  // sip stp report MFSD243
                     TempSipStpTransaction::truncate();
                     // return $TotalArray[0];
                     // $value=explode("~",$TotalArray[0]);
@@ -440,7 +667,7 @@ class MailBackController extends Controller
                             'to_product_code'=>str_replace("'","",$value[28]),
                         ));
                     }
-                }elseif ($file_type_id==3 && $file_id=7) {  // folio master report MFSD240
+                }elseif ($file_type_id==3 && $file_id==7) {  // folio master report MFSD240
                     TempFolioDetails::truncate();
                     // return $TotalArray[0];
                     // $value=explode("~",$TotalArray[0]);
@@ -858,6 +1085,61 @@ class MailBackController extends Controller
                 ->get();
         } catch (\Throwable $th) {
             throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($data);
+    }
+
+    public function misMatchSipStp(Request $request){
+        try {
+            $mismatch_flag=$request->mismatch_flag;
+            // return $mismatch_flag;
+            $rawQuery='';
+            if ($mismatch_flag=='A') {
+                $rawQuery="amc_flag='Y'";
+            }elseif ($mismatch_flag=='S') {
+                $rawQuery="scheme_flag='Y'";
+            }
+            $data=[];
+            $data=SipStpTransaction::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_sip_stp_trans.product_code')
+                ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
+                ->leftJoin('md_category','md_category.id','=','md_scheme.category_id')
+                ->leftJoin('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
+                ->leftJoin('md_amc','md_amc.id','=','md_scheme.amc_id')
+                ->leftJoin('md_amc as md_amc_1','md_amc_1.amc_code','=','td_sip_stp_trans.amc_code')
+                ->select('td_sip_stp_trans.*','md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name',
+                'md_amc.amc_short_name as amc_name','md_amc_1.amc_short_name as amc_short_name')
+                ->whereRaw($rawQuery)
+                ->get();
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($data);
+    }
+
+    public function misMatchFolio(Request $request){
+        try {
+            $mismatch_flag=$request->mismatch_flag;
+            // return $mismatch_flag;
+            $rawQuery='';
+            if ($mismatch_flag=='A') {
+                $rawQuery="amc_flag='Y'";
+            }elseif ($mismatch_flag=='S') {
+                $rawQuery="scheme_flag='Y'";
+            }
+            $data=[];
+            $data=FolioDetails::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_folio_details.product_code')
+                ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
+                ->leftJoin('md_category','md_category.id','=','md_scheme.category_id')
+                ->leftJoin('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
+                ->leftJoin('md_amc','md_amc.amc_code','=','td_folio_details.amc_code')
+                ->select('td_folio_details.*','md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name',
+                'md_amc.amc_short_name as amc_short_name')
+                ->whereRaw($rawQuery)
+                ->get();
+        } catch (\Throwable $th) {
+            //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
         return Helper::SuccessResponse($data);
