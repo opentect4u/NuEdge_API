@@ -110,13 +110,18 @@ class MailBackController extends Controller
                     ->orderBy('process_date','DESC')
                     ->first();
             
+
             $file_name=public_path('mailback/manual/'.$upload_file_name);
-            // return  $file_name;
+            $info = pathinfo($file_name);
+            if ($info['extension']=='txt') {
+                // $aArray = file($upload_file,FILE_IGNORE_NEW_LINES);
+                $TotalArray = file($file_name,FILE_IGNORE_NEW_LINES);  // for txt file
+            }else {
+                $TotalArray = array_map(function($v){return str_getcsv($v, ";");}, file($file_name));  //for csv file
+            }
 
-            // $aArray = file($upload_file,FILE_IGNORE_NEW_LINES);
-            $TotalArray = file($file_name,FILE_IGNORE_NEW_LINES);  // for txt file
+            
 
-            // $TotalArray = array_map(function($v){return str_getcsv($v, ";");}, file($file_name));  //for csv file
 
             // return $TotalArray;
             // return count($TotalArray);
@@ -131,6 +136,7 @@ class MailBackController extends Controller
             // TempMutualFundTransaction::truncate();
             if ($rnt_id==1) { // CAMS
                 if ($file_type_id=='1' && $file_id=='1') {  // transction  WBR2
+                    TempMutualFundTransaction::truncate();
                     for ($i=$start_count; $i <= $end_count; $i++) { 
                         $value=explode("\t",$TotalArray[$i]);
                         TempMutualFundTransaction::create(array(
@@ -190,8 +196,9 @@ class MailBackController extends Controller
                         ));
                     }
                 }elseif ($file_type_id=='2' && $file_id=='3') {  // sip stp report WBR49
+                    TempSipStpTransaction::truncate();
                     // return $TotalArray[0];
-                    // $value=explode("\t",$TotalArray[0]);
+                    $value=explode("\t",$TotalArray[1]);
                     // return $value;
                     for ($i=$start_count; $i <= $end_count; $i++) { 
                         $value=explode("\t",$TotalArray[$i]);
