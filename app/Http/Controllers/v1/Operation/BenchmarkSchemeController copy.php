@@ -17,95 +17,48 @@ class BenchmarkSchemeController extends Controller
     public function searchDetails(Request $request)
     {
         try {
+            $paginate=$request->paginate;
             $benchmark=json_decode($request->benchmark);
             $order=$request->order;
             $field=$request->field;
             $date_range=$request->date_range;
             $periods=$request->periods;
 
+            if ($paginate=='A') {
+                $paginate=999999999;
+            }
             $my_data=[];
-            $rawQuery='';  
-
-            switch ($periods) {
-                case 'D':
+            if ($order && $field) {
+                $rawOrderBy='';
+                if ($order > 0) {
+                    $rawOrderBy=$field.' ASC';
+                } else {
+                    $rawOrderBy=$field.' DESC';
+                }
+                
+                $my_data=BenchmarkScheme::leftJoin('md_exchange','md_exchange.id','=','td_benchmark_scheme.ex_id')
+                    ->leftJoin('md_benchmark','md_benchmark.id','=','td_benchmark_scheme.benchmark')
+                    ->select('td_benchmark_scheme.*','md_exchange.ex_name as exchange_name','md_benchmark.benchmark as benchmark')
+                    ->orderByRaw($rawOrderBy)
+                    ->paginate($paginate);
+            }else {
+                $rawQuery='';  
+                if ($periods=='D') {
                     $from_date=Carbon::parse(str_replace('/','-',explode("-",$date_range)[0]))->format('Y-m-d') ;
                     $to_date=Carbon::parse(str_replace('/','-',explode("-",$date_range)[1]))->format('Y-m-d') ;  
                     $queryString='td_benchmark_scheme.date';
                     $rawQuery.=Helper::FrmToDateRawQuery($from_date,$to_date,$rawQuery,$queryString);
-                    // return $rawQuery;
+
                     $my_data=BenchmarkScheme::leftJoin('md_exchange','md_exchange.id','=','td_benchmark_scheme.ex_id')
                         ->leftJoin('md_benchmark','md_benchmark.id','=','td_benchmark_scheme.benchmark')
-                        ->select('td_benchmark_scheme.*','md_exchange.ex_name as exchange_name','md_benchmark.benchmark as benchmark_name')
+                        ->select('td_benchmark_scheme.*','md_exchange.ex_name as exchange_name','md_benchmark.benchmark as benchmark')
+                        ->selectRaw('YEAR(td_benchmark_scheme.date) AS Year')
+                        ->selectRaw('MONTH(td_benchmark_scheme.date) AS Month')
                         ->whereIn('td_benchmark_scheme.benchmark',$benchmark)
                         ->whereRaw($rawQuery)
-                        ->orderBy('td_benchmark_scheme.benchmark','desc')
                         ->orderBy('td_benchmark_scheme.date','desc')
                         ->get();
-                    // return $my_data;
-                    break;
-                case 'W':
-                    $from_date=Carbon::parse(str_replace('/','-',explode("-",$date_range)[0]))->format('Y-m-d') ;
-                    $to_date=Carbon::parse(str_replace('/','-',explode("-",$date_range)[1]))->format('Y-m-d') ;  
-                    $queryString='r.date';
-                    $rawQuery.=Helper::FrmToDateRawQuery($from_date,$to_date,$rawQuery,$queryString);
-                    $row_name_string=  "'" .implode("','", $benchmark). "'";
-                    $my_data=DB::select('SELECT r.*,e.ex_name as exchange_name,b.benchmark as benchmark_name
-                        FROM td_benchmark_scheme AS r
-                            LEFT JOIN md_exchange AS e ON r.ex_id=e.id
-                            LEFT JOIN md_benchmark AS b ON r.benchmark=b.id
-                            JOIN (
-                                SELECT MAX(t.date) AS mydate
-                                FROM td_benchmark_scheme AS t
-                                GROUP BY YEAR(t.date), MONTH(t.date), WEEK(t.date)
-                            ) AS x ON r.date=x.mydate
-                            where r.benchmark IN ('.$row_name_string.') AND '.$rawQuery.' order BY r.benchmark,r.date DESC');
-                    break;
-                case 'F':
-                    $from_date=Carbon::parse(str_replace('/','-',explode("-",$date_range)[0]))->format('Y-m-d') ;
-                    $to_date=Carbon::parse(str_replace('/','-',explode("-",$date_range)[1]))->format('Y-m-d') ;  
-                    // return $to_date;
-                    $date_array=[];
-
-                    $startTime = strtotime( $from_date);
-                    $endTime = strtotime( $to_date );
-                    $mydiffer=14;
-                    // Loop between timestamps, 24 hours at a time 86400
-                    // for ( $i = $startTime; $i <= $endTime; $i = ($i + (86400 * $mydiffer)) ) {
-                    //     $thisDate = date( 'Y-m-d', $i ); // 2010-05-01, 2010-05-02, etc
-                    //     array_push($date_array,$thisDate);
-                    // }
-                    for ( $i = $endTime; $i >= $startTime; $i = ($i - (86400 * $mydiffer)) ) {
-                        $thisDate = date( 'Y-m-d', $i ); // 2010-05-01, 2010-05-02, etc
-                        array_push($date_array,$thisDate);
-                    }
-                    // return $date_array;
-                    // return $from_date;
-                    $queryString='r.date';
-                    $rawQuery.=Helper::FrmToDateRawQuery($from_date,$to_date,$rawQuery,$queryString);
-                    $row_name_string=  "'" .implode("','", $benchmark). "'";
-                    $row_date_array_string=  "'" .implode("','", $date_array). "'";
-                    // return $row_date_array_string;
-                    $my_data=DB::select('SELECT r.*,e.ex_name as exchange_name,b.benchmark as benchmark_name
-                        FROM td_benchmark_scheme AS r
-                            LEFT JOIN md_exchange AS e ON r.ex_id=e.id
-                            LEFT JOIN md_benchmark AS b ON r.benchmark=b.id
-                            JOIN (
-                                SELECT MAX(t.date) AS mydate
-                                FROM td_benchmark_scheme AS t
-                                GROUP BY YEAR(t.date), MONTH(t.date), WEEK(t.date)
-                            ) AS x ON r.date=x.mydate
-                            where r.benchmark IN ('.$row_name_string.') AND '.$rawQuery.' order BY r.benchmark,r.date DESC');
-
-                    // DB::enableQueryLog();
-                    // $my_data=DB::select('SELECT r.*,e.ex_name as exchange_name,b.benchmark as benchmark_name
-                    //     FROM td_benchmark_scheme AS r
-                    //         LEFT JOIN md_exchange AS e ON r.ex_id=e.id
-                    //         LEFT JOIN md_benchmark AS b ON r.benchmark=b.id
-                    //         where r.benchmark IN ('.$row_name_string.') AND r.date IN ('.$row_date_array_string.') order BY r.benchmark,r.date DESC');
-                    // dd(DB::getQueryLog());
-                    
-                    break;
-                case 'M':
+                }elseif ($periods=='M') {
                     $f_date="01-".str_replace('/','-',explode("-",$date_range)[0]);
                     $t_date=date('d')."-".str_replace('/','-',explode("-",$date_range)[1]);
                     $from_date=Carbon::parse(str_replace(' ','',$f_date))->format('Y-m-d');
@@ -113,9 +66,11 @@ class BenchmarkSchemeController extends Controller
                     // return  $t_date;
                     $queryString='r.date';
                     $rawQuery.=Helper::FrmToDateRawQuery($from_date,$to_date,$rawQuery,$queryString);
-                    // return $rawQuery;
+
+
                     $row_name_string=  "'" .implode("','", $benchmark). "'";
-                    $my_data=DB::select('SELECT r.*,e.ex_name as exchange_name,b.benchmark as benchmark_name
+
+                    $my_data=DB::select('SELECT r.*,e.ex_name as exchange_name,b.benchmark
                         FROM td_benchmark_scheme AS r
                             LEFT JOIN md_exchange AS e ON r.ex_id=e.id
                             LEFT JOIN md_benchmark AS b ON r.benchmark=b.id
@@ -124,9 +79,9 @@ class BenchmarkSchemeController extends Controller
                                 FROM td_benchmark_scheme AS t
                                 GROUP BY YEAR(t.date), MONTH(t.date)
                             ) AS x ON r.date=x.mydate
-                            where r.benchmark IN ('.$row_name_string.') AND '.$rawQuery.' order BY r.benchmark,r.date DESC');
-                    break;
-                case 'H':
+                            where r.benchmark IN ('.$row_name_string.') AND '.$rawQuery.' order BY r.date DESC');
+                    // return $my_data;
+                }elseif ($periods=='Y') {
                     $f_date="01-01-".str_replace('/','-',explode("-",$date_range)[0]);
                     $t_date=date('d-m')."-".str_replace('/','-',explode("-",$date_range)[1]);
                     $from_date=Carbon::parse(str_replace(' ','',$f_date))->format('Y-m-d');
@@ -134,28 +89,9 @@ class BenchmarkSchemeController extends Controller
                     // return  $t_date;
                     $queryString='r.date';
                     $rawQuery.=Helper::FrmToDateRawQuery($from_date,$to_date,$rawQuery,$queryString);
+                    
                     $row_name_string=  "'" .implode("','", $benchmark). "'";
-                    $my_data=DB::select('SELECT r.*,e.ex_name as exchange_name,b.benchmark as benchmark_name
-                        FROM td_benchmark_scheme AS r
-                            LEFT JOIN md_exchange AS e ON r.ex_id=e.id
-                            LEFT JOIN md_benchmark AS b ON r.benchmark=b.id
-                            JOIN (
-                                SELECT MAX(t.date) AS mydate
-                                FROM td_benchmark_scheme AS t
-                                GROUP BY YEAR(t.date), CEIL(MONTH(t.date) / 6)
-                            ) AS x ON r.date=x.mydate
-                            where r.benchmark IN ('.$row_name_string.') AND '.$rawQuery.' order BY r.benchmark,r.date DESC');
-                    break;
-                case 'Y':
-                    $f_date="01-01-".str_replace('/','-',explode("-",$date_range)[0]);
-                    $t_date=date('d-m')."-".str_replace('/','-',explode("-",$date_range)[1]);
-                    $from_date=Carbon::parse(str_replace(' ','',$f_date))->format('Y-m-d');
-                    $to_date=Carbon::parse(str_replace(' ','',$t_date))->format('Y-m-d');
-                    // return  $t_date;
-                    $queryString='r.date';
-                    $rawQuery.=Helper::FrmToDateRawQuery($from_date,$to_date,$rawQuery,$queryString);
-                    $row_name_string=  "'" .implode("','", $benchmark). "'";
-                    $my_data=DB::select('SELECT r.*,e.ex_name as exchange_name,b.benchmark as benchmark_name
+                    $my_data=DB::select('SELECT r.*,e.ex_name as exchange_name,b.benchmark
                         FROM td_benchmark_scheme AS r
                             LEFT JOIN md_exchange AS e ON r.ex_id=e.id
                             LEFT JOIN md_benchmark AS b ON r.benchmark=b.id
@@ -164,75 +100,9 @@ class BenchmarkSchemeController extends Controller
                                 FROM td_benchmark_scheme AS t
                                 GROUP BY YEAR(t.date)
                             ) AS x ON r.date=x.mydate
-                            where r.benchmark IN ('.$row_name_string.') AND '.$rawQuery.' order BY r.benchmark,r.date DESC');
-                    break;
-                default:
-                    break;
-            }
-                // if ($periods=='D') {
-                //     $from_date=Carbon::parse(str_replace('/','-',explode("-",$date_range)[0]))->format('Y-m-d') ;
-                //     $to_date=Carbon::parse(str_replace('/','-',explode("-",$date_range)[1]))->format('Y-m-d') ;  
-                //     $queryString='td_benchmark_scheme.date';
-                //     $rawQuery.=Helper::FrmToDateRawQuery($from_date,$to_date,$rawQuery,$queryString);
-
-                //     DB::enableQueryLog();
-
-                //     $my_data=BenchmarkScheme::leftJoin('md_exchange','md_exchange.id','=','td_benchmark_scheme.ex_id')
-                //         ->leftJoin('md_benchmark','md_benchmark.id','=','td_benchmark_scheme.benchmark')
-                //         ->select('td_benchmark_scheme.*','md_exchange.ex_name as exchange_name','md_benchmark.benchmark as benchmark')
-                //         ->selectRaw('YEAR(td_benchmark_scheme.date) AS Year')
-                //         ->selectRaw('MONTH(td_benchmark_scheme.date) AS Month')
-                //         ->whereIn('td_benchmark_scheme.benchmark',$benchmark)
-                //         ->whereRaw($rawQuery)
-                //         ->orderBy('td_benchmark_scheme.benchmark','desc')
-                //         ->orderBy('td_benchmark_scheme.date','desc')
-                //         ->get();
-                        
-                //     dd(DB::getQueryLog());
-                // }else
-                // if ($periods=='M') {
-                //     $f_date="01-".str_replace('/','-',explode("-",$date_range)[0]);
-                //     $t_date=date('d')."-".str_replace('/','-',explode("-",$date_range)[1]);
-                //     $from_date=Carbon::parse(str_replace(' ','',$f_date))->format('Y-m-d');
-                //     $to_date=Carbon::parse(str_replace(' ','',$t_date))->format('Y-m-d');
-                //     // return  $t_date;
-                //     $queryString='r.date';
-                //     $rawQuery.=Helper::FrmToDateRawQuery($from_date,$to_date,$rawQuery,$queryString);
-                //     // return $rawQuery;
-                //     $row_name_string=  "'" .implode("','", $benchmark). "'";
-                //     $my_data=DB::select('SELECT r.*,e.ex_name as exchange_name,b.benchmark as benchmark_name
-                //         FROM td_benchmark_scheme AS r
-                //             LEFT JOIN md_exchange AS e ON r.ex_id=e.id
-                //             LEFT JOIN md_benchmark AS b ON r.benchmark=b.id
-                //             JOIN (
-                //                 SELECT MAX(t.date) AS mydate
-                //                 FROM td_benchmark_scheme AS t
-                //                 GROUP BY YEAR(t.date), MONTH(t.date)
-                //             ) AS x ON r.date=x.mydate
-                //             where r.benchmark IN ('.$row_name_string.') AND '.$rawQuery.' order BY r.date DESC');
-                //     // return $my_data;
-                // }elseif ($periods=='Y') {
-                //     $f_date="01-01-".str_replace('/','-',explode("-",$date_range)[0]);
-                //     $t_date=date('d-m')."-".str_replace('/','-',explode("-",$date_range)[1]);
-                //     $from_date=Carbon::parse(str_replace(' ','',$f_date))->format('Y-m-d');
-                //     $to_date=Carbon::parse(str_replace(' ','',$t_date))->format('Y-m-d');
-                //     // return  $t_date;
-                //     $queryString='r.date';
-                //     $rawQuery.=Helper::FrmToDateRawQuery($from_date,$to_date,$rawQuery,$queryString);
-
-                //     $row_name_string=  "'" .implode("','", $benchmark). "'";
-                //     $my_data=DB::select('SELECT r.*,e.ex_name as exchange_name,b.benchmark
-                //         FROM td_benchmark_scheme AS r
-                //             LEFT JOIN md_exchange AS e ON r.ex_id=e.id
-                //             LEFT JOIN md_benchmark AS b ON r.benchmark=b.id
-                //             JOIN (
-                //                 SELECT MAX(t.date) AS mydate
-                //                 FROM td_benchmark_scheme AS t
-                //                 GROUP BY YEAR(t.date)
-                //             ) AS x ON r.date=x.mydate
-                //             where r.benchmark IN ('.$row_name_string.') AND '.$rawQuery.' order BY r.date DESC');
-                //     // return $my_data;
-                // }
+                            where r.benchmark IN ('.$row_name_string.') AND '.$rawQuery.' order BY r.date DESC');
+                    // return $my_data;
+                }
                 
                 // return $rawQuery;
                 
@@ -258,7 +128,7 @@ class BenchmarkSchemeController extends Controller
                 //     // ->take(100)
                 //     ->get();
 
-            
+            }
             // return $my_data;
             $data=[];
             foreach ($my_data as $key => $value) {
@@ -268,7 +138,7 @@ class BenchmarkSchemeController extends Controller
                 $old_close_price=0;
                 $change_price=0;
                 $change_percentage_format=0.00;
-                if (isset($my_data[$key+1]->close) && $my_data[$key+1]->close && isset($my_data[$key+1]->benchmark) &&  $my_data[$key+1]->benchmark==$value->benchmark) {
+                if (isset($my_data[$key+1]->close) && $my_data[$key+1]->close) {
                     $old_close_price=$my_data[$key+1]->close;
                     $change_price=$close_price-$old_close_price;
                     $change_percentage=(($change_price/$old_close_price)*100);

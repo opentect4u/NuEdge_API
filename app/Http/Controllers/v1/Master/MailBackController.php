@@ -204,6 +204,7 @@ class MailBackController extends Controller
                         $value=explode("\t",$TotalArray[$i]);
                         $pause_from_date=str_replace("'","",$value[38]);
                         $pause_to_date=str_replace("'","",$value[39]);
+                        $cease_date=str_replace("'","",$value[9]);
                         TempSipStpTransaction::create(array(
                             'rnt_id'=>$rnt_id,
                             'arn_no'=>NULL,
@@ -215,13 +216,20 @@ class MailBackController extends Controller
                             'auto_amount'=>$value[6],
                             'from_date'=>Carbon::parse(explode("/",str_replace("'","",$value[7]))[1].'-'.explode("/",str_replace("'","",$value[7]))[0].'-'.explode("/",str_replace("'","",$value[7]))[2])->format('Y-m-d H:i:s'),
                             'to_date'=>Carbon::parse(explode("/",str_replace("'","",$value[8]))[1].'-'.explode("/",str_replace("'","",$value[8]))[0].'-'.explode("/",str_replace("'","",$value[8]))[2])->format('Y-m-d H:i:s'),
+                            'cease_date'=>(isset($cease_date) && strlen($cease_date)>0)? Carbon::parse(explode("/",str_replace("'","",$value[9]))[1].'-'.explode("/",str_replace("'","",$value[9]))[0].'-'.explode("/",str_replace("'","",$value[9]))[2])->format('Y-m-d H:i:s'):NULL,
+                            'periodicity'=>str_replace("'","",$value[10]),
                             'period_day'=>str_replace("'","",$value[11]),
+                            'inv_iin'=>str_replace("'","",$value[12]),
+                            'payment_mode'=>str_replace("'","",$value[13]),
                             'reg_date'=>Carbon::parse(explode("/",str_replace("'","",$value[15]))[1].'-'.explode("/",str_replace("'","",$value[15]))[0].'-'.explode("/",str_replace("'","",$value[15]))[2])->format('Y-m-d H:i:s'),
                             'sub_brk_cd'=>str_replace("'","",$value[16]),
                             'euin_no'=>str_replace("'","",$value[28]),
                             'remarks'=>str_replace("'","",$value[17]),
+                            'top_up_req'=>str_replace("'","",$value[18]),
+                            'top_up_amount'=>str_replace("'","",$value[19]),
+                            'ac_type'=>str_replace("'","",$value[20]),
                             'bank'=>str_replace("'","",$value[21]),
-                            'branch'=>str_replace("'","",$value[22]),
+                            'bank_branch'=>str_replace("'","",$value[22]),
                             'instrm_no'=>str_replace("'","",$value[23]),
                             'chq_micr_no'=>str_replace("'","",$value[24]),
                             'first_client_pan'=>str_replace("'","",$value[26]),

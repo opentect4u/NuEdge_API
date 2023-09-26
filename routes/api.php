@@ -364,28 +364,44 @@ Route::prefix('v1')->group(function () {
         Route::post('mailbackProcess',[App\Http\Controllers\v1\Master\MailBackController::class,'upload']);
         Route::any('mailbackProcessDetails',[App\Http\Controllers\v1\Master\MailBackController::class,'Details']);
 
+        /*********************************** start Mail Back Process ************************ */
+
+        /*********************************** start Mail Back Mismatch ************************ */
         Route::any('mailbackMismatch',[App\Http\Controllers\v1\Master\MailBackController::class,'misMatch']);
         Route::post('mailbackMismatchLock',[App\Http\Controllers\v1\Master\MailBackController::class,'lockTransaction']);
         Route::any('mailbackMismatchNAV',[App\Http\Controllers\v1\Master\MailBackController::class,'misMatchNAV']);  // NAV mismatch details
         Route::any('mailbackMismatchSipStp',[App\Http\Controllers\v1\Master\MailBackController::class,'misMatchSipStp']);  // NAV mismatch details
         Route::any('mailbackMismatchFolio',[App\Http\Controllers\v1\Master\MailBackController::class,'misMatchFolio']);  // NAV mismatch details
+       
+        /*********************************** End Mail Back Mismatch ************************ */
 
-
-        Route::any('showTransDetails',[App\Http\Controllers\v1\Operation\TransactionDetailsController::class,'search']);
-        Route::any('showDeleteTransDetails',[App\Http\Controllers\v1\Operation\TransactionDetailsController::class,'searchDelete']);
-        Route::post('DeleteTransDetails',[App\Http\Controllers\v1\Operation\TransactionDetailsController::class,'delete']);
-        Route::any('searchClient',[App\Http\Controllers\v1\Operation\TransactionDetailsController::class,'searchClient']);
-        
+        /*************************************************Start For file help************************************************/
         Route::any('rntTransTypeSubtype',[App\Http\Controllers\v1\Master\MFTransTypeSubTypeController::class,'Details']);
         Route::any('rntTransTypeSubtypeShow',[App\Http\Controllers\v1\Master\MFTransTypeSubTypeController::class,'index']);
         Route::post('rntTransTypeSubtypeAddEdit',[App\Http\Controllers\v1\Master\MFTransTypeSubTypeController::class,'CreateUpdate']);
 
+        Route::any('rntSystematicFrequency',[App\Http\Controllers\v1\Master\SystematicFrequencyController::class,'Details']);
+        Route::any('rntSystematicFrequencyShow',[App\Http\Controllers\v1\Master\SystematicFrequencyController::class,'index']);
+        Route::post('rntSystematicFrequencyAddEdit',[App\Http\Controllers\v1\Master\SystematicFrequencyController::class,'CreateUpdate']);
 
+        Route::any('rntSystematicTransType',[App\Http\Controllers\v1\Master\SystematicTransTypeController::class,'Details']);
+        Route::any('rntSystematicTransTypeShow',[App\Http\Controllers\v1\Master\SystematicTransTypeController::class,'index']);
+        Route::post('rntSystematicTransTypeAddEdit',[App\Http\Controllers\v1\Master\SystematicTransTypeController::class,'CreateUpdate']);
+
+        /*************************************************End For file help************************************************/
+
+        /*************************************************Start For Report************************************************/
+        
+        Route::any('showTransDetails',[App\Http\Controllers\v1\Operation\TransactionDetailsController::class,'search']); // Search Transaction details
+        Route::any('showDeleteTransDetails',[App\Http\Controllers\v1\Operation\TransactionDetailsController::class,'searchDelete']);
+        Route::post('DeleteTransDetails',[App\Http\Controllers\v1\Operation\TransactionDetailsController::class,'delete']);
+        Route::any('searchClient',[App\Http\Controllers\v1\Operation\TransactionDetailsController::class,'searchClient']);
+        
         Route::any('showNAVDetails',[App\Http\Controllers\v1\Operation\NAVDetailsController::class,'search']);  // Search NAV details
         Route::any('showSipStpDetails',[App\Http\Controllers\v1\Operation\SipStpTransController::class,'search']);  // Search sip stp details
         Route::any('showFolioDetails',[App\Http\Controllers\v1\Operation\FolioDetailsController::class,'search']);  // Search sip stp details
 
-        /*********************************** start Mail Back Process ************************ */
+        /*************************************************End For Report************************************************/
 
         Route::prefix('client')->group(function () {
 
