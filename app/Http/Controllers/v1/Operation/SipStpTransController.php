@@ -25,7 +25,7 @@ class SipStpTransController extends Controller
     public function search(Request $request)
     {
         try {
-            // $report_type=$request->report_type;
+            $report_type=$request->report_type;
             $data=[];
 
             $data=SipStpTransaction::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_sip_stp_trans.product_code')

@@ -5,7 +5,7 @@ namespace App\Http\Controllers\v1\Master;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Helpers\Helper;
-use App\Models\{Benchmark,MutualFund,Exchange};
+use App\Models\{Benchmark,MutualFund,Exchange,BenchmarkScheme};
 use Validator;
 use Excel;
 use App\Imports\BenchmarkImport;
@@ -174,18 +174,19 @@ class BenchmarkController extends Controller
     {
         try {
             $id=$request->id;
-            $is_has=MutualFund::where('Benchmark_id',$id)->orWhere('Benchmark_id_to',$id)->get();
+            // return $id;
+            $is_has=BenchmarkScheme::where('Benchmark',$id)->get();
             if (count($is_has)>0) {
                 return Helper::WarningResponse(parent::DELETE_NOT_ALLOW_ERROR);
             }else {
                 $data=Benchmark::find($id);
                 $data->delete_flag='Y';
-                $data->deleted_date=date('Y-m-d H:i:s');
-                $data->deleted_by=1;
+                $data->delete_date=date('Y-m-d H:i:s');
+                $data->delete_by=1;
                 $data->save();
             }
         } catch (\Throwable $th) {
-            //throw $th;
+            throw $th;
             return Helper::ErrorResponse(parent::DELETE_FAIL_ERROR);
         }
         return Helper::SuccessResponse($data);
