@@ -910,7 +910,7 @@ class MailBackController extends Controller
                     ->leftJoin('md_employee','md_employee.euin_no','=','td_mutual_fund_trans.euin_no')
                     ->leftJoin('md_branch','md_branch.id','=','md_employee.branch_id')
                     ->select('td_mutual_fund_trans.*','md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name','md_amc.amc_short_name as amc_name',
-                    'md_plan.plan_name as plan_name','md_option.opt_name as option_name',
+                    'md_plan.plan_name as plan_name','md_option.opt_name as option_name','md_scheme.id as scheme_id','md_scheme.category_id','md_scheme.subcategory_id','md_amc.id as amc_id',
                     'md_employee.emp_name as rm_name','md_branch.brn_name as branch','md_employee.bu_type_id as bu_type_id','md_employee.branch_id as branch_id')
                     // ->selectRaw('sum(amount) as tot_amount')
                     // ->selectRaw('sum(stamp_duty) as tot_stamp_duty')
@@ -925,7 +925,7 @@ class MailBackController extends Controller
                     // ->groupBy('td_mutual_fund_trans.trans_desc')
                     // ->groupBy('td_mutual_fund_trans.kf_trans_type')
                     // ->inRandomOrder()
-                    ->take(100)
+                    ->take(5)
                     ->get();
 
                     $data=[];
