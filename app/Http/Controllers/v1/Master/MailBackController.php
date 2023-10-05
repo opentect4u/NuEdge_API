@@ -662,6 +662,7 @@ class MailBackController extends Controller
                             array_push($array_set,$single_array);
                         }
                     }
+                    
                     TempNAVDetails::insert($array_set);
                 }elseif ($file_type_id==2 && $file_id==6) {  // sip stp report MFSD243
                     TempSipStpTransaction::truncate();
