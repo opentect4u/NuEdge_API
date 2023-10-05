@@ -12,6 +12,7 @@ class SystematicTransType extends Model
     protected $fillable = [
         'rnt_id',
         'trans_type',
+        'trans_sub_type',
         'trans_type_code',
     ];
 }

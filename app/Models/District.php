@@ -10,6 +10,7 @@ class District extends Model
     use HasFactory;
     protected $table="md_district";
     protected $fillable = [
+        'country_id',
         'state_id',
         'name',
         'created_by',

@@ -75,6 +75,7 @@ class SystematicTransTypeController extends Controller
             if ($id > 0) {
                 $c_data=SystematicTransType::find($id);
                 $c_data->trans_type=$request->trans_type;
+                $c_data->trans_sub_type=$request->trans_sub_type;
                 $c_data->trans_type_code=$request->trans_type_code;
                 $c_data->rnt_id=$request->rnt_id;
                 $c_data->save();
@@ -82,11 +83,13 @@ class SystematicTransTypeController extends Controller
                 // return $request;
                 if ($request->rnt_id == 1) {  // cams
                     $is_has=SystematicTransType::where('trans_type',$request->trans_type)
+                        ->where('trans_sub_type',$request->trans_sub_type)
                         ->where('trans_type_code',$request->trans_type_code)
                         ->where('rnt_id',$request->rnt_id)
                         ->get();
                 }else {
                     $is_has=SystematicTransType::where('trans_type',$request->trans_type)
+                        ->where('trans_sub_type',$request->trans_sub_type)
                         ->where('trans_type_code',$request->trans_type_code)
                         ->where('rnt_id',$request->rnt_id)
                         ->get();
@@ -96,6 +99,7 @@ class SystematicTransTypeController extends Controller
                 }else{
                     $c_data=SystematicTransType::create(array(
                         'trans_type'=>$request->trans_type,
+                        'trans_sub_type'=>$request->trans_sub_type,
                         'trans_type_code'=>$request->trans_type_code,
                         'rnt_id'=>$request->rnt_id,
                     ));

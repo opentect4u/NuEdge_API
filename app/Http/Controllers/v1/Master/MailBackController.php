@@ -198,7 +198,7 @@ class MailBackController extends Controller
                 }elseif ($file_type_id=='2' && $file_id=='3') {  // sip stp report WBR49
                     TempSipStpTransaction::truncate();
                     // return $TotalArray[0];
-                    $value=explode("\t",$TotalArray[1]);
+                    // $value=explode("\t",$TotalArray[0]);
                     // return $value;
                     for ($i=$start_count; $i <= $end_count; $i++) { 
                         $value=explode("\t",$TotalArray[$i]);
@@ -216,7 +216,7 @@ class MailBackController extends Controller
                             'auto_amount'=>$value[6],
                             'from_date'=>Carbon::parse(explode("/",str_replace("'","",$value[7]))[1].'-'.explode("/",str_replace("'","",$value[7]))[0].'-'.explode("/",str_replace("'","",$value[7]))[2])->format('Y-m-d H:i:s'),
                             'to_date'=>Carbon::parse(explode("/",str_replace("'","",$value[8]))[1].'-'.explode("/",str_replace("'","",$value[8]))[0].'-'.explode("/",str_replace("'","",$value[8]))[2])->format('Y-m-d H:i:s'),
-                            'cease_date'=>(isset($cease_date) && strlen($cease_date)>0)? Carbon::parse(explode("/",str_replace("'","",$value[9]))[1].'-'.explode("/",str_replace("'","",$value[9]))[0].'-'.explode("/",str_replace("'","",$value[9]))[2])->format('Y-m-d H:i:s'):NULL,
+                            'cease_terminate_date'=>(isset($cease_date) && strlen($cease_date)>0)? Carbon::parse(explode("/",str_replace("'","",$value[9]))[1].'-'.explode("/",str_replace("'","",$value[9]))[0].'-'.explode("/",str_replace("'","",$value[9]))[2])->format('Y-m-d H:i:s'):NULL,
                             'periodicity'=>str_replace("'","",$value[10]),
                             'period_day'=>str_replace("'","",$value[11]),
                             'inv_iin'=>str_replace("'","",$value[12]),
@@ -239,7 +239,8 @@ class MailBackController extends Controller
                             'pause_to_date'=>(isset($pause_to_date) && strlen($pause_to_date)>0)? Carbon::parse(explode("/",str_replace("'","",$value[39]))[1].'-'.explode("/",str_replace("'","",$value[39]))[0].'-'.explode("/",str_replace("'","",$value[39]))[2])->format('Y-m-d H:i:s'):NULL,
                             'req_ref_no'=>str_replace("'","",$value[22]),
                             'frequency'=>str_replace("'","",$value[43]),
-                            'terminate_date'=>NULL,
+                            'to_product_code'=>(str_replace("'","",$value[32])=='')?NULL:str_replace("'","",$value[33]).str_replace("'","",$value[32]),
+                            'to_scheme_code'=>(str_replace("'","",$value[32])=='')?NULL:str_replace("'","",$value[32]),
                             'f_status'=>NULL,
                         ));
                     }
@@ -643,7 +644,7 @@ class MailBackController extends Controller
                 }elseif ($file_type_id==2 && $file_id==6) {  // sip stp report MFSD243
                     TempSipStpTransaction::truncate();
                     // return $TotalArray[0];
-                    // $value=explode("~",$TotalArray[0]);
+                    $value=explode("~",$TotalArray[0]);
                     // return $value;
                     for ($i=$start_count; $i <= $end_count; $i++) { 
                         // return $TotalArray[$i];
@@ -657,7 +658,7 @@ class MailBackController extends Controller
                             'folio_no'=>str_replace("'","",$value[4]),
                             'first_client_name'=>str_replace("'","",$value[5]),
                             'auto_trans_type'=>str_replace("'","",$value[23]),
-                            'auto_trans_no'=>str_replace("'","",$value[5]),
+                            'auto_trans_no'=>NULL,
                             'auto_amount'=>$value[10],
                             'from_date'=>date('Y-m-d H:i:s',strtotime($value[7])),
                             'to_date'=>date('Y-m-d H:i:s',strtotime($value[8])),
@@ -677,9 +678,11 @@ class MailBackController extends Controller
                             'pause_to_date'=>NULL,
                             'req_ref_no'=>NULL,
                             'frequency'=>str_replace("'","",$value[22]),
-                            'terminate_date'=>(isset($value[26]) && strlen($value[26])>0)?date('Y-m-d H:i:s',strtotime($value[26])):NULL,
+                            'cease_terminate_date'=>(isset($value[26]) && strlen($value[26])>0)?date('Y-m-d H:i:s',strtotime($value[26])):NULL,
                             'f_status'=>$value[27],
-                            'to_product_code'=>str_replace("'","",$value[28]),
+                            'no_of_installment'=>$value[9],
+                            'to_product_code'=>isset($value[28])?$value[28]:NULL,
+                            'to_scheme_code'=>NULL,
                         ));
                     }
                 }elseif ($file_type_id==3 && $file_id==7) {  // folio master report MFSD240
@@ -1153,6 +1156,95 @@ class MailBackController extends Controller
                 'md_amc.amc_short_name as amc_short_name')
                 ->whereRaw($rawQuery)
                 ->get();
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($data);
+    }
+
+
+    public function allMismatch(Request $request)
+    {
+        try {
+            $amc_count=MutualFundTransaction::where('delete_flag','N')->where('amc_flag','Y')->count();
+            $scheme_count=MutualFundTransaction::where('delete_flag','N')->where('scheme_flag','Y')->count();
+            $plan_option_count=MutualFundTransaction::where('delete_flag','N')->where('plan_option_flag','Y')->count();
+            $idcw_count=MutualFundTransaction::where('delete_flag','N')->where('divi_mismatch_flag','Y')->count();
+
+            $nav_amc_count=NAVDetails::where('amc_flag','Y')->count();
+            $nav_scheme_count=NAVDetails::where('scheme_flag','Y')->count();
+                        
+            $sip_amc_count=SipStpTransaction::where('amc_flag','Y')->count();
+            $sip_scheme_count=SipStpTransaction::where('scheme_flag','Y')->count();
+
+            $folio_amc_count=FolioDetails::where('amc_flag','Y')->count();
+            $folio_scheme_count=FolioDetails::where('scheme_flag','Y')->count();
+
+            $data=[
+                [   
+                    'id'=>1,
+                    'tab_name'=>'Transaction File',
+                    'file_type'=>[
+                        [
+                            'name'=>'AMC',
+                            'count'=>$amc_count
+                        ],
+                        [
+                            'name'=>'SCHEME',
+                            'count'=>$scheme_count
+                        ],
+                        [
+                            'name'=>'PLAN & OPTION',
+                            'count'=>$plan_option_count
+                        ],
+                        [
+                            'name'=>'IDCW',
+                            'count'=>$idcw_count
+                        ]
+                    ]
+                ],[   
+                    'id'=>2,
+                    'tab_name'=>'NAV File',
+                    'file_type'=>[
+                        [
+                            'name'=>'AMC',
+                            'count'=>$nav_amc_count
+                        ],
+                        [
+                            'name'=>'SCHEME',
+                            'count'=>$nav_scheme_count
+                        ]
+                    ]
+                ],[   
+                    'id'=>3,
+                    'tab_name'=>'SIP/STP/SWP File',
+                    'file_type'=>[
+                        [
+                            'name'=>'AMC',
+                            'count'=>$sip_amc_count
+                        ],
+                        [
+                            'name'=>'SCHEME',
+                            'count'=>$sip_scheme_count
+                        ]
+                    ]
+                ],[   
+                    'id'=>4,
+                    'tab_name'=>'Folio Master File',
+                    'file_type'=>[
+                        [
+                            'name'=>'AMC',
+                            'count'=>$folio_amc_count
+                        ],
+                        [
+                            'name'=>'SCHEME',
+                            'count'=>$folio_scheme_count
+                        ]
+                    ]
+                ]         
+                
+            ];
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);

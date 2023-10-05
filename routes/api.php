@@ -373,6 +373,8 @@ Route::prefix('v1')->group(function () {
         Route::any('mailbackMismatchSipStp',[App\Http\Controllers\v1\Master\MailBackController::class,'misMatchSipStp']);  // NAV mismatch details
         Route::any('mailbackMismatchFolio',[App\Http\Controllers\v1\Master\MailBackController::class,'misMatchFolio']);  // NAV mismatch details
        
+        Route::any('mailbackMismatchAll',[App\Http\Controllers\v1\Master\MailBackController::class,'allMismatch']);  // all mismatch details
+
         /*********************************** End Mail Back Mismatch ************************ */
 
         /*************************************************Start For file help************************************************/
@@ -402,6 +404,11 @@ Route::prefix('v1')->group(function () {
         Route::any('showFolioDetails',[App\Http\Controllers\v1\Operation\FolioDetailsController::class,'search']);  // Search sip stp details
 
         /*************************************************End For Report************************************************/
+
+        /*************************************************Start TAB sub TAB Show api************************************************/
+        Route::any('showTab1',[App\Http\Controllers\v1\TabController::class,'Tab1']);  // Search sip stp details
+
+        /*************************************************End TAB sub TAB Show api************************************************/
 
         Route::prefix('client')->group(function () {
 
