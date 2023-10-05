@@ -182,6 +182,7 @@ class MailBackController extends Controller
                     $value=explode(",",$TotalArray[0][0]);
                     // return $value;
                     // return count($TotalArray);
+                    $array_set=[];
                     for ($i=$start_count; $i <= $end_count; $i++) {
                         $value=explode(",",$TotalArray[$i][0]);
                         $nav_date=Carbon::parse(explode("/",str_replace("'","",$value[2]))[1].'-'.explode("/",str_replace("'","",$value[2]))[0].'-'.explode("/",str_replace("'","",$value[2]))[2])->format('Y-m-d H:i:s');
@@ -190,7 +191,7 @@ class MailBackController extends Controller
                             ->where('nav_date',$nav_date)
                             ->count();
                         if ($is_has_count==0) {
-                            TempNAVDetails::create(array(
+                            $single_array=[
                                 'rnt_id' =>$rnt_id,
                                 'amc_code'=>NULL,
                                 'product_code'=>str_replace("'","",$value[0]),
@@ -198,10 +199,13 @@ class MailBackController extends Controller
                                 'nav'=>str_replace("'","",$value[3]),
                                 'isin_no'=>str_replace("'","",$value[7]),
                                 'amc_flag'=>'N',
-                                'scheme_flag'=>'N',
-                            ));
+                                'scheme_flag'=>'N', 
+                            ];
+                            array_push($array_set,$single_array);
                         }
                     }
+                    // return $array_set;
+                    TempNAVDetails::insert($array_set);
                 }elseif ($file_type_id=='2' && $file_id=='3') {  // sip stp report WBR49
                     TempSipStpTransaction::truncate();
                     // return $TotalArray[0];
@@ -635,6 +639,7 @@ class MailBackController extends Controller
                     // $value=explode(",",$TotalArray[0][0]);
                     // return $value;
                     // return count($TotalArray);
+                    $array_set=[];
                     for ($i=$start_count; $i <= $end_count; $i++) {
                         $value=explode(",",$TotalArray[$i][0]);
                         $nav_date=Carbon::parse(str_replace("/","-",$value[4]))->format('Y-m-d H:i:s');
@@ -644,7 +649,7 @@ class MailBackController extends Controller
                             ->where('isin_no',$value[10])
                             ->count();
                         if ($is_has_count==0) {
-                            TempNAVDetails::create(array(
+                            $single_array=[
                                 'rnt_id' =>$rnt_id,
                                 'amc_code'=>$value[0],
                                 'product_code'=>$value[3],
@@ -653,9 +658,11 @@ class MailBackController extends Controller
                                 'isin_no'=>$value[10],
                                 'amc_flag'=>'N',
                                 'scheme_flag'=>'N',
-                            ));
+                            ];
+                            array_push($array_set,$single_array);
                         }
                     }
+                    TempNAVDetails::insert($array_set);
                 }elseif ($file_type_id==2 && $file_id==6) {  // sip stp report MFSD243
                     TempSipStpTransaction::truncate();
                     // return $TotalArray[0];
