@@ -25,6 +25,7 @@ class SipStpTransController extends Controller
     public function search(Request $request)
     {
         try {
+            // return $request;
             $report_type=$request->report_type;
             $sip_type=$request->sip_type;
 
@@ -136,16 +137,9 @@ class SipStpTransController extends Controller
 
                 
             }
+            // return $rawQuery;
             // $my_datas=[];
-            $my_datas=SipStpTransaction::
-                    select('td_sip_stp_trans.*','td_sip_stp_trans.period_day as sip_date','td_sip_stp_trans.auto_amount as amount','td_sip_stp_trans.bank as bank_name','td_sip_stp_trans.instrm_no as acc_no','td_sip_stp_trans.cease_terminate_date as terminated_date',
-                    'md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name',
-                    'md_amc.amc_short_name as amc_name','md_amc_1.amc_short_name as amc_short_name','md_plan.plan_name','md_option.opt_name as option_name',
-                    'md_employee.emp_name as rm_name','md_branch.brn_name as branch_name','md_employee.bu_type_id as bu_type_id','md_employee.branch_id as branch_id',
-                    'md_systematic_trans_type.trans_type','md_systematic_trans_type.trans_sub_type')
-                    // ->selectRaw('IF(td_sip_stp_trans.euin_no!="",td_sip_stp_trans.euin_no as my_euin_no,(select `euin_no` from `td_sip_stp_trans` where `folio_no` =td_sip_stp_trans.folio_no order by reg_date desc limit 1) as my_euin_no)')
-                    ->
-                    leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_sip_stp_trans.product_code')
+            $my_datas=SipStpTransaction::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_sip_stp_trans.product_code')
                     ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
                     ->leftJoin('md_plan','md_plan.id','=','md_scheme_isin.plan_id')
                     ->leftJoin('md_option','md_option.id','=','md_scheme_isin.option_id')
@@ -162,11 +156,11 @@ class SipStpTransController extends Controller
 
                     ->leftJoin('md_branch','md_branch.id','=','md_employee.branch_id')
                     ->leftJoin('md_systematic_trans_type','md_systematic_trans_type.trans_type_code','=','td_sip_stp_trans.auto_trans_type')
-                    // ->select('td_sip_stp_trans.*','td_sip_stp_trans.period_day as sip_date','td_sip_stp_trans.auto_amount as amount','td_sip_stp_trans.bank as bank_name','td_sip_stp_trans.instrm_no as acc_no','td_sip_stp_trans.cease_terminate_date as terminated_date',
-                    // 'md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name',
-                    // 'md_amc.amc_short_name as amc_name','md_amc_1.amc_short_name as amc_short_name','md_plan.plan_name','md_option.opt_name as option_name',
-                    // 'md_employee.emp_name as rm_name','md_branch.brn_name as branch_name','md_employee.bu_type_id as bu_type_id','md_employee.branch_id as branch_id',
-                    // 'md_systematic_trans_type.trans_type','md_systematic_trans_type.trans_sub_type')
+                    ->select('td_sip_stp_trans.*','td_sip_stp_trans.period_day as sip_date','td_sip_stp_trans.auto_amount as amount','td_sip_stp_trans.bank as bank_name','td_sip_stp_trans.instrm_no as acc_no','td_sip_stp_trans.cease_terminate_date as terminated_date',
+                    'md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name',
+                    'md_amc.amc_short_name as amc_name','md_amc_1.amc_short_name as amc_short_name','md_plan.plan_name','md_option.opt_name as option_name',
+                    'md_employee.emp_name as rm_name','md_branch.brn_name as branch_name','md_employee.bu_type_id as bu_type_id','md_employee.branch_id as branch_id',
+                    'md_systematic_trans_type.trans_type','md_systematic_trans_type.trans_sub_type')
                     ->selectRaw('(select `bu_type` from `md_business_type` where `bu_code` =md_employee.bu_type_id and `branch_id` =md_employee.branch_id limit 1) as bu_type')
                     ->selectRaw('(select `freq_name` from `md_systematic_frequency` where `rnt_id` =td_sip_stp_trans.rnt_id and `freq_code` =td_sip_stp_trans.periodicity limit 1) as freq')
                     ->where('td_sip_stp_trans.amc_flag','N')
@@ -178,7 +172,26 @@ class SipStpTransController extends Controller
                 
             foreach ($my_datas as $key => $my_data) {
                 if ($my_data->rnt_id==2) {
-                    $my_data->sip_date=date('d',strtotime($my_data->from_date));
+                    if(($my_data->frequency=="Daily") || ($my_data->frequency=="WEEKLY") || ($my_data->frequency=="Fortnightly")){
+                        $my_data->sip_date=$my_data->frequency;
+                    }else {
+                        $my_data->sip_date=date('d',strtotime($my_data->from_date));
+                    }
+                }elseif ($my_data->rnt_id==1) {
+                    // return $my_data;
+                    if(($my_data->freq=="Daily") || ($my_data->freq=="Weekly") || ($my_data->freq=="Fortnightly")){
+                        $my_data->sip_date=$my_data->freq;
+                    }
+
+                    if ($my_data->auto_trans_type=='P') {
+                        if(($my_data->freq=="Daily") || ($my_data->freq=="Weekly") || ($my_data->freq=="Fortnightly")){
+                            $my_data->from_date = $my_data->freq;
+                        }else {
+                            $my_data->from_date =date('Y-m-d', strtotime('+1 month', (strtotime($my_data->reg_date))));
+                            // return $my_data->reg_date.' - '.$my_data->from_date;
+                            // return $my_data;
+                        }
+                    }
                 }
                 array_push($data,$my_data);
             }

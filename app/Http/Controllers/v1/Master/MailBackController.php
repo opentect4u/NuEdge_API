@@ -184,16 +184,23 @@ class MailBackController extends Controller
                     // return count($TotalArray);
                     for ($i=$start_count; $i <= $end_count; $i++) {
                         $value=explode(",",$TotalArray[$i][0]);
-                        TempNAVDetails::create(array(
-                            'rnt_id' =>$rnt_id,
-                            'amc_code'=>NULL,
-                            'product_code'=>str_replace("'","",$value[0]),
-                            'nav_date'=>Carbon::parse(explode("/",str_replace("'","",$value[2]))[1].'-'.explode("/",str_replace("'","",$value[2]))[0].'-'.explode("/",str_replace("'","",$value[2]))[2])->format('Y-m-d H:i:s'),
-                            'nav'=>str_replace("'","",$value[3]),
-                            'isin_no'=>str_replace("'","",$value[7]),
-                            'amc_flag'=>'N',
-                            'scheme_flag'=>'N',
-                        ));
+                        $nav_date=Carbon::parse(explode("/",str_replace("'","",$value[2]))[1].'-'.explode("/",str_replace("'","",$value[2]))[0].'-'.explode("/",str_replace("'","",$value[2]))[2])->format('Y-m-d H:i:s');
+                        $is_has_count=NAVDetails::where('rnt_id',$rnt_id)
+                            ->where('product_code',str_replace("'","",$value[0]))
+                            ->where('nav_date',$nav_date)
+                            ->count();
+                        if ($is_has_count==0) {
+                            TempNAVDetails::create(array(
+                                'rnt_id' =>$rnt_id,
+                                'amc_code'=>NULL,
+                                'product_code'=>str_replace("'","",$value[0]),
+                                'nav_date'=>$nav_date,
+                                'nav'=>str_replace("'","",$value[3]),
+                                'isin_no'=>str_replace("'","",$value[7]),
+                                'amc_flag'=>'N',
+                                'scheme_flag'=>'N',
+                            ));
+                        }
                     }
                 }elseif ($file_type_id=='2' && $file_id=='3') {  // sip stp report WBR49
                     TempSipStpTransaction::truncate();
@@ -630,16 +637,24 @@ class MailBackController extends Controller
                     // return count($TotalArray);
                     for ($i=$start_count; $i <= $end_count; $i++) {
                         $value=explode(",",$TotalArray[$i][0]);
-                        TempNAVDetails::create(array(
-                            'rnt_id' =>$rnt_id,
-                            'amc_code'=>$value[0],
-                            'product_code'=>$value[3],
-                            'nav_date'=>Carbon::parse(str_replace("/","-",$value[4]))->format('Y-m-d H:i:s'),
-                            'nav'=>$value[5],
-                            'isin_no'=>$value[10],
-                            'amc_flag'=>'N',
-                            'scheme_flag'=>'N',
-                        ));
+                        $nav_date=Carbon::parse(str_replace("/","-",$value[4]))->format('Y-m-d H:i:s');
+                        $is_has_count=NAVDetails::where('rnt_id',$rnt_id)
+                            ->where('product_code',$value[3])
+                            ->where('nav_date',$nav_date)
+                            ->where('isin_no',$value[10])
+                            ->count();
+                        if ($is_has_count==0) {
+                            TempNAVDetails::create(array(
+                                'rnt_id' =>$rnt_id,
+                                'amc_code'=>$value[0],
+                                'product_code'=>$value[3],
+                                'nav_date'=>$nav_date,
+                                'nav'=>$value[5],
+                                'isin_no'=>$value[10],
+                                'amc_flag'=>'N',
+                                'scheme_flag'=>'N',
+                            ));
+                        }
                     }
                 }elseif ($file_type_id==2 && $file_id==6) {  // sip stp report MFSD243
                     TempSipStpTransaction::truncate();
