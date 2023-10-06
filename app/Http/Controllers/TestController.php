@@ -118,12 +118,27 @@ class TestController extends Controller
     }
 
     public function test(){
-        DB::enableQueryLog();
-        $euin_no=MutualFundTransaction::where('folio_no',6017105704)->first();
+
+        // $master_arr = array('CAT','DOG','RABBIT');
+        // $log_arr = array('CAT','CAR','RABBIT','DOG','PHONE');
+        // $unique=array_unique( array_merge($master_arr, $log_arr) );
+        // $master_arr=array_diff($unique, $master_arr);
+        // // print_r($master_arr);
+        // return $master_arr;
+
+        $A = array(1,2,3,4,5,6,7,8);
+        $B = array(1,2,3,4);
+
+        $C = array_intersect($A,$B);  //equals (1,2,3,4)
+        $A = array_diff($A,$B);   
+        return $A;
+
+        // DB::enableQueryLog();
+        // $euin_no=MutualFundTransaction::where('folio_no',6017105704)->first();
                         // $euin_no=MutualFundTransaction::where('folio_no',6017105704)
                         // ->where('euin_no','!=','')->first(['euin_no'])->value('euin_no');
 
         // dd(DB::getQueryLog());
-        return $euin_no;
+        // return $euin_no;
     }
 }

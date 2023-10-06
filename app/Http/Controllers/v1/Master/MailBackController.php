@@ -183,29 +183,51 @@ class MailBackController extends Controller
                     // return $value;
                     // return count($TotalArray);
                     $array_set=[];
+                    $array_product_code=[];
+                    $array_nav_date=[];
                     for ($i=$start_count; $i <= $end_count; $i++) {
                         $value=explode(",",$TotalArray[$i][0]);
                         $nav_date=Carbon::parse(explode("/",str_replace("'","",$value[2]))[1].'-'.explode("/",str_replace("'","",$value[2]))[0].'-'.explode("/",str_replace("'","",$value[2]))[2])->format('Y-m-d H:i:s');
-                        $is_has_count=NAVDetails::where('rnt_id',$rnt_id)
-                            ->where('product_code',str_replace("'","",$value[0]))
-                            ->where('nav_date',$nav_date)
-                            ->count();
-                        if ($is_has_count==0) {
-                            $single_array=[
-                                'rnt_id' =>$rnt_id,
-                                'amc_code'=>NULL,
-                                'product_code'=>str_replace("'","",$value[0]),
-                                'nav_date'=>$nav_date,
-                                'nav'=>str_replace("'","",$value[3]),
-                                'isin_no'=>str_replace("'","",$value[7]),
-                                'amc_flag'=>'N',
-                                'scheme_flag'=>'N', 
-                            ];
-                            array_push($array_set,$single_array);
-                        }
+                        // $is_has_count=NAVDetails::where('rnt_id',$rnt_id)
+                        //     ->where('product_code',str_replace("'","",$value[0]))
+                        //     ->where('nav_date',$nav_date)
+                        //     ->count();
+                        // if ($is_has_count==0) {
+                            // $single_array=[
+                            //     'rnt_id' =>$rnt_id,
+                            //     'amc_code'=>NULL,
+                            //     'product_code'=>str_replace("'","",$value[0]),
+                            //     'nav_date'=>$nav_date,
+                            //     'nav'=>str_replace("'","",$value[3]),
+                            //     'isin_no'=>str_replace("'","",$value[7]),
+                            //     'amc_flag'=>'N',
+                            //     'scheme_flag'=>'N', 
+                            // ];
+                            // array_push($array_set,$single_array);
+                            // array_push($array_product_code,str_replace("'","",$value[0]));
+                            // array_push($array_nav_date,$nav_date);
+                        // }
+                        TempNAVDetails::create([
+                            'rnt_id' =>$rnt_id,
+                            'amc_code'=>NULL,
+                            'product_code'=>str_replace("'","",$value[0]),
+                            'nav_date'=>$nav_date,
+                            'nav'=>str_replace("'","",$value[3]),
+                            'isin_no'=>str_replace("'","",$value[7]),
+                            'amc_flag'=>'N',
+                            'scheme_flag'=>'N', 
+                        ]);
                     }
+                    // $array_set=array_splice($array_set, 'amc_flag','N');
+                    // unset($array_set['amc_flag']);
+                    // unset($array_set['scheme_flag']);
                     // return $array_set;
-                    TempNAVDetails::insert($array_set);
+                    // $array_set_form_db=NAVDetails::where('rnt_id',$rnt_id)
+                    //         ->whereIn('product_code',$array_product_code)
+                    //         ->whereIn('nav_date',$array_nav_date)
+                    //         ->get();
+                    // return $array_set_form_db;
+                    // TempNAVDetails::insert($array_set);
                 }elseif ($file_type_id=='2' && $file_id=='3') {  // sip stp report WBR49
                     TempSipStpTransaction::truncate();
                     // return $TotalArray[0];
@@ -643,27 +665,37 @@ class MailBackController extends Controller
                     for ($i=$start_count; $i <= $end_count; $i++) {
                         $value=explode(",",$TotalArray[$i][0]);
                         $nav_date=Carbon::parse(str_replace("/","-",$value[4]))->format('Y-m-d H:i:s');
-                        $is_has_count=NAVDetails::where('rnt_id',$rnt_id)
-                            ->where('product_code',$value[3])
-                            ->where('nav_date',$nav_date)
-                            ->where('isin_no',$value[10])
-                            ->count();
-                        if ($is_has_count==0) {
-                            $single_array=[
-                                'rnt_id' =>$rnt_id,
-                                'amc_code'=>$value[0],
-                                'product_code'=>$value[3],
-                                'nav_date'=>$nav_date,
-                                'nav'=>$value[5],
-                                'isin_no'=>$value[10],
-                                'amc_flag'=>'N',
-                                'scheme_flag'=>'N',
-                            ];
-                            array_push($array_set,$single_array);
-                        }
+                        // $is_has_count=NAVDetails::where('rnt_id',$rnt_id)
+                        //     ->where('product_code',$value[3])
+                        //     ->where('nav_date',$nav_date)
+                        //     ->where('isin_no',$value[10])
+                        //     ->count();
+                        // if ($is_has_count==0) {
+                        //     $single_array=[
+                        //         'rnt_id' =>$rnt_id,
+                        //         'amc_code'=>$value[0],
+                        //         'product_code'=>$value[3],
+                        //         'nav_date'=>$nav_date,
+                        //         'nav'=>$value[5],
+                        //         'isin_no'=>$value[10],
+                        //         'amc_flag'=>'N',
+                        //         'scheme_flag'=>'N',
+                        //     ];
+                        //     array_push($array_set,$single_array);
+                        // }
+                        TempNAVDetails::create([
+                            'rnt_id' =>$rnt_id,
+                            'amc_code'=>$value[0],
+                            'product_code'=>$value[3],
+                            'nav_date'=>$nav_date,
+                            'nav'=>$value[5],
+                            'isin_no'=>$value[10],
+                            'amc_flag'=>'N',
+                            'scheme_flag'=>'N',
+                        ]);
                     }
-                    
-                    TempNAVDetails::insert($array_set);
+
+                    // TempNAVDetails::insert($array_set);
                 }elseif ($file_type_id==2 && $file_id==6) {  // sip stp report MFSD243
                     TempSipStpTransaction::truncate();
                     // return $TotalArray[0];
@@ -1140,7 +1172,14 @@ class MailBackController extends Controller
                 $rawQuery="amc_flag='Y'";
             }elseif ($mismatch_flag=='S') {
                 $rawQuery="scheme_flag='Y'";
+            }elseif ($mismatch_flag=='P/O') {
+                $rawQuery="plan_option_flag='Y'";
+            }elseif ($mismatch_flag=='B') {
+                $rawQuery="bu_type_flag='Y'";
+            }elseif ($mismatch_flag=='F') {
+                $rawQuery="freq_mismatch_flag='Y'";
             }
+
             $data=[];
             $data=SipStpTransaction::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_sip_stp_trans.product_code')
                 ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
