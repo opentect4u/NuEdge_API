@@ -418,6 +418,7 @@ class TransactionDetailsController extends Controller
                     ->select('td_mutual_fund_trans.*','md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name','md_amc.amc_short_name as amc_name',
                     'md_plan.plan_name as plan_name','md_option.opt_name as option_name')
                     ->where('td_mutual_fund_trans.delete_flag','N')
+                    // ->where('td_mutual_fund_trans.divi_lock_flag','L')
                     ->where('td_mutual_fund_trans.folio_no',$request->folio_no)
                     ->get();
 

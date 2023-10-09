@@ -185,29 +185,12 @@ class MailBackController extends Controller
                     $array_set=[];
                     $array_product_code=[];
                     $array_nav_date=[];
+                    
                     for ($i=$start_count; $i <= $end_count; $i++) {
-                        $value=explode(",",$TotalArray[$i][0]);
+                        $value=explode(",",$TotalArray[$i][0]); // 10/09/2023 12:00:00 am
                         $nav_date=Carbon::parse(explode("/",str_replace("'","",$value[2]))[1].'-'.explode("/",str_replace("'","",$value[2]))[0].'-'.explode("/",str_replace("'","",$value[2]))[2])->format('Y-m-d H:i:s');
-                        // $is_has_count=NAVDetails::where('rnt_id',$rnt_id)
-                        //     ->where('product_code',str_replace("'","",$value[0]))
-                        //     ->where('nav_date',$nav_date)
-                        //     ->count();
-                        // if ($is_has_count==0) {
-                            // $single_array=[
-                            //     'rnt_id' =>$rnt_id,
-                            //     'amc_code'=>NULL,
-                            //     'product_code'=>str_replace("'","",$value[0]),
-                            //     'nav_date'=>$nav_date,
-                            //     'nav'=>str_replace("'","",$value[3]),
-                            //     'isin_no'=>str_replace("'","",$value[7]),
-                            //     'amc_flag'=>'N',
-                            //     'scheme_flag'=>'N', 
-                            // ];
-                            // array_push($array_set,$single_array);
-                            // array_push($array_product_code,str_replace("'","",$value[0]));
-                            // array_push($array_nav_date,$nav_date);
-                        // }
-                        TempNAVDetails::create([
+                        
+                        $single_array=[
                             'rnt_id' =>$rnt_id,
                             'amc_code'=>NULL,
                             'product_code'=>str_replace("'","",$value[0]),
@@ -216,18 +199,26 @@ class MailBackController extends Controller
                             'isin_no'=>str_replace("'","",$value[7]),
                             'amc_flag'=>'N',
                             'scheme_flag'=>'N', 
-                        ]);
+                        ];
+                            
+                        array_push($array_set,$single_array);
+                        array_push($array_product_code,str_replace("'","",$value[0]));
+                        array_push($array_nav_date,$nav_date);
                     }
-                    // $array_set=array_splice($array_set, 'amc_flag','N');
-                    // unset($array_set['amc_flag']);
-                    // unset($array_set['scheme_flag']);
-                    // return $array_set;
-                    // $array_set_form_db=NAVDetails::where('rnt_id',$rnt_id)
-                    //         ->whereIn('product_code',$array_product_code)
-                    //         ->whereIn('nav_date',$array_nav_date)
-                    //         ->get();
-                    // return $array_set_form_db;
-                    // TempNAVDetails::insert($array_set);
+                    $array_set_form_db=NAVDetails::where('rnt_id',$rnt_id)
+                            ->whereIn('product_code',$array_product_code)
+                            ->whereIn('nav_date',$array_nav_date)
+                            ->get()->toArray();
+                
+                    $final_array =  array_udiff(
+                        $array_set,
+                        $array_set_form_db,
+                        fn($a, $b) => $a['rnt_id'] <=> $b['rnt_id'] && $a['product_code'] <=> $b['product_code'] && $a['nav_date'] <=> $b['nav_date']
+                    );
+                    // return $final_array;
+                    if (count($final_array) > 0) {
+                        TempNAVDetails::insert($final_array);
+                    }
                 }elseif ($file_type_id=='2' && $file_id=='3') {  // sip stp report WBR49
                     TempSipStpTransaction::truncate();
                     // return $TotalArray[0];
