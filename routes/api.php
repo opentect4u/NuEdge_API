@@ -393,17 +393,22 @@ Route::prefix('v1')->group(function () {
         /*************************************************End For file help************************************************/
 
         /*************************************************Start For Report************************************************/
-        
-        Route::any('showTransDetails',[App\Http\Controllers\v1\Operation\TransactionDetailsController::class,'search']); // Search Transaction details
-        Route::any('showDeleteTransDetails',[App\Http\Controllers\v1\Operation\TransactionDetailsController::class,'searchDelete']);
-        Route::post('DeleteTransDetails',[App\Http\Controllers\v1\Operation\TransactionDetailsController::class,'delete']);
         Route::any('searchClient',[App\Http\Controllers\v1\Operation\TransactionDetailsController::class,'searchClient']);
         
+        Route::any('showTransDetails',[App\Http\Controllers\v1\Operation\TransactionDetailsController::class,'search']); // Search Transaction details
         Route::any('showNAVDetails',[App\Http\Controllers\v1\Operation\NAVDetailsController::class,'search']);  // Search NAV details
         Route::any('showSipStpDetails',[App\Http\Controllers\v1\Operation\SipStpTransController::class,'search']);  // Search sip stp details
         Route::any('showFolioDetails',[App\Http\Controllers\v1\Operation\FolioDetailsController::class,'search']);  // Search sip stp details
 
         /*************************************************End For Report************************************************/
+
+        /*************************************************Start Delete Report************************************************/
+
+        Route::any('showDeleteTransDetails',[App\Http\Controllers\v1\Operation\TransactionDetailsController::class,'searchDelete']);
+        Route::post('DeleteTransDetails',[App\Http\Controllers\v1\Operation\TransactionDetailsController::class,'delete']);
+        Route::any('unlockTransDetails',[App\Http\Controllers\v1\Operation\TransactionDetailsController::class,'unlock']);
+        
+        /*************************************************End Delete Report************************************************/
 
         /*************************************************Start TAB sub TAB Show api************************************************/
         Route::any('showTab1',[App\Http\Controllers\v1\TabController::class,'Tab1']);  // Search sip stp details

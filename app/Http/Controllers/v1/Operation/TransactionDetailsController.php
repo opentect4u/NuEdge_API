@@ -497,20 +497,36 @@ class TransactionDetailsController extends Controller
             $id=json_decode($request->id);
             $data=[];
             foreach ($id as $key => $single_id) {
-                $delete_data=MutualFundTransaction::find($single_id);
-                $delete_data->delete_flag='Y';
-                $delete_data->deleted_at=1;
-                $delete_data->deleted_date=date('Y-m-d H:i:s');
-                $delete_data->save();
-                array_push($data,$delete_data);
+                // $delete_data=MutualFundTransaction::find($single_id);
+                // $delete_data->delete_flag='Y';
+                // $delete_data->deleted_at=1;
+                // $delete_data->deleted_date=date('Y-m-d H:i:s');
+                // $delete_data->save();
+                // array_push($data,$delete_data);
             }
             
         } catch (\Throwable $th) {
             //throw $th;
-            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+            return Helper::ErrorResponse(parent::DATA_SAVE_ERROR);
         }
         return Helper::SuccessResponse($data);
     }
 
+
+    function unlock(Request $request)
+    {
+        try {
+            // return $request;
+            $id=$request->id;
+            // $delete_data=MutualFundTransaction::find($id);
+            // $delete_data->divi_lock_flag='N';
+            // $delete_data->save();
+            $data=[];
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::DATA_SAVE_ERROR);
+        }
+        return Helper::SuccessResponse($data);
+    }
     
 }

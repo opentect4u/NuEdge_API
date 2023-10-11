@@ -24,6 +24,7 @@ class FolioDetails extends Model
         'add_3',
         'city',
         'pincode',
+        'rupee_bal',
         'state',
         'country',
         'tpin',

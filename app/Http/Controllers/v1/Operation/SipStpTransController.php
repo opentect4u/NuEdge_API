@@ -117,18 +117,18 @@ class SipStpTransController extends Controller
                 //     $queryString='td_sip_stp_trans.reg_date';
                 //     $rawQuery.=Helper::FrmToDateRawQuery($from_date,$to_date,$rawQuery,$queryString);
                 // }
-                // $queryString='td_sip_stp_trans.folio_no';
-                // $rawQuery.=Helper::WhereRawQuery($folio_no,$rawQuery,$queryString);
-                // $queryString='td_sip_stp_trans.first_client_pan';
-                // $rawQuery.=Helper::WhereRawQuery($pan_no,$rawQuery,$queryString);
-                // $queryString='md_scheme.amc_id';
-                // $rawQuery.=Helper::WhereRawQuery($amc_id,$rawQuery,$queryString);
-                // $queryString='md_scheme.category_id';
-                // $rawQuery.=Helper::WhereRawQuery($cat_id,$rawQuery,$queryString);
-                // $queryString='md_scheme.subcategory_id';
-                // $rawQuery.=Helper::WhereRawQuery($sub_cat_id,$rawQuery,$queryString);
-                // $queryString='md_scheme_isin.scheme_id';
-                // $rawQuery.=Helper::WhereRawQuery($scheme_id,$rawQuery,$queryString);
+                $queryString='td_sip_stp_trans.folio_no';
+                $rawQuery.=Helper::WhereRawQuery($folio_no,$rawQuery,$queryString);
+                $queryString='td_sip_stp_trans.first_client_pan';
+                $rawQuery.=Helper::WhereRawQuery($pan_no,$rawQuery,$queryString);
+                $queryString='md_scheme.amc_id';
+                $rawQuery.=Helper::WhereRawQuery($amc_id,$rawQuery,$queryString);
+                $queryString='md_scheme.category_id';
+                $rawQuery.=Helper::WhereRawQuery($cat_id,$rawQuery,$queryString);
+                $queryString='md_scheme.subcategory_id';
+                $rawQuery.=Helper::WhereRawQuery($sub_cat_id,$rawQuery,$queryString);
+                $queryString='md_scheme_isin.scheme_id';
+                $rawQuery.=Helper::WhereRawQuery($scheme_id,$rawQuery,$queryString);
 
                 // return $rawQuery;
                 // $rawQuery=$this->filterCriteria($rawQuery,$from_date,$to_date,$tin_no,$proposer_name,$ins_type_id,$company_id,$product_type_id,$product_id,$insured_bu_type,$ack_status);
@@ -148,6 +148,10 @@ class SipStpTransController extends Controller
                     ->leftJoin('md_amc','md_amc.id','=','md_scheme.amc_id')
                     ->leftJoin('md_amc as md_amc_1','md_amc_1.amc_code','=','td_sip_stp_trans.amc_code')
                     ->leftJoin('md_employee','md_employee.euin_no','=','td_sip_stp_trans.euin_no')
+                    ->leftJoin('md_scheme_isin as to_isin','to_isin.product_code','=','td_sip_stp_trans.to_product_code')
+                    ->leftJoin('md_scheme as to_scheme','to_scheme.id','=','to_isin.scheme_id')
+                    ->leftJoin('md_category as to_category','to_category.id','=','to_scheme.category_id')
+                    ->leftJoin('md_subcategory as to_subcategory','to_subcategory.id','=','to_scheme.subcategory_id')
                     // ->leftJoin(DB::raw('SELECT * FROM md_employee as r
                     // LEFT JOIN td_sip_stp_trans AS e ON r.euin_no=(IF(e.euin_no!="",e.euin_no,(select `euin_no` from `td_sip_stp_trans` where `folio_no` =td_sip_stp_trans.folio_no order by reg_date desc limit 1) as my_euin_no)) as my_euin_no'))
 
@@ -160,7 +164,8 @@ class SipStpTransController extends Controller
                     'md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name',
                     'md_amc.amc_short_name as amc_name','md_amc_1.amc_short_name as amc_short_name','md_plan.plan_name','md_option.opt_name as option_name',
                     'md_employee.emp_name as rm_name','md_branch.brn_name as branch_name','md_employee.bu_type_id as bu_type_id','md_employee.branch_id as branch_id',
-                    'md_systematic_trans_type.trans_type','md_systematic_trans_type.trans_sub_type')
+                    'md_systematic_trans_type.trans_type','md_systematic_trans_type.trans_sub_type',
+                    'to_scheme.scheme_name as to_scheme_name','to_category.cat_name as to_cat_name','to_subcategory.subcategory_name as to_subcat_name')
                     ->selectRaw('(select `bu_type` from `md_business_type` where `bu_code` =md_employee.bu_type_id and `branch_id` =md_employee.branch_id limit 1) as bu_type')
                     ->selectRaw('(select `freq_name` from `md_systematic_frequency` where `rnt_id` =td_sip_stp_trans.rnt_id and `freq_code` =td_sip_stp_trans.periodicity limit 1) as freq')
                     ->where('td_sip_stp_trans.amc_flag','N')
@@ -174,13 +179,24 @@ class SipStpTransController extends Controller
                 if ($my_data->rnt_id==2) {
                     if(($my_data->frequency=="Daily") || ($my_data->frequency=="WEEKLY") || ($my_data->frequency=="Fortnightly")){
                         $my_data->sip_date=$my_data->frequency;
+                        $my_data->stp_date=$my_data->frequency;
+                        $my_data->swp_date=$my_data->frequency;
                     }else {
                         $my_data->sip_date=date('d',strtotime($my_data->from_date));
+                        $my_data->stp_date=date('d',strtotime($my_data->from_date));
+                        $my_data->swp_date=date('d',strtotime($my_data->from_date));
                     }
+                    $my_data->freq=$my_data->frequency;
                 }elseif ($my_data->rnt_id==1) {
                     // return $my_data;
                     if(($my_data->freq=="Daily") || ($my_data->freq=="Weekly") || ($my_data->freq=="Fortnightly")){
                         $my_data->sip_date=$my_data->freq;
+                        $my_data->stp_date=$my_data->freq;
+                        $my_data->swp_date=$my_data->freq;
+                    }else {
+                        $my_data->sip_date=$my_data->freq;
+                        $my_data->stp_date=$my_data->freq;
+                        $my_data->swp_date=$my_data->freq;
                     }
 
                     if ($my_data->auto_trans_type=='P') {
@@ -193,6 +209,7 @@ class SipStpTransController extends Controller
                         }
                     }
                 }
+                $my_data->duration =(int)abs((strtotime($my_data->reg_date) - strtotime($my_data->to_date))/(60*60*24*30));
                 array_push($data,$my_data);
             }
 
