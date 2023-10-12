@@ -681,7 +681,7 @@ class MailBackController extends Controller
                     // return $value;
                     // return count($TotalArray);
 
-                    // $array_slice=array_slice($TotalArray,$start_count,$end_count);
+                    // $array_slice=array_slice($TotalArray,$start_count,300,true);
                     // $array_set = array_map(function ($result){
                     //     $value=explode(",",$result[0]);
                     //     $nav_date=Carbon::parse(str_replace("/","-",$value[4]))->format('Y-m-d H:i:s');

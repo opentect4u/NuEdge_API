@@ -194,9 +194,9 @@ class SipStpTransController extends Controller
                         $my_data->stp_date=$my_data->freq;
                         $my_data->swp_date=$my_data->freq;
                     }else {
-                        $my_data->sip_date=$my_data->freq;
-                        $my_data->stp_date=$my_data->freq;
-                        $my_data->swp_date=$my_data->freq;
+                        $my_data->sip_date=$my_data->period_day;
+                        $my_data->stp_date=$my_data->period_day;
+                        $my_data->swp_date=$my_data->period_day;
                     }
 
                     if ($my_data->auto_trans_type=='P') {
