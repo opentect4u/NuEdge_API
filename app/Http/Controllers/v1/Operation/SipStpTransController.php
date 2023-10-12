@@ -204,7 +204,7 @@ class SipStpTransController extends Controller
                         if(($my_data->freq=="Daily") || ($my_data->freq=="Weekly") || ($my_data->freq=="Fortnightly")){
                             $my_data->from_date = $my_data->freq;
                         }else {
-                            $my_data->from_date =date('Y-m-d', strtotime('+1 month', (strtotime($my_data->reg_date))));
+                            $my_data->from_date =date('Y-m', strtotime('+1 month', (strtotime($my_data->reg_date)))).'-'.$my_data->period_day;
                             // return $my_data->reg_date.' - '.$my_data->from_date;
                             // return $my_data;
                         }
