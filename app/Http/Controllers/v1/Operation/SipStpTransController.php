@@ -161,6 +161,7 @@ class SipStpTransController extends Controller
                     ->leftJoin('md_branch','md_branch.id','=','md_employee.branch_id')
                     ->leftJoin('md_systematic_trans_type','md_systematic_trans_type.trans_type_code','=','td_sip_stp_trans.auto_trans_type')
                     ->select('td_sip_stp_trans.*','td_sip_stp_trans.period_day as sip_date','td_sip_stp_trans.auto_amount as amount','td_sip_stp_trans.bank as bank_name','td_sip_stp_trans.instrm_no as acc_no','td_sip_stp_trans.cease_terminate_date as terminated_date',
+                    'td_sip_stp_trans.pause_from_date as pause_start_date','td_sip_stp_trans.pause_to_date as pause_end_date',
                     'md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name',
                     'md_amc.amc_short_name as amc_name','md_amc_1.amc_short_name as amc_short_name','md_plan.plan_name','md_option.opt_name as option_name',
                     'md_employee.emp_name as rm_name','md_branch.brn_name as branch_name','md_employee.bu_type_id as bu_type_id','md_employee.branch_id as branch_id',
