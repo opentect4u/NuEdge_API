@@ -96,8 +96,8 @@ class SipStpTransController extends Controller
                                 td_sip_stp_trans.to_date >= "'.date('Y-m-d').'" AND td_sip_stp_trans.from_date <= "'.date('Y-m-d').'" AND td_sip_stp_trans.cease_terminate_date IS NULL , 
                                 td_sip_stp_trans.to_date >= "'.date('Y-m-d').'" AND td_sip_stp_trans.from_date <= "'.date('Y-m-d').'" AND td_sip_stp_trans.cease_terminate_date IS NULL 
                                 )'; 
-                            $rawQuery.=' AND MONTH(td_sip_stp_trans.to_date)="'.$request->month.'" ';
-                            $rawQuery.=' AND YEAR(td_sip_stp_trans.to_date)="'.$request->year.'" ';
+                            $rawQuery.=' AND MONTH(td_sip_stp_trans.to_date) <="'.$request->month.'" ';
+                            $rawQuery.=' AND YEAR(td_sip_stp_trans.to_date) <="'.$request->year.'" ';
                         }
                         break;
                     case 'P':
