@@ -179,29 +179,12 @@ class MailBackController extends Controller
                     // return $value;
                     // return count($TotalArray);
                         
-                    $array_slice=array_slice($TotalArray,$start_count,$end_count);
-                    $array_set = array_map(function ($result){
-                        $value=explode(",",$result[0]);
-                        $nav_date=Carbon::parse(explode("/",str_replace("'","",$value[2]))[1].'-'.explode("/",str_replace("'","",$value[2]))[0].'-'.explode("/",str_replace("'","",$value[2]))[2])->format('Y-m-d H:i:s');
-                        $single_array=[
-                            'rnt_id' =>1,
-                            'amc_code'=>NULL,
-                            'product_code'=>str_replace("'","",$value[0]),
-                            'nav_date'=>$nav_date,
-                            'nav'=>str_replace("'","",$value[3]),
-                            'isin_no'=>str_replace("'","",$value[7]),
-                            'amc_flag'=>'N',
-                            'scheme_flag'=>'N', 
-                        ];
-                        return $single_array;
-                    }, $array_slice);
-                    // return $array_set;
-                    // $array_set=[];
-                    // for ($i=$start_count; $i <= $end_count; $i++) {
-                    //     $value=explode(",",$TotalArray[$i][0]); // 10/09/2023 12:00:00 am
+                    // $array_slice=array_slice($TotalArray,$start_count,$end_count);
+                    // $array_set = array_map(function ($result){
+                    //     $value=explode(",",$result[0]);
                     //     $nav_date=Carbon::parse(explode("/",str_replace("'","",$value[2]))[1].'-'.explode("/",str_replace("'","",$value[2]))[0].'-'.explode("/",str_replace("'","",$value[2]))[2])->format('Y-m-d H:i:s');
                     //     $single_array=[
-                    //         'rnt_id' =>$rnt_id,
+                    //         'rnt_id' =>1,
                     //         'amc_code'=>NULL,
                     //         'product_code'=>str_replace("'","",$value[0]),
                     //         'nav_date'=>$nav_date,
@@ -210,8 +193,25 @@ class MailBackController extends Controller
                     //         'amc_flag'=>'N',
                     //         'scheme_flag'=>'N', 
                     //     ];
-                    //     array_push($array_set,$single_array);
-                    // }
+                    //     return $single_array;
+                    // }, $array_slice);
+                    // return $array_set;
+                    $array_set=[];
+                    for ($i=$start_count; $i <= $end_count; $i++) {
+                        $value=explode(",",$TotalArray[$i][0]); // 10/09/2023 12:00:00 am
+                        $nav_date=Carbon::parse(explode("/",str_replace("'","",$value[2]))[1].'-'.explode("/",str_replace("'","",$value[2]))[0].'-'.explode("/",str_replace("'","",$value[2]))[2])->format('Y-m-d H:i:s');
+                        $single_array=[
+                            'rnt_id' =>$rnt_id,
+                            'amc_code'=>NULL,
+                            'product_code'=>str_replace("'","",$value[0]),
+                            'nav_date'=>$nav_date,
+                            'nav'=>str_replace("'","",$value[3]),
+                            'isin_no'=>str_replace("'","",$value[7]),
+                            'amc_flag'=>'N',
+                            'scheme_flag'=>'N', 
+                        ];
+                        array_push($array_set,$single_array);
+                    }
                     // return $array_set;
                     // $array_product_code=array_reduce($array_set, function ($result, $item) {
                     //     $result[] = $item['product_code'];
@@ -681,12 +681,29 @@ class MailBackController extends Controller
                     // return $value;
                     // return count($TotalArray);
 
-                    $array_slice=array_slice($TotalArray,$start_count,$end_count);
-                    $array_set = array_map(function ($result){
-                        $value=explode(",",$result[0]);
+                    // $array_slice=array_slice($TotalArray,$start_count,$end_count);
+                    // $array_set = array_map(function ($result){
+                    //     $value=explode(",",$result[0]);
+                    //     $nav_date=Carbon::parse(str_replace("/","-",$value[4]))->format('Y-m-d H:i:s');
+                    //     $single_array=[
+                    //         'rnt_id' =>2,
+                    //         'amc_code'=>$value[0],
+                    //         'product_code'=>$value[3],
+                    //         'nav_date'=>$nav_date,
+                    //         'nav'=>$value[5],
+                    //         'isin_no'=>$value[10],
+                    //         'amc_flag'=>'N',
+                    //         'scheme_flag'=>'N',
+                    //     ];
+                    //     return $single_array;
+                    // }, $array_slice);
+                    // return $array_set;
+                    $array_set=[];
+                    for ($i=$start_count; $i <= $end_count; $i++) {
+                        $value=explode(",",$TotalArray[$i][0]);
                         $nav_date=Carbon::parse(str_replace("/","-",$value[4]))->format('Y-m-d H:i:s');
                         $single_array=[
-                            'rnt_id' =>2,
+                            'rnt_id' =>$rnt_id,
                             'amc_code'=>$value[0],
                             'product_code'=>$value[3],
                             'nav_date'=>$nav_date,
@@ -695,42 +712,8 @@ class MailBackController extends Controller
                             'amc_flag'=>'N',
                             'scheme_flag'=>'N',
                         ];
-                        return $single_array;
-                    }, $array_slice);
-                    // return $array_set;
-                    // $array_set=[];
-                    // for ($i=$start_count; $i <= $end_count; $i++) {
-                    //     $value=explode(",",$TotalArray[$i][0]);
-                    //     $nav_date=Carbon::parse(str_replace("/","-",$value[4]))->format('Y-m-d H:i:s');
-                    //     // $is_has_count=NAVDetails::where('rnt_id',$rnt_id)
-                    //     //     ->where('product_code',$value[3])
-                    //     //     ->where('nav_date',$nav_date)
-                    //     //     ->where('isin_no',$value[10])
-                    //     //     ->count();
-                    //     // if ($is_has_count==0) {
-                    //     //     $single_array=[
-                    //     //         'rnt_id' =>$rnt_id,
-                    //     //         'amc_code'=>$value[0],
-                    //     //         'product_code'=>$value[3],
-                    //     //         'nav_date'=>$nav_date,
-                    //     //         'nav'=>$value[5],
-                    //     //         'isin_no'=>$value[10],
-                    //     //         'amc_flag'=>'N',
-                    //     //         'scheme_flag'=>'N',
-                    //     //     ];
-                    //     //     array_push($array_set,$single_array);
-                    //     // }
-                    //     TempNAVDetails::create([
-                    //         'rnt_id' =>$rnt_id,
-                    //         'amc_code'=>$value[0],
-                    //         'product_code'=>$value[3],
-                    //         'nav_date'=>$nav_date,
-                    //         'nav'=>$value[5],
-                    //         'isin_no'=>$value[10],
-                    //         'amc_flag'=>'N',
-                    //         'scheme_flag'=>'N',
-                    //     ]);
-                    // }
+                        array_push($array_set,$single_array);
+                    }
 
                     $array_product_code = array_map(function ($result){
                         return $result['product_code'];
