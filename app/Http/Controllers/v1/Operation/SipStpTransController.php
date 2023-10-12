@@ -104,7 +104,7 @@ class SipStpTransController extends Controller
                         $rawQuery.=' AND td_sip_stp_trans.cease_terminate_date IS NULL ';
                         $rawQuery.=' AND td_sip_stp_trans.pause_from_date!="" ';
                         $rawQuery.=' AND td_sip_stp_trans.pause_to_date!="" ';
-                        $rawQuery.=' AND td_sip_stp_trans.pause_to_date >="'.date('Y-m-d').'" ';
+                        $rawQuery.=' AND td_sip_stp_trans.to_date >="'.date('Y-m-d').'" ';
                         break;
                     default:
                         # code...
