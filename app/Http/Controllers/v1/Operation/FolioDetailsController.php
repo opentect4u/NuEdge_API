@@ -25,6 +25,24 @@ class FolioDetailsController extends Controller
     public function search(Request $request)
     {
         try {
+            $pan_no=$request->pan_no;
+            $folio_status=$request->folio_status;
+            $kyc_status=$request->kyc_status;
+            $nominee_status=$request->nominee_status;
+            $adhaar_pan_link_status=$request->adhaar_pan_link_status;
+            $folio_no=$request->folio_no;
+
+            $brn_cd=$request->brn_cd;
+            $bu_type_id=$request->bu_type_id;
+
+            $rawQuery='';
+            if ($folio_status || $pan_no || $folio_no) {
+                $queryString='td_folio_details.pan';
+                $rawQuery.=Helper::WhereRawQuery($pan_no,$rawQuery,$queryString);
+                $queryString='td_folio_details.folio_no';
+                $rawQuery.=Helper::WhereRawQuery($folio_no,$rawQuery,$queryString);
+            }
+
             $data=[];
             $data=FolioDetails::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_folio_details.product_code')
                 ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
@@ -35,7 +53,8 @@ class FolioDetailsController extends Controller
                 'md_amc.amc_short_name as amc_short_name')
                 ->where('td_folio_details.amc_flag','N')
                 ->where('td_folio_details.scheme_flag','N')
-                ->take(100)
+                ->whereRaw($rawQuery)
+                // ->take(100)
                 ->get();
         } catch (\Throwable $th) {
             //throw $th;

@@ -128,7 +128,7 @@ class MailBackController extends Controller
                     ->first();
             }
 
-
+            // tata nua plus 
             // TempMutualFundTransaction::truncate();
             if ($rnt_id==1) { // CAMS
                 if ($file_type_id=='1' && $file_id=='1') {  // transction  WBR2

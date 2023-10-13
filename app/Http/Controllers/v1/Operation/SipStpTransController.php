@@ -27,7 +27,6 @@ class SipStpTransController extends Controller
         try {
             // return $request;
             $report_type=$request->report_type;
-            $sip_type=$request->sip_type;
 
             $date_range=$request->date_range;
             $folio_no=$request->folio_no;
@@ -45,12 +44,15 @@ class SipStpTransController extends Controller
             $rawQuery='';
             $queryString='td_sip_stp_trans.auto_trans_type';
             if ($report_type=='P') {
+                $sip_type=$request->sip_type;
                 $my_array=['P','SIP','ISIP'];
                 $rawQuery.=Helper::WhereRawQuery($my_array,$rawQuery,$queryString);
             } elseif ($report_type=='R') {
+                $sip_type=$request->swp_type;
                 $my_array=['R','SWP'];
                 $rawQuery.=Helper::WhereRawQuery($my_array,$rawQuery,$queryString);
             } elseif ($report_type=='SO') {
+                $sip_type=$request->stp_type;
                 $my_array=['SO','STP'];
                 $rawQuery.=Helper::WhereRawQuery($my_array,$rawQuery,$queryString);
             }
