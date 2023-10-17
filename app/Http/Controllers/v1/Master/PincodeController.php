@@ -49,7 +49,7 @@ class PincodeController extends Controller
             'state_id'=>'required',
             'district_id'=>'required',
             'city_id'=>'required',
-            'city_type_id'=>'required',
+            // 'city_type_id'=>'required',
         ]);
         if($validator->fails()) {
             $errors = $validator->errors();
@@ -63,7 +63,7 @@ class PincodeController extends Controller
                 $data->state_id=$request->state_id;
                 $data->district_id=$request->district_id;
                 $data->city_id=$request->city_id;
-                $data->city_type_id=$request->city_type_id;
+                // $data->city_type_id=$request->city_type_id;
                 $data->pincode=$request->pincode;
                 $data->save();
             }else {
@@ -72,7 +72,7 @@ class PincodeController extends Controller
                     'state_id'=>$request->state_id,
                     'district_id'=>$request->district_id,
                     'city_id'=>$request->city_id,
-                    'city_type_id'=>$request->city_type_id,
+                    // 'city_type_id'=>$request->city_type_id,
                     'pincode'=>$request->pincode,
                 ));
             }

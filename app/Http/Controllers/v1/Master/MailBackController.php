@@ -742,7 +742,7 @@ class MailBackController extends Controller
                     TempSipStpTransaction::truncate();
                     // return $TotalArray[0];
                     $value=explode("~",$TotalArray[0]);
-                    // return $value;
+                    return $value;
                     for ($i=$start_count; $i <= $end_count; $i++) { 
                         // return $TotalArray[$i];
                         $value=explode("~",$TotalArray[$i]);
@@ -766,8 +766,8 @@ class MailBackController extends Controller
                             'remarks'=>NULL,
                             'bank'=>str_replace("'","",$value[31]),
                             'branch'=>NULL,
-                            'instrm_no'=>str_replace("'","",$value[30]),
-                            'chq_micr_no'=>NULL,
+                            'instrm_no'=>str_replace("'","",$value[32]),
+                            'chq_micr_no'=>str_replace("'","",$value[30]),
                             'first_client_pan'=>str_replace("'","",$value[17]),
                             'amc_code'=>str_replace("'","",$value[20]),
                             'sub_trans_desc'=>str_replace("'","",$value[37]),

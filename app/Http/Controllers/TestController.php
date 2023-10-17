@@ -126,19 +126,22 @@ class TestController extends Controller
         // // print_r($master_arr);
         // return $master_arr;
 
-        $A = array(1,2,3,4,5,6,7,8);
-        $B = array(1,2,3,4);
+        // $A = array(1,2,3,4,5,6,7,8);
+        // $B = array(1,2,3,4);
 
-        $C = array_intersect($A,$B);  //equals (1,2,3,4)
-        $A = array_diff($A,$B);   
-        return $A;
+        // $C = array_intersect($A,$B);  //equals (1,2,3,4)
+        // $A = array_diff($A,$B);   
+        // return $A;
 
-        // DB::enableQueryLog();
-        // $euin_no=MutualFundTransaction::where('folio_no',6017105704)->first();
+        DB::enableQueryLog();
+        $euin_no=MutualFundTransaction::select('euin_no')->where('folio_no','3101929013')->where('product_code','178ARRG')
+        ->orderBy('trans_date','ASC')
+            // ->get();
+            ->first();
                         // $euin_no=MutualFundTransaction::where('folio_no',6017105704)
                         // ->where('euin_no','!=','')->first(['euin_no'])->value('euin_no');
 
-        // dd(DB::getQueryLog());
+        dd(DB::getQueryLog());
         // return $euin_no;
     }
 }

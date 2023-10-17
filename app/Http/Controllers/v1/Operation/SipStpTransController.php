@@ -71,17 +71,16 @@ class SipStpTransController extends Controller
                     case 'R':
                         if ($sub_type=='RR') {
                             $rawQuery.=' AND td_sip_stp_trans.from_date >= "'.date('Y-m-d').'"';
-                            // break;
-                        }else {
-                            # code...
-                            // break;
+                        }else if($sub_type=='RU') {
+                            $rawQuery.=' AND td_sip_stp_trans.from_date >= td_sip_stp_trans.cease_terminate_date';
                         }
                         break;
                     case 'T':
                         // cond1 && (cond1 || cond2)
-                        // $rawQuery.=' AND td_sip_stp_trans.cease_terminate_date!="" OR td_sip_stp_trans.f_status="TERMINATED"';
-                        // $rawQuery.=' AND td_sip_stp_trans.cease_terminate_date!="" AND ( td_sip_stp_trans.f_status="" OR td_sip_stp_trans.f_status="TERMINATED")';
-                        $rawQuery.='AND IF(td_sip_stp_trans.rnt_id=1, td_sip_stp_trans.cease_terminate_date!="", td_sip_stp_trans.cease_terminate_date!="" AND td_sip_stp_trans.f_status="TERMINATED")';
+                        // $rawQuery.='AND IF(td_sip_stp_trans.rnt_id=1, td_sip_stp_trans.cease_terminate_date!="", td_sip_stp_trans.cease_terminate_date!="" AND td_sip_stp_trans.f_status="TERMINATED")';
+                        $rawQuery.='AND IF(td_sip_stp_trans.rnt_id=1, td_sip_stp_trans.cease_terminate_date!="", td_sip_stp_trans.cease_terminate_date!="" AND td_sip_stp_trans.to_date > td_sip_stp_trans.cease_terminate_date)';
+                        // $rawQuery.='AND td_sip_stp_trans.cease_terminate_date!="" AND td_sip_stp_trans.to_date >= td_sip_stp_trans.cease_terminate_date';
+                        $rawQuery.=' AND td_sip_stp_trans.from_date <= td_sip_stp_trans.cease_terminate_date';
 
                         break;
                     case 'M':
@@ -90,7 +89,7 @@ class SipStpTransController extends Controller
                             // $rawQuery.=' AND td_sip_stp_trans.cease_terminate_date IS NULL ';
                             $rawQuery.='AND IF(td_sip_stp_trans.rnt_id=1, 
                                 td_sip_stp_trans.to_date <= "'.date('Y-m-d').'" AND td_sip_stp_trans.cease_terminate_date IS NULL, 
-                                td_sip_stp_trans.cease_terminate_date!="" AND td_sip_stp_trans.f_status="Expired"
+                                td_sip_stp_trans.cease_terminate_date!="" AND td_sip_stp_trans.to_date <= td_sip_stp_trans.cease_terminate_date
                                 )';
                         }else if ($sub_type=='MT'){
                             // YEAR(date) AS y, MONTH(date)
@@ -149,17 +148,13 @@ class SipStpTransController extends Controller
                     ->leftJoin('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
                     ->leftJoin('md_amc','md_amc.id','=','md_scheme.amc_id')
                     ->leftJoin('md_amc as md_amc_1','md_amc_1.amc_code','=','td_sip_stp_trans.amc_code')
-                    ->leftJoin('md_employee','md_employee.euin_no','=','td_sip_stp_trans.euin_no')
+                    // ->leftJoin('md_employee','md_employee.euin_no','=','td_sip_stp_trans.euin_no')
                     ->leftJoin('md_scheme_isin as to_isin','to_isin.product_code','=','td_sip_stp_trans.to_product_code')
                     ->leftJoin('md_scheme as to_scheme','to_scheme.id','=','to_isin.scheme_id')
                     ->leftJoin('md_category as to_category','to_category.id','=','to_scheme.category_id')
                     ->leftJoin('md_subcategory as to_subcategory','to_subcategory.id','=','to_scheme.subcategory_id')
-                    // ->leftJoin(DB::raw('SELECT * FROM md_employee as r
-                    // LEFT JOIN td_sip_stp_trans AS e ON r.euin_no=(IF(e.euin_no!="",e.euin_no,(select `euin_no` from `td_sip_stp_trans` where `folio_no` =td_sip_stp_trans.folio_no order by reg_date desc limit 1) as my_euin_no)) as my_euin_no'))
-
-                    // ->leftJoin(DB::raw('SELECT * FROM md_employee as r
-                    // LEFT JOIN td_sip_stp_trans AS e ON r.euin_no=(IF(e.euin_no!="",e.euin_no,(select `euin_no` from `td_sip_stp_trans` where `folio_no` =td_sip_stp_trans.folio_no order by reg_date desc limit 1) as my_euin_no)) as my_euin_no'))
-
+                    ->leftJoin('md_employee','md_employee.euin_no','=','td_sip_stp_trans.euin_no')
+                    // ->leftJoin('md_employee','md_employee.euin_no','=',DB::raw('IF(td_sip_stp_trans.euin_no!="",td_sip_stp_trans.euin_no,(select euin_no from td_mutual_fund_trans where folio_no=td_sip_stp_trans.folio_no and product_code= td_sip_stp_trans.product_code order by trans_date asc limit 1))'))
                     ->leftJoin('md_branch','md_branch.id','=','md_employee.branch_id')
                     ->leftJoin('md_systematic_trans_type','md_systematic_trans_type.trans_type_code','=','td_sip_stp_trans.auto_trans_type')
                     ->select('td_sip_stp_trans.*','td_sip_stp_trans.period_day as sip_date','td_sip_stp_trans.auto_amount as amount','td_sip_stp_trans.bank as bank_name','td_sip_stp_trans.instrm_no as acc_no','td_sip_stp_trans.cease_terminate_date as terminated_date',
@@ -177,7 +172,7 @@ class SipStpTransController extends Controller
                     // ->orderBy('td_sip_stp_trans.nav_date','desc')
                     // ->take(50)
                     ->get();
-                
+            // return  $my_datas;  
             foreach ($my_datas as $key => $my_data) {
                 if ($my_data->rnt_id==2) {
                     if(($my_data->frequency=="Daily") || ($my_data->frequency=="WEEKLY") || ($my_data->frequency=="Fortnightly")){
@@ -190,9 +185,11 @@ class SipStpTransController extends Controller
                         $my_data->swp_date=date('d',strtotime($my_data->from_date));
                     }
                     $my_data->freq=$my_data->frequency;
+                    $my_data->duration =$my_data->no_of_installment;
                 }elseif ($my_data->rnt_id==1) {
                     // return $my_data;
                     if(($my_data->freq=="Daily") || ($my_data->freq=="Weekly") || ($my_data->freq=="Fortnightly")){
+                        // return $my_data;
                         $my_data->sip_date=$my_data->freq;
                         $my_data->stp_date=$my_data->freq;
                         $my_data->swp_date=$my_data->freq;
@@ -211,8 +208,18 @@ class SipStpTransController extends Controller
                             // return $my_data;
                         }
                     }
+                    if ($report_type=='R') {
+                        $my_data->duration =(int)abs((strtotime($my_data->from_date) - strtotime($my_data->to_date))/(60*60*24*30));
+                    }else {
+                        $calculation_day =(int)abs((strtotime($my_data->reg_date) - strtotime($my_data->from_date))/(60*60*24));
+                        $my_data->calculation_day =$calculation_day;
+                        if ($calculation_day >= 30) {
+                            $my_data->duration =(int)abs((strtotime($my_data->from_date) - strtotime($my_data->to_date))/(60*60*24*30));
+                        }else {
+                            $my_data->duration =(int)abs((strtotime($my_data->reg_date) - strtotime($my_data->to_date))/(60*60*24*30));
+                        }
+                    }
                 }
-                $my_data->duration =(int)abs((strtotime($my_data->reg_date) - strtotime($my_data->to_date))/(60*60*24*30));
                 array_push($data,$my_data);
             }
 
