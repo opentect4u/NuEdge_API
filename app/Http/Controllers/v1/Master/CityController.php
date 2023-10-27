@@ -60,12 +60,23 @@ class CityController extends Controller
                 $data->name=$request->name;
                 $data->save();
             }else {
-                $data=City::create(array(
+                $is_has=City::where([
                     'country_id'=>$request->country_id,
                     'state_id'=>$request->state_id,
                     'district_id'=>$request->district_id,
-                    'name'=>$request->name,
-                ));
+                    'name'=>$request->name
+                    ])
+                    ->get();
+                if (count($is_has)>0) {
+                    return Helper::WarningResponse(parent::ALREADY_EXIST);
+                }else {
+                    $data=City::create(array(
+                        'country_id'=>$request->country_id,
+                        'state_id'=>$request->state_id,
+                        'district_id'=>$request->district_id,
+                        'name'=>$request->name,
+                    ));
+                }
             }
         } catch (\Throwable $th) {
             //throw $th;

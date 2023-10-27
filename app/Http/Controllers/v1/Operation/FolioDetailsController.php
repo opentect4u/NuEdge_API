@@ -31,16 +31,33 @@ class FolioDetailsController extends Controller
             $nominee_status=$request->nominee_status;
             $adhaar_pan_link_status=$request->adhaar_pan_link_status;
             $folio_no=$request->folio_no;
+            $investor_static_type=$request->investor_static_type;
 
             $brn_cd=$request->brn_cd;
             $bu_type_id=$request->bu_type_id;
 
+            $kyc_status=$request->kyc_status;
+            $nominee_status=$request->nominee_status;
+            $adhaar_pan_link_status=$request->adhaar_pan_link_status;
+
             $rawQuery='';
-            if ($folio_status || $pan_no || $folio_no) {
+            if ($folio_status || $pan_no || $folio_no || $kyc_status || $nominee_status || $adhaar_pan_link_status) {
                 $queryString='td_folio_details.pan';
                 $rawQuery.=Helper::WhereRawQuery($pan_no,$rawQuery,$queryString);
                 $queryString='td_folio_details.folio_no';
                 $rawQuery.=Helper::WhereRawQuery($folio_no,$rawQuery,$queryString);
+                if ($folio_status) {
+                    $rawQuery.='IF(td_folio_details.rupee_bal IS NULL ||td_folio_details.rupee_bal="" || td_folio_details.rupee_bal="0","Inactive","Active") as folio_status="'.$folio_status.'"';
+                }
+                if ($kyc_status) {
+                    $rawQuery.='';
+                }
+                if ($nominee_status) {
+                    $rawQuery.='';
+                }
+                if ($adhaar_pan_link_status) {
+                    $rawQuery.='';
+                }
             }
 
             $data=[];
@@ -59,7 +76,7 @@ class FolioDetailsController extends Controller
                 'md_employee.emp_name as rm_name','md_branch.brn_name as branch_name','md_employee.bu_type_id as bu_type_id','md_employee.branch_id as branch_id','md_employee.euin_no as euin_no'
                 )
                 ->selectRaw('(select `bu_type` from `md_business_type` where `bu_code` =md_employee.bu_type_id and `branch_id` =md_employee.branch_id limit 1) as bu_type')
-                ->selectRaw('IF(td_folio_details.rupee_bal="" || td_folio_details.rupee_bal="0","Inactive","Active") as folio_status')
+                ->selectRaw('IF(td_folio_details.rupee_bal IS NULL ||td_folio_details.rupee_bal="" || td_folio_details.rupee_bal="0","Inactive","Active") as folio_status')
                 ->where('td_folio_details.amc_flag','N')
                 ->where('td_folio_details.scheme_flag','N')
                 ->whereRaw($rawQuery)

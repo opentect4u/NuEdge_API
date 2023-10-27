@@ -116,18 +116,19 @@ class BenchmarkController extends Controller
         }
         try {
             // return $request;
+            $mydata=[];
             $subcat_id=json_decode($request->subcat_id);
-            if ($request->id > 0) {
-                $data=Benchmark::find($request->id);
-                $data->ex_id=$request->ex_id;
-                $data->benchmark=$request->benchmark;
-                $data->category_id=$request->category_id;
-                $data->subcat_id=$subcat_id[0];
-                $data->launch_date=$request->launch_date;
-                $data->base_date=$request->base_date;
-                $data->base_value=$request->base_value;
-                $data->save();
-            }else{
+            // if ($request->id > 0) {
+            //     $data=Benchmark::find($request->id);
+            //     $data->ex_id=$request->ex_id;
+            //     $data->benchmark=$request->benchmark;
+            //     $data->category_id=$request->category_id;
+            //     $data->subcat_id=$subcat_id[0];
+            //     $data->launch_date=$request->launch_date;
+            //     $data->base_date=$request->base_date;
+            //     $data->base_value=$request->base_value;
+            //     $data->save();
+            // }else{
                 // $is_has=Benchmark::where('benchmark',$request->benchmark)
                 //     ->where('ex_id',$request->ex_id)
                 //     ->where('category_id',$request->category_id)
@@ -151,18 +152,21 @@ class BenchmarkController extends Controller
                         'base_value'=>$request->base_value,
                         // 'created_by'=>'',
                     )); 
+                    $setdata=Benchmark::leftJoin('md_exchange','md_exchange.id','=','md_benchmark.ex_id')
+                        ->leftJoin('md_category','md_category.id','=','md_benchmark.category_id')
+                        ->leftJoin('md_subcategory','md_subcategory.id','=','md_benchmark.subcat_id')
+                        ->select('md_benchmark.*','md_exchange.ex_name as exchange_name','md_category.cat_name as category_name','md_subcategory.subcategory_name as subcategory_name')
+                        ->where('md_benchmark.delete_flag','N')
+                        ->where('md_benchmark.id',$data->id)
+                        ->first();
+                    array_push($mydata,$setdata);
                 }
-                    
+                
+                // *#67#
+                // #002#
+
                 // }
-            } 
-            
-            $mydata=Benchmark::leftJoin('md_exchange','md_exchange.id','=','md_benchmark.ex_id')
-                ->leftJoin('md_category','md_category.id','=','md_benchmark.category_id')
-                ->leftJoin('md_subcategory','md_subcategory.id','=','md_benchmark.subcat_id')
-                ->select('md_benchmark.*','md_exchange.ex_name as exchange_name','md_category.cat_name as category_name','md_subcategory.subcategory_name as subcategory_name')
-                ->where('md_benchmark.delete_flag','N')
-                ->where('md_benchmark.id',$data->id)
-                ->first();
+            // } 
         } catch (\Throwable $th) {
             // throw $th;
             return Helper::ErrorResponse(parent::DATA_SAVE_ERROR);

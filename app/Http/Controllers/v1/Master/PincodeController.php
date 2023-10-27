@@ -67,14 +67,26 @@ class PincodeController extends Controller
                 $data->pincode=$request->pincode;
                 $data->save();
             }else {
-                $data=Pincode::create(array(
-                    'country_id'=>$request->country_id,
-                    'state_id'=>$request->state_id,
-                    'district_id'=>$request->district_id,
-                    'city_id'=>$request->city_id,
-                    // 'city_type_id'=>$request->city_type_id,
-                    'pincode'=>$request->pincode,
-                ));
+                $is_has=Pincode::where([
+                        'country_id'=>$request->country_id,
+                        'state_id'=>$request->state_id,
+                        'district_id'=>$request->district_id,
+                        'city_id'=>$request->city_id,
+                        'pincode'=>$request->pincode,
+                    ])
+                    ->get();
+                if (count($is_has)>0) {
+                    return Helper::WarningResponse(parent::ALREADY_EXIST);
+                }else {
+                    $data=Pincode::create(array(
+                        'country_id'=>$request->country_id,
+                        'state_id'=>$request->state_id,
+                        'district_id'=>$request->district_id,
+                        'city_id'=>$request->city_id,
+                        // 'city_type_id'=>$request->city_type_id,
+                        'pincode'=>$request->pincode,
+                    ));
+                }
             }
         } catch (\Throwable $th) {
             // throw $th;

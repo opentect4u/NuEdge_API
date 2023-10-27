@@ -91,10 +91,19 @@ class StateController extends Controller
                 $data->name=$request->name;
                 $data->save();
             }else {
-                $data=State::create(array(
-                    'country_id'=>$request->country_id,
-                    'name'=>$request->name,
-                ));
+                $is_has=State::where([
+                        'country_id'=>$request->country_id,
+                        'name'=>$request->name
+                    ])
+                    ->get();
+                if (count($is_has)>0) {
+                    return Helper::WarningResponse(parent::ALREADY_EXIST);
+                }else {
+                    $data=State::create(array(
+                        'country_id'=>$request->country_id,
+                        'name'=>$request->name,
+                    ));
+                }
             }
         } catch (\Throwable $th) {
             // throw $th;

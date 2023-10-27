@@ -58,11 +58,22 @@ class DistrictController extends Controller
                 $data->name=$request->name;
                 $data->save();
             }else {
-                $data=District::create(array(
+                $is_has=District::where([
                     'country_id'=>$request->country_id,
                     'state_id'=>$request->state_id,
-                    'name'=>$request->name,
-                ));
+                    'name'=>$request->name
+                ])
+                ->get();
+                if (count($is_has)>0) {
+                    return Helper::WarningResponse(parent::ALREADY_EXIST);
+                }else {
+                    $data=District::create(array(
+                        'country_id'=>$request->country_id,
+                        'state_id'=>$request->state_id,
+                        'name'=>$request->name,
+                    ));
+                }
+                
             }
         } catch (\Throwable $th) {
             //throw $th;

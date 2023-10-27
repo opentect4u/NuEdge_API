@@ -223,6 +223,8 @@ Route::prefix('v1')->group(function () {
         Route::post('cityTypeAddEdit',[App\Http\Controllers\v1\Master\CityTypeController::class,'createUpdate']);
         Route::post('cityTypeimport',[App\Http\Controllers\v1\Master\CityTypeController::class,'import']);
 
+        Route::post('cityTypeMap',[App\Http\Controllers\v1\Master\CityTypeController::class,'map']);
+
         Route::any('geographyDetailSearch',[App\Http\Controllers\v1\Master\PincodeController::class,'searchDetails']);
         Route::post('geographyExport',[App\Http\Controllers\v1\Master\PincodeController::class,'geographyExport']);
 
@@ -368,11 +370,13 @@ Route::prefix('v1')->group(function () {
 
         /*********************************** start Mail Back Mismatch ************************ */
         Route::any('mailbackMismatch',[App\Http\Controllers\v1\Master\MailBackController::class,'misMatch']);
-        Route::post('mailbackMismatchLock',[App\Http\Controllers\v1\Master\MailBackController::class,'lockTransaction']);
         Route::any('mailbackMismatchNAV',[App\Http\Controllers\v1\Master\MailBackController::class,'misMatchNAV']);  // NAV mismatch details
         Route::any('mailbackMismatchSipStp',[App\Http\Controllers\v1\Master\MailBackController::class,'misMatchSipStp']);  // NAV mismatch details
         Route::any('mailbackMismatchFolio',[App\Http\Controllers\v1\Master\MailBackController::class,'misMatchFolio']);  // NAV mismatch details
        
+        Route::post('mailbackMismatchLock',[App\Http\Controllers\v1\Master\MailBackController::class,'lockTransaction']);
+        Route::post('mailbackMismatchUnlock',[App\Http\Controllers\v1\Master\MailBackController::class,'unlockTransaction']);
+        
         Route::any('mailbackMismatchAll',[App\Http\Controllers\v1\Master\MailBackController::class,'allMismatch']);  // all mismatch details
 
         /*********************************** End Mail Back Mismatch ************************ */

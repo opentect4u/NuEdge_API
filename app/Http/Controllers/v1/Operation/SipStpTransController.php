@@ -208,7 +208,7 @@ class SipStpTransController extends Controller
                             // return $my_data;
                         }
                     }
-                    if ($report_type=='R') {
+                    if ($report_type=='R') {  // if swp 
                         $my_data->duration =(int)abs((strtotime($my_data->from_date) - strtotime($my_data->to_date))/(60*60*24*30));
                     }else {
                         $calculation_day =(int)abs((strtotime($my_data->reg_date) - strtotime($my_data->from_date))/(60*60*24));

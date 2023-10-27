@@ -1025,7 +1025,7 @@ class MailBackController extends Controller
                     // ->groupBy('td_mutual_fund_trans.trans_desc')
                     // ->groupBy('td_mutual_fund_trans.kf_trans_type')
                     // ->inRandomOrder()
-                    ->take(5)
+                    // ->take(5)
                     ->get();
 
                     $data=[];
@@ -1140,6 +1140,25 @@ class MailBackController extends Controller
             $up_data=MutualFundTransaction::find($id);
             $up_data->divi_mismatch_flag='N';
             $up_data->divi_lock_flag='L';
+            $up_data->save();
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($up_data);
+    }
+
+    public function unlockTransaction(Request $request)
+    {
+        try {
+            // return $request;
+            $id=$request->id;
+            return $id;
+            $up_data=MutualFundTransaction::find($id);
+            if ($up_data->divi_lock_flag=='L') {
+                $up_data->divi_mismatch_flag='Y';
+                $up_data->divi_lock_flag='N';
+            }
             $up_data->save();
         } catch (\Throwable $th) {
             //throw $th;

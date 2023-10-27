@@ -97,4 +97,23 @@ class CityTypeController extends Controller
         }
         return Helper::SuccessResponse($data1);
     }
+
+    public function map(Request $request)
+    {
+        try {
+            // return $request;
+            $datas = Excel::toArray([], $request->file('file'));
+            $data=$datas[0];
+            // $datas = array_map(function($v){return str_getcsv($v, ";");}, file($file_name));  //for csv file
+
+            // return $data;
+
+            $data1=[];
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::IMPORT_CSV_ERROR);
+        }
+        return Helper::SuccessResponse($data1);
+    }
 }
