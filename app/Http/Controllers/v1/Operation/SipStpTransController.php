@@ -153,8 +153,8 @@ class SipStpTransController extends Controller
                     ->leftJoin('md_scheme as to_scheme','to_scheme.id','=','to_isin.scheme_id')
                     ->leftJoin('md_category as to_category','to_category.id','=','to_scheme.category_id')
                     ->leftJoin('md_subcategory as to_subcategory','to_subcategory.id','=','to_scheme.subcategory_id')
-                    // ->leftJoin('md_employee','md_employee.euin_no','=','td_sip_stp_trans.euin_no')
-                    ->leftJoin('md_employee','md_employee.euin_no','=',DB::raw('IF(td_sip_stp_trans.euin_no!="",td_sip_stp_trans.euin_no,(select euin_no from td_mutual_fund_trans where folio_no=td_sip_stp_trans.folio_no and product_code= td_sip_stp_trans.product_code order by trans_date asc limit 1))'))
+                    ->leftJoin('md_employee','md_employee.euin_no','=','td_sip_stp_trans.euin_no')
+                    // ->leftJoin('md_employee','md_employee.euin_no','=',DB::raw('IF(td_sip_stp_trans.euin_no!="",td_sip_stp_trans.euin_no,(select euin_no from td_mutual_fund_trans where folio_no=td_sip_stp_trans.folio_no and product_code= td_sip_stp_trans.product_code order by trans_date asc limit 1))'))
                     ->leftJoin('md_branch','md_branch.id','=','md_employee.branch_id')
                     ->leftJoin('md_systematic_trans_type','md_systematic_trans_type.trans_type_code','=','td_sip_stp_trans.auto_trans_type')
                     ->select('td_sip_stp_trans.*','td_sip_stp_trans.period_day as sip_date','td_sip_stp_trans.auto_amount as amount','td_sip_stp_trans.bank as bank_name','td_sip_stp_trans.instrm_no as acc_no','td_sip_stp_trans.cease_terminate_date as terminated_date',
@@ -212,7 +212,7 @@ class SipStpTransController extends Controller
                     }else {
                         $calculation_day =(int)abs((strtotime($my_data->reg_date) - strtotime($my_data->from_date))/(60*60*24));
                         $my_data->calculation_day =$calculation_day;
-                        if ($calculation_day >= 30) {
+                        if ($calculation_day < 30) {
                             $my_data->duration =(int)abs((strtotime($my_data->from_date) - strtotime($my_data->to_date))/(60*60*24*30));
                         }else {
                             $my_data->duration =(int)abs((strtotime($my_data->reg_date) - strtotime($my_data->to_date))/(60*60*24*30));
