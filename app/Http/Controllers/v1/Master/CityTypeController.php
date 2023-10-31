@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Helpers\Helper;
 use App\Models\CityType;
+use App\Models\Pincode;
 use Validator;
 use Excel;
 
@@ -98,6 +99,8 @@ class CityTypeController extends Controller
         return Helper::SuccessResponse($data1);
     }
 
+
+
     public function map(Request $request)
     {
         try {
@@ -107,7 +110,30 @@ class CityTypeController extends Controller
             // $datas = array_map(function($v){return str_getcsv($v, ";");}, file($file_name));  //for csv file
 
             // return $data;
+            // return count($data);
+            $data1=array_slice($data,1,(count($data)-1));
+            $manku = array_map(function ($el){
+                    // print_r($el);
+                    return $el[0];
+            },$data1);
+            // return $manku;
 
+            $update_wherein=Pincode::whereIn('pincode',$manku)
+            ->update([
+                'city_type_id'=>$request->city_type_id
+            ]);
+            if ($request->city_type_id==1) {
+                $update_notwherein=Pincode::whereNotIn('pincode',$manku)
+                    ->update([
+                        'city_type_id'=>2
+                    ]);
+            }elseif ($request->city_type_id==2) {
+                $update_notwherein=Pincode::whereNotIn('pincode',$manku)
+                    ->update([
+                        'city_type_id'=>1
+                    ]);
+            }
+            // return $update_notwherein;
             $data1=[];
 
         } catch (\Throwable $th) {
