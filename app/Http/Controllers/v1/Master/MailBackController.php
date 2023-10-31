@@ -741,8 +741,8 @@ class MailBackController extends Controller
                 }elseif ($file_type_id==2 && $file_id==6) {  // sip stp report MFSD243
                     TempSipStpTransaction::truncate();
                     // return $TotalArray[0];
-                    $value=explode("~",$TotalArray[0]);
-                    return $value;
+                    // $value=explode("~",$TotalArray[0]);
+                    // return $value;
                     for ($i=$start_count; $i <= $end_count; $i++) { 
                         // return $TotalArray[$i];
                         $value=explode("~",$TotalArray[$i]);
@@ -755,7 +755,7 @@ class MailBackController extends Controller
                             'folio_no'=>str_replace("'","",$value[4]),
                             'first_client_name'=>str_replace("'","",$value[5]),
                             'auto_trans_type'=>str_replace("'","",$value[23]),
-                            'auto_trans_no'=>NULL,
+                            'auto_trans_no'=>str_replace("'","",$value[34]),  // RegSlno
                             'auto_amount'=>$value[10],
                             'from_date'=>date('Y-m-d H:i:s',strtotime($value[7])),
                             'to_date'=>date('Y-m-d H:i:s',strtotime($value[8])),

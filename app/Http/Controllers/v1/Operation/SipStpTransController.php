@@ -175,6 +175,7 @@ class SipStpTransController extends Controller
                     ->get();
             // return  $my_datas;  
             foreach ($my_datas as $key => $my_data) {
+                $my_data->reg_no =$my_data->auto_trans_no;
                 if ($my_data->rnt_id==2) {
                     if(($my_data->frequency=="Daily") || ($my_data->frequency=="WEEKLY") || ($my_data->frequency=="Fortnightly")){
                         $my_data->sip_date=$my_data->frequency;
@@ -187,9 +188,7 @@ class SipStpTransController extends Controller
                     }
                     $my_data->freq=$my_data->frequency;
                     $my_data->duration =$my_data->no_of_installment;
-                    // $my_data->reg_no =$my_data->reg_sl_no;
                 }elseif ($my_data->rnt_id==1) {
-                    $my_data->reg_no =$my_data->auto_trans_no;
                     // return $my_data;
                     if(($my_data->freq=="Daily") || ($my_data->freq=="Weekly") || ($my_data->freq=="Fortnightly")){
                         // return $my_data;
