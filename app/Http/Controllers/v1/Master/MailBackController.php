@@ -1136,11 +1136,23 @@ class MailBackController extends Controller
         try {
             // return $request;
             $id=$request->id;
-            // return $id;
-            $up_data=MutualFundTransaction::find($id);
-            $up_data->divi_mismatch_flag='N';
-            $up_data->divi_lock_flag='L';
-            $up_data->save();
+            $file_type=$request->file_type;
+            switch ($file_type) {
+                case 'T':
+                    $up_data=MutualFundTransaction::find($id);
+                    $up_data->divi_mismatch_flag='N';
+                    $up_data->divi_lock_flag='L';
+                    $up_data->save();
+                    break;
+                case 'N':
+                    break;
+                case 'S':
+                    break;
+                case 'F':
+                    break;
+                default:
+                    break;
+            }
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
@@ -1153,7 +1165,7 @@ class MailBackController extends Controller
         try {
             // return $request;
             $id=$request->id;
-            return $id;
+            // return $id;
             $up_data=MutualFundTransaction::find($id);
             if ($up_data->divi_lock_flag=='L') {
                 $up_data->divi_mismatch_flag='Y';

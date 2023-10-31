@@ -520,6 +520,7 @@ class TransactionDetailsController extends Controller
             $id=$request->id;
             // $delete_data=MutualFundTransaction::find($id);
             // $delete_data->divi_lock_flag='N';
+            // $up_data->divi_mismatch_flag='Y';
             // $delete_data->save();
             $data=[];
         } catch (\Throwable $th) {

@@ -47,17 +47,18 @@ class FolioDetailsController extends Controller
                 $queryString='td_folio_details.folio_no';
                 $rawQuery.=Helper::WhereRawQuery($folio_no,$rawQuery,$queryString);
                 if ($folio_status) {
-                    $rawQuery.='IF(td_folio_details.rupee_bal IS NULL ||td_folio_details.rupee_bal="" || td_folio_details.rupee_bal="0","Inactive","Active") as folio_status="'.$folio_status.'"';
+                    $condition=(strlen($rawQuery) > 0)? " AND ":" ";
+                    $rawQuery.=$condition.'(IF(td_folio_details.rupee_bal IS NULL || td_folio_details.rupee_bal="" || td_folio_details.rupee_bal="0","Inactive","Active"))="'.$folio_status.'"';
                 }
-                if ($kyc_status) {
-                    $rawQuery.='';
-                }
-                if ($nominee_status) {
-                    $rawQuery.='';
-                }
-                if ($adhaar_pan_link_status) {
-                    $rawQuery.='';
-                }
+                // if ($kyc_status) {
+                //     $rawQuery.='';
+                // }
+                // if ($nominee_status) {
+                //     $rawQuery.='';
+                // }
+                // if ($adhaar_pan_link_status) {
+                //     $rawQuery.='';
+                // }
             }
 
             $data=[];
