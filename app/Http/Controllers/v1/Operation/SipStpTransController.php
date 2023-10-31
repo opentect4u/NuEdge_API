@@ -97,8 +97,9 @@ class SipStpTransController extends Controller
                                 td_sip_stp_trans.to_date >= "'.date('Y-m-d').'" AND td_sip_stp_trans.from_date <= "'.date('Y-m-d').'" AND td_sip_stp_trans.cease_terminate_date IS NULL , 
                                 td_sip_stp_trans.to_date >= "'.date('Y-m-d').'" AND td_sip_stp_trans.from_date <= "'.date('Y-m-d').'" AND td_sip_stp_trans.cease_terminate_date IS NULL 
                                 )'; 
-                            $rawQuery.=' AND MONTH(td_sip_stp_trans.to_date) <="'.$request->month.'" ';
-                            $rawQuery.=' AND YEAR(td_sip_stp_trans.to_date) <="'.$request->year.'" ';
+                            $rawQuery.=' AND MONTH(td_sip_stp_trans.to_date) >="'.$request->month.'" ';
+                            $rawQuery.=' AND YEAR(td_sip_stp_trans.to_date) >="'.$request->year.'" ';
+                            $rawQuery.=' AND DATE(td_sip_stp_trans.to_date) >"'.date('d').'" ';
                         }
                         break;
                     case 'P':
@@ -186,7 +187,9 @@ class SipStpTransController extends Controller
                     }
                     $my_data->freq=$my_data->frequency;
                     $my_data->duration =$my_data->no_of_installment;
+                    // $my_data->reg_no =$my_data->reg_sl_no;
                 }elseif ($my_data->rnt_id==1) {
+                    $my_data->reg_no =$my_data->auto_trans_no;
                     // return $my_data;
                     if(($my_data->freq=="Daily") || ($my_data->freq=="Weekly") || ($my_data->freq=="Fortnightly")){
                         // return $my_data;
