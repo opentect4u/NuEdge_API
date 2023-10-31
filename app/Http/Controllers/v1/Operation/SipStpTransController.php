@@ -199,15 +199,14 @@ class SipStpTransController extends Controller
                         $my_data->swp_date=$my_data->period_day;
                     }
 
-                    if ($my_data->auto_trans_type=='P') {
-                        if(($my_data->freq=="Daily") || ($my_data->freq=="Weekly") || ($my_data->freq=="Fortnightly")){
-                            $my_data->from_date = $my_data->freq;
-                        }else {
-                            $my_data->from_date =date('Y-m', strtotime('+1 month', (strtotime($my_data->reg_date)))).'-'.$my_data->period_day;
-                            // return $my_data->reg_date.' - '.$my_data->from_date;
-                            // return $my_data;
-                        }
-                    }
+                    // if ($my_data->auto_trans_type=='P') {
+                    //     if(($my_data->freq=="Daily") || ($my_data->freq=="Weekly") || ($my_data->freq=="Fortnightly")){
+                    //         $my_data->from_date = $my_data->freq;
+                    //     }else {
+                    //         $my_data->from_date =date('Y-m', strtotime('+1 month', (strtotime($my_data->reg_date)))).'-'.$my_data->period_day;
+                    //     }
+                    // }
+                    /***************for duration calculation****************************/
                     if ($report_type=='R') {  // if swp 
                         $my_data->duration =(int)abs((strtotime($my_data->from_date) - strtotime($my_data->to_date))/(60*60*24*30));
                     }else {
