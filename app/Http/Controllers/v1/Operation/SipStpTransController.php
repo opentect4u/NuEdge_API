@@ -70,7 +70,12 @@ class SipStpTransController extends Controller
                         break;
                     case 'R':
                         if ($sub_type=='RR') {
-                            $rawQuery.=' AND td_sip_stp_trans.from_date <= "'.date('Y-m-d').'"';
+                            $rawQuery.=' AND td_sip_stp_trans.from_date >= "'.date('Y-m-d').'"';
+
+                            $rawQuery.=' AND MONTH(td_sip_stp_trans.from_date) >="'.$request->month.'" ';
+                            $rawQuery.=' AND YEAR(td_sip_stp_trans.from_date) >="'.$request->year.'" ';
+                            $rawQuery.=' AND DATE(td_sip_stp_trans.from_date) >"'.date('d').'" ';
+
                         }else if($sub_type=='RU') {
                             $rawQuery.=' AND td_sip_stp_trans.from_date >= td_sip_stp_trans.cease_terminate_date';
                         }
