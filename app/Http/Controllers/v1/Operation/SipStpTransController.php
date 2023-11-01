@@ -147,7 +147,7 @@ class SipStpTransController extends Controller
             }
             // return $rawQuery;
             // $my_datas=[];
-            DB::enableQueryLog();
+            // DB::enableQueryLog();
 
             $my_datas=SipStpTransaction::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_sip_stp_trans.product_code')
                     ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
@@ -182,7 +182,7 @@ class SipStpTransController extends Controller
                     // ->take(50)
                     ->get();
             // return  $my_datas;  
-            dd(DB::getQueryLog());
+            // dd(DB::getQueryLog());
 
             foreach ($my_datas as $key => $my_data) {
                 $my_data->reg_no =$my_data->auto_trans_no;
