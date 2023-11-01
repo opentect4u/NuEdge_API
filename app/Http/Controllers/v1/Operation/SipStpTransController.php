@@ -78,6 +78,7 @@ class SipStpTransController extends Controller
 
                         }else if($sub_type=='RU') {
                             $rawQuery.=' AND td_sip_stp_trans.from_date >= td_sip_stp_trans.cease_terminate_date';
+                            $rawQuery.=' AND td_sip_stp_trans.from_date >= "'.date('Y-m-d').'"';
                         }
                         break;
                     case 'T':
