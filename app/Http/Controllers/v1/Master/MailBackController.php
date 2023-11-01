@@ -630,7 +630,7 @@ class MailBackController extends Controller
                     # code...
                 }
             }else if($rnt_id==2){  // KFINTECH
-                if ($file_type_id==1 && $file_id==3) {  // transction MFSD201
+                if ($file_type_id==1 && $file_id==5) {  // transction MFSD201
                     for ($i=$start_count; $i <= $end_count; $i++) { 
                         $value=explode("~",$TotalArray[$i]);
                         // $value=explode("~",$TotalArray[0]);
@@ -782,7 +782,7 @@ class MailBackController extends Controller
                             'to_scheme_code'=>NULL,
                         ));
                     }
-                }elseif ($file_type_id==3 && $file_id==7) {  // folio master report MFSD240
+                }elseif ($file_type_id==3 && $file_id==7) {  // folio master report MFSD211
                     TempFolioDetails::truncate();
                     // return $TotalArray[0];
                     // $value=explode("~",$TotalArray[0]);
