@@ -78,9 +78,7 @@ class FolioDetailsController extends Controller
                 )
                 ->selectRaw('(select `bu_type` from `md_business_type` where `bu_code` =md_employee.bu_type_id and `branch_id` =md_employee.branch_id limit 1) as bu_type')
                 ->selectRaw('IF(td_folio_details.rupee_bal IS NULL ||td_folio_details.rupee_bal="" || td_folio_details.rupee_bal="0","Inactive","Active") as folio_status')
-                ->selectRaw('IF(td_folio_details.folio_date IS NULL || td_folio_details.rupee_bal="","
-                (select trans_date from td_mutual_fund_trans where folio_no=td_folio_details.folio_no and product_code= td_folio_details.product_code order by trans_date asc limit 1)
-                ",td_folio_details.folio_date) as folio_date')
+                ->selectRaw('IF(td_folio_details.folio_date IS NULL || td_folio_details.rupee_bal="","(select trans_date from td_mutual_fund_trans where folio_no=td_folio_details.folio_no and product_code= td_folio_details.product_code order by trans_date asc limit 1)",td_folio_details.folio_date) as folio_date')
                 ->where('td_folio_details.amc_flag','N')
                 ->where('td_folio_details.scheme_flag','N')
                 ->whereRaw($rawQuery)
