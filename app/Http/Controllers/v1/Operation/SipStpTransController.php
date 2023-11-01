@@ -72,9 +72,9 @@ class SipStpTransController extends Controller
                         if ($sub_type=='RR') {
                             $rawQuery.=' AND td_sip_stp_trans.from_date >= "'.date('Y-m-d').'"';
 
-                            $rawQuery.=' AND MONTH(td_sip_stp_trans.from_date) >="'.$request->month.'" ';
-                            $rawQuery.=' AND YEAR(td_sip_stp_trans.from_date) >="'.$request->year.'" ';
-                            $rawQuery.=' AND DATE(td_sip_stp_trans.from_date) >"'.date('d').'" ';
+                            // $rawQuery.=' AND MONTH(td_sip_stp_trans.from_date) >="'.$request->month.'" ';
+                            // $rawQuery.=' AND YEAR(td_sip_stp_trans.from_date) >="'.$request->year.'" ';
+                            // $rawQuery.=' AND DATE(td_sip_stp_trans.from_date) >"'.date('d').'" ';
 
                         }else if($sub_type=='RU') {
                             $rawQuery.=' AND td_sip_stp_trans.from_date >= td_sip_stp_trans.cease_terminate_date';
@@ -147,6 +147,8 @@ class SipStpTransController extends Controller
             }
             // return $rawQuery;
             // $my_datas=[];
+            DB::enableQueryLog();
+
             $my_datas=SipStpTransaction::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_sip_stp_trans.product_code')
                     ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
                     ->leftJoin('md_plan','md_plan.id','=','md_scheme_isin.plan_id')
@@ -180,6 +182,8 @@ class SipStpTransController extends Controller
                     // ->take(50)
                     ->get();
             // return  $my_datas;  
+            dd(DB::getQueryLog());
+
             foreach ($my_datas as $key => $my_data) {
                 $my_data->reg_no =$my_data->auto_trans_no;
                 if ($my_data->rnt_id==2) {
@@ -232,7 +236,7 @@ class SipStpTransController extends Controller
 
             
         } catch (\Throwable $th) {
-            throw $th;
+            // throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
         return Helper::SuccessResponse($data);

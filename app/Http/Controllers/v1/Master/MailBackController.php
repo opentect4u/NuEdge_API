@@ -762,7 +762,7 @@ class MailBackController extends Controller
                             'period_day'=>str_replace("'","",$value[11]),
                             'reg_date'=>date('Y-m-d H:i:s',strtotime($value[6])),
                             'sub_brk_cd'=>str_replace("'","",$value[15]),
-                            'euin_no'=>str_replace("'","",$value[28]),
+                            'euin_no'=>NULL,
                             'remarks'=>NULL,
                             'bank'=>str_replace("'","",$value[31]),
                             'branch'=>NULL,
