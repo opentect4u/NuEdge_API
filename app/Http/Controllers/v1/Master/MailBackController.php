@@ -759,7 +759,8 @@ class MailBackController extends Controller
                             'auto_amount'=>$value[10],
                             'from_date'=>date('Y-m-d H:i:s',strtotime($value[7])),
                             'to_date'=>date('Y-m-d H:i:s',strtotime($value[8])),
-                            'period_day'=>str_replace("'","",$value[11]),
+                            // 'period_day'=>str_replace("'","",$value[11]),
+                            'period_day'=>0,
                             'reg_date'=>date('Y-m-d H:i:s',strtotime($value[6])),
                             'sub_brk_cd'=>str_replace("'","",$value[15]),
                             'euin_no'=>NULL,
@@ -1258,7 +1259,7 @@ class MailBackController extends Controller
                 ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
                 ->leftJoin('md_category','md_category.id','=','md_scheme.category_id')
                 ->leftJoin('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
-                ->leftJoin('md_amc','md_amc.id','=','md_scheme.amc_id')
+                ->leftJoin('md_amc','md_amc.amc_code','=','td_sip_stp_trans.amc_code')
                 ->leftJoin('md_amc as md_amc_1','md_amc_1.amc_code','=','td_sip_stp_trans.amc_code')
                 ->select('td_sip_stp_trans.*','md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name',
                 'md_amc.amc_short_name as amc_name','md_amc_1.amc_short_name as amc_short_name')
