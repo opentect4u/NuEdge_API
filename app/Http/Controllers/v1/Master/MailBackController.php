@@ -1237,7 +1237,8 @@ class MailBackController extends Controller
         return Helper::SuccessResponse($data);
     }
 
-    public function misMatchSipStp(Request $request){
+    public function misMatchSipStp(Request $request)
+    {
         try {
             $mismatch_flag=$request->mismatch_flag;
             // return $mismatch_flag;
@@ -1272,7 +1273,8 @@ class MailBackController extends Controller
         return Helper::SuccessResponse($data);
     }
 
-    public function misMatchFolio(Request $request){
+    public function misMatchFolio(Request $request)
+    {
         try {
             $mismatch_flag=$request->mismatch_flag;
             // return $mismatch_flag;

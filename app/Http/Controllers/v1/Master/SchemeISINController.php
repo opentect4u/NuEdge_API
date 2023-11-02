@@ -16,7 +16,8 @@ use App\Models\{
     SchemeISIN,
     Plan,
     Option,
-    MutualFundTransaction
+    MutualFundTransaction,
+    SipStpTransaction
 };
 use Validator;
 use Excel;
@@ -326,6 +327,10 @@ class SchemeISINController extends Controller
                         $rnt2_up_data2->save();
                     }
                 }
+
+                SipStpTransaction::where('product_code',$value->product_code)->update([
+                        'scheme_flag'=>'N',
+                    ]);
                 // End insert and update scheme ISIN, update table td_mutual_fund_trans 
             }
           
