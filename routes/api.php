@@ -394,6 +394,10 @@ Route::prefix('v1')->group(function () {
         Route::any('rntSystematicTransTypeShow',[App\Http\Controllers\v1\Master\SystematicTransTypeController::class,'index']);
         Route::post('rntSystematicTransTypeAddEdit',[App\Http\Controllers\v1\Master\SystematicTransTypeController::class,'CreateUpdate']);
 
+        Route::any('rntSystematicUnregister',[App\Http\Controllers\v1\Master\SystematicUnregisterController::class,'Details']);
+        Route::any('rntSystematicUnregisterShow',[App\Http\Controllers\v1\Master\SystematicUnregisterController::class,'index']);
+        Route::post('rntSystematicUnregisterAddEdit',[App\Http\Controllers\v1\Master\SystematicUnregisterController::class,'CreateUpdate']);
+
         /*************************************************End For file help************************************************/
 
         /*************************************************Start For Report************************************************/

@@ -57,9 +57,7 @@ class SipStpTransController extends Controller
                 $rawQuery.=Helper::WhereRawQuery($my_array,$rawQuery,$queryString);
             }
             
-            
             if ($sip_type || $date_range || $folio_no || $pan_no || !empty($amc_id) || !empty($cat_id) || !empty($sub_cat_id) || !empty($scheme_id)) {
-
                 switch ($sip_type) {
                     case 'L':
                         $rawQuery.=' AND td_sip_stp_trans.cease_terminate_date IS NULL ';
@@ -76,10 +74,11 @@ class SipStpTransController extends Controller
                                 $rawQuery.=' AND MONTH(td_sip_stp_trans.from_date)="'.$request->month.'" ';
                             }
                             // $rawQuery.=' AND DATE(td_sip_stp_trans.from_date) >"'.date('d').'" ';
-
                         }else if($sub_type=='RU') {
-                            $rawQuery.=' AND td_sip_stp_trans.from_date >= td_sip_stp_trans.cease_terminate_date';
-                            $rawQuery.=' AND td_sip_stp_trans.from_date >= "'.date('Y-m-d').'"';
+                            // $rawQuery.=' AND td_sip_stp_trans.from_date >= td_sip_stp_trans.cease_terminate_date';
+                            // $rawQuery.=' AND td_sip_stp_trans.from_date >= "'.date('Y-m-d').'"';
+                            // (`from_date` >= ? or `from_date` > ?)
+                            $rawQuery.='AND (td_sip_stp_trans.from_date >= td_sip_stp_trans.cease_terminate_date OR (SELECT COUNT(*) FROM `md_systematic_unregistered` WHERE remarks=td_sip_stp_trans.remarks AND rnt_id=td_sip_stp_trans.rnt_id) > 0)';
                         }
                         break;
                     case 'T':
@@ -88,7 +87,6 @@ class SipStpTransController extends Controller
                         $rawQuery.='AND IF(td_sip_stp_trans.rnt_id=1, td_sip_stp_trans.cease_terminate_date!="", td_sip_stp_trans.cease_terminate_date!="" AND td_sip_stp_trans.to_date > td_sip_stp_trans.cease_terminate_date)';
                         // $rawQuery.='AND td_sip_stp_trans.cease_terminate_date!="" AND td_sip_stp_trans.to_date >= td_sip_stp_trans.cease_terminate_date';
                         $rawQuery.=' AND td_sip_stp_trans.from_date <= td_sip_stp_trans.cease_terminate_date';
-
                         break;
                     case 'M':
                         if ($sub_type=='MM') {  
@@ -125,35 +123,26 @@ class SipStpTransController extends Controller
                         $rawQuery.=' AND td_sip_stp_trans.to_date >="'.date('Y-m-d').'" ';
                         break;
                     default:
-                        # code...
                         break;
                 }
 
-                // if ($date_range) {
-                //     $from_date=Carbon::parse(str_replace('/','-',explode("-",$date_range)[0]))->format('Y-m-d') ;
-                //     $to_date=Carbon::parse(str_replace('/','-',explode("-",$date_range)[1]))->format('Y-m-d') ;
-                //     $queryString='td_sip_stp_trans.reg_date';
-                //     $rawQuery.=Helper::FrmToDateRawQuery($from_date,$to_date,$rawQuery,$queryString);
-                // }
-                $queryString='td_sip_stp_trans.folio_no';
-                $rawQuery.=Helper::WhereRawQuery($folio_no,$rawQuery,$queryString);
-                $queryString='td_sip_stp_trans.first_client_pan';
-                $rawQuery.=Helper::WhereRawQuery($pan_no,$rawQuery,$queryString);
-                $queryString='md_scheme.amc_id';
-                $rawQuery.=Helper::WhereRawQuery($amc_id,$rawQuery,$queryString);
-                $queryString='md_scheme.category_id';
-                $rawQuery.=Helper::WhereRawQuery($cat_id,$rawQuery,$queryString);
-                $queryString='md_scheme.subcategory_id';
-                $rawQuery.=Helper::WhereRawQuery($sub_cat_id,$rawQuery,$queryString);
-                $queryString='md_scheme_isin.scheme_id';
-                $rawQuery.=Helper::WhereRawQuery($scheme_id,$rawQuery,$queryString);
+                // $queryString='td_sip_stp_trans.folio_no';
+                // $rawQuery.=Helper::WhereRawQuery($folio_no,$rawQuery,$queryString);
+                // $queryString='td_sip_stp_trans.first_client_pan';
+                // $rawQuery.=Helper::WhereRawQuery($pan_no,$rawQuery,$queryString);
+                // $queryString='md_scheme.amc_id';
+                // $rawQuery.=Helper::WhereRawQuery($amc_id,$rawQuery,$queryString);
+                // $queryString='md_scheme.category_id';
+                // $rawQuery.=Helper::WhereRawQuery($cat_id,$rawQuery,$queryString);
+                // $queryString='md_scheme.subcategory_id';
+                // $rawQuery.=Helper::WhereRawQuery($sub_cat_id,$rawQuery,$queryString);
+                // $queryString='md_scheme_isin.scheme_id';
+                // $rawQuery.=Helper::WhereRawQuery($scheme_id,$rawQuery,$queryString);
 
                 // return $rawQuery;
-                // $rawQuery=$this->filterCriteria($rawQuery,$from_date,$to_date,$tin_no,$proposer_name,$ins_type_id,$company_id,$product_type_id,$product_id,$insured_bu_type,$ack_status);
+                $rawQuery=$this->filterCriteria($rawQuery,$folio_no,$pan_no,$amc_id,$cat_id,$sub_cat_id,$scheme_id);
 
                 // return $rawQuery;
-
-                
             }
             // return $rawQuery;
             // $my_datas=[];
@@ -172,8 +161,8 @@ class SipStpTransController extends Controller
                     ->leftJoin('md_scheme as to_scheme','to_scheme.id','=','to_isin.scheme_id')
                     ->leftJoin('md_category as to_category','to_category.id','=','to_scheme.category_id')
                     ->leftJoin('md_subcategory as to_subcategory','to_subcategory.id','=','to_scheme.subcategory_id')
-                    // ->leftJoin('md_employee','md_employee.euin_no','=','td_sip_stp_trans.euin_no')
-                    ->leftJoin('md_employee','md_employee.euin_no','=',DB::raw('IF(td_sip_stp_trans.euin_no!="",td_sip_stp_trans.euin_no,(select euin_no from td_mutual_fund_trans where folio_no=td_sip_stp_trans.folio_no and product_code= td_sip_stp_trans.product_code order by trans_date asc limit 1))'))
+                    ->leftJoin('md_employee','md_employee.euin_no','=','td_sip_stp_trans.euin_no')
+                    // ->leftJoin('md_employee','md_employee.euin_no','=',DB::raw('IF(td_sip_stp_trans.euin_no!="",td_sip_stp_trans.euin_no,(select euin_no from td_mutual_fund_trans where folio_no=td_sip_stp_trans.folio_no and product_code= td_sip_stp_trans.product_code order by trans_date asc limit 1))'))
                     ->leftJoin('md_branch','md_branch.id','=','md_employee.branch_id')
                     ->leftJoin('md_systematic_trans_type','md_systematic_trans_type.trans_type_code','=','td_sip_stp_trans.auto_trans_type')
                     ->select('td_sip_stp_trans.*','td_sip_stp_trans.period_day as sip_date','td_sip_stp_trans.auto_amount as amount','td_sip_stp_trans.cease_terminate_date as terminated_date',
@@ -189,6 +178,9 @@ class SipStpTransController extends Controller
                     ->selectRaw('(IF(td_sip_stp_trans.instrm_no!="" || td_sip_stp_trans.instrm_no!= NULL,td_sip_stp_trans.instrm_no,(select acc_no from td_mutual_fund_trans where folio_no=td_sip_stp_trans.folio_no and product_code= td_sip_stp_trans.product_code order by trans_date asc limit 1))) as acc_no')
                     ->where('td_sip_stp_trans.amc_flag','N')
                     ->where('td_sip_stp_trans.scheme_flag','N')
+                    ->where('td_sip_stp_trans.bu_type_flag','N')
+                    ->where('td_sip_stp_trans.plan_option_flag','N')
+                    ->where('td_sip_stp_trans.freq_mismatch_flag','N')
                     ->whereRaw($rawQuery)
                     // ->orderBy('td_sip_stp_trans.nav_date','desc')
                     // ->take(50)
@@ -252,5 +244,22 @@ class SipStpTransController extends Controller
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
         return Helper::SuccessResponse($data);
+    }
+
+    public function filterCriteria($rawQuery,$folio_no,$pan_no,$amc_id,$cat_id,$sub_cat_id,$scheme_id)
+    {
+        $queryString='td_sip_stp_trans.folio_no';
+        $rawQuery.=Helper::WhereRawQuery($folio_no,$rawQuery,$queryString);
+        $queryString='td_sip_stp_trans.first_client_pan';
+        $rawQuery.=Helper::WhereRawQuery($pan_no,$rawQuery,$queryString);
+        $queryString='md_scheme.amc_id';
+        $rawQuery.=Helper::WhereRawQuery($amc_id,$rawQuery,$queryString);
+        $queryString='md_scheme.category_id';
+        $rawQuery.=Helper::WhereRawQuery($cat_id,$rawQuery,$queryString);
+        $queryString='md_scheme.subcategory_id';
+        $rawQuery.=Helper::WhereRawQuery($sub_cat_id,$rawQuery,$queryString);
+        $queryString='md_scheme_isin.scheme_id';
+        $rawQuery.=Helper::WhereRawQuery($scheme_id,$rawQuery,$queryString);
+        return $rawQuery;
     }
 }

@@ -764,7 +764,7 @@ class MailBackController extends Controller
                             'reg_date'=>date('Y-m-d H:i:s',strtotime($value[6])),
                             'sub_brk_cd'=>str_replace("'","",$value[15]),
                             'euin_no'=>NULL,
-                            'remarks'=>NULL,
+                            'remarks'=>str_replace("'","",$value[27]),
                             'bank'=>str_replace("'","",$value[31]),
                             'branch'=>NULL,
                             'instrm_no'=>str_replace("'","",$value[32]),

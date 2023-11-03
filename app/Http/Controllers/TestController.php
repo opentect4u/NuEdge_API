@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use DB;
-use App\Models\{Scheme,MutualFundTransaction};
+use App\Models\{Scheme,MutualFundTransaction,SipStpTransaction};
 
 class TestController extends Controller
 {
@@ -132,12 +132,20 @@ class TestController extends Controller
         // $C = array_intersect($A,$B);  //equals (1,2,3,4)
         // $A = array_diff($A,$B);   
         // return $A;
-
+        // return 'hii';
         DB::enableQueryLog();
-        $euin_no=MutualFundTransaction::select('euin_no')->where('folio_no','3101929013')->where('product_code','178ARRG')
-        ->orderBy('trans_date','ASC')
-            // ->get();
-            ->first();
+        $data=SipStpTransaction::where('rnt_id',1)
+        ->where(function ($query) {
+            $query->where('from_date', '>=', 'cease_terminate_date')
+                //   ->where('from_date', '>', date('Y-m-d'));
+                  ->orWhere('from_date', '>', date('Y-m-d'));
+        })->get();
+        // return $data;
+
+        // $euin_no=MutualFundTransaction::select('euin_no')->where('folio_no','3101929013')->where('product_code','178ARRG')
+        // ->orderBy('trans_date','ASC')
+        //     // ->get();
+        //     ->first();
                         // $euin_no=MutualFundTransaction::where('folio_no',6017105704)
                         // ->where('euin_no','!=','')->first(['euin_no'])->value('euin_no');
 
