@@ -154,7 +154,7 @@ class TransactionDetailsController extends Controller
                 $rawQuery.=Helper::WhereRawQuery($scheme_id,$rawQuery,$queryString);
                 // return $rawQuery;
                 // $rawQuery=$this->filterCriteria($rawQuery,$from_date,$to_date,$tin_no,$proposer_name,$ins_type_id,$company_id,$product_type_id,$product_id,$insured_bu_type,$ack_status);
-
+                // return $request;
                 $all_data=MutualFundTransaction::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_mutual_fund_trans.product_code')
                     ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
                     ->leftJoin('md_category','md_category.id','=','md_scheme.category_id')
@@ -163,16 +163,17 @@ class TransactionDetailsController extends Controller
                     ->leftJoin('md_plan','md_plan.id','=','md_scheme_isin.plan_id')
                     ->leftJoin('md_option','md_option.id','=','md_scheme_isin.option_id')
                     ->leftJoin('md_employee','md_employee.euin_no','=','td_mutual_fund_trans.euin_no')
-                    // ->leftJoin('md_employee','md_employee.euin_no','=',DB::raw('IF(td_mutual_fund_trans.euin_no!="",td_mutual_fund_trans.euin_no,(select euin_no from td_mutual_fund_trans where folio_no=td_sip_stp_trans.folio_no and product_code= td_sip_stp_trans.product_code order by trans_date asc limit 1))'))
+                    // ->leftJoin('md_employee','md_employee.euin_no','=',DB::raw('IF(td_mutual_fund_trans.euin_no!="",td_mutual_fund_trans.euin_no,(select euin_no from td_mutual_fund_trans where folio_no=td_mutual_fund_trans.folio_no and product_code=td_mutual_fund_trans.product_code order by trans_date asc limit 1))'))
                     ->leftJoin('md_branch','md_branch.id','=','md_employee.branch_id')
                     ->select('td_mutual_fund_trans.*','md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name','md_amc.amc_short_name as amc_name',
                     'md_plan.plan_name as plan_name','md_option.opt_name as option_name',
-                    'md_employee.emp_name as rm_name','md_branch.brn_name as branch','md_employee.bu_type_id as bu_type_id','md_employee.branch_id as branch_id')
+                    'md_employee.emp_name as rm_name','md_branch.brn_name as branch','md_employee.bu_type_id as bu_type_id','md_employee.branch_id as branch_id','md_employee.euin_no as euin_no')
                     ->selectRaw('sum(amount) as tot_amount')
                     ->selectRaw('sum(stamp_duty) as tot_stamp_duty')
                     ->selectRaw('sum(tds) as tot_tds')
                     ->selectRaw('count(*) as tot_rows')
 
+                    // ->selectRaw('(select bu_type from md_business_type where bu_code=md_employee.bu_type_id and branch_id=md_employee.branch_id limit 1) as bu_type')
                     ->selectRaw('IF(td_mutual_fund_trans.euin_no="",(select euin_no from td_mutual_fund_trans where folio_no=td_mutual_fund_trans.folio_no and euin_no!="" limit 1),td_mutual_fund_trans.euin_no) as my_euin_no')
 
                     ->where('td_mutual_fund_trans.delete_flag','N')
