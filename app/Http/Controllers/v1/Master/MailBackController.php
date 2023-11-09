@@ -867,6 +867,25 @@ class MailBackController extends Controller
                             'nom_per_3'=>NULL,
                         ));
                     }
+                }elseif ($file_type_id==5 && $file_id==11) {  // sip stp pause report MFSD231
+                    // $value=explode("~",$TotalArray[1]);
+                    // return $value;
+                    for ($i=$start_count; $i <= $end_count; $i++) { 
+                        // return $TotalArray[$i];
+                        $value=explode("~",$TotalArray[$i]);
+                        $product_code=$value[0].$value[1].$value[2];
+                        $folio_no=$value[4];
+                        $PAUSEFROM=Carbon::parse(str_replace("/","-",$value[9]))->format('Y-m-d');
+                        $PAUSETO=Carbon::parse(str_replace("/","-",$value[10]))->format('Y-m-d');
+                        // return Carbon::parse(str_replace("/","-",$value[9]))->format('Y-m-d');
+                        $data=SipStpTransaction::where('product_code',$product_code)->where('folio_no',$folio_no)
+                        ->update([
+                            'pause_from_date'=>$PAUSEFROM,
+                            'pause_to_date'=>$PAUSETO,
+                        ]);
+                        // ->get();
+                        // return $data;
+                    }
                 }else {
                     # code...
                 }

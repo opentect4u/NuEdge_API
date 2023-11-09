@@ -398,6 +398,10 @@ Route::prefix('v1')->group(function () {
         Route::any('rntSystematicUnregisterShow',[App\Http\Controllers\v1\Master\SystematicUnregisterController::class,'index']);
         Route::post('rntSystematicUnregisterAddEdit',[App\Http\Controllers\v1\Master\SystematicUnregisterController::class,'CreateUpdate']);
 
+        Route::any('rntFolioDetails',[App\Http\Controllers\v1\Master\FolioTaxStatusController::class,'Details']);
+        Route::any('rntFolioDetailsShow',[App\Http\Controllers\v1\Master\FolioTaxStatusController::class,'index']);
+        Route::post('rntFolioDetailsAddEdit',[App\Http\Controllers\v1\Master\FolioTaxStatusController::class,'CreateUpdate']);
+
         /*************************************************End For file help************************************************/
 
         /*************************************************Start For Report************************************************/
