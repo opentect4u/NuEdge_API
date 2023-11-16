@@ -538,7 +538,7 @@ class AcknowledgementController extends Controller
                     'ack_copy_scan'=>$ack_copy_scan_name,
                     'ack_remarks'=>$request->ack_remarks,
                     'form_status'=>'A',
-                    // 'updated_at'
+                    'updated_by'=>Helper::modifyUser($request->user()),
                 ));   
             // return $data1;
             // return $request->tin_no;

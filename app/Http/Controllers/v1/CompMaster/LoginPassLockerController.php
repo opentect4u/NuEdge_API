@@ -54,6 +54,7 @@ class LoginPassLockerController extends Controller
                 $data->login_id=$request->login_id;
                 $data->login_pass=$request->login_pass;
                 $data->sec_qus_ans=$request->sec_qus_ans;
+                $data->updated_by=Helper::modifyUser($request->user());
                 $data->save();
             }else{
                 $data=CompLoginPwdLocker::create(array(
@@ -62,6 +63,7 @@ class LoginPassLockerController extends Controller
                     'login_id'=>$request->login_id,
                     'login_pass'=>$request->login_pass,
                     'sec_qus_ans'=>$request->sec_qus_ans,
+                    'created_by'=>Helper::modifyUser($request->user()),
                 ));      
             }  
             $data=CompLoginPwdLocker::leftJoin('md_cm_products','md_cm_products.id','=','md_cm_login_pwd_locker.product_id')

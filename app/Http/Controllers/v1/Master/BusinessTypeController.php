@@ -52,12 +52,13 @@ class BusinessTypeController extends Controller
                 $data=BusinessType::find($request->id);
                 $data->brn_code=$request->brn_code;
                 $data->brn_name=$request->brn_name;
+                $data->updated_by=Helper::modifyUser($request->user());
                 $data->save();
             }else{
                 $data=BusinessType::create(array(
                     'brn_code'=>$request->brn_code,
                     'brn_name'=>$request->brn_name,
-                    // 'created_by'=>'',
+                    'created_by'=>Helper::modifyUser($request->user()),
                 ));    
             }  
         } catch (\Throwable $th) {

@@ -76,11 +76,12 @@ class DocumentTypeController extends Controller
             if ($request->id > 0) {
                 $data=DocumentType::find($request->id);
                 $data->doc_type=$request->doc_type;
+                $data->updated_by=Helper::modifyUser($request->user());
                 $data->save();
             }else{
                 $data=DocumentType::create(array(
                     'doc_type'=>$request->doc_type,
-                    // 'created_by'=>'',
+                    'created_by'=>Helper::modifyUser($request->user()),
                 ));      
             }    
         } catch (\Throwable $th) {

@@ -95,6 +95,7 @@ class PlanController extends Controller
             if ($request->id > 0) {
                 $data=Plan::find($request->id);
                 $data->plan_name=$request->plan_name;
+                $data->updated_by=Helper::modifyUser($request->user());
                 $data->save();
             }else{
                 $is_has=Plan::where('plan_name',$request->plan_name)->where('delete_flag','N')->get();
@@ -103,7 +104,7 @@ class PlanController extends Controller
                 }else {
                     $data=Plan::create(array(
                         'plan_name'=>$request->plan_name,
-                        // 'created_by'=>'',
+                        'created_by'=>Helper::modifyUser($request->user()),
                     ));    
                 }
             }  
@@ -125,7 +126,7 @@ class PlanController extends Controller
                 $data=Plan::find($id);
                 $data->delete_flag='Y';
                 $data->deleted_date=date('Y-m-d H:i:s');
-                $data->deleted_by=1;
+                $data->deleted_by=Helper::modifyUser($request->user());
                 $data->save();
             }
         } catch (\Throwable $th) {

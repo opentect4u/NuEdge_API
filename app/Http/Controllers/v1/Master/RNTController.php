@@ -211,6 +211,7 @@ class RNTController extends Controller
             $file=$request->logo;
             if ($request->id > 0) {
                 // return $request;
+                // return Helper::modifyUser($request->user());
                 $data=RNT::find($request->id);
                 if ($file) {
                     $cv_path_extension=$file->getClientOriginalExtension();
@@ -269,6 +270,7 @@ class RNTController extends Controller
                 $data->distributor_care_no=$request->distributor_care_no;
                 $data->distributor_care_email=$request->distributor_care_email;
                 $data->logo=$logo;
+                $data->updated_by=Helper::modifyUser($request->user());
                 $data->save();
             }else{
                 $is_has=RNT::where('rnt_name',$request->rnt_name)->where('delete_flag','N')->get();
@@ -324,7 +326,7 @@ class RNTController extends Controller
                         'l7_email'=>$request->l7_email,
                         'distributor_care_no'=>$request->distributor_care_no,
                         'logo'=>$logo,
-                        // 'created_by'=>'',
+                        'created_by'=>Helper::modifyUser($request->user()),
                     ));
                 }
             }
@@ -481,7 +483,7 @@ class RNTController extends Controller
                 $data=RNT::find($id);
                 $data->delete_flag='Y';
                 $data->deleted_date=date('Y-m-d H:i:s');
-                $data->deleted_by=1;
+                $data->deleted_by=Helper::modifyUser($request->user());
                 $data->save();
             }
         } catch (\Throwable $th) {

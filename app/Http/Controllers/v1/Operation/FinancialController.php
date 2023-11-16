@@ -1024,7 +1024,7 @@ class FinancialController extends Controller
                             'client_name'=>$second_client_name,
                             'pan'=>$second_client_pan,
                             'client_type'=>'E',
-                            // 'created_by'=>'',
+                            'created_by'=>Helper::modifyUser($request->user()),
                         ));
                         $second_client_id=$s_c_data->id;
                     }
@@ -1037,7 +1037,7 @@ class FinancialController extends Controller
                             'client_name'=>$third_client_name,
                             'pan'=>$third_client_pan,
                             'client_type'=>'E',
-                            // 'created_by'=>'',
+                            'created_by'=>Helper::modifyUser($request->user()),
                         ));
                         $third_client_id=$t_c_data->id;
                     }
@@ -1061,6 +1061,7 @@ class FinancialController extends Controller
                         'inv_type'=>isset($request->inv_type)?$request->inv_type:'N',
                         'application_no'=>isset($request->application_no)?$request->application_no:NULL,
                         'folio_no'=>isset($request->folio_no)?$request->folio_no:NULL,
+                        'updated_by'=>Helper::modifyUser($request->user()),
                     ));
                     $data=MutualFund::create(array(
                         'temp_tin_no' =>$request->temp_tin_no,
@@ -1136,7 +1137,7 @@ class FinancialController extends Controller
                         'step_up_by'=>isset($request->step_up_by)?$request->step_up_by:'N',
                         'step_up_amount'=>isset($request->step_up_amount)?$request->step_up_amount:NULL,
                         'step_up_percentage'=>isset($request->step_up_percentage)?$request->step_up_percentage:NULL,
-                        // 'created_by'=>'',
+                        'created_by'=>Helper::modifyUser($request->user()),
                     ));
 
                     // START only for non financial changes
@@ -1145,12 +1146,12 @@ class FinancialController extends Controller
                         $up_data=Client::find($first_client_id);
                         if ($request->email) {
                             $up_data->email=$request->email;
-                            $up_data->save();
                         }
                         if ($request->mobile) {
                             $up_data->mobile=$request->mobile;
-                            $up_data->save();
                         }
+                        $up_data->updated_by=Helper::modifyUser($request->user());
+                        $up_data->save();
                     }
 
                     if ($data->trans_id==22) {  // address change
@@ -1163,6 +1164,7 @@ class FinancialController extends Controller
                         $up_data->state=$request->state;
                         $up_data->pincode=$request->pincode;
                         $up_data->country_id=$request->country_id;
+                        $up_data->updated_by=Helper::modifyUser($request->user());
                         $up_data->save();
                     }
 
@@ -1183,6 +1185,7 @@ class FinancialController extends Controller
                         }
                         $up_data->client_code=$client_code;
                         $up_data->client_name=$client_name;
+                        $up_data->updated_by=Helper::modifyUser($request->user());
                         $up_data->save();
                     }
 
@@ -1190,6 +1193,7 @@ class FinancialController extends Controller
                         $first_client_id=$data->first_client_id;
                         $up_data=Client::find($first_client_id);
                         $up_data->client_type_mode=$request->change_status;
+                        $up_data->updated_by=Helper::modifyUser($request->user());
                         $up_data->save();
                     }
 
@@ -1203,6 +1207,7 @@ class FinancialController extends Controller
                         $up_data=Client::find($first_client_id);
                         $up_data->pan=$request->folio_pan;
                         $up_data->client_type='P';
+                        $up_data->updated_by=Helper::modifyUser($request->user());
                         $up_data->save();
                     }
                     if ($data->trans_id==29) {  // Redemption
@@ -1214,6 +1219,7 @@ class FinancialController extends Controller
                         $up_data=Client::find($first_client_id);
                         $up_data->pan=$request->minor_to_major_pan;
                         $up_data->client_type='P';
+                        $up_data->updated_by=Helper::modifyUser($request->user());
                         $up_data->save();
                     }
 
@@ -1277,7 +1283,7 @@ class FinancialController extends Controller
                     'application_no'=>isset($request->application_no)?$request->application_no:NULL,
                     'kyc_status'=>isset($request->kyc_status)?$request->kyc_status:'A',
                     'branch_code'=>Helper::getBranchCode(),
-                    // 'created_by'=>'',
+                    'created_by'=>Helper::modifyUser($request->user()),
                 ));
                 // return $fr_data;
                 $ttin_no=$fr_data->temp_tin_no;
@@ -1290,7 +1296,7 @@ class FinancialController extends Controller
                             'client_name'=>$second_client_name,
                             'pan'=>$second_client_pan,
                             'client_type'=>'E',
-                            // 'created_by'=>'',
+                            'created_by'=>Helper::modifyUser($request->user()),
                         ));
                         $second_client_id=$s_c_data->id;
                     }
@@ -1303,7 +1309,7 @@ class FinancialController extends Controller
                             'client_name'=>$third_client_name,
                             'pan'=>$third_client_pan,
                             'client_type'=>'E',
-                            // 'created_by'=>'',
+                            'created_by'=>Helper::modifyUser($request->user()),
                         ));
                         $third_client_id=$t_c_data->id;
                     }
@@ -1389,7 +1395,7 @@ class FinancialController extends Controller
                         'step_up_by'=>isset($request->step_up_by)?$request->step_up_by:'N',
                         'step_up_amount'=>isset($request->step_up_amount)?$request->step_up_amount:NULL,
                         'step_up_percentage'=>isset($request->step_up_percentage)?$request->step_up_percentage:NULL,
-
+                        'created_by'=>Helper::modifyUser($request->user()),
                     ));
 
                 // START only for non financial changes
@@ -1398,12 +1404,12 @@ class FinancialController extends Controller
                     $up_data=Client::find($first_client_id);
                     if ($request->email) {
                         $up_data->email=$request->email;
-                        $up_data->save();
                     }
                     if ($request->mobile) {
                         $up_data->mobile=$request->mobile;
-                        $up_data->save();
                     }
+                    $up_data->updated_by=Helper::modifyUser($request->user());
+                    $up_data->save();
                 }
 
                 if ($data->trans_id==22) {  // address change
@@ -1416,6 +1422,7 @@ class FinancialController extends Controller
                     $up_data->state=$request->state;
                     $up_data->pincode=$request->pincode;
                     $up_data->country_id=$request->country_id;
+                    $up_data->updated_by=Helper::modifyUser($request->user());
                     $up_data->save();
                 }
 
@@ -1434,6 +1441,7 @@ class FinancialController extends Controller
                     }
                     $up_data->client_code=$client_code;
                     $up_data->client_name=$client_name;
+                    $up_data->updated_by=Helper::modifyUser($request->user());
                     $up_data->save();
                 }
 
@@ -1441,6 +1449,7 @@ class FinancialController extends Controller
                     $first_client_id=$data->first_client_id;
                     $up_data=Client::find($first_client_id);
                     $up_data->client_type_mode=$request->change_status;
+                    $up_data->updated_by=Helper::modifyUser($request->user());
                     $up_data->save();
                 }
 
@@ -1454,6 +1463,7 @@ class FinancialController extends Controller
                     $up_data=Client::find($first_client_id);
                     $up_data->pan=$request->folio_pan;
                     $up_data->client_type='P';
+                    $up_data->updated_by=Helper::modifyUser($request->user());
                     $up_data->save();
                 }
                 if ($data->trans_id==29) {  // Redemption
@@ -1465,6 +1475,8 @@ class FinancialController extends Controller
                     $up_data=Client::find($first_client_id);
                     $up_data->pan=$request->minor_to_major_pan;
                     $up_data->client_type='P';
+                    $up_data->updated_by=Helper::modifyUser($request->user());
+                    $up_data->save();
                 }
 
                 if ($request->transmission_type!='' && $data->trans_id==19) {
@@ -1498,6 +1510,7 @@ class FinancialController extends Controller
                     $up_data=Client::find($first_client_id);
                     $up_data->email = ($request->change_contact_type == 'B' || $request->change_contact_type == 'E') ? $request->email : $up_data->email;
                     $up_data->mobile = ($request->change_contact_type == 'B' || $request->change_contact_type == 'M') ? $request->mobile : $up_data->mobile;
+                    $up_data->updated_by=Helper::modifyUser($request->user());
                     $up_data->save();
                 }
 

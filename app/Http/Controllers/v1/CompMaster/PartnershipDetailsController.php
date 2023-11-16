@@ -92,6 +92,7 @@ class PartnershipDetailsController extends Controller
                 $data->city_id=$request->city_id;
                 $data->pincode=$request->pincode;
                 $data->percentage=$request->percentage;
+                $data->updated_by=Helper::modifyUser($request->user());
                 $data->save();
             }else{
                 // return $request;
@@ -110,6 +111,7 @@ class PartnershipDetailsController extends Controller
                     'city_id'=>$request->city_id,
                     'pincode'=>$request->pincode,
                     'percentage'=>$request->percentage,
+                    'created_by'=>Helper::modifyUser($request->user()),
                 ));      
             }    
         } catch (\Throwable $th) {

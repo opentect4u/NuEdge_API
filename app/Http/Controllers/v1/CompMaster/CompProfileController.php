@@ -90,6 +90,7 @@ class CompProfileController extends Controller
                 $data->instagram=$request->instagram;
                 $data->blog=$request->blog;
                 $data->comp_default=$request->comp_default;
+                $data->updated_by=Helper::modifyUser($request->user());
                 $data->save();
             }else{
                 // return $request;
@@ -126,7 +127,7 @@ class CompProfileController extends Controller
                     'instagram'=>$request->instagram,
                     'blog'=>$request->blog,
                     'comp_default'=>$request->comp_default,
-                    // 'created_by'=>$request->instagram=>'',
+                    'created_by'=>Helper::modifyUser($request->user()),
                 ));      
             }    
         } catch (\Throwable $th) {

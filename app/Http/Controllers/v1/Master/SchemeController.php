@@ -744,6 +744,7 @@ class SchemeController extends Controller
                 $data->ava_special_sip=$request->ava_special_sip;
                 $data->special_sip_name=$request->special_sip_name;
                 $data->benchmark_id=isset($request->benchmark_id)?$request->benchmark_id:NULL;
+                $data->updated_by=Helper::modifyUser($request->user());
                 $data->save();
 
                 if ($request->scheme_type=='N') {
@@ -812,7 +813,7 @@ class SchemeController extends Controller
                             'ava_special_sip'=>$request->ava_special_sip,
                             'special_sip_name'=>$request->special_sip_name,
                             'benchmark_id'=>isset($request->benchmark_id)?$request->benchmark_id:NULL,
-                            // 'created_by'=>'',
+                            'created_by'=>Helper::modifyUser($request->user()),
                         ));    
                     }elseif ($request->scheme_type=='N') {
                         $doc_name_1='';
@@ -903,7 +904,7 @@ class SchemeController extends Controller
                             // 'growth_isin'=>$request->growth_isin,
                             // 'idcw_payout_isin'=>$request->idcw_payout_isin,
                             // 'idcw_reinvestment_isin'=>$request->idcw_reinvestment_isin,
-                            // 'created_by'=>'',
+                            'created_by'=>Helper::modifyUser($request->user()),
                         ));  
 
                         $doc_names='';
@@ -920,7 +921,7 @@ class SchemeController extends Controller
                                     'scheme_id'=>$data->id,
                                     'form_name'=>$request->form_name[$key],
                                     'form_upload'=>$doc_names,
-                                    // 'created_by'=>'',
+                                    // 'created_by'=>Helper::modifyUser($request->user()),
                                 ));      
                             }
                         }

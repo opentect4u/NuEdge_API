@@ -151,12 +151,13 @@ class TransctionController extends Controller
                 $data=Transction::find($request->id);
                 $data->trans_type_id=$request->trans_type_id;
                 $data->trns_name=$request->trns_name;
+                $data->updated_by=Helper::modifyUser($request->user());
                 $data->save();
             }else{
                 $data=Transction::create(array(
                     'trans_type_id'=>$request->trans_type_id,
                     'trns_name'=>$request->trns_name,
-                    // 'created_by'=>'',
+                    'created_by'=>Helper::modifyUser($request->user()),
                 ));      
             }    
             $data=Transction::join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')

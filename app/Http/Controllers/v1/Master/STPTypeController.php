@@ -88,6 +88,7 @@ class STPTypeController extends Controller
             if ($request->id > 0) {
                 $data=STPType::find($request->id);
                 $data->stp_type_name=$request->stp_type_name;
+                $data->updated_by=Helper::modifyUser($request->user());
                 $data->save();
             }else{
                 $is_has=STPType::where('stp_type_name',$request->stp_type_name)->count();
@@ -97,7 +98,7 @@ class STPTypeController extends Controller
                 }else {
                     $data=STPType::create(array(
                         'stp_type_name'=>$request->stp_type_name,
-                        // 'created_by'=>'',
+                        'created_by'=>Helper::modifyUser($request->user()),
                     ));      
                 }
             }    

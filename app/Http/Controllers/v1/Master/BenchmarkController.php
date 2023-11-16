@@ -150,7 +150,7 @@ class BenchmarkController extends Controller
                         'launch_date'=>$request->launch_date,
                         'base_date'=>$request->base_date,
                         'base_value'=>$request->base_value,
-                        // 'created_by'=>'',
+                        'created_by'=>Helper::modifyUser($request->user()),
                     )); 
                     $setdata=Benchmark::leftJoin('md_exchange','md_exchange.id','=','md_benchmark.ex_id')
                         ->leftJoin('md_category','md_category.id','=','md_benchmark.category_id')
@@ -183,7 +183,7 @@ class BenchmarkController extends Controller
                 $data=Benchmark::find($id);
                 $data->delete_flag='Y';
                 $data->delete_date=date('Y-m-d H:i:s');
-                $data->delete_by=1;
+                $data->delete_by=Helper::modifyUser($request->user());
                 $data->save();
             }
         } catch (\Throwable $th) {

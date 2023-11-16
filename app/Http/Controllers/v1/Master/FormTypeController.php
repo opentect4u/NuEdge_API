@@ -41,12 +41,13 @@ class FormTypeController extends Controller
                 $data=FormType::find($request->id);
                 $data->product_id=$request->product_id;
                 $data->form_name=$request->form_name;
+                $data->updated_by=Helper::modifyUser($request->user());
                 $data->save();
             }else{
                 $data=FormType::create(array(
                     'product_id'=>$request->product_id,
                     'form_name'=>$request->form_name,
-                    'created_by'=>'',
+                    'created_by'=>Helper::modifyUser($request->user()),
                 ));  
             }    
         } catch (\Throwable $th) {

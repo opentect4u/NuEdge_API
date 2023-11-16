@@ -2,6 +2,7 @@
 namespace App\Helpers;
 use App\Http\Controllers\Controller;
 use DB;
+use Illuminate\Http\Request;
 
 class Helper{
 
@@ -22,6 +23,7 @@ class Helper{
             'data'=>[]
         ],400);
     }
+
     public static function WarningResponse($msg)
     {
         return response()->json([
@@ -30,6 +32,16 @@ class Helper{
             'data'=>[]
         ],201);
     }
+
+    public static function loginErrorResponse($msg)
+    {
+        return response()->json([
+            'suc'=>0,
+            'msg'=>$msg,
+            'data'=>null
+        ],201);
+    }
+
     public static function ipWhitelist($ip)
     {
         return response()->json([
@@ -37,6 +49,20 @@ class Helper{
             'msg'=>Controller::IP_WHITELIST_ERROR.$ip,
             'data'=>[]
         ],400);
+    }
+
+    public static function unauthorized($msg)
+    {
+        return response()->json([
+            'suc'=>0,
+            'msg'=>$msg,
+            'data'=>[]
+        ],403);
+    }
+
+    public static function modifyUser($user)
+    {
+        return $user->id;
     }
 
     public static function CommonParamValue($id)

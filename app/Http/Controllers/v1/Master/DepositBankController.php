@@ -88,6 +88,7 @@ class DepositBankController extends Controller
                 $data->branch_name=$request->branch_name;
                 $data->micr_code=$request->micr_code;
                 $data->branch_addr=$request->branch_addr;
+                $data->updated_by=Helper::modifyUser($request->user());
                 $data->save();
             }else{
                 $data=DepositBank::create(array(
@@ -97,7 +98,7 @@ class DepositBankController extends Controller
                     'micr_code'=>$request->micr_code,
                     'branch_addr'=>$request->branch_addr,
                     'deleted_flag'=>'N',
-                    // 'created_by'=>'',
+                    'created_by'=>Helper::modifyUser($request->user()),
                 ));      
             }    
         } catch (\Throwable $th) {
@@ -166,7 +167,7 @@ class DepositBankController extends Controller
                 $data=DepositBank::find($id);
                 $data->deleted_flag='Y';
                 $data->deleted_at=date('Y-m-d H:i:s');
-                $data->deleted_by=1;
+                $data->deleted_by=Helper::modifyUser($request->user());
                 $data->save();
             }
         } catch (\Throwable $th) {

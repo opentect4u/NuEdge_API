@@ -348,6 +348,7 @@ class BenchmarkSchemeController extends Controller
                 $data->subcat_id=$request->subcat_id;
                 $data->launch_date=$request->launch_date;
                 $data->launch_price=$request->launch_price;
+                $data->updated_by=Helper::modifyUser($request->user());
                 $data->save();
             }else{
                 $is_has=BenchmarkScheme::where('benchmark',$request->benchmark)
@@ -367,7 +368,7 @@ class BenchmarkSchemeController extends Controller
                         'high'=>$request->high,
                         'low'=>$request->low,
                         'close'=>$request->close,
-                        // 'created_by'=>'',
+                        'created_by'=>Helper::modifyUser($request->user()),
                     ));    
                 }
             } 

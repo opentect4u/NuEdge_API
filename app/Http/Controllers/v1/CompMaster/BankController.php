@@ -80,6 +80,7 @@ class BankController extends Controller
                     $dt->branch_name=$value->branch_name;
                     $dt->branch_add=$value->branch_add;
                     $dt->upload_chq=$upload_chq_name;
+                    $dt->updated_by=Helper::modifyUser($request->user());
                     $dt->save();
                 }else {
                     $upload_chq_name='';
@@ -98,6 +99,7 @@ class BankController extends Controller
                         'branch_name'=>$value->branch_name,
                         'branch_add'=>$value->branch_add,
                         'upload_chq'=>isset($upload_chq_name)?$upload_chq_name:'',
+                        'created_by'=>Helper::modifyUser($request->user()),
                     ));    
                 }
                 $data1=CompBank::leftJoin('md_cm_profile','md_cm_profile.id','=','md_cm_bank.cm_profile_id')

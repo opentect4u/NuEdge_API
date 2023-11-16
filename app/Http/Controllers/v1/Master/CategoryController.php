@@ -95,6 +95,7 @@ class CategoryController extends Controller
                 $data=Category::find($request->id);
                 $data->product_id=$request->product_id;
                 $data->cat_name=$request->cat_name;
+                $data->updated_by=Helper::modifyUser($request->user());
                 $data->save();
             }else{
                 $is_has=Category::where('cat_name',$request->cat_name)->where('delete_flag','N')->get();
@@ -104,7 +105,7 @@ class CategoryController extends Controller
                     $data=Category::create(array(
                         'product_id'=>$request->product_id,
                         'cat_name'=>$request->cat_name,
-                        // 'created_by'=>'',
+                        'created_by'=>Helper::modifyUser($request->user()),
                     ));    
                 }  
             }    
@@ -126,7 +127,7 @@ class CategoryController extends Controller
                 $data=Category::find($id);
                 $data->delete_flag='Y';
                 $data->deleted_date=date('Y-m-d H:i:s');
-                $data->deleted_by=1;
+                $data->deleted_by=Helper::modifyUser($request->user());
                 $data->save();
             }
         } catch (\Throwable $th) {

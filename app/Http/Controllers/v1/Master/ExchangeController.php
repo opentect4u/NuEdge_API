@@ -91,6 +91,7 @@ class ExchangeController extends Controller
             if ($request->id > 0) {
                 $data=Exchange::find($request->id);
                 $data->ex_name=$request->ex_name;
+                $data->updated_by=Helper::modifyUser($request->user());
                 $data->save();
             }else{
                 $is_has=Exchange::where('ex_name',$request->ex_name)->where('delete_flag','N')->get();
@@ -99,6 +100,7 @@ class ExchangeController extends Controller
                 }else {
                     $data=Exchange::create(array(
                         'ex_name'=>$request->ex_name,
+                        'created_by'=>Helper::modifyUser($request->user()),
                     ));    
                 }
             }  
@@ -121,7 +123,7 @@ class ExchangeController extends Controller
                 $data=Exchange::find($id);
                 $data->delete_flag='Y';
                 $data->delete_date=date('Y-m-d H:i:s');
-                $data->delete_by=1;
+                $data->delete_by=Helper::modifyUser($request->user());
                 $data->save();
             }
         } catch (\Throwable $th) {

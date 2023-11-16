@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Helpers\Helper;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,7 +17,10 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
-
+Route::get('/login', function () {
+    // return view('welcome');
+    return Helper::unauthorized('Unauthorized');
+})->name('login');
 
 Route::get('stringPosition',[App\Http\Controllers\TestController::class,'index']);
 Route::get('test',[App\Http\Controllers\TestController::class,'test']);

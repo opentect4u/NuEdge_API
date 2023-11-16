@@ -269,7 +269,7 @@ class SchemeISINController extends Controller
                         'option_id'=>$value->option_id,
                         'isin_no'=>$value->isin_no,
                         'product_code'=>$value->product_code,
-                        // 'created_by'=>'',
+                        'created_by'=>Helper::modifyUser($request->user()),
                     ));
                 }else {
                     $dt=SchemeISIN::find($value->row_id);
@@ -278,6 +278,7 @@ class SchemeISINController extends Controller
                     $dt->option_id=$value->option_id;
                     $dt->isin_no=$value->isin_no;
                     $dt->product_code=$value->product_code;
+                    $dt->updated_by=Helper::modifyUser($request->user());
                     $dt->save();
                 }  
                 $sc_data=SchemeISIN::leftjoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
@@ -306,10 +307,12 @@ class SchemeISINController extends Controller
                             $rnt_up_data=MutualFundTransaction::find($update_data->id);
                             $rnt_up_data->scheme_flag='N';
                             $rnt_up_data->plan_option_flag='N';
+                            $rnt_up_data->updated_by=Helper::modifyUser($request->user());
                             $rnt_up_data->save();
                         }elseif ($update_data->rnt_id==2) {
                             $rnt_up_data2=MutualFundTransaction::find($update_data->id);
                             $rnt_up_data2->scheme_flag='N';
+                            $rnt_up_data2->updated_by=Helper::modifyUser($request->user());
                             $rnt_up_data2->save();
                         }
                     }
@@ -324,6 +327,7 @@ class SchemeISINController extends Controller
                     if ($update_data2->rnt_id==2) {
                         $rnt2_up_data2=MutualFundTransaction::find($update_data2->id);
                         $rnt2_up_data2->plan_option_flag='N';
+                        $rnt2_up_data2->updated_by=Helper::modifyUser($request->user());
                         $rnt2_up_data2->save();
                     }
                 }
@@ -349,7 +353,7 @@ class SchemeISINController extends Controller
             $data=SchemeISIN::find($id);
             $data->delete_flag='Y';
             $data->deleted_date=date('Y-m-d H:i:s');
-            $data->deleted_by=1;
+            $data->deleted_by=Helper::modifyUser($request->user());
             $data->save();
             
         } catch (\Throwable $th) {

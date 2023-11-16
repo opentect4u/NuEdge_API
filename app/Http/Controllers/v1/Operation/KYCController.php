@@ -555,6 +555,7 @@ class KYCController extends Controller
                     'final_kyc_status'=>'U',
                     'branch_code'=>1,
                     'deleted_flag'=>'N',
+                    'created_by'=>Helper::modifyUser($request->user()),
                     // 'created_by'=>'',
                     // modification_type
                     // fresh_type

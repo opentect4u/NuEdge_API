@@ -97,6 +97,7 @@ class OptionController extends Controller
             if ($request->id > 0) {
                 $data=Option::find($request->id);
                 $data->opt_name=$request->opt_name;
+                $data->updated_by=Helper::modifyUser($request->user());
                 $data->save();
             }else{
                 $is_has=Option::where('opt_name',$request->opt_name)->where('delete_flag','N')->get();
@@ -105,7 +106,7 @@ class OptionController extends Controller
                 }else {
                     $data=Option::create(array(
                         'opt_name'=>$request->opt_name,
-                        // 'created_by'=>'',
+                        'created_by'=>Helper::modifyUser($request->user()),
                     ));   
                 } 
             }  

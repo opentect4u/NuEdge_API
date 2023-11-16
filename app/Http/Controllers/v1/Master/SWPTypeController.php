@@ -84,6 +84,7 @@ class SWPTypeController extends Controller
             if ($request->id > 0) {
                 $data=SWPType::find($request->id);
                 $data->swp_type_name=$request->swp_type_name;
+                $data->updated_by=Helper::modifyUser($request->user());
                 $data->save();
             }else{
                 $is_has=SWPType::where('swp_type_name',$request->swp_type_name)->count();
@@ -93,7 +94,7 @@ class SWPTypeController extends Controller
                 }else {
                     $data=SWPType::create(array(
                         'swp_type_name'=>$request->swp_type_name,
-                        // 'created_by'=>'',
+                        'created_by'=>Helper::modifyUser($request->user()),
                     ));      
                 }
             }    

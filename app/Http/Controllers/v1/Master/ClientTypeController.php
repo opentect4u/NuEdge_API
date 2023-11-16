@@ -87,6 +87,7 @@ class ClientTypeController extends Controller
             if ($request->id > 0) {
                 $data=ClientType::find($request->id);
                 $data->type_name=$request->type_name;
+                $data->updated_by=Helper::modifyUser($request->user());
                 $data->save();
             }else{
                 $is_has=ClientType::where('type_name',$request->type_name)->count();
@@ -96,7 +97,7 @@ class ClientTypeController extends Controller
                 }else {
                     $data=ClientType::create(array(
                         'type_name'=>$request->type_name,
-                        // 'created_by'=>'',
+                        'created_by'=>Helper::modifyUser($request->user()),
                     ));      
                 }
             }    

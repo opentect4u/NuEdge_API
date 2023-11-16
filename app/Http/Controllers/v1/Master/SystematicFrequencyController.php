@@ -77,6 +77,7 @@ class SystematicFrequencyController extends Controller
                 $c_data->freq_code=$request->freq_code;
                 $c_data->freq_name=$request->freq_name;
                 $c_data->rnt_id=$request->rnt_id;
+                // $data->updated_by=Helper::modifyUser($request->user());
                 $c_data->save();
             }else {
                 // return $request;
@@ -98,6 +99,7 @@ class SystematicFrequencyController extends Controller
                         'freq_code'=>$request->freq_code,
                         'freq_name'=>$request->freq_name,
                         'rnt_id'=>$request->rnt_id,
+                        // 'created_by'=>Helper::modifyUser($request->user()),
                     ));
                 }
             }

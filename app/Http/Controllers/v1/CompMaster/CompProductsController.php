@@ -51,12 +51,13 @@ class CompProductsController extends Controller
                 $data=CompProduct::find($request->id);
                 $data->cm_profile_id=$request->cm_profile_id;
                 $data->product_name=$request->product_name;
+                $data->updated_by=Helper::modifyUser($request->user());
                 $data->save();
             }else{
                 $data=CompProduct::create(array(
                     'cm_profile_id'=>$request->cm_profile_id,
                     'product_name'=>$request->product_name,
-                    // 'created_by'=>'',
+                    'created_by'=>Helper::modifyUser($request->user()),
                 ));      
             }    
             $data=CompProduct::leftJoin('md_cm_profile','md_cm_profile.id','=','md_cm_products.cm_profile_id')
@@ -83,6 +84,7 @@ class CompProductsController extends Controller
         try {
             $data=CompProduct::find($request->id);
             $data->product_name=$request->product_name;
+            $data->updated_by=Helper::modifyUser($request->user());
             $data->save();
         } catch (\Throwable $th) {
             //throw $th;

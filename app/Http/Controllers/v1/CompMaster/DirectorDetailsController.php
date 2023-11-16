@@ -66,6 +66,7 @@ class DirectorDetailsController extends Controller
                 $data->din_no=$request->din_no;
                 $data->valid_from=$request->valid_from;
                 $data->valid_to=$request->valid_to;
+                $data->updated_by=Helper::modifyUser($request->user());
                 $data->save();
             }else{
 
@@ -92,8 +93,8 @@ class DirectorDetailsController extends Controller
                     'email'=>$request->email,
                     'din_no'=>$request->din_no,
                     'valid_from'=>$request->valid_from,
-                    'valid_to'=>$request->valid_to
-                    // 'created_by'=>$request->instagram=>'',
+                    'valid_to'=>$request->valid_to,
+                    'created_by'=>Helper::modifyUser($request->user()),
                 ));      
             }    
         } catch (\Throwable $th) {

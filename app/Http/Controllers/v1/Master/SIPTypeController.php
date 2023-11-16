@@ -85,6 +85,7 @@ class SIPTypeController extends Controller
             if ($request->id > 0) {
                 $data=SIPType::find($request->id);
                 $data->sip_type_name=$request->sip_type_name;
+                $data->updated_by=Helper::modifyUser($request->user());
                 $data->save();
             }else{
                 $is_has=SIPType::where('sip_type_name',$request->sip_type_name)->count();
@@ -94,7 +95,7 @@ class SIPTypeController extends Controller
                 }else {
                     $data=SIPType::create(array(
                         'sip_type_name'=>$request->sip_type_name,
-                        // 'created_by'=>'',
+                        'created_by'=>Helper::modifyUser($request->user()),
                     ));      
                 }
             }    

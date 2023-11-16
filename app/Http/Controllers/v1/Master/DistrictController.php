@@ -56,6 +56,7 @@ class DistrictController extends Controller
                 $data->country_id=$request->country_id;
                 $data->state_id=$request->state_id;
                 $data->name=$request->name;
+                $data->updated_by=Helper::modifyUser($request->user());
                 $data->save();
             }else {
                 $is_has=District::where([
@@ -71,6 +72,7 @@ class DistrictController extends Controller
                         'country_id'=>$request->country_id,
                         'state_id'=>$request->state_id,
                         'name'=>$request->name,
+                        'created_by'=>Helper::modifyUser($request->user()),
                     ));
                 }
                 

@@ -110,7 +110,7 @@ class DocumentController extends Controller
                         'client_id'=>$request->client_id,
                         'doc_type_id'=>$request->doc_type_id[$key],
                         'doc_name'=>$doc_name,
-                        // 'created_by'=>'',
+                        'created_by'=>Helper::modifyUser($request->user()),
                     ));      
                 }
             $data=Client::with('ClientDoc')->where('id',$request->client_id)->get();      
@@ -155,7 +155,7 @@ class DocumentController extends Controller
                             'client_id'=>$request->client_id,
                             'doc_type_id'=>$request->doc_type_id[$key],
                             'doc_name'=>$doc_name,
-                            // 'created_by'=>'',
+                            'created_by'=>Helper::modifyUser($request->user()),
                         ));    
                     } else {
                         if ($file[$key]) {

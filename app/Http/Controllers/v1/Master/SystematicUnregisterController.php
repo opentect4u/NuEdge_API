@@ -73,6 +73,7 @@ class SystematicUnregisterController extends Controller
                 $modify_data=SystematicUnregistered::find($id);
                 $modify_data->remarks=$request->remarks;
                 $modify_data->rnt_id=$request->rnt_id;
+                // $data->updated_by=Helper::modifyUser($request->user());
                 $modify_data->save();
             }else {
                 // return $request;
@@ -91,6 +92,7 @@ class SystematicUnregisterController extends Controller
                     $modify_data=SystematicUnregistered::create(array(
                         'remarks'=>$request->remarks,
                         'rnt_id'=>$request->rnt_id,
+                        // 'created_by'=>Helper::modifyUser($request->user()),
                     ));
                 }
             }

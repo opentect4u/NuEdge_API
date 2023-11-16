@@ -645,7 +645,7 @@ class FormReceivedController extends Controller
                     'kyc_modification'=>isset($request->kyc_modification)?$request->kyc_modification:NULL,
                     'existing_kyc_status'=>isset($request->existing_kyc_status)?$request->existing_kyc_status:NULL,   //
                     'branch_code'=>$branch_code,
-                    // 'created_by'=>'',
+                    'created_by'=>Helper::modifyUser($request->user()),
                 ));      
               
         } catch (\Throwable $th) {
@@ -689,7 +689,8 @@ class FormReceivedController extends Controller
                     'application_no'=>isset($request->application_no)?$request->application_no:NULL,
                     'kyc_status'=>$request->kyc_status,
                     'branch_code'=>$branch_code,
-                    // 'created_by'=>'',
+                    'updated_by'=>Helper::modifyUser($request->user()),
+                // 'created_by'=>'',
                 ]);      
             $data=FormReceived::where('temp_tin_no',$request->temp_tin_no)->first();
         } catch (\Throwable $th) {
@@ -717,7 +718,7 @@ class FormReceivedController extends Controller
             }else {
                 $data=FormReceived::where('temp_tin_no',$request->temp_tin_no)->update([
                     'deleted_at'=>date('Y-m-d H:i:s'),
-                    'deleted_by'=>1,
+                    'deleted_by'=>Helper::modifyUser($request->user()),
                     'deleted_flag'=>'Y',
                 ]);
             }

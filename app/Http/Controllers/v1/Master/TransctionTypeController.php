@@ -99,12 +99,13 @@ class TransctionTypeController extends Controller
                 $data=TransctionType::find($request->id);
                 $data->product_id=$request->product_id;
                 $data->trns_type=$request->trns_type;
+                $data->updated_by=Helper::modifyUser($request->user());
                 $data->save();
             }else{
                 $data=TransctionType::create(array(
                     'product_id'=>$request->product_id,
                     'trns_type'=>$request->trns_type,
-                    'created_by'=>'',
+                    'created_by'=>Helper::modifyUser($request->user()),
                 ));  
             }    
         } catch (\Throwable $th) {

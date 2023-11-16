@@ -246,6 +246,7 @@ class SubcategoryController extends Controller
                 $data=SubCategory::find($request->id);
                 $data->category_id=$request->category_id;
                 $data->subcategory_name=$request->subcategory_name;
+                $data->updated_by=Helper::modifyUser($request->user());
                 $data->save();
             }else{
                 $is_has=SubCategory::where('subcategory_name',$request->subcategory_name)->where('delete_flag','N')->get();
@@ -255,7 +256,7 @@ class SubcategoryController extends Controller
                     $data=SubCategory::create(array(
                         'category_id'=>$request->category_id,
                         'subcategory_name'=>$request->subcategory_name,
-                        'created_by'=>'',
+                        'created_by'=>Helper::modifyUser($request->user()),
                     ));   
                 }   
             }
@@ -282,7 +283,7 @@ class SubcategoryController extends Controller
                 $data=SubCategory::find($id);
                 $data->delete_flag='Y';
                 $data->deleted_date=date('Y-m-d H:i:s');
-                $data->deleted_by=1;
+                $data->deleted_by=Helper::modifyUser($request->user());
                 $data->save();
             }
         } catch (\Throwable $th) {

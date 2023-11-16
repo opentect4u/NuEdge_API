@@ -94,6 +94,7 @@ class MailBackController extends Controller
                     'upload_file'=>$upload_file_name,
                     'process_date'=>date('Y-m-d H:i:s'),
                     'process_type'=>'M',
+                    'created_by'=>Helper::modifyUser($request->user()),
                 ));
                 $id=$create_dt->id;
             }else {

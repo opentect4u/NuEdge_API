@@ -87,6 +87,7 @@ class EmailController extends Controller
                 $data->event=$request->event;
                 $data->subject=$request->subject;
                 $data->body=$request->body;
+                $data->updated_by=Helper::modifyUser($request->user());
                 $data->save();
             }else{
                 $is_has=Email::where('event',$request->event)->count();
@@ -98,7 +99,7 @@ class EmailController extends Controller
                         'event'=>$request->event,
                         'subject'=>$request->subject,
                         'body'=>$request->body,
-                        // 'created_by'=>'',
+                        'created_by'=>Helper::modifyUser($request->user()),
                     ));      
                 }
             }    

@@ -100,6 +100,7 @@ class SharedHolderController extends Controller
                 $data->distinctive_no_to=$request->distinctive_no_to;
                 $data->nominee=$request->nominee;
                 $data->type=$type;
+                $data->updated_by=Helper::modifyUser($request->user());
                 $data->save();
             }else{
                 if ($request->type=='T') {
@@ -138,6 +139,7 @@ class SharedHolderController extends Controller
                         'transfer_id'=>$request->trans_from_id,
                         'upload_scan'=>isset($logo)?$logo:NULL,
                         'remarks'=>isset($request->remarks)?$request->remarks:NULL,
+                        'created_by'=>Helper::modifyUser($request->user()),
                     ));
 
                     $find=CompShareHolder::find($request->trans_from_id);
@@ -176,12 +178,13 @@ class SharedHolderController extends Controller
                         'distinctive_no_to'=>$request->distinctive_no_to,
                         'nominee'=>$request->nominee,
                         'type'=>$type,
+                        'created_by'=>Helper::modifyUser($request->user()),
                     ));      
                 }
                 
             }    
         } catch (\Throwable $th) {
-            throw $th;
+            // throw $th;
             return Helper::ErrorResponse(parent::DATA_SAVE_ERROR);
         }
         return Helper::SuccessResponse($data);

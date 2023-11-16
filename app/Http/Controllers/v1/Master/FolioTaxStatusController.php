@@ -73,6 +73,7 @@ class FolioTaxStatusController extends Controller
                 $c_data->status=$request->status;
                 $c_data->status_code=$request->status_code;
                 $c_data->rnt_id=$request->rnt_id;
+                $data->updated_by=Helper::modifyUser($request->user());
                 $c_data->save();
             }else {
                 // return $request;
@@ -94,6 +95,7 @@ class FolioTaxStatusController extends Controller
                         'status'=>$request->status,
                         'status_code'=>$request->status_code,
                         'rnt_id'=>$request->rnt_id,
+                        'created_by'=>Helper::modifyUser($request->user()),
                     ));
                 }
             }

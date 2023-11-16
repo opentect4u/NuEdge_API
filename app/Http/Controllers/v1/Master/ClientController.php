@@ -268,6 +268,7 @@ class ClientController extends Controller
                     $datas->email=$request->email;
                     $datas->sec_email=$request->sec_email;
                     $datas->client_type='P';
+                    $data->updated_by=Helper::modifyUser($request->user());
                     $datas->save();
 
                     $doc_name='';
@@ -285,7 +286,7 @@ class ClientController extends Controller
                                     'client_id'=>$datas->id,
                                     'doc_type_id'=>$request->doc_type_id[$key],
                                     'doc_name'=>$doc_name,
-                                    // 'created_by'=>'',
+                                    'created_by'=>Helper::modifyUser($request->user()),
                                 ));      
                             }
                         }
@@ -354,6 +355,7 @@ class ClientController extends Controller
                                 'sec_email'=>$request->sec_email,
                                 'client_type'=>$request->client_type,
                                 'client_type_mode'=>$request->client_type_mode,
+                                'created_by'=>Helper::modifyUser($request->user()),
                             )); 
                             $doc_name='';
                             $files=$request->file;
@@ -370,7 +372,7 @@ class ClientController extends Controller
                                         'client_id'=>$u_data->id,
                                         'doc_type_id'=>$request->doc_type_id[$key],
                                         'doc_name'=>$doc_name,
-                                        // 'created_by'=>'',
+                                        'created_by'=>Helper::modifyUser($request->user()),
                                     ));      
                                 }
                             }
@@ -386,6 +388,7 @@ class ClientController extends Controller
                                         'email'=>$value10->email,
                                         'dob'=>$value10->dob,
                                         'pan'=>$value10->pan,
+                                        'created_by'=>Helper::modifyUser($request->user()),
                                     ));
                                 }
                             }
@@ -419,6 +422,7 @@ class ClientController extends Controller
                             'sec_email'=>$request->sec_email,
                             'client_type'=>$request->client_type,
                             'client_type_mode'=>$request->client_type_mode,
+                            'created_by'=>Helper::modifyUser($request->user()),
                         )); 
                         $doc_name='';
                         $files=$request->file;
@@ -435,7 +439,7 @@ class ClientController extends Controller
                                     'client_id'=>$u_data->id,
                                     'doc_type_id'=>$request->doc_type_id[$key],
                                     'doc_name'=>$doc_name,
-                                    // 'created_by'=>'',
+                                    'created_by'=>Helper::modifyUser($request->user()),
                                 ));      
                             }
                         }
@@ -451,6 +455,7 @@ class ClientController extends Controller
                                         'email'=>$value10->email,
                                         'dob'=>$value10->dob,
                                         'pan'=>$value10->pan,
+                                        'created_by'=>Helper::modifyUser($request->user()),
                                     ));
                                 }
                             }
@@ -484,7 +489,7 @@ class ClientController extends Controller
                             'guardians_name'=>$request->guardians_name,
                             'relation'=>$request->relation,
                             'client_type_mode'=>$request->client_type_mode,
-                            // 'created_by'=>'',
+                            'created_by'=>Helper::modifyUser($request->user()),
                         ));
                         $doc_name='';
                         $files=$request->file;
@@ -501,7 +506,7 @@ class ClientController extends Controller
                                     'client_id'=>$u_data->id,
                                     'doc_type_id'=>$request->doc_type_id[$key],
                                     'doc_name'=>$doc_name,
-                                    // 'created_by'=>'',
+                                    'created_by'=>Helper::modifyUser($request->user()),
                                 ));      
                             }
                         }
@@ -572,7 +577,7 @@ class ClientController extends Controller
             //     $data=Client::find($id);
             //     $data->delete_flag='Y';
             //     $data->deleted_date=date('Y-m-d H:i:s');
-            //     $data->deleted_by=1;
+            //     $data->deleted_by=Helper::modifyUser($request->user());
             //     $data->save();
             // }
         } catch (\Throwable $th) {

@@ -419,6 +419,7 @@ class KYCAckController extends Controller
                     'ack_copy_scan'=>$ack_copy_scan_name,
                     'ack_remarks'=>$request->ack_remarks,
                     'form_status'=>'A',
+                    'updated_by'=>Helper::modifyUser($request->user()),
                     // 'updated_at'
                 ));   
             // return $data1;

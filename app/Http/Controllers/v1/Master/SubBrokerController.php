@@ -58,13 +58,14 @@ class SubBrokerController extends Controller
                 $data->arn_no=$request->arn_no;
                 $data->code=$request->code;
                 $data->bro_name=$request->bro_name;
+                $data->updated_by=Helper::modifyUser($request->user());
                 $data->save();
             }else{
                 $data=SubBroker::create(array(
                     'arn_no'=>$request->arn_no,
                     'code'=>$request->code,
                     'bro_name'=>$request->bro_name,
-                    // 'created_by'=>'',
+                    'created_by'=>Helper::modifyUser($request->user()),
                 ));      
             }    
         } catch (\Throwable $th) {

@@ -49,7 +49,7 @@ class BranchController extends Controller
                 $data=Branch::create(array(
                     'brn_code'=>$request->brn_code,
                     'brn_name'=>$request->brn_name,
-                    // 'created_by'=>'',
+                    'created_by'=>Helper::modifyUser($request->user()),
                 ));    
             }  
         } catch (\Throwable $th) {

@@ -80,11 +80,13 @@ class CountryController extends Controller
             if ($id > 0) {
                 $data=Country::find($id);
                 $data->name=$request->name;
+                $data->updated_by=Helper::modifyUser($request->user());
                 $data->save();
             }else {
                 
                 $data=Country::create(array(
                     'name'=>$request->name,
+                    'created_by'=>Helper::modifyUser($request->user()),
                 ));
             }
         } catch (\Throwable $th) {

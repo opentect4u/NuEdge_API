@@ -73,7 +73,7 @@ class EmployeeController extends Controller
                 $data=Employee::create(array(
                     'euin_no'=>$request->euin_no,
                     'emp_name'=>$request->emp_name,
-                    // 'created_by'=>'',
+                    'created_by'=>Helper::modifyUser($request->user()),
                 ));      
            
         } catch (\Throwable $th) {
@@ -97,6 +97,7 @@ class EmployeeController extends Controller
         try {
             $data=Employee::where('emp_code',$request->emp_code)->update([
                 'emp_name'=>$request->emp_name,
+                'created_by'=>Helper::modifyUser($request->user()),
             ]);
         } catch (\Throwable $th) {
             //throw $th;

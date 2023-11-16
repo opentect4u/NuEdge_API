@@ -45,10 +45,12 @@ class CityTypeController extends Controller
             if ($id > 0) {
                 $data=CityType::find($id);
                 $data->name=$request->name;
+                $data->updated_by=Helper::modifyUser($request->user());
                 $data->save();
             }else {
                 $data=CityType::create(array(
                     'name'=>$request->name,
+                    'created_by'=>Helper::modifyUser($request->user()),
                 ));
             }
         } catch (\Throwable $th) {
@@ -120,17 +122,20 @@ class CityTypeController extends Controller
 
             $update_wherein=Pincode::whereIn('pincode',$manku)
             ->update([
-                'city_type_id'=>$request->city_type_id
+                'city_type_id'=>$request->city_type_id,
+                'updated_by'=>Helper::modifyUser($request->user()),
             ]);
             if ($request->city_type_id==1) {
                 $update_notwherein=Pincode::whereNotIn('pincode',$manku)
                     ->update([
-                        'city_type_id'=>2
+                        'city_type_id'=>2,
+                        'updated_by'=>Helper::modifyUser($request->user()),
                     ]);
             }elseif ($request->city_type_id==2) {
                 $update_notwherein=Pincode::whereNotIn('pincode',$manku)
                     ->update([
-                        'city_type_id'=>1
+                        'city_type_id'=>1,
+                        'updated_by'=>Helper::modifyUser($request->user()),
                     ]);
             }
             // return $update_notwherein;

@@ -70,6 +70,7 @@ class LicenseDetailsController extends Controller
                 $data->valid_from=$request->valid_from;
                 $data->valid_to=$request->valid_to;
                 $data->upload_file=$upload_file;
+                $data->updated_by=Helper::modifyUser($request->user());
                 $data->save();
             }else{
 
@@ -86,6 +87,7 @@ class LicenseDetailsController extends Controller
                     'valid_from'=>$request->valid_from,
                     'valid_to'=>$request->valid_to,
                     'upload_file'=>$upload_file,
+                    'created_by'=>Helper::modifyUser($request->user()),
                 ));      
             }            
         } catch (\Throwable $th) {

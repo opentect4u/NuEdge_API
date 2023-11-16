@@ -77,6 +77,7 @@ class DocumentLockerController extends Controller
                         $dat->valid_from=$value->valid_from;
                         $dat->valid_to=$value->valid_to;
                         $dat->upload_file=$logo;
+                        $dat->updated_by=Helper::modifyUser($request->user());
                         $dat->save();
                     }else {
                         // return $file;
@@ -93,6 +94,7 @@ class DocumentLockerController extends Controller
                             'valid_from'=>$value->valid_from,
                             'valid_to'=>$value->valid_to,
                             'upload_file'=>$logo,
+                            'created_by'=>Helper::modifyUser($request->user()),
                         ));    
                     }
                     array_push($data,$dat) ;

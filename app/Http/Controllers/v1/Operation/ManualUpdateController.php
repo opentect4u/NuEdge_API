@@ -549,6 +549,7 @@ class ManualUpdateController extends Controller
                     'upload_soa'=>$upload_soa_name,
                     'manual_update_remarks'=>$request->manual_update_remarks,
                     'form_status'=>'M',
+                    'updated_by'=>Helper::modifyUser($request->user()),
                     // 'updated_at'
                 ));   
             }elseif ($request->manual_trans_status=="R") { // reject
@@ -571,6 +572,7 @@ class ManualUpdateController extends Controller
                     'reject_reason_id'=>isset($request->reject_reason_id)?$request->reject_reason_id:NULL,
                     'reject_memo'=>$reject_memo_name,
                     'manual_update_remarks'=>$request->manual_update_remarks,
+                    'updated_by'=>Helper::modifyUser($request->user()),
                 ));   
             } elseif ($request->manual_trans_status=="N") { // pending
                 MutualFund::where('tin_no',$request->tin_no)->update(array(
@@ -583,6 +585,7 @@ class ManualUpdateController extends Controller
                     'reject_reason_id'=>isset($request->reject_reason_id)?$request->reject_reason_id:NULL,
                     'pending_reason'=>isset($request->pending_reason)?$request->pending_reason:NULL,
                     'manual_update_remarks'=>$request->manual_update_remarks,
+                    'updated_by'=>Helper::modifyUser($request->user()),
                 ));   
             }
             $data=MutualFund::where('tin_no',$request->tin_no)->first();

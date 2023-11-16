@@ -306,6 +306,7 @@ class AMCController extends Controller
                 $data->distributor_care_no=$request->distributor_care_no;
                 $data->distributor_care_email=$request->distributor_care_email;
                 $data->logo=$logo_name;
+                $data->updated_by=Helper::modifyUser($request->user());
                 $data->save();
             }else{
                 $is_has=AMC::where('amc_name',$request->amc_name)->where('delete_flag','N')->get();
@@ -368,7 +369,7 @@ class AMCController extends Controller
                         'distributor_care_email'=>$request->distributor_care_email,
                         'logo'=>$logo_name,
                         'delete_flag'=>'N',
-                        // 'created_by'=>'',
+                        'created_by'=>Helper::modifyUser($request->user()),
                     ));  
                 }    
             }    
@@ -391,7 +392,7 @@ class AMCController extends Controller
                 $data=AMC::find($id);
                 $data->delete_flag='Y';
                 $data->deleted_date=date('Y-m-d H:i:s');
-                $data->deleted_by=1;
+                $data->deleted_by=Helper::modifyUser($request->user());
                 $data->save();
             }
         } catch (\Throwable $th) {

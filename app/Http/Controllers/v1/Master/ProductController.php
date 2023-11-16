@@ -42,11 +42,12 @@ class ProductController extends Controller
             if ($request->id > 0) {
                 $data=Product::find($request->id);
                 $data->product_name=$request->product_name;
+                $data->updated_by=Helper::modifyUser($request->user());
                 $data->save();
             }else{
                 $data=Product::create(array(
                     'product_name'=>$request->product_name,
-                    // 'created_by'=>'',
+                    'created_by'=>Helper::modifyUser($request->user()),
                 ));      
             }    
         } catch (\Throwable $th) {
@@ -69,6 +70,7 @@ class ProductController extends Controller
         try {
             $data=Product::find($request->id);
             $data->product_name=$request->product_name;
+            $data->updated_by=Helper::modifyUser($request->user());
             $data->save();
         } catch (\Throwable $th) {
             //throw $th;
