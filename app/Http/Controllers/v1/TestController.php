@@ -8,6 +8,7 @@ use App\Helpers\Helper;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use App\Models\AMC;
+use DB;
 
 class TestController extends Controller
 {
@@ -69,5 +70,14 @@ class TestController extends Controller
         return $acronym;
         return "hii";
         # code...
+    }
+
+    public function index3()
+    {
+        // return 'hii';
+        $p1='5317672/89';
+        $p2='D110';
+        $data=DB::select('call get_euin_no("'.$p1.'", "'.$p2.'")');
+        return $data[0]->euin_no;
     }
 }
