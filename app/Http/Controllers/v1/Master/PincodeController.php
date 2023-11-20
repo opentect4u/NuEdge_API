@@ -65,7 +65,7 @@ class PincodeController extends Controller
                 $data->city_id=$request->city_id;
                 // $data->city_type_id=$request->city_type_id;
                 $data->pincode=$request->pincode;
-                // $data->updated_by=Helper::modifyUser($request->user());
+                $data->updated_by=Helper::modifyUser($request->user());
                 $data->save();
             }else {
                 $is_has=Pincode::where([
@@ -86,7 +86,7 @@ class PincodeController extends Controller
                         'city_id'=>$request->city_id,
                         // 'city_type_id'=>$request->city_type_id,
                         'pincode'=>$request->pincode,
-                        // 'created_by'=>Helper::modifyUser($request->user()),
+                        'created_by'=>Helper::modifyUser($request->user()),
                     ));
                 }
             }

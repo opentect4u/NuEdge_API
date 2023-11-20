@@ -89,7 +89,7 @@ class StateController extends Controller
                 $data=State::find($id);
                 $data->country_id=$request->country_id;
                 $data->name=$request->name;
-                // $data->updated_by=Helper::modifyUser($request->user());
+                $data->updated_by=Helper::modifyUser($request->user());
                 $data->save();
             }else {
                 $is_has=State::where([
@@ -103,7 +103,7 @@ class StateController extends Controller
                     $data=State::create(array(
                         'country_id'=>$request->country_id,
                         'name'=>$request->name,
-                        // 'created_by'=>Helper::modifyUser($request->user()),
+                        'created_by'=>Helper::modifyUser($request->user()),
                     ));
                 }
             }

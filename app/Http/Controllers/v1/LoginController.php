@@ -13,18 +13,24 @@ class LoginController extends Controller
 {
     public function login(Request $request)
     {
-        if(Auth::attempt(['email' => $request->email, 'password' => $request->password])){ 
-            $user = Auth::user(); 
-
-            // Auth::user()->tokens->each(function($token, $key) {
-            //     $token->delete();
-            // });
-            $success['token'] =  $user->createToken('MyNuedgeApp')->accessToken; 
-            $success['user'] =  $user;
-            // return $success;
-        } else { 
-            return Helper::loginErrorResponse('Username and password don`t match');
-        } 
+        try {
+            //code...
+            if(Auth::attempt(['email' => $request->email, 'password' => $request->password])){ 
+                $user = Auth::user(); 
+    
+                // Auth::user()->tokens->each(function($token, $key) {
+                //     $token->delete();
+                // });
+                $success['token'] =  $user->createToken('MyNuedgeApp')->accessToken; 
+                $success['user'] =  $user;
+                // return $success;
+            } else { 
+                return Helper::loginErrorResponse('Username and password don`t match');
+            } 
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
         return Helper::SuccessResponse($success);
     }
 
