@@ -46,6 +46,7 @@ class HomeController extends Controller
                     // The passwords match...
                     $update_data=User::find($is_has->id);
                     $update_data->password=Hash::make($password);
+                    $update_data->updated_by=Helper::modifyUser($request->user());
                     $update_data->save();
                     $data='Your password has been changed successfully';
                 }else {
