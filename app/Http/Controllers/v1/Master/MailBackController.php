@@ -223,28 +223,28 @@ class MailBackController extends Controller
                     //     return $result;
                     // }, array());
                     
-                    $array_product_code = array_map(function ($result){
-                        return $result['product_code'];
-                    }, $array_set);
-                    $array_nav_date = array_map(function ($result){
-                        return $result['nav_date'];
-                    }, $array_set);
+                    // $array_product_code = array_map(function ($result){
+                    //     return $result['product_code'];
+                    // }, $array_set);
+                    // $array_nav_date = array_map(function ($result){
+                    //     return $result['nav_date'];
+                    // }, $array_set);
 
-                    $array_set_form_db=NAVDetails::where('rnt_id',$rnt_id)
-                            ->whereIn('product_code',array_unique($array_product_code)) 
-                            ->whereIn('nav_date',array_unique($array_nav_date))
-                            ->get()->toArray();
+                    // $array_set_form_db=NAVDetails::where('rnt_id',$rnt_id)
+                    //         ->whereIn('product_code',array_unique($array_product_code)) 
+                    //         ->whereIn('nav_date',array_unique($array_nav_date))
+                    //         ->get()->toArray();
                 
-                    $final_array =  array_udiff(
-                        $array_set,
-                        $array_set_form_db,
-                        fn($a, $b) => $a['rnt_id'] <=> $b['rnt_id'] && 
-                        $a['product_code'] <=> $b['product_code'] && 
-                        $a['nav_date'] <=> $b['nav_date']
-                    );
+                    // $final_array =  array_udiff(
+                    //     $array_set,
+                    //     $array_set_form_db,
+                    //     fn($a, $b) => $a['rnt_id'] <=> $b['rnt_id'] && 
+                    //     $a['product_code'] <=> $b['product_code'] && 
+                    //     $a['nav_date'] <=> $b['nav_date']
+                    // );
                     // return $final_array;
-                    if (count($final_array) > 0) {
-                        TempNAVDetails::insert($final_array);
+                    if (count($array_set) > 0) {
+                        TempNAVDetails::insert($array_set);
                     }
                 }elseif ($file_type_id=='2' && $file_id=='3') {  // sip stp report WBR49
                     TempSipStpTransaction::truncate();
@@ -716,28 +716,28 @@ class MailBackController extends Controller
                         array_push($array_set,$single_array);
                     }
 
-                    $array_product_code = array_map(function ($result){
-                        return $result['product_code'];
-                    }, $array_set);
-                    $array_nav_date = array_map(function ($result){
-                        return $result['nav_date'];
-                    }, $array_set);
+                    // $array_product_code = array_map(function ($result){
+                    //     return $result['product_code'];
+                    // }, $array_set);
+                    // $array_nav_date = array_map(function ($result){
+                    //     return $result['nav_date'];
+                    // }, $array_set);
 
-                    $array_set_form_db=NAVDetails::where('rnt_id',$rnt_id)
-                            ->whereIn('product_code',array_unique($array_product_code)) 
-                            ->whereIn('nav_date',array_unique($array_nav_date))
-                            ->get()->toArray();
+                    // $array_set_form_db=NAVDetails::where('rnt_id',$rnt_id)
+                    //         ->whereIn('product_code',array_unique($array_product_code)) 
+                    //         ->whereIn('nav_date',array_unique($array_nav_date))
+                    //         ->get()->toArray();
                 
-                    $final_array =  array_udiff(
-                        $array_set,
-                        $array_set_form_db,
-                        fn($a, $b) => $a['rnt_id'] <=> $b['rnt_id'] && 
-                        $a['product_code'] <=> $b['product_code'] && 
-                        $a['nav_date'] <=> $b['nav_date']
-                    );
+                    // $final_array =  array_udiff(
+                    //     $array_set,
+                    //     $array_set_form_db,
+                    //     fn($a, $b) => $a['rnt_id'] <=> $b['rnt_id'] && 
+                    //     $a['product_code'] <=> $b['product_code'] && 
+                    //     $a['nav_date'] <=> $b['nav_date']
+                    // );
                     // return $final_array;
-                    if (count($final_array) > 0) {
-                        TempNAVDetails::insert($final_array);
+                    if (count($array_set) > 0) {
+                        TempNAVDetails::insert($array_set);
                     }
                 }elseif ($file_type_id==2 && $file_id==6) {  // sip stp report MFSD243
                     TempSipStpTransaction::truncate();
