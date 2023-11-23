@@ -406,6 +406,9 @@ Route::prefix('v1')->group(function () {
             Route::any('rntFolioDetailsShow',[App\Http\Controllers\v1\Master\FolioTaxStatusController::class,'index']);
             Route::post('rntFolioDetailsAddEdit',[App\Http\Controllers\v1\Master\FolioTaxStatusController::class,'CreateUpdate']);
 
+            Route::any('fileUploadHelp',[App\Http\Controllers\v1\Master\UploadFileHelpController::class,'index']);
+            Route::post('fileUploadHelpAddEdit',[App\Http\Controllers\v1\Master\UploadFileHelpController::class,'CreateUpdate']);
+
             /*************************************************End For file help************************************************/
 
             /*************************************************Start For Report************************************************/

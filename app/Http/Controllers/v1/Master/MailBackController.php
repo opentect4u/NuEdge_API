@@ -134,9 +134,12 @@ class MailBackController extends Controller
             if ($rnt_id==1) { // CAMS
                 if ($file_type_id=='1' && $file_id=='1') {  // transction  WBR2
                     TempMutualFundTransaction::truncate();
+
+                    $array_set=[];
                     for ($i=$start_count; $i <= $end_count; $i++) { 
                         $value=explode("\t",$TotalArray[$i]);
-                        TempMutualFundTransaction::create(array(
+                        // TempMutualFundTransaction::create(array(
+                        $single_array=[
                             'rnt_id'=>$rnt_id,
                             'arn_no'=>str_replace("'","",$value[16]),
                             'sub_brk_cd'=>str_replace("'","",$value[17]),
@@ -171,7 +174,48 @@ class MailBackController extends Controller
                             'tds'=>NULL,
                             'acc_no'=>str_replace("'","",$value[63]),
                             'bank_name'=>str_replace("'","",$value[64]),
-                        ));
+                            'created_at'=>date('Y-m-d H:i:s'),
+                            'updated_at'=>date('Y-m-d H:i:s'),
+                        ];
+                        // ));
+                        array_push($array_set,$single_array);
+                    }
+
+                    $array_trans_no = array_map(function ($result){
+                        return $result['trans_no'];
+                    }, $array_set);
+                    // DB::enableQueryLog();
+                    $array_set_form_db=MutualFundTransaction::select('*')
+                            ->selectRaw('DATE(created_at) as aa_for_create_at')->where('rnt_id',$rnt_id)
+                            ->whereIn('trans_no',array_unique($array_trans_no)) 
+                            // ->whereDate('created_at',date('Y-m-d'))
+                            ->get()->toArray();
+                            // ->get();
+                    // dd(DB::getQueryLog());
+
+                    // return $array_set_form_db;
+                    // return $array_set;
+                    $final_array=[];
+                    
+                    foreach ($array_set as $key => $value) {
+                        // return $value;
+                        if (in_array($value['trans_no'], array_column($array_set_form_db, 'trans_no'))) {
+                            // return 
+                            $var1=date('Y-m-d',strtotime($value['created_at']));
+                            $var2=$value['trans_no'];
+                            $filtered_array = array_filter($array_set_form_db, function($val) use($var1, $var2){
+                                return ($val['aa_for_create_at']==$var1 && $val['trans_no']==$var2);
+                            });
+                            if ($filtered_array) {
+                                array_push($final_array,$value);
+                            }
+                        }else {
+                            array_push($final_array,$value);
+                        }
+                    }
+                    // return $final_array;
+                    if (count($final_array) > 0) {
+                        TempMutualFundTransaction::insert($final_array);
                     }
                 }else if ($file_type_id=='4' && $file_id=='8') {  // historical nav WBR1
                     TempNAVDetails::truncate();
@@ -251,12 +295,14 @@ class MailBackController extends Controller
                     // return $TotalArray[0];
                     // $value=explode("\t",$TotalArray[0]);
                     // return $value;
+                    $array_set=[];
                     for ($i=$start_count; $i <= $end_count; $i++) { 
                         $value=explode("\t",$TotalArray[$i]);
                         $pause_from_date=str_replace("'","",$value[38]);
                         $pause_to_date=str_replace("'","",$value[39]);
                         $cease_date=str_replace("'","",$value[9]);
-                        TempSipStpTransaction::create(array(
+                        // TempSipStpTransaction::create(array(
+                        $single_array=[
                             'rnt_id'=>$rnt_id,
                             'arn_no'=>NULL,
                             'product_code'=>str_replace("'","",$value[0]),
@@ -267,7 +313,7 @@ class MailBackController extends Controller
                             'auto_amount'=>$value[6],
                             'from_date'=>Carbon::parse(explode("/",str_replace("'","",$value[7]))[1].'-'.explode("/",str_replace("'","",$value[7]))[0].'-'.explode("/",str_replace("'","",$value[7]))[2])->format('Y-m-d H:i:s'),
                             'to_date'=>Carbon::parse(explode("/",str_replace("'","",$value[8]))[1].'-'.explode("/",str_replace("'","",$value[8]))[0].'-'.explode("/",str_replace("'","",$value[8]))[2])->format('Y-m-d H:i:s'),
-                            'cease_terminate_date'=>(isset($cease_date) && strlen($cease_date)>0)? Carbon::parse(explode("/",str_replace("'","",$value[9]))[1].'-'.explode("/",str_replace("'","",$value[9]))[0].'-'.explode("/",str_replace("'","",$value[9]))[2])->format('Y-m-d H:i:s'):NULL,
+                            'cease_terminate_date'=>(isset($cease_date) && strlen($cease_date)>0)? Carbon::parse(explode("/",str_replace("'","",$value[9]))[1].'-'.explode("/",str_replace("'","",$value[9]))[0].'-'.explode("/",str_replace("'","",$value[9]))[2])->format('Y-m-d'):NULL,
                             'periodicity'=>str_replace("'","",$value[10]),
                             'period_day'=>str_replace("'","",$value[11]),
                             'inv_iin'=>str_replace("'","",$value[12]),
@@ -293,7 +339,57 @@ class MailBackController extends Controller
                             'to_product_code'=>(str_replace("'","",$value[32])=='')?NULL:str_replace("'","",$value[33]).str_replace("'","",$value[32]),
                             'to_scheme_code'=>(str_replace("'","",$value[32])=='')?NULL:str_replace("'","",$value[32]),
                             'f_status'=>NULL,
-                        ));
+                        ];
+                        // ));
+                        array_push($array_set,$single_array);
+                    }
+
+                    $array_product_code = array_map(function ($result){
+                        return $result['product_code'];
+                    }, $array_set);
+                    $array_folio_no = array_map(function ($result){
+                        return $result['folio_no'];
+                    }, $array_set);
+                    $array_first_client_pan= array_map(function ($result){
+                        return $result['first_client_pan'];
+                    }, $array_set);
+
+                    $array_set_form_db=SipStpTransaction::where('rnt_id',$rnt_id)
+                            ->whereIn('product_code',array_unique($array_product_code)) 
+                            ->whereIn('folio_no',array_unique($array_folio_no)) 
+                            ->whereIn('first_client_pan',array_unique($array_first_client_pan)) 
+                            ->get()->toArray();
+                    // return $array_set;
+                    // return $array_set_form_db;
+                    $final_array = [];
+                    foreach ($array_set as $key => $value) {
+                        $var1=$value['product_code'];
+                        $var2=$value['folio_no'];
+                        $var3=$value['first_client_pan'];
+                        $var4=$value['from_date'];
+                        $var5=$value['reg_date'];
+                        $var6=$value['cease_terminate_date'];
+                        $var7=$value['to_product_code'];
+                        $var8=$value['rnt_id'];
+                        $filtered_array = array_filter($array_set_form_db, function($val) use($var1, $var2,$var3,$var4,$var5,$var6,$var7,$var8){
+                            return (
+                                $val['product_code']==$var1 
+                                && $val['folio_no']==$var2
+                                && $val['first_client_pan']==$var3
+                                && $val['from_date']==$var4
+                                && $val['reg_date']==$var5
+                                && $val['cease_terminate_date']==$var6
+                                && $val['to_product_code']==$var7
+                                && $val['rnt_id']==$var8
+                            );
+                        });
+                        if (!$filtered_array) {
+                            array_push($final_array,$value);
+                        }
+                    }
+                    // return $final_array;
+                    if (count($final_array) > 0) {
+                        TempSipStpTransaction::insert($final_array);
                     }
                 }elseif ($file_type_id=='3' && $file_id=='4') {  // folio master report WBR9C
                     TempFolioDetails::truncate();
@@ -632,11 +728,14 @@ class MailBackController extends Controller
                 }
             }else if($rnt_id==2){  // KFINTECH
                 if ($file_type_id==1 && $file_id==5) {  // transction MFSD201
+
+                    $array_set=[];
                     for ($i=$start_count; $i <= $end_count; $i++) { 
                         $value=explode("~",$TotalArray[$i]);
                         // $value=explode("~",$TotalArray[0]);
                         // return $value;
-                        TempMutualFundTransaction::create(array(
+                        // TempMutualFundTransaction::create(array(
+                        $single_array=[
                             'rnt_id'=>$rnt_id,
                             'arn_no'=>$value[19],
                             'sub_brk_cd'=>isset($value[20])?$value[20]:NULL,
@@ -673,7 +772,45 @@ class MailBackController extends Controller
                             'remarks'=>isset($value[48])?$value[48]:NULL,
                             'dividend_option'=>isset($value[33])?$value[33]:NULL,
                             'isin_no'=>isset($value[66])?$value[66]:NULL,
-                        ));
+                        ];
+                        // ));
+                        array_push($array_set,$single_array);
+                    }
+
+                    $array_trans_no = array_map(function ($result){
+                        return $result['trans_no'];
+                    }, $array_set);
+                    // DB::enableQueryLog();
+                    $array_set_form_db=MutualFundTransaction::select('*')
+                            ->selectRaw('DATE(created_at) as aa_for_create_at')->where('rnt_id',$rnt_id)
+                            ->whereIn('trans_no',array_unique($array_trans_no)) 
+                            // ->whereDate('created_at',date('Y-m-d'))
+                            ->get()->toArray();
+                            // ->get();
+                    // dd(DB::getQueryLog());
+                    // return $array_set_form_db;
+                    // return $array_set;
+                    $final_array=[];
+                    
+                    foreach ($array_set as $key => $value) {
+                        // return $value;
+                        if (in_array($value['trans_no'], array_column($array_set_form_db, 'trans_no'))) {
+                            // return 
+                            $var1=date('Y-m-d',strtotime($value['created_at']));
+                            $var2=$value['trans_no'];
+                            $filtered_array = array_filter($array_set_form_db, function($val) use($var1, $var2){
+                                return ($val['aa_for_create_at']==$var1 && $val['trans_no']==$var2);
+                            });
+                            if ($filtered_array) {
+                                array_push($final_array,$value);
+                            }
+                        }else {
+                            array_push($final_array,$value);
+                        }
+                    }
+                    // return $final_array;
+                    if (count($final_array) > 0) {
+                        TempMutualFundTransaction::insert($final_array);
                     }
                 }else if ($file_type_id==4 && $file_id==9) {  // historical nav MFSD217
                     TempNAVDetails::truncate();
@@ -744,12 +881,14 @@ class MailBackController extends Controller
                     // return $TotalArray[0];
                     // $value=explode("~",$TotalArray[0]);
                     // return $value;
+                    $array_set=[];
                     for ($i=$start_count; $i <= $end_count; $i++) { 
                         // return $TotalArray[$i];
                         $value=explode("~",$TotalArray[$i]);
                         // return $value;
                         // return date('Y-m-d',strtotime($value[6]));
-                        TempSipStpTransaction::create(array(
+                        // TempSipStpTransaction::create(array(
+                        $single_array=[
                             'rnt_id'=>$rnt_id,
                             'arn_no'=>$value[13],
                             'product_code'=>str_replace("'","",$value[21]),
@@ -777,12 +916,62 @@ class MailBackController extends Controller
                             'pause_to_date'=>NULL,
                             'req_ref_no'=>NULL,
                             'frequency'=>str_replace("'","",$value[22]),
-                            'cease_terminate_date'=>(isset($value[26]) && strlen($value[26])>0)?date('Y-m-d H:i:s',strtotime($value[26])):NULL,
+                            'cease_terminate_date'=>(isset($value[26]) && strlen($value[26])>0)?date('Y-m-d',strtotime($value[26])):NULL,
                             'f_status'=>$value[27],
                             'no_of_installment'=>$value[9],
                             'to_product_code'=>isset($value[28])?$value[28]:NULL,
                             'to_scheme_code'=>NULL,
-                        ));
+                        ];
+                        // ));
+                        array_push($array_set,$single_array);
+                    }
+
+                    $array_product_code = array_map(function ($result){
+                        return $result['product_code'];
+                    }, $array_set);
+                    $array_folio_no = array_map(function ($result){
+                        return $result['folio_no'];
+                    }, $array_set);
+                    $array_first_client_pan= array_map(function ($result){
+                        return $result['first_client_pan'];
+                    }, $array_set);
+
+                    $array_set_form_db=SipStpTransaction::where('rnt_id',$rnt_id)
+                            ->whereIn('product_code',array_unique($array_product_code)) 
+                            ->whereIn('folio_no',array_unique($array_folio_no)) 
+                            ->whereIn('first_client_pan',array_unique($array_first_client_pan)) 
+                            ->get()->toArray();
+                    // return $array_set;
+                    // return $array_set_form_db;
+                    $final_array = [];
+                    foreach ($array_set as $key => $value) {
+                        $var1=$value['product_code'];
+                        $var2=$value['folio_no'];
+                        $var3=$value['first_client_pan'];
+                        $var4=$value['from_date'];
+                        $var5=$value['reg_date'];
+                        $var6=$value['cease_terminate_date'];
+                        $var7=$value['to_product_code'];
+                        $var8=$value['rnt_id'];
+                        $filtered_array = array_filter($array_set_form_db, function($val) use($var1, $var2,$var3,$var4,$var5,$var6,$var7,$var8){
+                            return (
+                                $val['product_code']==$var1 
+                                && $val['folio_no']==$var2
+                                && $val['first_client_pan']==$var3
+                                && $val['from_date']==$var4
+                                && $val['reg_date']==$var5
+                                && $val['cease_terminate_date']==$var6
+                                && $val['to_product_code']==$var7
+                                && $val['rnt_id']==$var8
+                            );
+                        });
+                        if (!$filtered_array) {
+                            array_push($final_array,$value);
+                        }
+                    }
+                    // return $final_array;
+                    if (count($final_array) > 0) {
+                        TempSipStpTransaction::insert($final_array);
                     }
                 }elseif ($file_type_id==3 && $file_id==7) {  // folio master report MFSD211
                     TempFolioDetails::truncate();
