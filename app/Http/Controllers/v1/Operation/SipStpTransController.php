@@ -79,7 +79,7 @@ class SipStpTransController extends Controller
                             // $rawQuery.=' AND tt_sip_stp_swp_report.from_date >= tt_sip_stp_swp_report.cease_terminate_date';
                             // $rawQuery.=' AND tt_sip_stp_swp_report.from_date >= "'.date('Y-m-d').'"';
                             // (`from_date` >= ? or `from_date` > ?)
-                            $rawQuery.='AND (tt_sip_stp_swp_report.from_date >= tt_sip_stp_swp_report.cease_terminate_date OR (SELECT COUNT(*) FROM `md_systematic_unregistered` WHERE remarks=tt_sip_stp_swp_report.remarks AND rnt_id=tt_sip_stp_swp_report.rnt_id) > 0)';
+                            $rawQuery.='AND (DATE_FORMAT(tt_sip_stp_swp_report.from_date,"Y-m-d") >= DATE_FORMAT(tt_sip_stp_swp_report.cease_terminate_date,"Y-m-d") OR (SELECT COUNT(*) FROM `md_systematic_unregistered` WHERE remarks=tt_sip_stp_swp_report.remarks AND rnt_id=tt_sip_stp_swp_report.rnt_id) > 0)';
                         }
                         break;
                     case 'T':
