@@ -249,9 +249,9 @@ class SipStpTransController extends Controller
 
     public function filterCriteria($rawQuery,$folio_no,$pan_no,$amc_id,$cat_id,$sub_cat_id,$scheme_id)
     {
-        $queryString='td_sip_stp_trans.folio_no';
+        $queryString='tt_sip_stp_swp_report.folio_no';
         $rawQuery.=Helper::WhereRawQuery($folio_no,$rawQuery,$queryString);
-        $queryString='td_sip_stp_trans.first_client_pan';
+        $queryString='tt_sip_stp_swp_report.first_client_pan';
         $rawQuery.=Helper::WhereRawQuery($pan_no,$rawQuery,$queryString);
         $queryString='md_scheme.amc_id';
         $rawQuery.=Helper::WhereRawQuery($amc_id,$rawQuery,$queryString);
