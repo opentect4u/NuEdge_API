@@ -217,6 +217,69 @@ class MailBackController extends Controller
                     if (count($final_array) > 0) {
                         TempMutualFundTransaction::insert($final_array);
                     }
+                }else if ($file_type_id=='1' && $file_id=='2') {  // transction WBR2A
+                    TempMutualFundTransaction::truncate();
+                    // return $TotalArray[0];
+                    $value=explode("\t",$TotalArray[1]);
+                    return $value;
+                    $array_set=[];
+                    for ($i=$start_count; $i <= $end_count; $i++) { 
+                        $value=explode("\t",$TotalArray[$i]);
+                        // TempMutualFundTransaction::create(array(
+                        $single_array=[
+                            'rnt_id'=>$rnt_id,
+                            'arn_no'=>str_replace("'","",$value[16]),
+                            'sub_brk_cd'=>str_replace("'","",$value[17]),
+                            'euin_no'=>NULL,
+                            'first_client_name'=>str_replace("'","",$value[4]),
+                            'first_client_pan'=>str_replace("'","",$value[42]),
+                            'amc_code'=>str_replace("'","",$value[0]),
+                            'folio_no'=>str_replace("'","",$value[1]),
+                            'product_code'=>str_replace("'","",$value[2]),
+                            'trans_no'=>str_replace("'","",$value[6]),
+                            'trans_mode'=>str_replace("'","",$value[7]),
+                            'trans_status'=>str_replace("'","",$value[8]),
+                            'user_trans_no'=>str_replace("'","",$value[10]),
+                            'trans_date'=>Carbon::parse(explode("/",str_replace("'","",$value[11]))[1].'-'.explode("/",str_replace("'","",$value[11]))[0].'-'.explode("/",str_replace("'","",$value[11]))[2])->format('Y-m-d H:i:s'),
+                            'post_date'=>Carbon::parse(explode("/",str_replace("'","",$value[12]))[1].'-'.explode("/",str_replace("'","",$value[12]))[0].'-'.explode("/",str_replace("'","",$value[12]))[2])->format('Y-m-d H:i:s'),
+                            'pur_price'=>str_replace("'","",$value[13]),
+                            'units'=>str_replace("'","",$value[14]),
+                            'amount'=>str_replace("'","",$value[15]),
+                            'rec_date'=>Carbon::parse(explode("/",str_replace("'","",$value[21]))[1].'-'.explode("/",str_replace("'","",$value[21]))[0].'-'.explode("/",str_replace("'","",$value[21]))[2])->format('Y-m-d H:i:s'),
+                            'trxn_type'=>str_replace("'","",$value[5]),
+                            'trxn_type_flag'=>str_replace("'","",$value[45]),
+                            'trxn_nature'=>str_replace("'","",$value[25]),
+                            'te_15h'=>str_replace("'","",$value[28]),
+                            'micr_code'=>str_replace("'","",$value[29]),
+                            'remarks'=>str_replace("'","",$value[30]),
+                            'sw_flag'=>str_replace("'","",$value[31]),
+                            'old_folio'=>str_replace("'","",$value[32]),
+                            'seq_no'=>str_replace("'","",$value[33]),
+                            'reinvest_flag'=>str_replace("'","",$value[34]),
+                            'stt'=>str_replace("'","",$value[36]),
+                            'stamp_duty'=>str_replace("'","",$value[74]),
+                            'tds'=>NULL,
+                            'acc_no'=>str_replace("'","",$value[63]),
+                            'bank_name'=>str_replace("'","",$value[64]),
+                            'created_at'=>date('Y-m-d H:i:s'),
+                            'updated_at'=>date('Y-m-d H:i:s'),
+                        ];
+                        // ));
+                        array_push($array_set,$single_array);
+                    }
+
+                    $array_trans_no = array_map(function ($result){
+                        return $result['trans_no'];
+                    }, $array_set);
+                    // DB::enableQueryLog();
+                    $array_set_form_db=MutualFundTransaction::select('*')
+                            ->selectRaw('DATE(created_at) as aa_for_create_at')->where('rnt_id',$rnt_id)
+                            ->whereIn('trans_no',array_unique($array_trans_no)) 
+                            // ->whereDate('created_at',date('Y-m-d'))
+                            ->get()->toArray();
+                    // return $array_set_form_db;
+                    return $array_set;
+
                 }else if ($file_type_id=='4' && $file_id=='8') {  // historical nav WBR1
                     TempNAVDetails::truncate();
                     // return $TotalArray[0];
@@ -906,7 +969,7 @@ class MailBackController extends Controller
                             'euin_no'=>NULL,
                             'remarks'=>str_replace("'","",$value[27]),
                             'bank'=>str_replace("'","",$value[31]),
-                            'branch'=>NULL,
+                            'bank_branch'=>NULL,
                             'instrm_no'=>str_replace("'","",$value[32]),
                             'chq_micr_no'=>str_replace("'","",$value[30]),
                             'first_client_pan'=>str_replace("'","",$value[17]),

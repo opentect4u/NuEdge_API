@@ -23,9 +23,9 @@ class UploadFileHelpController extends Controller
                 $data=UploadFileHelp::paginate($paginate);      
             } else {
                 $data=UploadFileHelp::leftJoin('md_rnt','md_rnt.id','=','md_file_upload_help.rnt_id')
-                    ->leftJoin('md_mailback_filetype','md_mailback_filetype.id','=','md_file_upload_help.file_type_id')
-                    ->leftJoin('md_mailback_filename','md_mailback_filename.id','=','md_file_upload_help.file_id')
-                    ->select('md_file_upload_help.*','md_rnt.rnt_name as rnt_name','md_mailback_filetype.name as file_type_name','md_mailback_filename.name as file_name')
+                    // ->leftJoin('md_mailback_filetype','md_mailback_filetype.id','=','md_file_upload_help.file_type_id')
+                    // ->leftJoin('md_mailback_filename','md_mailback_filename.id','=','md_file_upload_help.file_id')
+                    ->select('md_file_upload_help.*','md_rnt.rnt_name as rnt_name')
                     ->get();      
             }
         } catch (\Throwable $th) {
@@ -80,9 +80,9 @@ class UploadFileHelpController extends Controller
                 }
             } 
             $mydata=UploadFileHelp::leftJoin('md_rnt','md_rnt.id','=','md_file_upload_help.rnt_id')
-                ->leftJoin('md_mailback_filetype','md_mailback_filetype.id','=','md_file_upload_help.file_type_id')
-                ->leftJoin('md_mailback_filename','md_mailback_filename.id','=','md_file_upload_help.file_id')
-                ->select('md_file_upload_help.*','md_rnt.rnt_name as rnt_name','md_mailback_filetype.name as file_type_name','md_mailback_filename.name as file_name')
+                // ->leftJoin('md_mailback_filetype','md_mailback_filetype.id','=','md_file_upload_help.file_type_id')
+                // ->leftJoin('md_mailback_filename','md_mailback_filename.id','=','md_file_upload_help.file_id')
+                ->select('md_file_upload_help.*','md_rnt.rnt_name as rnt_name')
                 ->where('md_file_upload_help.id',$data->id)
                 ->first();   
         } catch (\Throwable $th) {
