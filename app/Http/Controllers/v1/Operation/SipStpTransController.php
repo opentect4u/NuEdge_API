@@ -149,7 +149,7 @@ class SipStpTransController extends Controller
             // $my_datas=[];
             // DB::enableQueryLog();
 
-            $my_datas=SipStpSwpReport::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_sip_stp_trans.product_code')
+            $my_datas=SipStpTransaction::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_sip_stp_trans.product_code')
                     ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
                     ->leftJoin('md_plan','md_plan.id','=','md_scheme_isin.plan_id')
                     ->leftJoin('md_option','md_option.id','=','md_scheme_isin.option_id')
