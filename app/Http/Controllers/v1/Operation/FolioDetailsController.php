@@ -82,7 +82,7 @@ class FolioDetailsController extends Controller
                 'md_plan.plan_name','md_option.opt_name as option_name')
                 ->selectRaw('(select `bu_type` from `md_business_type` where `bu_code` =md_employee.bu_type_id and `branch_id` =md_employee.branch_id limit 1) as bu_type')
                 // ->selectRaw('IF(td_folio_details.rupee_bal IS NULL ||td_folio_details.rupee_bal="" || td_folio_details.rupee_bal="0","Inactive","Active") as folio_status')
-                ->selectRaw('IF(td_folio_details.folio_date IS NULL || td_folio_details.folio_date="",(select trans_date from td_mutual_fund_trans where folio_no=td_folio_details.folio_no and product_code= td_folio_details.product_code order by trans_date asc limit 1),td_folio_details.folio_date) as folio_date')
+                ->selectRaw('IF(DATE_FORMAT(td_folio_details.folio_date,"Y-m-d") IS NULL || DATE_FORMAT(td_folio_details.folio_date,"Y-m-d")="",(select trans_date from td_mutual_fund_trans where folio_no=td_folio_details.folio_no and product_code= td_folio_details.product_code order by trans_date asc limit 1),DATE_FORMAT(td_folio_details.folio_date,"Y-m-d")) as folio_date')
 
                 ->selectRaw('IF(td_folio_details.rnt_id=2,(select status from md_folio_tax_status where status_code=td_folio_details.tax_status limit 1),td_folio_details.tax_status) as tax_status')
 
