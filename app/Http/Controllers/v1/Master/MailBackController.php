@@ -1393,6 +1393,7 @@ class MailBackController extends Controller
             // return $request;
             $id=$request->id;
             $file_type=$request->file_type;
+            $up_data='';
             switch ($file_type) {
                 case 'T':
                     $up_data=MutualFundTransaction::find($id);
