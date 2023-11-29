@@ -13,6 +13,8 @@ class FolioTaxStaus extends Model
         'rnt_id',
         'status',
         'status_code',
+        'created_by',
+        'updated_by',
     ];
 
 }
