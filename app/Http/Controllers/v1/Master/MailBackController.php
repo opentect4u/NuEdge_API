@@ -450,6 +450,19 @@ class MailBackController extends Controller
                             array_push($final_array,$value);
                         }
                     }
+
+                    // $final_array =  array_udiff(
+                    //     $array_set,
+                    //     $array_set_form_db,
+                    //     fn($a, $b) => $a['rnt_id'] <=> $b['rnt_id'] 
+                    //     && $a['product_code'] <=> $b['product_code'] 
+                    //     && $a['folio_no'] <=> $b['folio_no']
+                    //     && $a['first_client_pan'] <=> $b['first_client_pan']
+                    //     && $a['from_date'] <=> $b['from_date']
+                    //     && $a['reg_date'] <=> $b['reg_date']
+                    //     && $a['cease_terminate_date'] <=> $b['cease_terminate_date']
+                    //     && $a['to_product_code'] <=> $b['to_product_code']
+                    // );
                     // return $final_array;
                     if (count($final_array) > 0) {
                         TempSipStpTransaction::insert($final_array);
@@ -835,6 +848,8 @@ class MailBackController extends Controller
                             'remarks'=>isset($value[48])?$value[48]:NULL,
                             'dividend_option'=>isset($value[33])?$value[33]:NULL,
                             'isin_no'=>isset($value[66])?$value[66]:NULL,
+                            'created_at'=>date('Y-m-d H:i:s'),
+                            'updated_at'=>date('Y-m-d H:i:s'),
                         ];
                         // ));
                         array_push($array_set,$single_array);
@@ -1280,18 +1295,18 @@ class MailBackController extends Controller
                     ->leftJoin('md_amc','md_amc.amc_code','=','td_mutual_fund_trans.amc_code')
                     ->leftJoin('md_plan','md_plan.id','=','md_scheme_isin.plan_id')
                     ->leftJoin('md_option','md_option.id','=','md_scheme_isin.option_id')
-                    ->leftJoin('md_employee','md_employee.euin_no','=','td_mutual_fund_trans.euin_no')
+                    ->leftJoin('md_employee','md_employee.euin_no','=',DB::raw('IF(td_mutual_fund_trans.euin_no!="",td_mutual_fund_trans.euin_no,(select euin_no from td_mutual_fund_trans where folio_no=td_mutual_fund_trans.folio_no and product_code=td_mutual_fund_trans.product_code AND euin_no!="" limit 1))'))
                     ->leftJoin('md_branch','md_branch.id','=','md_employee.branch_id')
                     ->select('td_mutual_fund_trans.*','md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name','md_amc.amc_short_name as amc_name',
-                    'md_plan.plan_name as plan_name','md_option.opt_name as option_name','md_scheme.id as scheme_id','md_scheme.category_id','md_scheme.subcategory_id','md_amc.id as amc_id',
-                    'md_employee.emp_name as rm_name','md_branch.brn_name as branch','md_employee.bu_type_id as bu_type_id','md_employee.branch_id as branch_id')
+                    'md_plan.plan_name as plan_name','md_option.opt_name as option_name','md_amc.id as amc_id',
+                    'md_employee.emp_name as rm_name','md_branch.brn_name as branch','md_employee.bu_type_id as bu_type_id','md_employee.branch_id as branch_id','md_employee.euin_no as euin_no')
                     // ->selectRaw('sum(amount) as tot_amount')
                     // ->selectRaw('sum(stamp_duty) as tot_stamp_duty')
                     // ->selectRaw('sum(tds) as tot_tds')
                     ->selectRaw('amount as tot_amount')
                     ->selectRaw('stamp_duty as tot_stamp_duty')
                     ->selectRaw('tds as tot_tds')
-                    // ->selectRaw('count(*) as tot_rows')
+                    ->selectRaw('(select bu_type from md_business_type where bu_code=md_employee.bu_type_id and branch_id=md_employee.branch_id limit 1) as bu_type')
                     ->where('td_mutual_fund_trans.delete_flag','N')
                     ->whereRaw($rawQuery)
                     ->orderBy('td_mutual_fund_trans.created_at','desc')
@@ -1309,33 +1324,6 @@ class MailBackController extends Controller
                         $euin=$value->euin_no;
                         $trans_no=$value->trans_no;
                         $trans_date=$value->trans_date;
-                        // MutualFundTransaction::
-                        if($euin == ''){
-                            $euin_no=MutualFundTransaction::where('folio_no',$value->folio_no)
-                            ->where('euin_no','!=','')->first();
-                            // return $euin_no;
-                            if ($euin_no) {
-                                $rm_data=DB::table('md_employee')
-                                    ->leftJoin('md_branch','md_branch.id','=','md_employee.branch_id')
-                                    ->leftJoin('md_business_type','md_business_type.bu_code','=','md_employee.bu_type_id')
-                                    ->select('md_employee.*','md_branch.brn_name as branch_name','md_business_type.bu_type as bu_type')
-                                    ->where('md_employee.euin_no',$euin_no->euin_no)
-                                    ->first();
-                                // return $rm_data;
-                                if ($rm_data) {
-                                    $value->bu_type=$rm_data->bu_type;
-                                    $value->branch=$rm_data->branch_name;
-                                    $value->rm_name=$rm_data->emp_name;
-                                    $value->euin_no=$rm_data->euin_no;
-                                }
-                            }
-                        }else{
-                            $value->bu_type=DB::table('md_business_type')
-                                ->where('bu_code',$value->bu_type_id)
-                                ->where('branch_id',$value->branch_id)
-                                ->value('bu_type');
-                        }
-                        
                         // ====================start trans type & sub type=========================
                         $trxn_type=$value->trxn_type;
                         $trxn_type_flag=$value->trxn_type_flag;
@@ -1388,16 +1376,8 @@ class MailBackController extends Controller
                         $value->tot_gross_amount= ((float)$value->tot_amount + (float)$value->tot_stamp_duty + (float)$value->tot_tds);
                         $value->transaction_type=$transaction_type;
                         $value->transaction_subtype=$transaction_subtype;
-    
-                        // if (!empty($trans_type) && in_array($transaction_type ,$trans_type) && !empty($trans_sub_type) && in_array($transaction_subtype ,$trans_sub_type)) {
-                        //     array_push($data,$value);
-                        // }else if (!empty($trans_type) && in_array($transaction_type ,$trans_type)) {
-                        //     array_push($data,$value);
-                        // }else if (!empty($transaction_subtype) && in_array($transaction_subtype ,$trans_sub_type)) {
-                        //     array_push($data,$value);
-                        // }else{
-                            array_push($data,$value);
-                        // }
+
+                        array_push($data,$value);
                     }
         } catch (\Throwable $th) {
             throw $th;

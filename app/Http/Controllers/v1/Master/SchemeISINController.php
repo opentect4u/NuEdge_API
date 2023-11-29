@@ -307,12 +307,12 @@ class SchemeISINController extends Controller
                             $rnt_up_data=MutualFundTransaction::find($update_data->id);
                             $rnt_up_data->scheme_flag='N';
                             $rnt_up_data->plan_option_flag='N';
-                            $rnt_up_data->updated_by=Helper::modifyUser($request->user());
+                            // $rnt_up_data->updated_by=Helper::modifyUser($request->user());
                             $rnt_up_data->save();
                         }elseif ($update_data->rnt_id==2) {
                             $rnt_up_data2=MutualFundTransaction::find($update_data->id);
                             $rnt_up_data2->scheme_flag='N';
-                            $rnt_up_data2->updated_by=Helper::modifyUser($request->user());
+                            // $rnt_up_data2->updated_by=Helper::modifyUser($request->user());
                             $rnt_up_data2->save();
                         }
                     }
@@ -327,7 +327,7 @@ class SchemeISINController extends Controller
                     if ($update_data2->rnt_id==2) {
                         $rnt2_up_data2=MutualFundTransaction::find($update_data2->id);
                         $rnt2_up_data2->plan_option_flag='N';
-                        $rnt2_up_data2->updated_by=Helper::modifyUser($request->user());
+                        // $rnt2_up_data2->updated_by=Helper::modifyUser($request->user());
                         $rnt2_up_data2->save();
                     }
                 }
@@ -339,7 +339,7 @@ class SchemeISINController extends Controller
             }
           
         } catch (\Throwable $th) {
-            //throw $th;
+            // throw $th;
             return Helper::ErrorResponse(parent::DATA_SAVE_ERROR);
         }
         return Helper::SuccessResponse($data);

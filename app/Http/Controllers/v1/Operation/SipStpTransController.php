@@ -79,13 +79,22 @@ class SipStpTransController extends Controller
                             // $rawQuery.=' AND tt_sip_stp_swp_report.from_date >= tt_sip_stp_swp_report.cease_terminate_date';
                             // $rawQuery.=' AND tt_sip_stp_swp_report.from_date >= "'.date('Y-m-d').'"';
                             // (`from_date` >= ? or `from_date` > ?)
-                            $rawQuery.='AND (DATE_FORMAT(tt_sip_stp_swp_report.from_date,"Y-m-d") >= DATE_FORMAT(tt_sip_stp_swp_report.cease_terminate_date,"Y-m-d") OR (SELECT COUNT(*) FROM `md_systematic_unregistered` WHERE remarks=tt_sip_stp_swp_report.remarks AND rnt_id=tt_sip_stp_swp_report.rnt_id) > 0)';
+                            // $rawQuery.=' AND tt_sip_stp_swp_report.remarks!=""';
+                            $rawQuery.='AND (
+                                DATE_FORMAT(tt_sip_stp_swp_report.from_date,"Y-m-d") >= DATE_FORMAT(tt_sip_stp_swp_report.cease_terminate_date,"Y-m-d") 
+                                OR 
+                                (SELECT COUNT(*) FROM `md_systematic_unregistered` WHERE remarks=tt_sip_stp_swp_report.remarks AND rnt_id=tt_sip_stp_swp_report.rnt_id) > 0
+                            )';
                         }
                         break;
                     case 'T':
                         // cond1 && (cond1 || cond2)
                         // $rawQuery.='AND IF(tt_sip_stp_swp_report.rnt_id=1, tt_sip_stp_swp_report.cease_terminate_date!="", tt_sip_stp_swp_report.cease_terminate_date!="" AND tt_sip_stp_swp_report.f_status="TERMINATED")';
-                        $rawQuery.='AND IF(tt_sip_stp_swp_report.rnt_id=1, DATE_FORMAT(tt_sip_stp_swp_report.cease_terminate_date,"Y-m-d")!="", DATE_FORMAT(tt_sip_stp_swp_report.cease_terminate_date,"Y-m-d")!="" AND DATE_FORMAT(tt_sip_stp_swp_report.to_date,"Y-m-d") > DATE_FORMAT(tt_sip_stp_swp_report.cease_terminate_date,"Y-m-d"))';
+                        $rawQuery.='AND IF(tt_sip_stp_swp_report.rnt_id=1, 
+                            DATE_FORMAT(tt_sip_stp_swp_report.cease_terminate_date,"Y-m-d")!="", 
+                            DATE_FORMAT(tt_sip_stp_swp_report.cease_terminate_date,"Y-m-d")!="" AND DATE_FORMAT(tt_sip_stp_swp_report.to_date,"Y-m-d") > DATE_FORMAT(tt_sip_stp_swp_report.cease_terminate_date,"Y-m-d")
+                        )';
+                        // mysql -h nuedgedb1.cppextefqhgz.ap-south-1.rds.amazonaws.com -u admin -p
                         // $rawQuery.='AND tt_sip_stp_swp_report.cease_terminate_date!="" AND tt_sip_stp_swp_report.to_date >= tt_sip_stp_swp_report.cease_terminate_date';
                         $rawQuery.=' AND DATE_FORMAT(tt_sip_stp_swp_report.from_date,"Y-m-d") <= DATE_FORMAT(tt_sip_stp_swp_report.cease_terminate_date,"Y-m-d")';
                         break;
