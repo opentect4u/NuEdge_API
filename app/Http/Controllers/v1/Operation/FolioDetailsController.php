@@ -96,7 +96,7 @@ class FolioDetailsController extends Controller
                 ->selectRaw('IF(td_folio_details.rnt_id=2,
                     IF(td_folio_details.tax_status_3_holder IS NULL || td_folio_details.tax_status_3_holder="",
                         IF(td_folio_details.pan_3_holder IS NULL || td_folio_details.pan_3_holder="","",(select status from md_folio_tax_status where status_code=(select tax_status from td_folio_details where pan=td_folio_details.pan_3_holder limit 1) limit 1)),
-                        (select status from md_folio_tax_status where status_code=td_folio_details.tax_status_3_holder limit 1))+,
+                        (select status from md_folio_tax_status where status_code=td_folio_details.tax_status_3_holder limit 1)),
                     IF(td_folio_details.tax_status_3_holder IS NULL || td_folio_details.tax_status_3_holder="",
                         IF(td_folio_details.pan_3_holder IS NULL || td_folio_details.pan_3_holder="","",(select tax_status from td_folio_details where pan=td_folio_details.pan_3_holder limit 1)),
                         td_folio_details.tax_status_3_holder))as tax_status_3_holder')
