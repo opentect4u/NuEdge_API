@@ -533,10 +533,18 @@ class TransactionDetailsController extends Controller
         try {
             // return $request;
             $id=$request->id;
-            // $delete_data=MutualFundTransaction::find($id);
-            // $delete_data->divi_lock_flag='N';
-            // $up_data->divi_mismatch_flag='Y';
-            // $delete_data->save();
+            $up_data=MutualFundTransaction::find($id);
+            if ($up_data->divi_lock_flag=='L') {
+                $up_data->divi_mismatch_flag='Y';
+                $up_data->divi_lock_flag='N';
+            }
+            if ($up_data->bu_type_lock_flag=='L') {
+                $up_data->bu_type_flag='Y';
+                $up_data->bu_type_lock_flag='N';
+                $up_data->euin_no=$up_data->old_euin_no;
+                $up_data->old_euin_no=NULL;
+            }
+            $up_data->save();
             $data=[];
         } catch (\Throwable $th) {
             //throw $th;

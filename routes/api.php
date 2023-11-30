@@ -425,7 +425,7 @@ Route::prefix('v1')->group(function () {
 
             Route::any('showDeleteTransDetails',[App\Http\Controllers\v1\Operation\TransactionDetailsController::class,'searchDelete']);
             Route::post('DeleteTransDetails',[App\Http\Controllers\v1\Operation\TransactionDetailsController::class,'delete']);
-            Route::any('unlockTransDetails',[App\Http\Controllers\v1\Operation\TransactionDetailsController::class,'unlock']);
+            Route::post('unlockTransDetails',[App\Http\Controllers\v1\Operation\TransactionDetailsController::class,'unlock']);
             
             /*************************************************End Delete Report************************************************/
 
