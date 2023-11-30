@@ -1299,7 +1299,7 @@ class MailBackController extends Controller
                     ->leftJoin('md_branch','md_branch.id','=','md_employee.branch_id')
                     ->select('td_mutual_fund_trans.*','md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name','md_amc.amc_short_name as amc_name',
                     'md_plan.plan_name as plan_name','md_option.opt_name as option_name','md_amc.id as amc_id',
-                    'md_employee.emp_name as rm_name','md_branch.brn_name as branch','md_employee.bu_type_id as bu_type_id','md_employee.branch_id as branch_id','md_employee.euin_no as euin_no')
+                    'md_employee.emp_name as rm_name','md_branch.brn_name as branch','md_employee.bu_type_id as bu_type_id','md_employee.branch_id as branch_id')
                     // ->selectRaw('sum(amount) as tot_amount')
                     // ->selectRaw('sum(stamp_duty) as tot_stamp_duty')
                     // ->selectRaw('sum(tds) as tot_tds')
@@ -1393,30 +1393,54 @@ class MailBackController extends Controller
             // return $request;
             $id=$request->id;
             $file_type=$request->file_type;
-            $up_data='';
-            // switch ($file_type) {
-            //     case 'T':
-            //         $up_data=MutualFundTransaction::find($id);
-            //         $up_data->divi_mismatch_flag='N';
-            //         $up_data->divi_lock_flag='L';
-            //         $up_data->save();
-            //         break;
-            //     case 'N':
-            //         break;
-            //     case 'S':
-            //         break;
-            //     case 'F':
-            //         break;
-            //     default:
-            //         break;
-            // }
+            $sub_file_type=$request->sub_file_type;
+            switch ($file_type) {
+                case 'T':
+                    if ($sub_file_type=='B') {
+                        // return $request;
+                        $up_data=MutualFundTransaction::where('folio_no',$request->folio_no)
+                            ->where('product_code',$request->product_code)
+                            ->where('euin_no',$request->euin_no)
+                            ->update([
+                                'old_euin_no'=>$request->euin_no,
+                                'euin_no'=>$request->new_euin_no,
+                                'bu_type_flag'=>'N',
+                                'bu_type_lock_flag'=>'L'
+                            ]);
+                    }elseif ($sub_file_type=='D') {
+                        $up_data=MutualFundTransaction::find($id);
+                        $up_data->divi_mismatch_flag='N';
+                        $up_data->divi_lock_flag='L';
+                        $up_data->save();
+                    }
+                    break;
+                case 'N':
+                    break;
+                case 'S':
+                    break;
+                case 'F':
+                    break;
+                default:
+                    break;
+            }
 
             // if ($file_type=='T') {
-                $up_data=MutualFundTransaction::find($id);
-                $up_data->divi_mismatch_flag='N';
-                $up_data->divi_lock_flag='L';
-                $up_data->save();
+                // $up_data=MutualFundTransaction::find($id);
+                // $up_data->divi_mismatch_flag='N';
+                // $up_data->divi_lock_flag='L';
+                // $up_data->save();
             // }
+            // $up_data=MutualFundTransaction::where('folio_no',$request->folio_no)
+            //     ->where('product_code',$request->product_code)
+            //     ->where('euin_no',$request->euin_no)
+            //     ->update([
+            //         'old_euin_no'=>$request->euin_no,
+            //         'euin_no'=>$request->new_euin_no,
+            //         'bu_type_flag'=>'N',
+            //         'bu_type_lock_flag'=>'L'
+            //     ]);
+
+
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);

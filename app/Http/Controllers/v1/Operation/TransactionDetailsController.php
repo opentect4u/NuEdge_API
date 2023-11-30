@@ -298,9 +298,11 @@ class TransactionDetailsController extends Controller
                                 ->where('k_divident_flag',$trans_flag)
                                 ->first();
                         }elseif ($trans_flag=='TI') {
+                            $get_type_subtype='';
                             $transaction_type='Transfer In';
                             $transaction_subtype='Transfer In';
                         }elseif ($trans_flag=='TO') {
+                            $get_type_subtype='';
                             $transaction_type='Transfer Out';
                             $transaction_subtype='Transfer Out';
                         } else {
@@ -330,7 +332,7 @@ class TransactionDetailsController extends Controller
                     }
                 }
         } catch (\Throwable $th) {
-            // throw $th;
+            throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
         return Helper::SuccessResponse($data);

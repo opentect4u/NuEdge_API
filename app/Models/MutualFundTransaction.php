@@ -15,6 +15,7 @@ class MutualFundTransaction extends Model
         'arn_no',
         'sub_brk_cd',
         'euin_no',
+        'old_euin_no',
         'first_client_name',
         'first_client_pan',
         'amc_code',
@@ -57,6 +58,7 @@ class MutualFundTransaction extends Model
         'isin_no',
 
         'bu_type_flag',
+        'bu_type_lock_flag',
         'amc_flag',
         'scheme_flag',
         'plan_option_flag',
