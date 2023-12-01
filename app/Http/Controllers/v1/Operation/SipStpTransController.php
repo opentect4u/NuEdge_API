@@ -110,7 +110,12 @@ class SipStpTransController extends Controller
                     case 'M':
                         if ($sub_type=='MM') {  
                             // $rawQuery.=' AND tt_sip_stp_swp_report.to_date <= "'.date('Y-m-d').'" ';
-                            $rawQuery.=' AND date(tt_sip_stp_swp_report.to_date) <= "'.date('Y-m-d').'" AND tt_sip_stp_swp_report.to_date <= tt_sip_stp_swp_report.cease_terminate_date';
+                            $rawQuery.=' AND 
+                            (date(tt_sip_stp_swp_report.to_date) <= "'.date('Y-m-d').'" 
+                            AND 
+                            tt_sip_stp_swp_report.to_date <= tt_sip_stp_swp_report.cease_terminate_date
+                            OR tt_sip_stp_swp_report.cease_terminate_date IS NULL
+                            )';
                             // $rawQuery.='AND IF(tt_sip_stp_swp_report.rnt_id=1, 
                             //     date(tt_sip_stp_swp_report.to_date) <= "'.date('Y-m-d').'" AND tt_sip_stp_swp_report.cease_terminate_date IS NULL, 
                             //     date(tt_sip_stp_swp_report.to_date) <= "'.date('Y-m-d').'" AND tt_sip_stp_swp_report.to_date <= tt_sip_stp_swp_report.cease_terminate_date
