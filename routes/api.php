@@ -383,6 +383,8 @@ Route::prefix('v1')->group(function () {
             
             Route::any('mailbackMismatchAll',[App\Http\Controllers\v1\Master\MailBackController::class,'allMismatch']);  // all mismatch details
 
+            Route::get('showISIN',[App\Http\Controllers\v1\Operation\SipStpTransController::class,'showISIN']);  // show isin no using product code
+
             /*********************************** End Mail Back Mismatch ************************ */
 
             /*************************************************Start For file help************************************************/

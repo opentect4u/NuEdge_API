@@ -1417,6 +1417,16 @@ class MailBackController extends Controller
                 case 'N':
                     break;
                 case 'S':
+                    if ($sub_file_type=='P/O') {
+                        return $request;
+                        $up_data=SipStpTransaction::where('folio_no',$request->folio_no)
+                        ->where('product_code',$request->product_code)
+                        ->update([
+                            'isin_no'=>$request->new_isin_no,
+                            'plan_option_flag'=>'N',
+                            'plan_option_lock_flag'=>'L'
+                        ]);
+                    }
                     break;
                 case 'F':
                     break;

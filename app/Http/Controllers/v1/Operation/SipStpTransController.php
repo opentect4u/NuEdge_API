@@ -13,7 +13,8 @@ use App\Models\{
     MFTransTypeSubType,
     SipStpTransaction,
     TempSipStpTransaction,
-    SipStpSwpReport
+    SipStpSwpReport,
+    SchemeISIN
 };
 use Validator;
 use Illuminate\Support\Carbon;
@@ -96,13 +97,16 @@ class SipStpTransController extends Controller
                         // $rawQuery.='AND IF(tt_sip_stp_swp_report.rnt_id=1, tt_sip_stp_swp_report.cease_terminate_date!="", tt_sip_stp_swp_report.cease_terminate_date!="" AND tt_sip_stp_swp_report.f_status="TERMINATED")';
                         $rawQuery.='AND IF(tt_sip_stp_swp_report.rnt_id=1, 
                             DATE_FORMAT(tt_sip_stp_swp_report.cease_terminate_date,"Y-m-d")!="", 
-                            DATE_FORMAT(tt_sip_stp_swp_report.cease_terminate_date,"Y-m-d")!="" AND tt_sip_stp_swp_report.to_date > tt_sip_stp_swp_report.cease_terminate_date
+                            DATE_FORMAT(tt_sip_stp_swp_report.cease_terminate_date,"Y-m-d")!="" 
+                            AND tt_sip_stp_swp_report.to_date > tt_sip_stp_swp_report.cease_terminate_date
                         )';
                         // mysql -h nuedgedb1.cppextefqhgz.ap-south-1.rds.amazonaws.com -u admin -p
                         // ALTER TABLE md_systematic_unregistered convert TO CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
                         // $rawQuery.='AND tt_sip_stp_swp_report.cease_terminate_date!="" AND tt_sip_stp_swp_report.to_date >= tt_sip_stp_swp_report.cease_terminate_date';
                         $rawQuery.=' AND tt_sip_stp_swp_report.from_date <= tt_sip_stp_swp_report.cease_terminate_date';
-                        $rawQuery.=' AND datediff(tt_sip_stp_swp_report.cease_terminate_date, tt_sip_stp_swp_report.from_date) > 30';
+                        $rawQuery.=' AND (SELECT COUNT(*) FROM `md_systematic_unregistered` WHERE remarks=tt_sip_stp_swp_report.remarks AND rnt_id=tt_sip_stp_swp_report.rnt_id)=0';
+
+                        // $rawQuery.=' AND datediff(tt_sip_stp_swp_report.cease_terminate_date, tt_sip_stp_swp_report.from_date) > 30';
                         break;
                     case 'M':
                         if ($sub_type=='MM') {  
@@ -167,7 +171,7 @@ class SipStpTransController extends Controller
                     'tt_sip_stp_swp_report.pause_from_date as pause_start_date','tt_sip_stp_swp_report.pause_to_date as pause_end_date','tt_sip_stp_swp_report.bank as bank_name','tt_sip_stp_swp_report.instrm_no as acc_no',
                     'md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name',
                     'md_amc.amc_short_name as amc_name','md_amc_1.amc_short_name as amc_short_name','md_plan.plan_name','md_option.opt_name as option_name',
-                    'md_employee.emp_name as rm_name','md_employee.euin_no as euin_no','md_branch.brn_name as branch_name','md_employee.bu_type_id as bu_type_id','md_employee.branch_id as branch_id',
+                    'md_employee.emp_name as rm_name','md_branch.brn_name as branch_name','md_employee.bu_type_id as bu_type_id','md_employee.branch_id as branch_id',
                     'md_systematic_trans_type.trans_type','md_systematic_trans_type.trans_sub_type',
                     'to_scheme.scheme_name as to_scheme_name','to_category.cat_name as to_cat_name','to_subcategory.subcategory_name as to_subcat_name')
                     ->selectRaw('(select `bu_type` from `md_business_type` where `bu_code`=md_employee.bu_type_id and `branch_id`=md_employee.branch_id limit 1) as bu_type')
@@ -256,5 +260,17 @@ class SipStpTransController extends Controller
         $queryString='md_scheme_isin.scheme_id';
         $rawQuery.=Helper::WhereRawQuery($scheme_id,$rawQuery,$queryString);
         return $rawQuery;
+    }
+
+    public function showISIN(Request $request)
+    {
+        try {
+            $product_code=$request->product_code;
+            $data=SchemeISIN::where('product_code',$product_code)->get();
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($data);
     }
 }
