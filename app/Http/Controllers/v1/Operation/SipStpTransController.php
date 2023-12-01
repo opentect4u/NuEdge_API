@@ -105,8 +105,7 @@ class SipStpTransController extends Controller
                         // $rawQuery.='AND tt_sip_stp_swp_report.cease_terminate_date!="" AND tt_sip_stp_swp_report.to_date >= tt_sip_stp_swp_report.cease_terminate_date';
                         $rawQuery.=' AND tt_sip_stp_swp_report.from_date <= tt_sip_stp_swp_report.cease_terminate_date';
                         $rawQuery.=' AND (SELECT COUNT(*) FROM `md_systematic_unregistered` WHERE remarks=tt_sip_stp_swp_report.remarks AND rnt_id=tt_sip_stp_swp_report.rnt_id)=0';
-
-                        // $rawQuery.=' AND datediff(tt_sip_stp_swp_report.cease_terminate_date, tt_sip_stp_swp_report.from_date) > 30';
+                        $rawQuery.=' AND datediff(tt_sip_stp_swp_report.cease_terminate_date, tt_sip_stp_swp_report.from_date) > 30';
                         break;
                     case 'M':
                         if ($sub_type=='MM') {  
