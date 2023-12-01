@@ -112,12 +112,17 @@ class SipStpTransController extends Controller
                             // $rawQuery.=' AND tt_sip_stp_swp_report.to_date <= "'.date('Y-m-d').'" ';
                             // $rawQuery.=' AND tt_sip_stp_swp_report.cease_terminate_date IS NULL ';
                             $rawQuery.='AND IF(tt_sip_stp_swp_report.rnt_id=1, 
-                                tt_sip_stp_swp_report.to_date <= "'.date('Y-m-d').'" AND tt_sip_stp_swp_report.cease_terminate_date IS NULL, 
-                                tt_sip_stp_swp_report.cease_terminate_date!="" AND tt_sip_stp_swp_report.to_date <= tt_sip_stp_swp_report.cease_terminate_date
+                                date(tt_sip_stp_swp_report.to_date) <= "'.date('Y-m-d').'" AND tt_sip_stp_swp_report.cease_terminate_date IS NULL, 
+                                date(tt_sip_stp_swp_report.to_date) <= "'.date('Y-m-d').'" AND tt_sip_stp_swp_report.to_date <= tt_sip_stp_swp_report.cease_terminate_date
                                 )';
                             // $rawQuery.='AND IF(tt_sip_stp_swp_report.rnt_id=1, 
                             //     DATE_FORMAT(tt_sip_stp_swp_report.to_date,"Y-m-d") <= "'.date('Y-m-d').'" AND DATE_FORMAT(tt_sip_stp_swp_report.cease_terminate_date,"Y-m-d") IS NULL, 
                             //     DATE_FORMAT(tt_sip_stp_swp_report.cease_terminate_date,"Y-m-d")!="" AND DATE_FORMAT(tt_sip_stp_swp_report.to_date,"Y-m-d") <= DATE_FORMAT(tt_sip_stp_swp_report.cease_terminate_date,"Y-m-d")
+                            //     )';
+
+                            // $rawQuery.='AND IF(tt_sip_stp_swp_report.rnt_id=1, 
+                            //     DATE_FORMAT(tt_sip_stp_swp_report.to_date,"Y-m-d") <= "'.date('Y-m-d').'" AND tt_sip_stp_swp_report.cease_terminate_date IS NULL, 
+                            //     DATE_FORMAT(tt_sip_stp_swp_report.to_date,"Y-m-d") <= "'.date('Y-m-d').'" AND tt_sip_stp_swp_report.to_date<=tt_sip_stp_swp_report.cease_terminate_date
                             //     )';
                         }else if ($sub_type=='MT'){
                             // YEAR(date) AS y, MONTH(date)
