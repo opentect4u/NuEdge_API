@@ -95,8 +95,8 @@ class SipStpTransController extends Controller
                         // cond1 && (cond1 || cond2)
                         // $rawQuery.='AND IF(tt_sip_stp_swp_report.rnt_id=1, tt_sip_stp_swp_report.cease_terminate_date!="", tt_sip_stp_swp_report.cease_terminate_date!="" AND tt_sip_stp_swp_report.f_status="TERMINATED")';
                         $rawQuery.='AND IF(tt_sip_stp_swp_report.rnt_id=1, 
-                            tt_sip_stp_swp_report.cease_terminate_date!="", 
-                            tt_sip_stp_swp_report.cease_terminate_date!="" AND tt_sip_stp_swp_report.to_date > tt_sip_stp_swp_report.cease_terminate_date
+                            DATE_FORMAT(tt_sip_stp_swp_report.cease_terminate_date,"Y-m-d")!="", 
+                            DATE_FORMAT(tt_sip_stp_swp_report.cease_terminate_date,"Y-m-d")!="" AND tt_sip_stp_swp_report.to_date > tt_sip_stp_swp_report.cease_terminate_date
                         )';
                         // mysql -h nuedgedb1.cppextefqhgz.ap-south-1.rds.amazonaws.com -u admin -p
                         // ALTER TABLE md_systematic_unregistered convert TO CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
