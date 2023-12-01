@@ -973,7 +973,7 @@ class MailBackController extends Controller
                             'folio_no'=>str_replace("'","",$value[4]),
                             'first_client_name'=>str_replace("'","",$value[5]),
                             'auto_trans_type'=>str_replace("'","",$value[23]),
-                            'auto_trans_no'=>str_replace("'","",$value[34]),  // RegSlno
+                            'auto_trans_no'=> (str_replace("'","",$value[34]))?str_replace("'","",$value[34]):str_replace("'","",$value[3]),  // RegSlno  and ihno
                             'auto_amount'=>$value[10],
                             'from_date'=>date('Y-m-d H:i:s',strtotime($value[7])),
                             'to_date'=>date('Y-m-d H:i:s',strtotime($value[8])),
