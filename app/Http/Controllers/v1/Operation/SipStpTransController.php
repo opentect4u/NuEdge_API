@@ -150,7 +150,7 @@ class SipStpTransController extends Controller
                         }
                         break;
                     case 'P':
-                        $rawQuery.=' AND date(tt_sip_stp_swp_report.cease_terminate_date) IS NULL ';
+                        $rawQuery.=' AND tt_sip_stp_swp_report.cease_terminate_date IS NULL ';
                         $rawQuery.=' AND date(tt_sip_stp_swp_report.pause_from_date)!="" ';
                         $rawQuery.=' AND date(tt_sip_stp_swp_report.pause_to_date)!="" ';
                         $rawQuery.=' AND date(tt_sip_stp_swp_report.to_date)>="'.date('Y-m-d').'" ';
