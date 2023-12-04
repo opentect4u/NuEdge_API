@@ -18,5 +18,7 @@ class CompBank extends Model
         'branch_name',
         'branch_add',
         'upload_chq',
+        'created_by',
+        'updated_by',
     ];
 }
