@@ -145,6 +145,116 @@ class FolioDetailsController extends Controller
                     ELSE ""
                 END),
                 tt_folio_details_reports.guardian_pa_link_ststus) as guardian_pa_link_ststus')
+                ->selectRaw('IF(tt_folio_details_reports.rnt_id=2,
+                (CASE 
+                    WHEN tt_folio_details_reports.kyc_status_1st="Y" THEN "KYC OK"
+                    WHEN tt_folio_details_reports.kyc_status_1st="H" THEN "KYC HOLD"
+                    WHEN tt_folio_details_reports.kyc_status_1st="R" THEN "KYC REJECTED"
+                    WHEN tt_folio_details_reports.kyc_status_1st="M" THEN "KYC Registered-Modified KYC"
+                    WHEN tt_folio_details_reports.kyc_status_1st="Blank" || tt_folio_details_reports.kyc_status_1st="BLANK" || tt_folio_details_reports.kyc_status_1st=" " 
+                    THEN "Not Applicable"
+                    ELSE ""
+                END),
+                tt_folio_details_reports.kyc_status_1st) as kyc_status_1st')
+                ->selectRaw('IF(tt_folio_details_reports.rnt_id=2,
+                (CASE 
+                    WHEN tt_folio_details_reports.kyc_status_2nd="Y" THEN "KYC OK"
+                    WHEN tt_folio_details_reports.kyc_status_2nd="H" THEN "KYC HOLD"
+                    WHEN tt_folio_details_reports.kyc_status_2nd="R" THEN "KYC REJECTED"
+                    WHEN tt_folio_details_reports.kyc_status_2nd="M" THEN "KYC Registered-Modified KYC"
+                    WHEN tt_folio_details_reports.kyc_status_2nd="Blank" || tt_folio_details_reports.kyc_status_2nd="BLANK" || tt_folio_details_reports.kyc_status_2nd=" " 
+                    THEN "Not Applicable"
+                    ELSE ""
+                END),
+                tt_folio_details_reports.kyc_status_2nd) as kyc_status_2nd')
+                ->selectRaw('IF(tt_folio_details_reports.rnt_id=2,
+                (CASE 
+                    WHEN tt_folio_details_reports.kyc_status_3rd="Y" THEN "KYC OK"
+                    WHEN tt_folio_details_reports.kyc_status_3rd="H" THEN "KYC HOLD"
+                    WHEN tt_folio_details_reports.kyc_status_3rd="R" THEN "KYC REJECTED"
+                    WHEN tt_folio_details_reports.kyc_status_3rd="M" THEN "KYC Registered-Modified KYC"
+                    WHEN tt_folio_details_reports.kyc_status_3rd="Blank" || tt_folio_details_reports.kyc_status_3rd="BLANK" || tt_folio_details_reports.kyc_status_3rd=" " 
+                    THEN "Not Applicable"
+                    ELSE ""
+                END),
+                tt_folio_details_reports.kyc_status_3rd) as kyc_status_3rd')
+                ->selectRaw('IF(tt_folio_details_reports.rnt_id=2,
+                (CASE 
+                    WHEN tt_folio_details_reports.guardian_kyc_status="Y" THEN "KYC OK"
+                    WHEN tt_folio_details_reports.guardian_kyc_status="H" THEN "KYC HOLD"
+                    WHEN tt_folio_details_reports.guardian_kyc_status="R" THEN "KYC REJECTED"
+                    WHEN tt_folio_details_reports.guardian_kyc_status="M" THEN "KYC Registered-Modified KYC"
+                    WHEN tt_folio_details_reports.guardian_kyc_status="Blank" || tt_folio_details_reports.guardian_kyc_status="BLANK" || tt_folio_details_reports.guardian_kyc_status=" " 
+                    THEN "Not Applicable"
+                    ELSE ""
+                END),
+                tt_folio_details_reports.guardian_kyc_status) as guardian_kyc_status')
+
+                ->selectRaw('IF(tt_folio_details_reports.ckyc_no_1st IS NULL || tt_folio_details_reports.ckyc_no_1st="" || tt_folio_details_reports.ckyc_no_1st="",
+                IF(tt_folio_details_reports.pan_2_holder!="",(SELECT ckyc_no_1st FROM tt_folio_details_reports WHERE pan=tt_folio_details_reports.pan_2_holder limit 1),""),
+                tt_folio_details_reports.ckyc_no_1st) as ckyc_no_1st')
+                ->selectRaw('IF(tt_folio_details_reports.ckyc_no_2nd IS NULL || tt_folio_details_reports.ckyc_no_2nd="" || tt_folio_details_reports.ckyc_no_2nd="",
+                IF(tt_folio_details_reports.pan_2_holder!="",(SELECT ckyc_no_1st FROM tt_folio_details_reports WHERE pan=tt_folio_details_reports.pan_2_holder limit 1),""),
+                tt_folio_details_reports.ckyc_no_2nd) as ckyc_no_2nd')
+                ->selectRaw('IF(tt_folio_details_reports.ckyc_no_3rd IS NULL || tt_folio_details_reports.ckyc_no_3rd="" || tt_folio_details_reports.ckyc_no_3rd="",
+                IF(tt_folio_details_reports.pan_3_holder!="",(SELECT ckyc_no_1st FROM tt_folio_details_reports WHERE pan=tt_folio_details_reports.pan_3_holder limit 1),""),
+                tt_folio_details_reports.ckyc_no_3rd) as ckyc_no_3rd')
+                ->selectRaw('IF(tt_folio_details_reports.guardian_ckyc_no IS NULL || tt_folio_details_reports.guardian_ckyc_no="" || tt_folio_details_reports.guardian_ckyc_no="",
+                IF(tt_folio_details_reports.guardian_pan!="",(SELECT ckyc_no_1st FROM tt_folio_details_reports WHERE pan=tt_folio_details_reports.guardian_pan limit 1),""),
+                tt_folio_details_reports.guardian_ckyc_no) as guardian_ckyc_no')
+
+                ->selectRaw('IF(tt_folio_details_reports.dob_2nd_holder IS NULL || tt_folio_details_reports.dob_2nd_holder="" || tt_folio_details_reports.dob_2nd_holder="",
+                IF(tt_folio_details_reports.pan_2_holder!="",(SELECT dob FROM tt_folio_details_reports WHERE pan=tt_folio_details_reports.pan_2_holder limit 1),""),
+                tt_folio_details_reports.dob_2nd_holder) as dob_2nd_holder')
+                ->selectRaw('IF(tt_folio_details_reports.dob_3rd_holder IS NULL || tt_folio_details_reports.dob_3rd_holder="" || tt_folio_details_reports.dob_3rd_holder="",
+                IF(tt_folio_details_reports.pan_3_holder!="",(SELECT dob FROM tt_folio_details_reports WHERE pan=tt_folio_details_reports.pan_3_holder limit 1),""),
+                tt_folio_details_reports.dob_3rd_holder) as dob_3rd_holder')
+                ->selectRaw('IF(tt_folio_details_reports.guardian_dob IS NULL || tt_folio_details_reports.guardian_dob="" || tt_folio_details_reports.guardian_dob="",
+                IF(tt_folio_details_reports.guardian_pan!="",(SELECT dob FROM tt_folio_details_reports WHERE pan=tt_folio_details_reports.guardian_pan limit 1),""),
+                tt_folio_details_reports.guardian_dob) as guardian_dob')
+
+
+                ->selectRaw('IF(tt_folio_details_reports.tax_status_2_holder IS NULL || tt_folio_details_reports.tax_status_2_holder="" || tt_folio_details_reports.tax_status_2_holder="",
+                IF(tt_folio_details_reports.pan_2_holder!="",(SELECT tax_status FROM tt_folio_details_reports WHERE pan=tt_folio_details_reports.pan_2_holder limit 1),""),
+                tt_folio_details_reports.tax_status_2_holder) as tax_status_2_holder')
+                ->selectRaw('IF(tt_folio_details_reports.tax_status_3_holder IS NULL || tt_folio_details_reports.tax_status_3_holder="" || tt_folio_details_reports.tax_status_3_holder="",
+                IF(tt_folio_details_reports.pan_3_holder!="",(SELECT tax_status FROM tt_folio_details_reports WHERE pan=tt_folio_details_reports.pan_3_holder limit 1),""),
+                tt_folio_details_reports.tax_status_3_holder) as tax_status_3_holder')
+                ->selectRaw('IF(tt_folio_details_reports.guardian_tax_status IS NULL || tt_folio_details_reports.guardian_tax_status="" || tt_folio_details_reports.guardian_tax_status="",
+                IF(tt_folio_details_reports.guardian_pan!="",(SELECT tax_status FROM tt_folio_details_reports WHERE pan=tt_folio_details_reports.guardian_pan limit 1),""),
+                tt_folio_details_reports.guardian_tax_status) as guardian_tax_status')
+
+                ->selectRaw('IF(tt_folio_details_reports.occupation_des_2nd IS NULL || tt_folio_details_reports.occupation_des_2nd="" || tt_folio_details_reports.occupation_des_2nd="",
+                IF(tt_folio_details_reports.pan_2_holder!="",(SELECT occupation_des FROM tt_folio_details_reports WHERE pan=tt_folio_details_reports.pan_2_holder limit 1),""),
+                tt_folio_details_reports.occupation_des_2nd) as occupation_des_2nd')
+                ->selectRaw('IF(tt_folio_details_reports.occupation_des_3rd IS NULL || tt_folio_details_reports.occupation_des_3rd="" || tt_folio_details_reports.occupation_des_3rd="",
+                IF(tt_folio_details_reports.pan_3_holder!="",(SELECT occupation_des FROM tt_folio_details_reports WHERE pan=tt_folio_details_reports.pan_3_holder limit 1),""),
+                tt_folio_details_reports.occupation_des_3rd) as occupation_des_3rd')
+                ->selectRaw('IF(tt_folio_details_reports.guardian_occu_des IS NULL || tt_folio_details_reports.guardian_occu_des="" || tt_folio_details_reports.guardian_occu_des="",
+                IF(tt_folio_details_reports.guardian_pan!="",(SELECT occupation_des FROM tt_folio_details_reports WHERE pan=tt_folio_details_reports.guardian_pan limit 1),""),
+                tt_folio_details_reports.guardian_occu_des) as guardian_occu_des')
+                
+                ->selectRaw('IF(tt_folio_details_reports.kyc_status_2nd IS NULL || tt_folio_details_reports.kyc_status_2nd="" || tt_folio_details_reports.kyc_status_2nd="",
+                IF(tt_folio_details_reports.pan_2_holder!="",(SELECT kyc_status_1st FROM tt_folio_details_reports WHERE pan=tt_folio_details_reports.pan_2_holder limit 1),""),
+                tt_folio_details_reports.kyc_status_2nd) as kyc_status_2nd')
+                ->selectRaw('IF(tt_folio_details_reports.kyc_status_3rd IS NULL || tt_folio_details_reports.kyc_status_3rd="" || tt_folio_details_reports.kyc_status_3rd="",
+                IF(tt_folio_details_reports.pan_3_holder!="",(SELECT kyc_status_1st FROM tt_folio_details_reports WHERE pan=tt_folio_details_reports.pan_3_holder limit 1),""),
+                tt_folio_details_reports.kyc_status_3rd) as kyc_status_3rd')
+                ->selectRaw('IF(tt_folio_details_reports.guardian_kyc_status IS NULL || tt_folio_details_reports.guardian_kyc_status="" || tt_folio_details_reports.guardian_kyc_status="",
+                IF(tt_folio_details_reports.guardian_pan!="",(SELECT kyc_status_1st FROM tt_folio_details_reports WHERE pan=tt_folio_details_reports.guardian_pan limit 1),""),
+                tt_folio_details_reports.guardian_kyc_status) as guardian_kyc_status')
+
+
+                ->selectRaw('IF(tt_folio_details_reports.pa_link_ststus_2nd IS NULL || tt_folio_details_reports.pa_link_ststus_2nd="" || tt_folio_details_reports.pa_link_ststus_2nd="",
+                IF(tt_folio_details_reports.pan_2_holder!="",(SELECT pa_link_ststus_1st FROM tt_folio_details_reports WHERE pan=tt_folio_details_reports.pan_2_holder limit 1),""),
+                tt_folio_details_reports.pa_link_ststus_2nd) as pa_link_ststus_2nd')
+                ->selectRaw('IF(tt_folio_details_reports.pa_link_ststus_3rd IS NULL || tt_folio_details_reports.pa_link_ststus_3rd="" || tt_folio_details_reports.pa_link_ststus_3rd="",
+                IF(tt_folio_details_reports.pan_3_holder!="",(SELECT pa_link_ststus_1st FROM tt_folio_details_reports WHERE pan=tt_folio_details_reports.pan_3_holder limit 1),""),
+                tt_folio_details_reports.pa_link_ststus_3rd) as pa_link_ststus_3rd')
+                ->selectRaw('IF(tt_folio_details_reports.guardian_pa_link_ststus IS NULL || tt_folio_details_reports.guardian_pa_link_ststus="" || tt_folio_details_reports.guardian_pa_link_ststus="",
+                IF(tt_folio_details_reports.guardian_pan!="",(SELECT pa_link_ststus_1st FROM tt_folio_details_reports WHERE pan=tt_folio_details_reports.guardian_pan limit 1),""),
+                tt_folio_details_reports.guardian_pa_link_ststus) as guardian_pa_link_ststus')
+
                 // ->selectRaw('IF(td_folio_details.bank_micr="" || td_folio_details.bank_micr IS NULL,(SELECT micr_code FROM md_deposit_bank WHERE ifs_code=td_folio_details.bank_ifsc limit 1),td_folio_details.bank_micr) as bank_micr')
                 ->where('tt_folio_details_reports.amc_flag','N')
                 ->where('tt_folio_details_reports.scheme_flag','N')

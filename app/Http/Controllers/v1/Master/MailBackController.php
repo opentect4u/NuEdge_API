@@ -19,7 +19,8 @@ use App\Models\{
     TempSipStpTransaction,
     SipStpTransaction,
     FolioDetails,
-    TempFolioDetails
+    TempFolioDetails,
+    FolioDetailsReport
 };
 use Validator;
 use Illuminate\Support\Carbon;
@@ -631,6 +632,10 @@ class MailBackController extends Controller
                                 'pa_link_ststus_1st'=>str_replace("'","",$value[72]),
                                 'pa_link_ststus_2nd'=>str_replace("'","",$value[73]),
                                 'pa_link_ststus_3rd'=>str_replace("'","",$value[74]),
+                                'kyc_status_1st'=>str_replace("'","",$value[68]),
+                                'kyc_status_2nd'=>str_replace("'","",$value[70]),
+                                'kyc_status_3rd'=>str_replace("'","",$value[71]),
+                                'guardian_kyc_status'=>str_replace("'","",$value[69]),
                             ));
                         }
                     }
@@ -1059,80 +1064,95 @@ class MailBackController extends Controller
                     for ($i=$start_count; $i <= $end_count; $i++) { 
                         // return $TotalArray[$i];
                         $value=explode("~",$TotalArray[$i]);
+
+                        $dd=str_replace("/","-",$value[15]);
+                        if ($dd=='' || $dd==' ') {
+                            $mydob=NULL;
+                        }else {
+                            $mydob=Carbon::parse($dd)->format('Y-m-d');
+                        }
                         TempFolioDetails::create(array(
                             'rnt_id'=>$rnt_id,
                             'product_code'=>$value[0],
                             'amc_code'=>$value[1],
                             'folio_no'=>$value[2],
                             'folio_date'=>NULL,
-                            'dividend_option'=>$value[3],
-                            'first_client_name'=>$value[5],
-                            'joint_name_1'=>$value[6],
-                            'joint_name_2'=>$value[7],
-                            'add_1'=>$value[8],
-                            'add_2'=>$value[9],
-                            'add_3'=>$value[10],
-                            'city'=>$value[11],
-                            'pincode'=>$value[12],
-                            'state'=>$value[13],
-                            'country'=>$value[14],
-                            'tpin'=>$value[15],
-                            'f_name'=>$value[17],
-                            'dob'=>$value[16],
-                            'm_name'=>$value[18],
-                            'phone_residence'=>$value[19],
-                            'phone_res_1'=>$value[20],
-                            'phone_res_2'=>$value[21],
-                            'phone_ofc'=>$value[22],
-                            'phone_ofc_1'=>$value[23],
-                            'phone_ofc_2'=>$value[24],
-                            'fax_residence'=>$value[25],
-                            'fax_ofc'=>$value[26],
-                            'tax_status'=>$value[27],
-                            'occ_code'=>$value[28],
-                            'email'=>$value[29],
-                            'bank_acc_no'=>$value[30],
-                            'bank_name'=>$value[31],
-                            'bank_ifsc'=>NULL,
-                            'acc_type'=>$value[32],
-                            'branch'=>$value[33],
-                            'bank_add_1'=>$value[34],
-                            'bank_add_2'=>$value[35],
-                            'bank_add_3'=>$value[36],
-                            'bank_city'=>$value[37],
-                            'bank_phone'=>$value[38],
-                            'bank_state'=>$value[39],
-                            'bank_country'=>$value[40],
-                            'invs_id'=>$value[41],
-                            'arn_no'=>$value[42],
-                            'pan'=>$value[43],
-                            'pan_2_holder'=>NULL,
-                            'pan_3_holder'=>NULL,
-                            'mobile'=>$value[44],
-                            'report_date'=>$value[45],
-                            'report_time'=>$value[46],
+                            'dividend_option'=>$value[46],
+                            'first_client_name'=>$value[4],
+                            'joint_name_1'=>$value[5],
+                            'joint_name_2'=>$value[6],
+                            'add_1'=>$value[7],
+                            'add_2'=>$value[8],
+                            'add_3'=>$value[9],
+                            'city'=>$value[10],
+                            'pincode'=>$value[11],
+                            'state'=>$value[12],
+                            'country'=>$value[13],
+                            'tpin'=>$value[14],
+                            'f_name'=>$value[16],
+                            'dob'=>$mydob,
+                            'm_name'=>$value[17],
+                            'phone_residence'=>$value[18],
+                            'phone_res_1'=>$value[19],
+                            'phone_res_2'=>$value[20],
+                            'phone_ofc'=>$value[21],
+                            'phone_ofc_1'=>$value[22],
+                            'phone_ofc_2'=>$value[23],
+                            'fax_residence'=>$value[24],
+                            'fax_ofc'=>$value[25],
+                            'tax_status'=>$value[26],
+                            'occ_code'=>$value[27],
+                            'email'=>$value[28],
+                            'bank_acc_no'=>$value[29],
+                            'bank_name'=>$value[30],
+                            'bank_ifsc'=>$value[59],
+                            'acc_type'=>$value[31],
+                            'branch'=>$value[32],
+                            'bank_add_1'=>$value[33],
+                            'bank_add_2'=>$value[34],
+                            'bank_add_3'=>$value[35],
+                            'bank_city'=>$value[36],
+                            'bank_phone'=>$value[37],
+                            'bank_state'=>$value[38],
+                            'bank_country'=>$value[39],
+                            'invs_id'=>$value[40],
+                            'arn_no'=>$value[41],
+                            'pan'=>$value[44],
+                            'pan_2_holder'=>$value[50],
+                            'pan_3_holder'=>$value[51],
+                            'mobile'=>$value[45],
+                            'report_date'=>NULL,
+                            'report_time'=>NULL,
                             'occupation_des'=>$value[47],
                             'mode_of_holding'=>$value[48],
-                            'mode_of_holding_des'=>$value[49],
-                            'mapin_id'=>$value[50],
-                            'aadhaar_1_holder'=>$value[51],
-                            'aadhaar_2_holder'=>$value[52],
-                            'aadhaar_3_holder'=>$value[53],
-                            'guardian_name'=>NULL,
-                            'guardian_aadhaar'=>$value[54],
-                            'guardian_pan'=>NULL,
+                            'mode_of_holding_des'=>$value[48],
+                            'mapin_id'=>$value[49],
+                            'aadhaar_1_holder'=>$value[74],
+                            'aadhaar_2_holder'=>$value[75],
+                            'aadhaar_3_holder'=>$value[76],
+                            'guardian_name'=>$value[53],
+                            'guardian_aadhaar'=>$value[77],
+                            'guardian_pan'=>$value[65],
                             'guardian_relation'=>NULL,
                             'reinvest_flag'=>NULL,
-                            'nom_optout_status'=>NULL,
-                            'nom_name_1'=>NULL,
-                            'nom_relation_1'=>NULL,
-                            'nom_per_1'=>NULL,
-                            'nom_name_2'=>NULL,
-                            'nom_relation_2'=>NULL,
-                            'nom_per_2'=>NULL,
-                            'nom_name_3'=>NULL,
-                            'nom_relation_3'=>NULL,
-                            'nom_per_3'=>NULL,
+                            'nom_optout_status'=>$value[111],
+                            'nom_name_1'=>$value[54],
+                            'nom_relation_1'=>$value[68],
+                            'nom_per_1'=>$value[71],
+                            'nom_name_2'=>$value[60],
+                            'nom_relation_2'=>$value[69],
+                            'nom_per_2'=>$value[72],
+                            'nom_name_3'=>$value[61],
+                            'nom_relation_3'=>$value[70],
+                            'nom_per_3'=>$value[73],
+                            'kyc_status_1st'=>$value[62],
+                            'kyc_status_2nd'=>$value[63],
+                            'kyc_status_3rd'=>$value[64],
+                            'guardian_kyc_status'=>$value[109],
+                            'ckyc_no_1st'=>$value[102],
+                            'ckyc_no_2nd'=>$value[103],
+                            'ckyc_no_3rd'=>$value[104],
+                            'guardian_ckyc_no'=>$value[105]
                         ));
                     }
                 }elseif ($file_type_id==5 && $file_id==11) {  // sip stp pause report MFSD231
@@ -1418,7 +1438,7 @@ class MailBackController extends Controller
                     break;
                 case 'S':
                     if ($sub_file_type=='P/O') {
-                        return $request;
+                        // return $request;
                         $up_data=SipStpTransaction::where('folio_no',$request->folio_no)
                         ->where('product_code',$request->product_code)
                         ->update([
@@ -1429,6 +1449,16 @@ class MailBackController extends Controller
                     }
                     break;
                 case 'F':
+                    if ($sub_file_type=='P/O') {
+                        // return $request;
+                        $up_data=FolioDetails::where('folio_no',$request->folio_no)
+                        ->where('product_code',$request->product_code)
+                        ->update([
+                            'isin_no'=>$request->isin_no,
+                            'plan_option_flag'=>'N',
+                            'plan_option_lock_flag'=>'L'
+                        ]);
+                    }
                     break;
                 default:
                     break;
@@ -1584,15 +1614,72 @@ class MailBackController extends Controller
                 $rawQuery="plan_option_flag='Y'";
             }
             $data=[];
-            $data=FolioDetails::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_folio_details.product_code')
+            $data=FolioDetailsReport::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','tt_folio_details_reports.product_code')
                 ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
+                ->leftJoin('md_plan','md_plan.id','=','md_scheme_isin.plan_id')
+                ->leftJoin('md_option','md_option.id','=','md_scheme_isin.option_id')
                 ->leftJoin('md_category','md_category.id','=','md_scheme.category_id')
                 ->leftJoin('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
-                ->leftJoin('md_amc','md_amc.amc_code','=','td_folio_details.amc_code')
-                ->select('td_folio_details.*','md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name',
-                'md_amc.amc_short_name as amc_short_name')
+                ->leftJoin('md_amc','md_amc.amc_code','=','tt_folio_details_reports.amc_code')
+                ->leftJoin('md_employee','md_employee.euin_no','=','tt_folio_details_reports.euin_no')
+                ->leftJoin('md_branch','md_branch.id','=','md_employee.branch_id')
+                ->leftJoin('md_pincode','md_pincode.id','=','tt_folio_details_reports.pincode')
+                ->leftJoin('md_states','md_states.id','=','md_pincode.state_id')
+                ->leftJoin('md_city_type','md_city_type.id','=','md_pincode.city_type_id')
+                ->leftJoin('md_deposit_bank','md_deposit_bank.ifs_code','=','tt_folio_details_reports.bank_ifsc')
+                ->select('tt_folio_details_reports.*','md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name',
+                'md_amc.amc_short_name as amc_short_name','md_states.name as state','md_city_type.name as city_type',
+                'md_employee.emp_name as rm_name','md_branch.brn_name as branch_name','md_employee.bu_type_id as bu_type_id','md_employee.branch_id as branch_id',
+                'md_plan.plan_name','md_option.opt_name as option_name','md_deposit_bank.micr_code as bank_micr')
+                ->selectRaw('(select `bu_type` from `md_business_type` where `bu_code` =md_employee.bu_type_id and `branch_id` =md_employee.branch_id limit 1) as bu_type')
+
+                ->selectRaw('IF(tt_folio_details_reports.rnt_id=2,
+                (CASE 
+                    WHEN tt_folio_details_reports.pa_link_ststus_1st="Y" THEN "Aadhaar Linked"
+                    WHEN tt_folio_details_reports.pa_link_ststus_1st="N" THEN "Aadhaar Not Linked"
+                    WHEN tt_folio_details_reports.pa_link_ststus_1st="Blank" || pa_link_ststus_1st="BLANK" THEN "Not Applicable"
+                    ELSE ""
+                END),
+                tt_folio_details_reports.pa_link_ststus_1st) as pa_link_ststus_1st')
+                ->selectRaw('IF(tt_folio_details_reports.rnt_id=2,
+                (CASE 
+                    WHEN tt_folio_details_reports.pa_link_ststus_2nd="Y" THEN "Aadhaar Linked"
+                    WHEN tt_folio_details_reports.pa_link_ststus_2nd="N" THEN "Aadhaar Not Linked"
+                    WHEN tt_folio_details_reports.pa_link_ststus_2nd="Blank" || pa_link_ststus_2nd="BLANK" THEN "Not Applicable"
+                    ELSE ""
+                END),
+                tt_folio_details_reports.pa_link_ststus_2nd) as pa_link_ststus_2nd')
+                ->selectRaw('IF(tt_folio_details_reports.rnt_id=2,
+                (CASE 
+                    WHEN tt_folio_details_reports.pa_link_ststus_3rd="Y" THEN "Aadhaar Linked"
+                    WHEN tt_folio_details_reports.pa_link_ststus_3rd="N" THEN "Aadhaar Not Linked"
+                    WHEN tt_folio_details_reports.pa_link_ststus_3rd="Blank" || pa_link_ststus_3rd="BLANK" THEN "Not Applicable"
+                    ELSE ""
+                END),
+                tt_folio_details_reports.pa_link_ststus_3rd) as pa_link_ststus_3rd')
+                ->selectRaw('IF(tt_folio_details_reports.rnt_id=2,
+                (CASE 
+                    WHEN tt_folio_details_reports.guardian_pa_link_ststus="Y" THEN "Aadhaar Linked"
+                    WHEN tt_folio_details_reports.guardian_pa_link_ststus="N" THEN "Aadhaar Not Linked"
+                    WHEN tt_folio_details_reports.guardian_pa_link_ststus="Blank" || guardian_pa_link_ststus="BLANK" THEN "Not Applicable"
+                    ELSE ""
+                END),
+                tt_folio_details_reports.guardian_pa_link_ststus) as guardian_pa_link_ststus')
                 ->whereRaw($rawQuery)
+                ->groupBy('tt_folio_details_reports.product_code')
+                ->groupBy('tt_folio_details_reports.folio_no')
+                // ->take(100)
                 ->get();
+            // dd(DB::getQueryLog());
+            // $data=FolioDetails::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_folio_details.product_code')
+            //     ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
+            //     ->leftJoin('md_category','md_category.id','=','md_scheme.category_id')
+            //     ->leftJoin('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
+            //     ->leftJoin('md_amc','md_amc.amc_code','=','td_folio_details.amc_code')
+            //     ->select('td_folio_details.*','md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name',
+            //     'md_amc.amc_short_name as amc_short_name')
+            //     ->whereRaw($rawQuery)
+            //     ->get();
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
