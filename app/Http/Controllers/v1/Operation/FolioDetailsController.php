@@ -48,11 +48,13 @@ class FolioDetailsController extends Controller
                 $rawQuery.=Helper::WhereRawQuery($pan_no,$rawQuery,$queryString);
                 $queryString='tt_folio_details_reports.folio_no';
                 $rawQuery.=Helper::WhereRawQuery($folio_no,$rawQuery,$queryString);
-                if ($folio_status) {
-                    $condition=(strlen($rawQuery) > 0)? " AND ":" ";
-                    // $rawQuery.=$condition.'(IF((select SUM(amount) from td_mutual_fund_trans where folio_no=td_folio_details.folio_no and product_code=td_folio_details.product_code) > 0,"Active","Inactive"))="'.$folio_status.'"';
-                    $rawQuery.=$condition.'(IF((select SUM(amount) from td_mutual_fund_trans where folio_no=tt_folio_details_reports.folio_no and product_code=tt_folio_details_reports.product_code) > 0,"Active","Inactive"))="'.$folio_status.'"';
-                }
+                $queryString='tt_folio_details_reports.folio_status';
+                $rawQuery.=Helper::WhereRawQuery($folio_status,$rawQuery,$queryString);
+                // if ($folio_status) {
+                //     $condition=(strlen($rawQuery) > 0)? " AND ":" ";
+                //     // $rawQuery.=$condition.'(IF((select SUM(amount) from td_mutual_fund_trans where folio_no=td_folio_details.folio_no and product_code=td_folio_details.product_code) > 0,"Active","Inactive"))="'.$folio_status.'"';
+                //     $rawQuery.=$condition.'(IF((select SUM(amount) from td_mutual_fund_trans where folio_no=tt_folio_details_reports.folio_no and product_code=tt_folio_details_reports.product_code) > 0,"Active","Inactive"))="'.$folio_status.'"';
+                // }
                 // if ($kyc_status) {
                 //     $rawQuery.='';
                 // }
