@@ -12,6 +12,7 @@ class TempFolioDetails extends Model
     protected $fillable = [
         'rnt_id',
         'product_code',
+        'euin_no',
         'amc_code',
         'folio_no',
         'folio_date',

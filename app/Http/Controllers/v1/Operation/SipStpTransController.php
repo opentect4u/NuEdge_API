@@ -247,6 +247,10 @@ class SipStpTransController extends Controller
                         }
                     }
                 }
+                if ($my_data->pause_end_date!='' && $my_data->pause_end_date < date('Y-m-d')) {  // if pause to date more then to date
+                    $my_data->pause_start_date=NULL;
+                    $my_data->pause_end_date=NULL;
+                }
                 array_push($data,$my_data);
             }
 

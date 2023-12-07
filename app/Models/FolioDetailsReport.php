@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class FolioDetails extends Model
+class FolioDetailsReport extends Model
 {
     use HasFactory;
-    protected $table="td_folio_details";
+    protected $table="tt_folio_details_reports";
     protected $fillable = [
         'rnt_id',
         'product_code',
@@ -118,6 +118,8 @@ class FolioDetails extends Model
         'amc_flag',
         'scheme_flag',
         'plan_option_flag',
+        'folio_balance',
+        'folio_status',
         'delete_flag',
         'deleted_date',
         'deleted_by',

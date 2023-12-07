@@ -610,7 +610,7 @@ class MailBackController extends Controller
                                 'guardian_ckyc_no'=>str_replace("'","",$value[51]),
                                 'guardian_tax_status'=>NULL,
                                 'guardian_occu_des'=>NULL,
-                                'guardian_pa_link_ststus'=>NULL,
+                                'guardian_pa_link_ststus'=>str_replace("'","",$value[72]),
                                 'reinvest_flag'=>str_replace("'","",$value[20]),
                                 'nom_optout_status'=>str_replace("'","",$value[35]),
                                 'nom_name_1'=>str_replace("'","",$value[36]),
@@ -1580,6 +1580,8 @@ class MailBackController extends Controller
                 $rawQuery="amc_flag='Y'";
             }elseif ($mismatch_flag=='S') {
                 $rawQuery="scheme_flag='Y'";
+            }elseif ($mismatch_flag=='P/O') {
+                $rawQuery="plan_option_flag='Y'";
             }
             $data=[];
             $data=FolioDetails::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_folio_details.product_code')
