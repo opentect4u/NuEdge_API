@@ -26,6 +26,7 @@ class FolioDetailsController extends Controller
     public function search(Request $request)
     {
         try {
+            // return $request;
             $pan_no=$request->pan_no;
             $folio_status=$request->folio_status;
             $kyc_status=$request->kyc_status;
@@ -62,7 +63,7 @@ class FolioDetailsController extends Controller
                 //     $rawQuery.='';
                 // }
             }
-
+            // return $rawQuery;
             $data=[];
             // DB::enableQueryLog();
             // FolioDetailsReport
@@ -153,7 +154,7 @@ class FolioDetailsController extends Controller
                 // ->take(100)
                 ->get();
             // dd(DB::getQueryLog());
-            
+            // return $data;
         } catch (\Throwable $th) {
             throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
