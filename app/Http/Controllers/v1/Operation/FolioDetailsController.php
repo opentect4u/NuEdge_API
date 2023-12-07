@@ -203,13 +203,13 @@ class FolioDetailsController extends Controller
                 IF(tt_folio_details_reports.guardian_pan!="",(SELECT ckyc_no_1st FROM tt_folio_details_reports WHERE pan=tt_folio_details_reports.guardian_pan limit 1),""),
                 tt_folio_details_reports.guardian_ckyc_no) as guardian_ckyc_no')
 
-                ->selectRaw('IF(tt_folio_details_reports.dob_2nd_holder IS NULL || tt_folio_details_reports.dob_2nd_holder="" || tt_folio_details_reports.dob_2nd_holder="",
+                ->selectRaw('IF(DATE_FORMAT(tt_folio_details_reports.dob_2nd_holder,"Y-m-d") IS NULL || DATE_FORMAT(tt_folio_details_reports.dob_2nd_holder,"Y-m-d")="" || DATE_FORMAT(tt_folio_details_reports.dob_2nd_holder,"Y-m-d")="",
                 IF(tt_folio_details_reports.pan_2_holder!="",(SELECT dob FROM tt_folio_details_reports WHERE pan=tt_folio_details_reports.pan_2_holder limit 1),""),
                 tt_folio_details_reports.dob_2nd_holder) as dob_2nd_holder')
-                ->selectRaw('IF(tt_folio_details_reports.dob_3rd_holder IS NULL || tt_folio_details_reports.dob_3rd_holder="" || tt_folio_details_reports.dob_3rd_holder="",
+                ->selectRaw('IF(DATE_FORMAT(tt_folio_details_reports.dob_3rd_holder,"Y-m-d") IS NULL || DATE_FORMAT(tt_folio_details_reports.dob_3rd_holder,"Y-m-d")="" || DATE_FORMAT(tt_folio_details_reports.dob_3rd_holder,"Y-m-d")="",
                 IF(tt_folio_details_reports.pan_3_holder!="",(SELECT dob FROM tt_folio_details_reports WHERE pan=tt_folio_details_reports.pan_3_holder limit 1),""),
                 tt_folio_details_reports.dob_3rd_holder) as dob_3rd_holder')
-                ->selectRaw('IF(tt_folio_details_reports.guardian_dob IS NULL || tt_folio_details_reports.guardian_dob="" || tt_folio_details_reports.guardian_dob="",
+                ->selectRaw('IF(DATE_FORMAT(tt_folio_details_reports.guardian_dob,"Y-m-d") IS NULL || DATE_FORMAT(tt_folio_details_reports.guardian_dob,"Y-m-d")="" || DATE_FORMAT(tt_folio_details_reports.guardian_dob,"Y-m-d")="",
                 IF(tt_folio_details_reports.guardian_pan!="",(SELECT dob FROM tt_folio_details_reports WHERE pan=tt_folio_details_reports.guardian_pan limit 1),""),
                 tt_folio_details_reports.guardian_dob) as guardian_dob')
 
