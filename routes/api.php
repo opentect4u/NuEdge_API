@@ -28,7 +28,7 @@ Route::prefix('v1')->group(function () {
 
         Route::post('register',[App\Http\Controllers\v1\RegisterController::class,'register']);
         Route::post('login',[App\Http\Controllers\v1\LoginController::class,'login']);
-        // Route::middleware(['auth:api'])->group(function () {
+        Route::middleware(['auth:api'])->group(function () {
             Route::post('logout',[App\Http\Controllers\v1\LoginController::class,'logout']);
             Route::get('users',[App\Http\Controllers\v1\HomeController::class,'index']);
             Route::post('changePassword',[App\Http\Controllers\v1\HomeController::class,'chnagePassword']);
@@ -420,7 +420,7 @@ Route::prefix('v1')->group(function () {
             Route::any('showNAVDetails',[App\Http\Controllers\v1\Operation\NAVDetailsController::class,'search']);  // Search NAV details
             Route::any('showSipStpDetails',[App\Http\Controllers\v1\Operation\SipStpTransController::class,'search']);  // Search sip stp details
             Route::any('showFolioDetails',[App\Http\Controllers\v1\Operation\FolioDetailsController::class,'search']);  // Search sip stp details
-            Route::any('showBrokerChangeDetails',[App\Http\Controllers\v1\Operation\BrokerChangeTransController::class,'search']);  // Search sip stp details
+            Route::any('showBrokerChangeDetails',[App\Http\Controllers\v1\Operation\BrokerChangeTransController::class,'search']);  // Search broker change details
 
             /*************************************************End For Report************************************************/
 
@@ -440,7 +440,7 @@ Route::prefix('v1')->group(function () {
             Route::prefix('client')->group(function () {
 
             });
-        // });
+        });
 
     // });
 });
