@@ -20,7 +20,9 @@ use App\Models\{
     SipStpTransaction,
     FolioDetails,
     TempFolioDetails,
-    FolioDetailsReport
+    FolioDetailsReport,
+    TempBrokerChangeTrans,
+    BrokerChangeTrans
 };
 use Validator;
 use Illuminate\Support\Carbon;
@@ -218,15 +220,14 @@ class MailBackController extends Controller
                     if (count($final_array) > 0) {
                         TempMutualFundTransaction::insert($final_array);
                     }
-                }else if ($file_type_id=='1' && $file_id=='2') {  // transction WBR2A
-                    TempMutualFundTransaction::truncate();
+                }else if ($file_type_id=='6' && $file_id=='2') {  // transction WBR2A
+                    TempBrokerChangeTrans::truncate();
                     // return $TotalArray[0];
-                    $value=explode("\t",$TotalArray[1]);
-                    return $value;
+                    // $value=explode("\t",$TotalArray[0]);
+                    // return $value;
                     $array_set=[];
                     for ($i=$start_count; $i <= $end_count; $i++) { 
                         $value=explode("\t",$TotalArray[$i]);
-                        // TempMutualFundTransaction::create(array(
                         $single_array=[
                             'rnt_id'=>$rnt_id,
                             'arn_no'=>str_replace("'","",$value[16]),
@@ -265,7 +266,6 @@ class MailBackController extends Controller
                             'created_at'=>date('Y-m-d H:i:s'),
                             'updated_at'=>date('Y-m-d H:i:s'),
                         ];
-                        // ));
                         array_push($array_set,$single_array);
                     }
 
@@ -273,14 +273,35 @@ class MailBackController extends Controller
                         return $result['trans_no'];
                     }, $array_set);
                     // DB::enableQueryLog();
-                    $array_set_form_db=MutualFundTransaction::select('*')
+                    $array_set_form_db=BrokerChangeTrans::select('*')
                             ->selectRaw('DATE(created_at) as aa_for_create_at')->where('rnt_id',$rnt_id)
                             ->whereIn('trans_no',array_unique($array_trans_no)) 
                             // ->whereDate('created_at',date('Y-m-d'))
                             ->get()->toArray();
                     // return $array_set_form_db;
-                    return $array_set;
+                    // return $array_set;
 
+                    $final_array=[];
+                    foreach ($array_set as $key => $value) {
+                        // return $value;
+                        if (in_array($value['trans_no'], array_column($array_set_form_db, 'trans_no'))) {
+                            // return 
+                            $var1=date('Y-m-d',strtotime($value['created_at']));
+                            $var2=$value['trans_no'];
+                            $filtered_array = array_filter($array_set_form_db, function($val) use($var1, $var2){
+                                return ($val['aa_for_create_at']==$var1 && $val['trans_no']==$var2);
+                            });
+                            if ($filtered_array) {
+                                array_push($final_array,$value);
+                            }
+                        }else {
+                            array_push($final_array,$value);
+                        }
+                    }
+                    // return $final_array;
+                    if (count($final_array) > 0) {
+                        TempBrokerChangeTrans::insert($final_array);
+                    }
                 }else if ($file_type_id=='4' && $file_id=='8') {  // historical nav WBR1
                     TempNAVDetails::truncate();
                     // return $TotalArray[0];
