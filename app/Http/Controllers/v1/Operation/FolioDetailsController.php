@@ -79,7 +79,7 @@ class FolioDetailsController extends Controller
                 ->leftJoin('md_employee','md_employee.euin_no','=','tt_folio_details_reports.euin_no')
                 // ->leftJoin('md_employee','md_employee.euin_no','=',DB::raw('(select euin_no from td_mutual_fund_trans where folio_no=tt_folio_details_reports.folio_no and product_code= tt_folio_details_reports.product_code order by trans_date asc limit 1)'))
                 ->leftJoin('md_branch','md_branch.id','=','md_employee.branch_id')
-                ->leftJoin('md_pincode','md_pincode.id','=','tt_folio_details_reports.pincode')
+                ->leftJoin('md_pincode','md_pincode.pincode','=','tt_folio_details_reports.pincode')
                 ->leftJoin('md_states','md_states.id','=','md_pincode.state_id')
                 ->leftJoin('md_city_type','md_city_type.id','=','md_pincode.city_type_id')
                 ->leftJoin('md_deposit_bank','md_deposit_bank.ifs_code','=','tt_folio_details_reports.bank_ifsc')
