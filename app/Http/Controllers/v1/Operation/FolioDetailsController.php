@@ -45,8 +45,10 @@ class FolioDetailsController extends Controller
 
             $rawQuery='';
             if ($folio_status || $client_name || $pan_no || $folio_no || $kyc_status || $nominee_status || $adhaar_pan_link_status) {
-                $queryString='tt_folio_details_reports.first_client_name';
-                $rawQuery.=Helper::WhereRawQuery($client_name,$rawQuery,$queryString);
+                if (!$pan_no) {
+                    $queryString='tt_folio_details_reports.first_client_name';
+                    $rawQuery.=Helper::WhereRawQuery($client_name,$rawQuery,$queryString);
+                }
                 $queryString='tt_folio_details_reports.pan';
                 $rawQuery.=Helper::WhereRawQuery($pan_no,$rawQuery,$queryString);
                 $queryString='tt_folio_details_reports.folio_no';
