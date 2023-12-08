@@ -257,16 +257,16 @@ class FolioDetailsController extends Controller
                 IF(tt_folio_details_reports.guardian_pan!="",(SELECT kyc_status_1st FROM td_folio_details WHERE pan=tt_folio_details_reports.guardian_pan and kyc_status_1st!="" limit 1),""),
                 tt_folio_details_reports.guardian_kyc_status) as guardian_kyc_status')
 
-                ->selectRaw('IF(tt_folio_details_reports.pa_link_ststus_1st IS NULL || tt_folio_details_reports.pa_link_ststus_1st="" || tt_folio_details_reports.pa_link_ststus_1st="",
+                ->selectRaw('IF(tt_folio_details_reports.pa_link_ststus_1st IS NULL || tt_folio_details_reports.pa_link_ststus_1st="" || tt_folio_details_reports.pa_link_ststus_1st=" ",
                 IF(tt_folio_details_reports.pan!="",(SELECT pa_link_ststus_1st FROM td_folio_details WHERE pan=tt_folio_details_reports.pan and pa_link_ststus_1st!="" limit 1),""),
                 tt_folio_details_reports.pa_link_ststus_1st) as pa_link_ststus_1st')
-                ->selectRaw('IF(tt_folio_details_reports.pa_link_ststus_2nd IS NULL || tt_folio_details_reports.pa_link_ststus_2nd="" || tt_folio_details_reports.pa_link_ststus_2nd="",
+                ->selectRaw('IF(tt_folio_details_reports.pa_link_ststus_2nd IS NULL || tt_folio_details_reports.pa_link_ststus_2nd="" || tt_folio_details_reports.pa_link_ststus_2nd=" ",
                 IF(tt_folio_details_reports.pan_2_holder!="",(SELECT pa_link_ststus_1st FROM td_folio_details WHERE pan=tt_folio_details_reports.pan_2_holder and pa_link_ststus_1st!="" limit 1),""),
                 tt_folio_details_reports.pa_link_ststus_2nd) as pa_link_ststus_2nd')
-                ->selectRaw('IF(tt_folio_details_reports.pa_link_ststus_3rd IS NULL || tt_folio_details_reports.pa_link_ststus_3rd="" || tt_folio_details_reports.pa_link_ststus_3rd="",
+                ->selectRaw('IF(tt_folio_details_reports.pa_link_ststus_3rd IS NULL || tt_folio_details_reports.pa_link_ststus_3rd="" || tt_folio_details_reports.pa_link_ststus_3rd=" ",
                 IF(tt_folio_details_reports.pan_3_holder!="",(SELECT pa_link_ststus_1st FROM td_folio_details WHERE pan=tt_folio_details_reports.pan_3_holder and pa_link_ststus_1st!="" limit 1),""),
                 tt_folio_details_reports.pa_link_ststus_3rd) as pa_link_ststus_3rd')
-                ->selectRaw('IF(tt_folio_details_reports.guardian_pa_link_ststus IS NULL || tt_folio_details_reports.guardian_pa_link_ststus="" || tt_folio_details_reports.guardian_pa_link_ststus="",
+                ->selectRaw('IF(tt_folio_details_reports.guardian_pa_link_ststus IS NULL || tt_folio_details_reports.guardian_pa_link_ststus="" || tt_folio_details_reports.guardian_pa_link_ststus=" ",
                 IF(tt_folio_details_reports.guardian_pan!="",(SELECT pa_link_ststus_1st FROM td_folio_details WHERE pan=tt_folio_details_reports.guardian_pan and pa_link_ststus_1st!="" limit 1),""),
                 tt_folio_details_reports.guardian_pa_link_ststus) as guardian_pa_link_ststus')
 
