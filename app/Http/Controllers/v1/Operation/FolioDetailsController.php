@@ -193,7 +193,7 @@ class FolioDetailsController extends Controller
                 tt_folio_details_reports.guardian_kyc_status) as guardian_kyc_status')
 
                 ->selectRaw('IF(tt_folio_details_reports.ckyc_no_1st IS NULL || tt_folio_details_reports.ckyc_no_1st="" || tt_folio_details_reports.ckyc_no_1st="",
-                IF(tt_folio_details_reports.pan_2_holder!="",(SELECT ckyc_no_1st FROM tt_folio_details_reports WHERE pan=tt_folio_details_reports.pan_2_holder limit 1),""),
+                IF(tt_folio_details_reports.pan!="",(SELECT ckyc_no_1st FROM tt_folio_details_reports WHERE pan=tt_folio_details_reports.pan limit 1),""),
                 tt_folio_details_reports.ckyc_no_1st) as ckyc_no_1st')
                 ->selectRaw('IF(tt_folio_details_reports.ckyc_no_2nd IS NULL || tt_folio_details_reports.ckyc_no_2nd="" || tt_folio_details_reports.ckyc_no_2nd="",
                 IF(tt_folio_details_reports.pan_2_holder!="",(SELECT ckyc_no_1st FROM tt_folio_details_reports WHERE pan=tt_folio_details_reports.pan_2_holder limit 1),""),
