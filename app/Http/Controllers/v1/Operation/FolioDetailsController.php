@@ -229,16 +229,16 @@ class FolioDetailsController extends Controller
                 tt_folio_details_reports.guardian_tax_status) as guardian_tax_status')
 
                 ->selectRaw('IF(tt_folio_details_reports.occupation_des IS NULL || tt_folio_details_reports.occupation_des="" || tt_folio_details_reports.occupation_des="",
-                IF(tt_folio_details_reports.pan!="",(SELECT occupation_des FROM td_folio_details WHERE pan=tt_folio_details_reports.pan and occupation_des!="" limit 1),""),
+                IF(tt_folio_details_reports.pan!="",(SELECT occupation_des FROM td_folio_details WHERE pan=tt_folio_details_reports.pan and occupation_des!="" and occupation_des!="Blank" and occupation_des!="BLANK" limit 1),""),
                 tt_folio_details_reports.occupation_des) as occupation_des')
                 ->selectRaw('IF(tt_folio_details_reports.occupation_des_2nd IS NULL || tt_folio_details_reports.occupation_des_2nd="" || tt_folio_details_reports.occupation_des_2nd="",
-                IF(tt_folio_details_reports.pan_2_holder!="",(SELECT occupation_des FROM td_folio_details WHERE pan=tt_folio_details_reports.pan_2_holder and occupation_des!="" limit 1),""),
+                IF(tt_folio_details_reports.pan_2_holder!="",(SELECT occupation_des FROM td_folio_details WHERE pan=tt_folio_details_reports.pan_2_holder and occupation_des!="" and occupation_des!="Blank" and occupation_des!="BLANK" limit 1),""),
                 tt_folio_details_reports.occupation_des_2nd) as occupation_des_2nd')
                 ->selectRaw('IF(tt_folio_details_reports.occupation_des_3rd IS NULL || tt_folio_details_reports.occupation_des_3rd="" || tt_folio_details_reports.occupation_des_3rd="",
-                IF(tt_folio_details_reports.pan_3_holder!="",(SELECT occupation_des FROM td_folio_details WHERE pan=tt_folio_details_reports.pan_3_holder and occupation_des!="" limit 1),""),
+                IF(tt_folio_details_reports.pan_3_holder!="",(SELECT occupation_des FROM td_folio_details WHERE pan=tt_folio_details_reports.pan_3_holder and occupation_des!="" and occupation_des!="Blank" and occupation_des!="BLANK" limit 1),""),
                 tt_folio_details_reports.occupation_des_3rd) as occupation_des_3rd')
                 ->selectRaw('IF(tt_folio_details_reports.guardian_occu_des IS NULL || tt_folio_details_reports.guardian_occu_des="" || tt_folio_details_reports.guardian_occu_des="",
-                IF(tt_folio_details_reports.guardian_pan!="",(SELECT occupation_des FROM td_folio_details WHERE pan=tt_folio_details_reports.guardian_pan and occupation_des!="" limit 1),""),
+                IF(tt_folio_details_reports.guardian_pan!="",(SELECT occupation_des FROM td_folio_details WHERE pan=tt_folio_details_reports.guardian_pan and occupation_des!="" and occupation_des!="Blank" and occupation_des!="BLANK" limit 1),""),
                 tt_folio_details_reports.guardian_occu_des) as guardian_occu_des')
                 
                 ->selectRaw('IF(tt_folio_details_reports.kyc_status_1st IS NULL || tt_folio_details_reports.kyc_status_1st="" || tt_folio_details_reports.kyc_status_1st="",
