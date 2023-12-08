@@ -378,6 +378,10 @@ class FolioDetailsController extends Controller
                     }else {
                         $value->guardian_kyc_status="";
                     }
+
+                    if ($value->mode_of_holding=="SINGLE") {
+                        $value->mode_of_holding="SI";
+                    }
                 }
                 array_push($data,$value);
             }
