@@ -193,16 +193,16 @@ class FolioDetailsController extends Controller
                 tt_folio_details_reports.guardian_kyc_status) as guardian_kyc_status')
 
                 ->selectRaw('IF(tt_folio_details_reports.ckyc_no_1st IS NULL || tt_folio_details_reports.ckyc_no_1st="" || tt_folio_details_reports.ckyc_no_1st="",
-                IF(tt_folio_details_reports.pan!="",(SELECT ckyc_no_1st FROM tt_folio_details_reports WHERE pan=tt_folio_details_reports.pan limit 1),""),
+                IF(tt_folio_details_reports.pan!="",(SELECT ckyc_no_1st FROM tt_folio_details_reports WHERE pan=tt_folio_details_reports.pan and ckyc_no_1st!="" limit 1),""),
                 tt_folio_details_reports.ckyc_no_1st) as ckyc_no_1st')
                 ->selectRaw('IF(tt_folio_details_reports.ckyc_no_2nd IS NULL || tt_folio_details_reports.ckyc_no_2nd="" || tt_folio_details_reports.ckyc_no_2nd="",
-                IF(tt_folio_details_reports.pan_2_holder!="",(SELECT ckyc_no_1st FROM tt_folio_details_reports WHERE pan=tt_folio_details_reports.pan_2_holder limit 1),""),
+                IF(tt_folio_details_reports.pan_2_holder!="",(SELECT ckyc_no_1st FROM tt_folio_details_reports WHERE pan=tt_folio_details_reports.pan_2_holder and ckyc_no_1st!="" limit 1),""),
                 tt_folio_details_reports.ckyc_no_2nd) as ckyc_no_2nd')
                 ->selectRaw('IF(tt_folio_details_reports.ckyc_no_3rd IS NULL || tt_folio_details_reports.ckyc_no_3rd="" || tt_folio_details_reports.ckyc_no_3rd="",
-                IF(tt_folio_details_reports.pan_3_holder!="",(SELECT ckyc_no_1st FROM tt_folio_details_reports WHERE pan=tt_folio_details_reports.pan_3_holder limit 1),""),
+                IF(tt_folio_details_reports.pan_3_holder!="",(SELECT ckyc_no_1st FROM tt_folio_details_reports WHERE pan=tt_folio_details_reports.pan_3_holder and ckyc_no_1st!="" limit 1),""),
                 tt_folio_details_reports.ckyc_no_3rd) as ckyc_no_3rd')
                 ->selectRaw('IF(tt_folio_details_reports.guardian_ckyc_no IS NULL || tt_folio_details_reports.guardian_ckyc_no="" || tt_folio_details_reports.guardian_ckyc_no="",
-                IF(tt_folio_details_reports.guardian_pan!="",(SELECT ckyc_no_1st FROM tt_folio_details_reports WHERE pan=tt_folio_details_reports.guardian_pan limit 1),""),
+                IF(tt_folio_details_reports.guardian_pan!="",(SELECT ckyc_no_1st FROM tt_folio_details_reports WHERE pan=tt_folio_details_reports.guardian_pan and ckyc_no_1st!="" limit 1),""),
                 tt_folio_details_reports.guardian_ckyc_no) as guardian_ckyc_no')
 
                 ->selectRaw('IF(DATE_FORMAT(tt_folio_details_reports.dob_2nd_holder,"Y-m-d") IS NULL || DATE_FORMAT(tt_folio_details_reports.dob_2nd_holder,"Y-m-d")="" || DATE_FORMAT(tt_folio_details_reports.dob_2nd_holder,"Y-m-d")="",
