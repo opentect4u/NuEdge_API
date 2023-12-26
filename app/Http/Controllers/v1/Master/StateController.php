@@ -57,12 +57,15 @@ class StateController extends Controller
             if ($search) {
                 $data=State::where('name','like', '%' . $search . '%')->get();      
             }elseif ($country_id) {
-                $data=State::where('country_id',$country_id)->orderBy('name','desc')->get();
+                $data=State::where('country_id',$country_id)
+                    ->orderBy('name','ASC')->get();
             }elseif (!empty($arr_country_id)) {
                 // return $arr_country_id;
-                $data=State::whereIn('country_id',$arr_country_id)->orderBy('name','desc')->get();
+                $data=State::whereIn('country_id',$arr_country_id)
+                    ->orderBy('name','ASC')->get();
             }elseif ($id) {
-                $data=State::where('id',$id)->orderBy('name','desc')->get();
+                $data=State::where('id',$id)
+                    ->orderBy('name','ASC')->get();
             } else{
                 $data=State::get();   
             }   

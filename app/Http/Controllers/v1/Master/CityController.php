@@ -23,9 +23,11 @@ class CityController extends Controller
             if ($search!='') {
                 $data=City::where('name','like', '%' . $search . '%')->get();      
             }elseif ($district_id!='') {
-                $data=City::where('district_id',$district_id)->get();   
+                $data=City::where('district_id',$district_id)
+                    ->orderBy('name','ASC')->get();   
             }elseif (!empty($arr_district_id)) {
-                $data=City::whereIn('district_id',$arr_district_id)->get();   
+                $data=City::whereIn('district_id',$arr_district_id)
+                    ->orderBy('name','ASC')->get();   
             }elseif ($id!='') {
                 $data=City::where('id',$id)->get();   
             } else{

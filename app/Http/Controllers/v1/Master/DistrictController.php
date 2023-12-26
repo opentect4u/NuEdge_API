@@ -23,9 +23,11 @@ class DistrictController extends Controller
             if ($search!='') {
                 $data=District::where('name','like', '%' . $search . '%')->get();      
             }elseif ($state_id!='') {
-                $data=District::where('state_id',$state_id)->orderBy('name','desc')->get();   
+                $data=District::where('state_id',$state_id)
+                    ->orderBy('name','ASC')->get();   
             }elseif (!empty($arr_state_id)) {
-                $data=District::whereIn('state_id',$arr_state_id)->orderBy('name','desc')->get();   
+                $data=District::whereIn('state_id',$arr_state_id)
+                    ->orderBy('name','ASC')->get();   
             }elseif ($id!='') {
                 $data=District::where('id',$id)->get();   
             } else{

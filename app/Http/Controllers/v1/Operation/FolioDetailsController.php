@@ -385,6 +385,12 @@ class FolioDetailsController extends Controller
                         $value->mode_of_holding="SI";
                     }
                 }
+
+                if ($value->guardian_relation='F') {
+                    $value->guardian_relation='Father';
+                }elseif ($value->guardian_relation='M') {
+                    $value->guardian_relation='Mother';
+                }
                 array_push($data,$value);
             }
         } catch (\Throwable $th) {
