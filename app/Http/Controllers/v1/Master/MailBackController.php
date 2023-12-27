@@ -1630,7 +1630,7 @@ class MailBackController extends Controller
                 ->leftJoin('md_option','md_option.id','=','md_scheme_isin.option_id')
                 ->leftJoin('md_category','md_category.id','=','md_scheme.category_id')
                 ->leftJoin('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
-                ->leftJoin('md_amc','md_amc.id','=','md_scheme.amc_id')
+                ->leftJoin('md_amc','md_amc.amc_code','=','tt_sip_stp_swp_report.amc_code')
                 ->leftJoin('md_amc as md_amc_1','md_amc_1.amc_code','=','tt_sip_stp_swp_report.amc_code')
                 ->leftJoin('md_scheme_isin as to_isin','to_isin.product_code','=','tt_sip_stp_swp_report.to_product_code')
                 ->leftJoin('md_scheme as to_scheme','to_scheme.id','=','to_isin.scheme_id')
