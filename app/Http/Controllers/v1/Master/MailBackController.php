@@ -1111,7 +1111,7 @@ class MailBackController extends Controller
                             'country'=>$value[13],
                             'tpin'=>$value[14],
                             'f_name'=>$value[16],
-                            'dob'=>$mydob,
+                            'dob'=>DATE_FORMAT($mydob,"Y-m-d"),
                             'm_name'=>$value[17],
                             'phone_residence'=>$value[18],
                             'phone_res_1'=>$value[19],
