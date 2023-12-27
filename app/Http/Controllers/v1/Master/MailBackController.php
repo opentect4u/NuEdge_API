@@ -1090,14 +1090,15 @@ class MailBackController extends Controller
                         if ($dd=='' || $dd==' ') {
                             $mydob=NULL;
                         }else {
-                            $mydob=DATE_FORMAT(Carbon::parse($dd)->format('Y-m-d'),"Y-m-d");
+                            $mydob=Carbon::parse($dd)->format('Y-m-d');
+                            // DATE_FORMAT($mydob,"Y-m-d")
                         }
                         TempFolioDetails::create(array(
                             'rnt_id'=>$rnt_id,
                             'product_code'=>$value[0],
                             'amc_code'=>$value[1],
                             'folio_no'=>$value[2],
-                            'folio_date'=>NULL,
+                            // 'folio_date'=>NULL,
                             'dividend_option'=>$value[46],
                             'first_client_name'=>$value[4],
                             'joint_name_1'=>$value[5],
