@@ -1090,7 +1090,7 @@ class MailBackController extends Controller
                         if ($dd=='' || $dd==' ') {
                             $mydob=NULL;
                         }else {
-                            $mydob=Carbon::parse($dd)->format('Y-m-d');
+                            $mydob=DATE_FORMAT(Carbon::parse($dd)->format('Y-m-d'),"Y-m-d");
                         }
                         TempFolioDetails::create(array(
                             'rnt_id'=>$rnt_id,
@@ -1111,7 +1111,7 @@ class MailBackController extends Controller
                             'country'=>$value[13],
                             'tpin'=>$value[14],
                             'f_name'=>$value[16],
-                            'dob'=>DATE_FORMAT($mydob,"Y-m-d"),
+                            'dob'=>$mydob,
                             'm_name'=>$value[17],
                             'phone_residence'=>$value[18],
                             'phone_res_1'=>$value[19],
