@@ -22,7 +22,8 @@ use App\Models\{
     TempFolioDetails,
     FolioDetailsReport,
     TempBrokerChangeTrans,
-    BrokerChangeTrans
+    BrokerChangeTrans,
+    SipStpSwpReport
 };
 use Validator;
 use Illuminate\Support\Carbon;
@@ -1623,30 +1624,30 @@ class MailBackController extends Controller
             //     ->whereRaw($rawQuery)
             //     ->get();
 
-            $my_datas=SipStpTransaction::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_sip_stp_trans.product_code')
+            $my_datas=SipStpSwpReport::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','tt_sip_stp_swp_report.product_code')
                 ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
                 ->leftJoin('md_plan','md_plan.id','=','md_scheme_isin.plan_id')
                 ->leftJoin('md_option','md_option.id','=','md_scheme_isin.option_id')
                 ->leftJoin('md_category','md_category.id','=','md_scheme.category_id')
                 ->leftJoin('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
                 ->leftJoin('md_amc','md_amc.id','=','md_scheme.amc_id')
-                ->leftJoin('md_amc as md_amc_1','md_amc_1.amc_code','=','td_sip_stp_trans.amc_code')
-                ->leftJoin('md_scheme_isin as to_isin','to_isin.product_code','=','td_sip_stp_trans.to_product_code')
+                ->leftJoin('md_amc as md_amc_1','md_amc_1.amc_code','=','tt_sip_stp_swp_report.amc_code')
+                ->leftJoin('md_scheme_isin as to_isin','to_isin.product_code','=','tt_sip_stp_swp_report.to_product_code')
                 ->leftJoin('md_scheme as to_scheme','to_scheme.id','=','to_isin.scheme_id')
                 ->leftJoin('md_category as to_category','to_category.id','=','to_scheme.category_id')
                 ->leftJoin('md_subcategory as to_subcategory','to_subcategory.id','=','to_scheme.subcategory_id')
-                ->leftJoin('md_employee','md_employee.euin_no','=','td_sip_stp_trans.euin_no')
+                ->leftJoin('md_employee','md_employee.euin_no','=','tt_sip_stp_swp_report.euin_no')
                 ->leftJoin('md_branch','md_branch.id','=','md_employee.branch_id')
-                ->leftJoin('md_systematic_trans_type','md_systematic_trans_type.trans_type_code','=','td_sip_stp_trans.auto_trans_type')
-                ->select('td_sip_stp_trans.*','td_sip_stp_trans.period_day as sip_date','td_sip_stp_trans.auto_amount as amount','td_sip_stp_trans.cease_terminate_date as terminated_date',
-                'td_sip_stp_trans.pause_from_date as pause_start_date','td_sip_stp_trans.pause_to_date as pause_end_date','td_sip_stp_trans.bank as bank_name','td_sip_stp_trans.instrm_no as acc_no',
+                ->leftJoin('md_systematic_trans_type','md_systematic_trans_type.trans_type_code','=','tt_sip_stp_swp_report.auto_trans_type')
+                ->select('tt_sip_stp_swp_report.*','tt_sip_stp_swp_report.period_day as sip_date','tt_sip_stp_swp_report.auto_amount as amount','tt_sip_stp_swp_report.cease_terminate_date as terminated_date',
+                'tt_sip_stp_swp_report.pause_from_date as pause_start_date','tt_sip_stp_swp_report.pause_to_date as pause_end_date','tt_sip_stp_swp_report.bank as bank_name','tt_sip_stp_swp_report.instrm_no as acc_no',
                 'md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name',
                 'md_amc.amc_short_name as amc_name','md_amc_1.amc_short_name as amc_short_name','md_plan.plan_name','md_option.opt_name as option_name',
                 'md_employee.emp_name as rm_name','md_branch.brn_name as branch_name','md_employee.bu_type_id as bu_type_id','md_employee.branch_id as branch_id',
                 'md_systematic_trans_type.trans_type','md_systematic_trans_type.trans_sub_type',
                 'to_scheme.scheme_name as to_scheme_name','to_category.cat_name as to_cat_name','to_subcategory.subcategory_name as to_subcat_name')
                 ->selectRaw('(select `bu_type` from `md_business_type` where `bu_code`=md_employee.bu_type_id and `branch_id`=md_employee.branch_id limit 1) as bu_type')
-                ->selectRaw('(select `freq_name` from `md_systematic_frequency` where `rnt_id`=td_sip_stp_trans.rnt_id and `freq_code`=td_sip_stp_trans.periodicity limit 1) as freq')
+                ->selectRaw('(select `freq_name` from `md_systematic_frequency` where `rnt_id`=tt_sip_stp_swp_report.rnt_id and `freq_code`=tt_sip_stp_swp_report.periodicity limit 1) as freq')
                 ->whereRaw($rawQuery)
                 // ->take(50)
                 ->get();
