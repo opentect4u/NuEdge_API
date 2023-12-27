@@ -38,7 +38,7 @@ class BrokerChangeTransController extends Controller
             $trans_type=json_decode($request->trans_type);
             $trans_sub_type=json_decode($request->trans_sub_type);
 
-            $date_range='01/12/2023 - 08/12/2023';
+            // $date_range='01/12/2023 - 08/12/2023';
 
             $rawQuery='';
             if ($date_range || $folio_no || $pan_no || !empty($amc_id) || !empty($cat_id) || !empty($sub_cat_id) || !empty($scheme_id)) {
