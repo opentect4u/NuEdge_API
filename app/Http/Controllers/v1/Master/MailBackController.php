@@ -424,6 +424,8 @@ class MailBackController extends Controller
                             'to_product_code'=>(str_replace("'","",$value[32])=='')?NULL:str_replace("'","",$value[33]).str_replace("'","",$value[32]),
                             'to_scheme_code'=>(str_replace("'","",$value[32])=='')?NULL:str_replace("'","",$value[32]),
                             'f_status'=>NULL,
+                            'created_at'=>date('Y-m-d H:i:s'),
+                            'updated_at'=>date('Y-m-d H:i:s'),
                         ];
                         // ));
                         array_push($array_set,$single_array);
@@ -1025,6 +1027,8 @@ class MailBackController extends Controller
                             'no_of_installment'=>$value[9],
                             'to_product_code'=>isset($value[28])?$value[28]:NULL,
                             'to_scheme_code'=>NULL,
+                            'created_at'=>date('Y-m-d H:i:s'),
+                            'updated_at'=>date('Y-m-d H:i:s'),
                         ];
                         // ));
                         array_push($array_set,$single_array);
@@ -1080,8 +1084,8 @@ class MailBackController extends Controller
                 }elseif ($file_type_id==3 && $file_id==7) {  // folio master report MFSD211
                     TempFolioDetails::truncate();
                     // return $TotalArray[0];
-                    // $value=explode("~",$TotalArray[0]);
-                    // return $value;
+                    $value=explode("~",$TotalArray[0]);
+                    return $value;
                     for ($i=$start_count; $i <= $end_count; $i++) { 
                         // return $TotalArray[$i];
                         $value=explode("~",$TotalArray[$i]);
@@ -1440,6 +1444,7 @@ class MailBackController extends Controller
                 case 'T':
                     if ($sub_file_type=='B') {
                         // return $request;
+                        // lock folio using folio and product code 
                         $up_data=MutualFundTransaction::where('folio_no',$request->folio_no)
                             ->where('product_code',$request->product_code)
                             ->where('euin_no',$request->euin_no)
@@ -1611,8 +1616,10 @@ class MailBackController extends Controller
                 ->leftJoin('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
                 ->leftJoin('md_amc','md_amc.amc_code','=','td_sip_stp_trans.amc_code')
                 ->leftJoin('md_amc as md_amc_1','md_amc_1.amc_code','=','td_sip_stp_trans.amc_code')
+                ->leftJoin('md_systematic_trans_type','md_systematic_trans_type.trans_type_code','=','td_sip_stp_trans.auto_trans_type')
                 ->select('td_sip_stp_trans.*','md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name',
-                'md_amc.amc_short_name as amc_name','md_amc_1.amc_short_name as amc_short_name')
+                'md_amc.amc_short_name as amc_name','md_amc_1.amc_short_name as amc_short_name',
+                'md_systematic_trans_type.trans_type','md_systematic_trans_type.trans_sub_type')
                 ->whereRaw($rawQuery)
                 ->get();
         } catch (\Throwable $th) {
