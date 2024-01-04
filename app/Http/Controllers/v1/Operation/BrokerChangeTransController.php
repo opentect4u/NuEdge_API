@@ -30,6 +30,8 @@ class BrokerChangeTransController extends Controller
             $folio_no=$request->folio_no;
             $client_id=$request->client_id;
             $pan_no=$request->pan_no;
+            $type=$request->type;
+            $all_client=$request->all_client;
             // $pan_no=json_decode($request->pan_no);
             $amc_id=json_decode($request->amc_id);
             $cat_id=json_decode($request->cat_id);
@@ -41,14 +43,14 @@ class BrokerChangeTransController extends Controller
             // $date_range='01/12/2023 - 08/12/2023';
 
             $rawQuery='';
-            if ($date_range || $folio_no || $pan_no || !empty($amc_id) || !empty($cat_id) || !empty($sub_cat_id) || !empty($scheme_id)) {
-                if ($date_range) {
-                    $from_date=Carbon::parse(str_replace('/','-',explode("-",$date_range)[0]))->format('Y-m-d') ;
-                    $to_date=Carbon::parse(str_replace('/','-',explode("-",$date_range)[1]))->format('Y-m-d') ;
-                    // return $to_date;
-                    $queryString='tt_broker_change_trans_report.trans_date';
-                    $rawQuery.=Helper::FrmToDateRawQuery($from_date,$to_date,$rawQuery,$queryString);
-                }
+            if ($folio_no || $pan_no || !empty($amc_id) || !empty($cat_id) || !empty($sub_cat_id) || !empty($scheme_id)) {
+                // if ($date_range) {
+                //     $from_date=Carbon::parse(str_replace('/','-',explode("-",$date_range)[0]))->format('Y-m-d') ;
+                //     $to_date=Carbon::parse(str_replace('/','-',explode("-",$date_range)[1]))->format('Y-m-d') ;
+                //     // return $to_date;
+                //     $queryString='tt_broker_change_trans_report.trans_date';
+                //     $rawQuery.=Helper::FrmToDateRawQuery($from_date,$to_date,$rawQuery,$queryString);
+                // }
                 
                 $queryString='tt_broker_change_trans_report.folio_no';
                 $rawQuery.=Helper::WhereRawQuery($folio_no,$rawQuery,$queryString);
@@ -67,45 +69,76 @@ class BrokerChangeTransController extends Controller
                 // return $rawQuery;
                 // $rawQuery=$this->filterCriteria($rawQuery,$from_date,$to_date,$tin_no,$proposer_name,$ins_type_id,$company_id,$product_type_id,$product_id,$insured_bu_type,$ack_status);
                 // return $request;
+
+                // DB::enableQueryLog();
+                $all_data=BrokerChangeTransReport::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','tt_broker_change_trans_report.product_code')
+                    ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
+                    ->leftJoin('md_category','md_category.id','=','md_scheme.category_id')
+                    ->leftJoin('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
+                    ->leftJoin('md_amc','md_amc.amc_code','=','tt_broker_change_trans_report.amc_code')
+                    ->leftJoin('md_plan','md_plan.id','=','md_scheme_isin.plan_id')
+                    ->leftJoin('md_option','md_option.id','=','md_scheme_isin.option_id')
+                    ->leftJoin('md_employee','md_employee.euin_no','=','tt_broker_change_trans_report.euin_no')
+                    ->leftJoin('md_branch','md_branch.id','=','md_employee.branch_id')
+                    ->select('tt_broker_change_trans_report.*','md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name','md_amc.amc_short_name as amc_name',
+                    'md_plan.plan_name as plan_name','md_option.opt_name as option_name',
+                    'md_employee.emp_name as rm_name','md_branch.brn_name as branch','md_employee.bu_type_id as bu_type_id','md_employee.branch_id as branch_id')
+                    ->selectRaw('sum(amount) as tot_amount')
+                    ->selectRaw('sum(stamp_duty) as tot_stamp_duty')
+                    ->selectRaw('sum(tds) as tot_tds')
+                    ->selectRaw('count(*) as tot_rows')
+                    ->selectRaw('(select bu_type from md_business_type where bu_code=md_employee.bu_type_id and branch_id=md_employee.branch_id limit 1) as bu_type')
+                    // ->selectRaw('IF(tt_broker_change_trans_report.euin_no="",(select euin_no from tt_broker_change_trans_report where folio_no=tt_broker_change_trans_report.folio_no and euin_no!="" limit 1),tt_broker_change_trans_report.euin_no) as my_euin_no')
+                    ->where('tt_broker_change_trans_report.delete_flag','N')
+                    ->where('tt_broker_change_trans_report.amc_flag','N')
+                    ->where('tt_broker_change_trans_report.scheme_flag','N')
+                    ->where('tt_broker_change_trans_report.plan_option_flag','N')
+                    ->where('tt_broker_change_trans_report.bu_type_flag','N')
+                    ->where('tt_broker_change_trans_report.divi_mismatch_flag','N')
+                    ->whereRaw($rawQuery)
+                    ->groupBy('tt_broker_change_trans_report.trans_no')
+                    ->groupBy('tt_broker_change_trans_report.trxn_type_flag')
+                    ->groupByRaw('IF(substr(trxn_nature,1,19)="Systematic-Reversed","Systematic-Reversed",trxn_nature)')
+                    ->groupBy('tt_broker_change_trans_report.trans_desc')
+                    ->groupBy('tt_broker_change_trans_report.kf_trans_type')
+                    ->get();
+                // dd(DB::getQueryLog());
+            }else {
+                // DB::enableQueryLog();
+                $all_data=BrokerChangeTransReport::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','tt_broker_change_trans_report.product_code')
+                    ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
+                    ->leftJoin('md_category','md_category.id','=','md_scheme.category_id')
+                    ->leftJoin('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
+                    ->leftJoin('md_amc','md_amc.amc_code','=','tt_broker_change_trans_report.amc_code')
+                    ->leftJoin('md_plan','md_plan.id','=','md_scheme_isin.plan_id')
+                    ->leftJoin('md_option','md_option.id','=','md_scheme_isin.option_id')
+                    ->leftJoin('md_employee','md_employee.euin_no','=','tt_broker_change_trans_report.euin_no')
+                    ->leftJoin('md_branch','md_branch.id','=','md_employee.branch_id')
+                    ->select('tt_broker_change_trans_report.*','md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name','md_amc.amc_short_name as amc_name',
+                    'md_plan.plan_name as plan_name','md_option.opt_name as option_name',
+                    'md_employee.emp_name as rm_name','md_branch.brn_name as branch','md_employee.bu_type_id as bu_type_id','md_employee.branch_id as branch_id')
+                    ->selectRaw('sum(amount) as tot_amount')
+                    ->selectRaw('sum(stamp_duty) as tot_stamp_duty')
+                    ->selectRaw('sum(tds) as tot_tds')
+                    ->selectRaw('count(*) as tot_rows')
+                    ->selectRaw('(select bu_type from md_business_type where bu_code=md_employee.bu_type_id and branch_id=md_employee.branch_id limit 1) as bu_type')
+                    // ->selectRaw('IF(tt_broker_change_trans_report.euin_no="",(select euin_no from tt_broker_change_trans_report where folio_no=tt_broker_change_trans_report.folio_no and euin_no!="" limit 1),tt_broker_change_trans_report.euin_no) as my_euin_no')
+                    ->where('tt_broker_change_trans_report.delete_flag','N')
+                    ->where('tt_broker_change_trans_report.amc_flag','N')
+                    ->where('tt_broker_change_trans_report.scheme_flag','N')
+                    ->where('tt_broker_change_trans_report.plan_option_flag','N')
+                    ->where('tt_broker_change_trans_report.bu_type_flag','N')
+                    ->where('tt_broker_change_trans_report.divi_mismatch_flag','N')
+                    // ->whereRaw($rawQuery)
+                    ->groupBy('tt_broker_change_trans_report.trans_no')
+                    ->groupBy('tt_broker_change_trans_report.trxn_type_flag')
+                    ->groupByRaw('IF(substr(trxn_nature,1,19)="Systematic-Reversed","Systematic-Reversed",trxn_nature)')
+                    ->groupBy('tt_broker_change_trans_report.trans_desc')
+                    ->groupBy('tt_broker_change_trans_report.kf_trans_type')
+                    ->get();
+                // dd(DB::getQueryLog());
             } 
-            // DB::enableQueryLog();
-            $all_data=BrokerChangeTransReport::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','tt_broker_change_trans_report.product_code')
-                ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
-                ->leftJoin('md_category','md_category.id','=','md_scheme.category_id')
-                ->leftJoin('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
-                ->leftJoin('md_amc','md_amc.amc_code','=','tt_broker_change_trans_report.amc_code')
-                ->leftJoin('md_plan','md_plan.id','=','md_scheme_isin.plan_id')
-                ->leftJoin('md_option','md_option.id','=','md_scheme_isin.option_id')
-                ->leftJoin('md_employee','md_employee.euin_no','=','tt_broker_change_trans_report.euin_no')
-                ->leftJoin('md_branch','md_branch.id','=','md_employee.branch_id')
-                ->select('tt_broker_change_trans_report.*','md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name','md_amc.amc_short_name as amc_name',
-                'md_plan.plan_name as plan_name','md_option.opt_name as option_name',
-                'md_employee.emp_name as rm_name','md_branch.brn_name as branch','md_employee.bu_type_id as bu_type_id','md_employee.branch_id as branch_id')
-                ->selectRaw('sum(amount) as tot_amount')
-                ->selectRaw('sum(stamp_duty) as tot_stamp_duty')
-                ->selectRaw('sum(tds) as tot_tds')
-                ->selectRaw('count(*) as tot_rows')
-
-                ->selectRaw('(select bu_type from md_business_type where bu_code=md_employee.bu_type_id and branch_id=md_employee.branch_id limit 1) as bu_type')
-                // ->selectRaw('IF(tt_broker_change_trans_report.euin_no="",(select euin_no from tt_broker_change_trans_report where folio_no=tt_broker_change_trans_report.folio_no and euin_no!="" limit 1),tt_broker_change_trans_report.euin_no) as my_euin_no')
-
-                ->where('tt_broker_change_trans_report.delete_flag','N')
-
-                ->where('tt_broker_change_trans_report.amc_flag','N')
-                ->where('tt_broker_change_trans_report.scheme_flag','N')
-                ->where('tt_broker_change_trans_report.plan_option_flag','N')
-                ->where('tt_broker_change_trans_report.bu_type_flag','N')
-                ->where('tt_broker_change_trans_report.divi_mismatch_flag','N')
-
-                ->whereRaw($rawQuery)
-                ->groupBy('tt_broker_change_trans_report.trans_no')
-                ->groupBy('tt_broker_change_trans_report.trxn_type_flag')
-                ->groupByRaw('IF(substr(trxn_nature,1,19)="Systematic-Reversed","Systematic-Reversed",trxn_nature)')
-                ->groupBy('tt_broker_change_trans_report.trans_desc')
-                ->groupBy('tt_broker_change_trans_report.kf_trans_type')
-                ->get();
-            // dd(DB::getQueryLog());
-
+            
             // return $all_data;
                 $data=[];
                 foreach ($all_data as $key => $value) {
@@ -176,13 +209,20 @@ class BrokerChangeTransController extends Controller
                     $value->transaction_type=$transaction_type;
                     $value->transaction_subtype=$transaction_subtype;
 
-                    if (!empty($trans_type) && in_array($transaction_type ,$trans_type) && !empty($trans_sub_type) && in_array($transaction_subtype ,$trans_sub_type)) {
-                        array_push($data,$value);
-                    }else if (!empty($trans_type) && in_array($transaction_type ,$trans_type)) {
-                        array_push($data,$value);
-                    }else if (!empty($transaction_subtype) && in_array($transaction_subtype ,$trans_sub_type)) {
-                        array_push($data,$value);
-                    }else{
+                    // if (!empty($trans_type) && in_array($transaction_type ,$trans_type) && !empty($trans_sub_type) && in_array($transaction_subtype ,$trans_sub_type)) {
+                    //     array_push($data,$value);
+                    // }else if (!empty($trans_type) && in_array($transaction_type ,$trans_type)) {
+                    //     array_push($data,$value);
+                    // }else if (!empty($transaction_subtype) && in_array($transaction_subtype ,$trans_sub_type)) {
+                    //     array_push($data,$value);
+                    // }else{
+                    //     array_push($data,$value);
+                    // }
+                    if ($type) {
+                        if ($type==$transaction_subtype) {
+                            array_push($data,$value);
+                        }
+                    }else {
                         array_push($data,$value);
                     }
                 }

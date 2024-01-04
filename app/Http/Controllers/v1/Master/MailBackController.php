@@ -1446,15 +1446,28 @@ class MailBackController extends Controller
                     if ($sub_file_type=='B') {
                         // return $request;
                         // lock folio using folio and product code 
+                        // $up_data=MutualFundTransaction::where('folio_no',$request->folio_no)
+                        //     ->where('product_code',$request->product_code)
+                        //     ->where('euin_no',$request->euin_no)
+                        //     ->update([
+                        //         'old_euin_no'=>$request->euin_no,
+                        //         'euin_no'=>$request->new_euin_no,
+                        //         'bu_type_flag'=>'N',
+                        //         'bu_type_lock_flag'=>'L'
+                        //     ]);
                         $up_data=MutualFundTransaction::where('folio_no',$request->folio_no)
                             ->where('product_code',$request->product_code)
-                            ->where('euin_no',$request->euin_no)
-                            ->update([
-                                'old_euin_no'=>$request->euin_no,
-                                'euin_no'=>$request->new_euin_no,
-                                'bu_type_flag'=>'N',
-                                'bu_type_lock_flag'=>'L'
-                            ]);
+                            ->where('bu_type_flag','Y')
+                            ->get();
+                        foreach ($up_data as $key => $single_data) {
+                            $single_data_update=MutualFundTransaction::find($single_data->id);
+                            $single_data_update->old_euin_no=$single_data_update->euin_no;
+                            $single_data_update->euin_no=$single_data_update->new_euin_no;
+                            $single_data_update->sub_brk_cd=NULL;
+                            $single_data_update->bu_type_flag='N';
+                            $single_data_update->bu_type_lock_flag='L';
+                            $single_data_update->update();
+                        }
                     }elseif ($sub_file_type=='D') {
                         $up_data=MutualFundTransaction::find($id);
                         $up_data->divi_mismatch_flag='N';
