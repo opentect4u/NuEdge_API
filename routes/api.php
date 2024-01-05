@@ -385,6 +385,8 @@ Route::prefix('v1')->group(function () {
 
             Route::get('showISIN',[App\Http\Controllers\v1\Operation\SipStpTransController::class,'showISIN']);  // show isin no using product code
 
+            Route::any('mailbackMismatchReplica',[App\Http\Controllers\v1\Master\MailBackReplicaController::class,'showLockTransaction']); // show all lock replicate transactions
+
             /*********************************** End Mail Back Mismatch ************************ */
 
             /*************************************************Start For file help************************************************/

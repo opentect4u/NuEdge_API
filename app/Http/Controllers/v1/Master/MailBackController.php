@@ -1462,7 +1462,7 @@ class MailBackController extends Controller
                         foreach ($up_data as $key => $single_data) {
                             $single_data_update=MutualFundTransaction::find($single_data->id);
                             $single_data_update->old_euin_no=$single_data_update->euin_no;
-                            $single_data_update->euin_no=$single_data_update->new_euin_no;
+                            $single_data_update->euin_no=$request->new_euin_no;
                             $single_data_update->sub_brk_cd=NULL;
                             $single_data_update->bu_type_flag='N';
                             $single_data_update->bu_type_lock_flag='L';
@@ -1487,6 +1487,22 @@ class MailBackController extends Controller
                             'plan_option_flag'=>'N',
                             'plan_option_lock_flag'=>'L'
                         ]);
+                    }elseif ($sub_file_type=='B') {
+                        // return $request;
+                        $up_data=SipStpTransaction::where('folio_no',$request->folio_no)
+                            ->where('product_code',$request->product_code)
+                            ->where('bu_type_flag','Y')
+                            ->get();
+                        // return $up_data;
+                        foreach ($up_data as $key => $single_data) {
+                            $single_data_update=SipStpTransaction::find($single_data->id);
+                            $single_data_update->old_euin_no=$single_data_update->euin_no;
+                            $single_data_update->euin_no=$request->new_euin_no;
+                            $single_data_update->sub_brk_cd=NULL;
+                            $single_data_update->bu_type_flag='N';
+                            $single_data_update->bu_type_lock_flag='L';
+                            $single_data_update->update();
+                        }
                     }
                     break;
                 case 'F':
@@ -1523,7 +1539,7 @@ class MailBackController extends Controller
 
 
         } catch (\Throwable $th) {
-            //throw $th;
+            throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
         return Helper::SuccessResponse($up_data);
