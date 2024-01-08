@@ -138,7 +138,6 @@ class MailBackController extends Controller
             if ($rnt_id==1) { // CAMS
                 if ($file_type_id=='1' && $file_id=='1') {  // transction  WBR2
                     TempMutualFundTransaction::truncate();
-
                     $array_set=[];
                     for ($i=$start_count; $i <= $end_count; $i++) { 
                         $value=explode("\t",$TotalArray[$i]);
@@ -833,7 +832,7 @@ class MailBackController extends Controller
                 }
             }else if($rnt_id==2){  // KFINTECH
                 if ($file_type_id==1 && $file_id==5) {  // transction MFSD201
-
+                    TempMutualFundTransaction::truncate();
                     $array_set=[];
                     for ($i=$start_count; $i <= $end_count; $i++) { 
                         $value=explode("~",$TotalArray[$i]);

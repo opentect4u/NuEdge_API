@@ -81,6 +81,7 @@ class MFTransTypeSubTypeController extends Controller
                 $c_data->c_k_trans_type=$request->c_k_trans_type;
                 $c_data->c_k_trans_sub_type=$request->c_k_trans_sub_type;
                 $c_data->k_divident_flag=$request->k_divident_flag;
+                $c_data->process_type=$request->process_type;
                 // $data->updated_by=Helper::modifyUser($request->user());
                 $c_data->save();
             }else {
@@ -113,6 +114,7 @@ class MFTransTypeSubTypeController extends Controller
                         'c_k_trans_type'=>isset($request->c_k_trans_type)?$request->c_k_trans_type:NULL,
                         'c_k_trans_sub_type'=>isset($request->c_k_trans_sub_type)?$request->c_k_trans_sub_type:NULL,
                         'k_divident_flag'=>isset($request->k_divident_flag)?$request->k_divident_flag:NULL,
+                        'process_type'=>isset($request->process_type)?$request->process_type:NULL,
                         // 'created_by'=>Helper::modifyUser($request->user()),
                     ));
                 }
