@@ -545,7 +545,7 @@ class MailBackController extends Controller
                                 'product_code'=>str_replace("'","",$value[1]),
                                 'amc_code'=>str_replace("'","",$value[0]),
                                 'folio_no'=>str_replace("'","",$value[2]),
-                                'folio_date'=>($folio_dt)?date('Y-m-d',strtotime($folio_dt)):NULL,
+                                'folio_date'=>($folio_dt)?date('Y-m-d H:i:s',strtotime($folio_dt)):NULL,
                                 'dividend_option'=>NULL,
                                 'first_client_name'=>str_replace("'","",$value[3]),
                                 'joint_name_1'=>str_replace("'","",$value[9]),
