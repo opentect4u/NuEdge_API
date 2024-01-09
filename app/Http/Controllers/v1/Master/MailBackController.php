@@ -505,7 +505,7 @@ class MailBackController extends Controller
                             if (!isset($folio_dtt[1])) {
                                 $folio_dt=NULL;
                             }else {
-                                $folio_dt=Carbon::parse(explode("/",str_replace("'","",$folio_date))[1].'-'.explode("/",str_replace("'","",$folio_date))[0].'-'.explode("/",str_replace("'","",$folio_date))[2])->format('Y-m-d');
+                                $folio_dt=Carbon::parse(explode("/",str_replace("'","",$folio_date))[1].'-'.explode("/",str_replace("'","",$folio_date))[0].'-'.explode("/",str_replace("'","",$folio_date))[2])->format('Y-m-d H:i:s');
                             }
 
                             $dob=str_replace("'","",$value[31]);
@@ -545,7 +545,7 @@ class MailBackController extends Controller
                                 'product_code'=>str_replace("'","",$value[1]),
                                 'amc_code'=>str_replace("'","",$value[0]),
                                 'folio_no'=>str_replace("'","",$value[2]),
-                                'folio_date'=>$folio_dt,
+                                'folio_date'=>($folio_dt)?date('Y-m-d',st6rtotime($folio_dt)):NULL,
                                 'dividend_option'=>NULL,
                                 'first_client_name'=>str_replace("'","",$value[3]),
                                 'joint_name_1'=>str_replace("'","",$value[9]),
