@@ -1085,7 +1085,7 @@ class MailBackController extends Controller
                     TempFolioDetails::truncate();
                     // return $TotalArray[0];
                     $value=explode("~",$TotalArray[0]);
-                    return $value;
+                    // return $value;
                     for ($i=$start_count; $i <= $end_count; $i++) { 
                         // return $TotalArray[$i];
                         $value=explode("~",$TotalArray[$i]);

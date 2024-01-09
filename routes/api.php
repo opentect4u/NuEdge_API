@@ -425,6 +425,7 @@ Route::prefix('v1')->group(function () {
             Route::any('showBrokerChangeDetails',[App\Http\Controllers\v1\Operation\BrokerChangeTransController::class,'search']);  // Search broker change details
 
             Route::any('showMonthlyMisReport',[App\Http\Controllers\v1\Reports\MonthlyMisController::class,'search']);  // Search Monthly MIS Report
+            Route::any('showMonthlyMisTrandReport',[App\Http\Controllers\v1\Reports\MonthlyMisController::class,'searchTrands']);  // Search Monthly MIS Trands Report
             /*************************************************End For Report************************************************/
 
             /*************************************************Start Delete Report************************************************/
