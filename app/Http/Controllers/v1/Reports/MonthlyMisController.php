@@ -216,23 +216,26 @@ class MonthlyMisController extends Controller
                 $queryString='md_scheme_isin.scheme_id';
                 $rawQuery.=Helper::WhereRawQuery($scheme_id,$rawQuery,$queryString);
                 
-                $no_of_month=3;
+                $no_of_month=5;
                 if ($no_of_month) {
                     $categories=[];
                     $chart_data=[];
+                    $table_data=[];
                     $monthly_inflow_amount_set=[];
                     $monthly_outflow_amount_set=[];
                     $monthly_net_inflow_amount_set=[];
                     for ($i=0; $i < $no_of_month; $i++) { 
                         $split_date=date('Y-m', strtotime('-'.$i.' months'));
                         array_push($categories,$split_date);
-
+                        // return $rawQuery;
                         $rawQuery1='';
                         $queryString='td_mutual_fund_trans.trans_date';
-                        $rawQuery1.='MONTH('.$queryString.')="'.explode("-",$split_date)[1].'" ';
+                        $rawQuery1.=(strlen($rawQuery) > 0)?" AND ":" ";
+                        $rawQuery1.=' MONTH('.$queryString.')="'.explode("-",$split_date)[1].'" ';
                         $rawQuery1.=' AND YEAR('.$queryString.')="'.explode("-",$split_date)[0].'" ';
-                        $rawQuery.=$rawQuery.$rawQuery1;
-                        // return $rawQuery;
+                        $myrawQuery=$rawQuery.$rawQuery1;
+                        // return $myrawQuery;
+                        // DB::enableQueryLog();
                         $all_data=MutualFundTransaction::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_mutual_fund_trans.product_code')
                             ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
                             ->leftJoin('md_category','md_category.id','=','md_scheme.category_id')
@@ -252,13 +255,15 @@ class MonthlyMisController extends Controller
                             ->where('td_mutual_fund_trans.plan_option_flag','N')
                             ->where('td_mutual_fund_trans.bu_type_flag','N')
                             ->where('td_mutual_fund_trans.divi_mismatch_flag','N')
-                            ->whereRaw($rawQuery)
+                            ->whereRaw($myrawQuery)
                             ->groupBy('td_mutual_fund_trans.trans_no')
                             ->groupBy('td_mutual_fund_trans.trxn_type_flag')
                             ->groupByRaw('IF(substr(trxn_nature,1,19)="Systematic-Reversed","Systematic-Reversed",trxn_nature)')
                             ->groupBy('td_mutual_fund_trans.trans_desc')
                             ->groupBy('td_mutual_fund_trans.kf_trans_type')
+                            ->take(50)
                             ->get();
+                        // dd(DB::getQueryLog());
 
                         $inflow_amount=0;
                         $outflow_amount=0;
@@ -361,10 +366,30 @@ class MonthlyMisController extends Controller
                         array_push($monthly_inflow_amount_set,$inflow_amount);
                         array_push($monthly_outflow_amount_set,$outflow_amount);
                         array_push($monthly_net_inflow_amount_set,$net_inflow_amount);
+                        $myset_data=[];
+                        $myset_data['monthly']=$split_date;
+                        $myset_data['monthly_inflow']=$inflow_amount;
+                        $myset_data['monthly_outflow']=$outflow_amount;
+                        $myset_data['monthly_net_inflow']=$net_inflow_amount;
+                        $myset_data['per_of_growth']=0;
+                        $myset_data['trend']=0;
+                        array_push($table_data,$myset_data);
                     }
                     // return $categories;
-                    return $monthly_inflow_amount_set;
+                    // return $monthly_inflow_amount_set;
+                    // return $table_data;
+                    $chart_data=[
+                        ['name'=>'Monthly Inflow','data'=>$monthly_inflow_amount_set],
+                        ['name'=>'Monthly Outflow','data'=>$monthly_outflow_amount_set],
+                        ['name'=>'Net Inflow','data'=>$monthly_net_inflow_amount_set]
+                    ];
+                    // return $chart_data;
                 }
+                $final_data=[];
+                $final_data['categories']=$categories;
+                $final_data['chart_data']=$chart_data;
+                $final_data['table_data']=$table_data;
+                // return $final_data;
                 
                 // return $rawQuery;
                 // DB::enableQueryLog();
@@ -490,6 +515,6 @@ class MonthlyMisController extends Controller
             throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
-        return Helper::SuccessResponse($data);
+        return Helper::SuccessResponse($final_data);
     }
 }
