@@ -216,7 +216,7 @@ class MonthlyMisController extends Controller
                 $queryString='md_scheme_isin.scheme_id';
                 $rawQuery.=Helper::WhereRawQuery($scheme_id,$rawQuery,$queryString);
                 
-                $no_of_month=5;
+                // $no_of_month=5;
                 if ($no_of_month) {
                     $categories=[];
                     $chart_data=[];
@@ -261,7 +261,7 @@ class MonthlyMisController extends Controller
                             ->groupByRaw('IF(substr(trxn_nature,1,19)="Systematic-Reversed","Systematic-Reversed",trxn_nature)')
                             ->groupBy('td_mutual_fund_trans.trans_desc')
                             ->groupBy('td_mutual_fund_trans.kf_trans_type')
-                            ->take(50)
+                            // ->take(50)
                             ->get();
                         // dd(DB::getQueryLog());
 
