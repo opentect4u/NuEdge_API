@@ -386,9 +386,9 @@ class FolioDetailsController extends Controller
                     }
                 }
 
-                if ($value->guardian_relation='F') {
+                if ($value->guardian_relation=='F') {
                     $value->guardian_relation='Father';
-                }elseif ($value->guardian_relation='M') {
+                }elseif ($value->guardian_relation=='M') {
                     $value->guardian_relation='Mother';
                 }
                 array_push($data,$value);
