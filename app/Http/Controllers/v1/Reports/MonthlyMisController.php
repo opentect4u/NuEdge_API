@@ -130,11 +130,7 @@ class MonthlyMisController extends Controller
                             if ($get_type_subtype) {
                                 $transaction_type=$get_type_subtype->trans_type." Rejection";
                                 $transaction_subtype=$get_type_subtype->trans_sub_type." Rejection";
-                                if ($transaction_subtype=='Refund Rejection') {
-                                    $process_type='O';
-                                }else {
-                                    $process_type='';
-                                }
+                                $process_type=$get_type_subtype->process_type;
                             }
                         }
                     }else {
@@ -148,7 +144,7 @@ class MonthlyMisController extends Controller
                             $get_type_subtype='';
                             $transaction_type='Transfer In';
                             $transaction_subtype='Transfer In';
-                            $process_type='I';
+                            $process_type='';
                         }elseif ($trans_flag=='TO') {
                             $get_type_subtype='';
                             $transaction_type='Transfer Out';

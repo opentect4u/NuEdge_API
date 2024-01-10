@@ -154,6 +154,7 @@ class BrokerChangeTransController extends Controller
                     $transaction_type='';
                     $transaction_subtype='';
 
+                    $chnage_type='';
                     if ($trxn_type && $trxn_type_flag && $trxn_nature) {  //for cams
                         $trxn_code=TransHelper::transTypeToCodeCAMS($trxn_type);
                         $trxn_nature_code=TransHelper::trxnNatureCodeCAMS($trxn_nature);
@@ -185,15 +186,17 @@ class BrokerChangeTransController extends Controller
                             $get_type_subtype=MFTransTypeSubType::where('c_k_trans_sub_type',$kf_trans_type)
                                 ->where('k_divident_flag',$trans_flag)
                                 ->first();
-                        }elseif ($trans_flag=='TI') {
-                            $get_type_subtype='';
-                            $transaction_type='Transfer In';
-                            $transaction_subtype='Transfer In';
-                        }elseif ($trans_flag=='TO') {
-                            $get_type_subtype='';
-                            $transaction_type='Transfer Out';
-                            $transaction_subtype='Transfer Out';
-                        } else {
+                        }
+                        // elseif ($trans_flag=='TI') {
+                        //     $get_type_subtype='';
+                        //     $transaction_type='Transfer In';
+                        //     $transaction_subtype='Transfer In';
+                        // }elseif ($trans_flag=='TO') {
+                        //     $get_type_subtype='';
+                        //     $transaction_type='Transfer Out';
+                        //     $transaction_subtype='Transfer Out';
+                        // } 
+                        else {
                             $get_type_subtype=MFTransTypeSubType::where('c_k_trans_sub_type',$kf_trans_type)
                                 ->first();
                         }
@@ -202,12 +205,15 @@ class BrokerChangeTransController extends Controller
                             $transaction_type=$get_type_subtype->trans_type;
                             $transaction_subtype=$get_type_subtype->trans_sub_type;
                         }
+
+                        $chnage_type=$trans_flag;
                     }
                     $value->gross_amount= number_format((float)((float)$amount + (float)$value->stamp_duty + (float)$value->tds), 2, '.', '');
                     // number_format((float)$foo, 2, '.', '')
                     $value->tot_gross_amount= number_format((float)((float)$value->tot_amount + (float)$value->tot_stamp_duty + (float)$value->tot_tds), 2, '.', '');
                     $value->transaction_type=$transaction_type;
                     $value->transaction_subtype=$transaction_subtype;
+                    $value->chnage_type=$chnage_type;
 
                     // if (!empty($trans_type) && in_array($transaction_type ,$trans_type) && !empty($trans_sub_type) && in_array($transaction_subtype ,$trans_sub_type)) {
                     //     array_push($data,$value);
