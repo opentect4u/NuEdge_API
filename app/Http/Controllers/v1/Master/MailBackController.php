@@ -1144,7 +1144,7 @@ class MailBackController extends Controller
                             'bank_name'=>$value[30],
                             'bank_ifsc'=>$value[59],
                             'acc_type'=>$value[31],
-                            'branch'=>$value[32],
+                            'bank_branch'=>$value[32],
                             'bank_add_1'=>$value[33],
                             'bank_add_2'=>$value[34],
                             'bank_add_3'=>$value[35],
