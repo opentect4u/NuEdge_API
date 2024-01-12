@@ -10,6 +10,7 @@ class BrokerChangeTrans extends Model
     use HasFactory;
     protected $table="td_broker_change_trans";
     protected $fillable = [
+        'mailback_process_id',
         'rnt_id',
         'arn_no',
         'sub_brk_cd',

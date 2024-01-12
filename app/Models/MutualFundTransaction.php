@@ -11,6 +11,7 @@ class MutualFundTransaction extends Model
     protected $table="td_mutual_fund_trans";
     // protected $primaryKey = 'tin_no';
     protected $fillable = [
+        'mailback_process_id',
         'rnt_id',
         'arn_no',
         'sub_brk_cd',

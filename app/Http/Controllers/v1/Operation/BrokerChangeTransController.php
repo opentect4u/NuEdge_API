@@ -40,18 +40,8 @@ class BrokerChangeTransController extends Controller
             $trans_type=json_decode($request->trans_type);
             $trans_sub_type=json_decode($request->trans_sub_type);
 
-            // $date_range='01/12/2023 - 08/12/2023';
-
             $rawQuery='';
             if ($folio_no || $pan_no || !empty($amc_id) || !empty($cat_id) || !empty($sub_cat_id) || !empty($scheme_id)) {
-                // if ($date_range) {
-                //     $from_date=Carbon::parse(str_replace('/','-',explode("-",$date_range)[0]))->format('Y-m-d') ;
-                //     $to_date=Carbon::parse(str_replace('/','-',explode("-",$date_range)[1]))->format('Y-m-d') ;
-                //     // return $to_date;
-                //     $queryString='tt_broker_change_trans_report.trans_date';
-                //     $rawQuery.=Helper::FrmToDateRawQuery($from_date,$to_date,$rawQuery,$queryString);
-                // }
-                
                 $queryString='tt_broker_change_trans_report.folio_no';
                 $rawQuery.=Helper::WhereRawQuery($folio_no,$rawQuery,$queryString);
                 $queryString='tt_broker_change_trans_report.first_client_pan';
@@ -67,9 +57,7 @@ class BrokerChangeTransController extends Controller
                 $queryString='md_scheme_isin.scheme_id';
                 $rawQuery.=Helper::WhereRawQuery($scheme_id,$rawQuery,$queryString);
                 // return $rawQuery;
-                // $rawQuery=$this->filterCriteria($rawQuery,$from_date,$to_date,$tin_no,$proposer_name,$ins_type_id,$company_id,$product_type_id,$product_id,$insured_bu_type,$ack_status);
                 // return $request;
-
                 // DB::enableQueryLog();
                 $all_data=BrokerChangeTransReport::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','tt_broker_change_trans_report.product_code')
                     ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
@@ -138,14 +126,12 @@ class BrokerChangeTransController extends Controller
                     ->get();
                 // dd(DB::getQueryLog());
             } 
-            
             // return $all_data;
                 $data=[];
                 foreach ($all_data as $key => $value) {
                     $euin=$value->euin_no;
                     $trans_no=$value->trans_no;
                     $trans_date=$value->trans_date;
-                    
                     // ====================start trans type & sub type=========================
                     $trxn_type=$value->trxn_type;
                     $trxn_type_flag=$value->trxn_type_flag;
@@ -153,8 +139,7 @@ class BrokerChangeTransController extends Controller
                     $amount=$value->amount;
                     $transaction_type='';
                     $transaction_subtype='';
-
-                    $chnage_type='';
+                    $change_type='';
                     if ($trxn_type && $trxn_type_flag && $trxn_nature) {  //for cams
                         $trxn_code=TransHelper::transTypeToCodeCAMS($trxn_type);
                         $trxn_nature_code=TransHelper::trxnNatureCodeCAMS($trxn_nature);
@@ -179,6 +164,7 @@ class BrokerChangeTransController extends Controller
                                 $transaction_subtype=$get_type_subtype->trans_sub_type." Rejection";
                             }
                         }
+                        $change_type='Transfer In';
                     }else {
                         $kf_trans_type=$value->kf_trans_type;
                         $trans_flag=$value->trans_flag;
@@ -206,14 +192,17 @@ class BrokerChangeTransController extends Controller
                             $transaction_subtype=$get_type_subtype->trans_sub_type;
                         }
 
-                        $chnage_type=$trans_flag;
+                        if ($trans_flag=='TI') {
+                            $change_type='Transfer In';
+                        }elseif ($trans_flag=='TO') {
+                            $change_type='Transfer Out';
+                        } 
                     }
                     $value->gross_amount= number_format((float)((float)$amount + (float)$value->stamp_duty + (float)$value->tds), 2, '.', '');
-                    // number_format((float)$foo, 2, '.', '')
                     $value->tot_gross_amount= number_format((float)((float)$value->tot_amount + (float)$value->tot_stamp_duty + (float)$value->tot_tds), 2, '.', '');
                     $value->transaction_type=$transaction_type;
                     $value->transaction_subtype=$transaction_subtype;
-                    $value->chnage_type=$chnage_type;
+                    $value->change_type=$change_type;
 
                     // if (!empty($trans_type) && in_array($transaction_type ,$trans_type) && !empty($trans_sub_type) && in_array($transaction_subtype ,$trans_sub_type)) {
                     //     array_push($data,$value);
@@ -225,7 +214,7 @@ class BrokerChangeTransController extends Controller
                     //     array_push($data,$value);
                     // }
                     if ($type) {
-                        if ($type==$transaction_subtype) {
+                        if ($type==$change_type) {
                             array_push($data,$value);
                         }
                     }else {

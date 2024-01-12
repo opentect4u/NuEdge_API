@@ -23,8 +23,7 @@ use App\Models\{
     FolioDetailsReport,
     TempBrokerChangeTrans,
     BrokerChangeTrans,
-    SipStpSwpReport,
-    BrokerChangeTransReport
+    SipStpSwpReport
 };
 use Validator;
 use Illuminate\Support\Carbon;
@@ -144,12 +143,101 @@ class MailBackController extends Controller
                     $array_set=[];
                     for ($i=$start_count; $i <= $end_count; $i++) { 
                         $value=explode("\t",$TotalArray[$i]);
+                        // TempMutualFundTransaction::create(array(
                         $single_array=[
                             'mailback_process_id'=>$id,
                             'rnt_id'=>$rnt_id,
                             'arn_no'=>str_replace("'","",$value[16]),
                             'sub_brk_cd'=>str_replace("'","",$value[17]),
                             'euin_no'=>str_replace("'","",$value[56]),
+                            'first_client_name'=>str_replace("'","",$value[4]),
+                            'first_client_pan'=>str_replace("'","",$value[42]),
+                            'amc_code'=>str_replace("'","",$value[0]),
+                            'folio_no'=>str_replace("'","",$value[1]),
+                            'product_code'=>str_replace("'","",$value[2]),
+                            'trans_no'=>str_replace("'","",$value[6]),
+                            'trans_mode'=>str_replace("'","",$value[7]),
+                            'trans_status'=>str_replace("'","",$value[8]),
+                            'user_trans_no'=>str_replace("'","",$value[10]),
+                            'trans_date'=>Carbon::parse(explode("/",str_replace("'","",$value[11]))[1].'-'.explode("/",str_replace("'","",$value[11]))[0].'-'.explode("/",str_replace("'","",$value[11]))[2])->format('Y-m-d H:i:s'),
+                            'post_date'=>Carbon::parse(explode("/",str_replace("'","",$value[12]))[1].'-'.explode("/",str_replace("'","",$value[12]))[0].'-'.explode("/",str_replace("'","",$value[12]))[2])->format('Y-m-d H:i:s'),
+                            'pur_price'=>str_replace("'","",$value[13]),
+                            'units'=>str_replace("'","",$value[14]),
+                            'amount'=>str_replace("'","",$value[15]),
+                            'rec_date'=>Carbon::parse(explode("/",str_replace("'","",$value[21]))[1].'-'.explode("/",str_replace("'","",$value[21]))[0].'-'.explode("/",str_replace("'","",$value[21]))[2])->format('Y-m-d H:i:s'),
+                            'trxn_type'=>str_replace("'","",$value[5]),
+                            'trxn_type_flag'=>str_replace("'","",$value[45]),
+                            'trxn_nature'=>str_replace("'","",$value[25]),
+                            'te_15h'=>str_replace("'","",$value[28]),
+                            'micr_code'=>str_replace("'","",$value[29]),
+                            'remarks'=>str_replace("'","",$value[30]),
+                            'sw_flag'=>str_replace("'","",$value[31]),
+                            'old_folio'=>str_replace("'","",$value[32]),
+                            'seq_no'=>str_replace("'","",$value[33]),
+                            'reinvest_flag'=>str_replace("'","",$value[34]),
+                            'stt'=>str_replace("'","",$value[36]),
+                            'stamp_duty'=>str_replace("'","",$value[74]),
+                            'tds'=>NULL,
+                            'acc_no'=>str_replace("'","",$value[63]),
+                            'bank_name'=>str_replace("'","",$value[64]),
+                            'created_at'=>date('Y-m-d H:i:s'),
+                            'updated_at'=>date('Y-m-d H:i:s'),
+                        ];
+                        // ));
+                        array_push($array_set,$single_array);
+                    }
+
+                    $array_trans_no = array_map(function ($result){
+                        return $result['trans_no'];
+                    }, $array_set);
+                    // DB::enableQueryLog();
+                    $array_set_form_db=MutualFundTransaction::select('*')
+                            ->selectRaw('DATE(created_at) as aa_for_create_at')
+                            ->where('rnt_id',$rnt_id)
+                            ->whereIn('trans_no',array_unique($array_trans_no)) 
+                            // ->whereDate('created_at',date('Y-m-d'))
+                            ->get()
+                            ->toArray();
+                            // ->get();
+                    // dd(DB::getQueryLog());
+
+                    return $array_set_form_db;
+                    // return $array_set;
+                    $final_array=[];
+                    
+                    foreach ($array_set as $key => $value) {
+                        // return $value;
+                        if (in_array($value['trans_no'], array_column($array_set_form_db, 'trans_no'))) {
+                            // return 
+                            $var1=date('Y-m-d',strtotime($value['created_at']));
+                            $var2=$value['trans_no'];
+                            $filtered_array = array_filter($array_set_form_db, function($val) use($var1, $var2){
+                                return ($val['aa_for_create_at']==$var1 && $val['trans_no']==$var2);
+                            });
+                            if ($filtered_array) {
+                                array_push($final_array,$value);
+                            }
+                        }else {
+                            array_push($final_array,$value);
+                        }
+                    }
+                    // return $final_array;
+                    if (count($final_array) > 0) {
+                        TempMutualFundTransaction::insert($final_array);
+                    }
+                }else if ($file_type_id=='6' && $file_id=='2') {  // transction WBR2A
+                    TempBrokerChangeTrans::truncate();
+                    // return $TotalArray[0];
+                    // $value=explode("\t",$TotalArray[0]);
+                    // return $value;
+                    $array_set=[];
+                    for ($i=$start_count; $i <= $end_count; $i++) { 
+                        $value=explode("\t",$TotalArray[$i]);
+                        $single_array=[
+                            'rnt_id'=>$rnt_id,
+                            'arn_no'=>str_replace("'","",$value[16]),
+                            'sub_brk_cd'=>str_replace("'","",$value[17]),
+                            'euin_no'=>NULL,
                             'first_client_name'=>str_replace("'","",$value[4]),
                             'first_client_pan'=>str_replace("'","",$value[42]),
                             'amc_code'=>str_replace("'","",$value[0]),
@@ -190,99 +278,23 @@ class MailBackController extends Controller
                         return $result['trans_no'];
                     }, $array_set);
                     // DB::enableQueryLog();
-                    $array_set_form_db=MutualFundTransaction::where('rnt_id',$rnt_id)
+                    $array_set_form_db=BrokerChangeTrans::select('*')
+                            ->selectRaw('DATE(created_at) as aa_for_create_at')->where('rnt_id',$rnt_id)
                             ->whereIn('trans_no',array_unique($array_trans_no)) 
-                            ->get()
-                            ->toArray();
-                    // dd(DB::getQueryLog());
+                            // ->whereDate('created_at',date('Y-m-d'))
+                            ->get()->toArray();
                     // return $array_set_form_db;
                     // return $array_set;
-                    $final_array=[];
-                    foreach ($array_set as $key => $value) {
-                        if (in_array($value['trans_no'], array_column($array_set_form_db, 'trans_no')) ) {
-                            $var1=$value['mailback_process_id'];
-                            $var2=$value['trans_no'];
-                            $filtered_array = array_filter($array_set_form_db, function($val) use($var1, $var2){
-                                return ($val['mailback_process_id']==$var1 && $val['trans_no']==$var2);
-                            });
-                            if ($filtered_array) {
-                                array_push($final_array,$value);
-                            }
-                        }else {
-                            array_push($final_array,$value);
-                        }
-                    }
-                    // return $final_array;
-                    if (count($final_array) > 0) {
-                        TempMutualFundTransaction::insert($final_array);
-                    }
-                }else if ($file_type_id=='6' && $file_id=='2') {  // broker change WBR2A
-                    TempBrokerChangeTrans::truncate();
-                    // return $TotalArray[0];
-                    // $value=explode("\t",$TotalArray[0]);
-                    // return $value;
-                    $array_set=[];
-                    for ($i=$start_count; $i <= $end_count; $i++) { 
-                        $value=explode("\t",$TotalArray[$i]);
-                        $single_array=[
-                            'mailback_process_id'=>$id,
-                            'rnt_id'=>$rnt_id,
-                            'arn_no'=>str_replace("'","",$value[16]),
-                            'sub_brk_cd'=>str_replace("'","",$value[17]),
-                            'euin_no'=>NULL,
-                            'first_client_name'=>str_replace("'","",$value[4]),
-                            'first_client_pan'=>str_replace("'","",$value[42]),
-                            'amc_code'=>str_replace("'","",$value[0]),
-                            'folio_no'=>str_replace("'","",$value[1]),
-                            'product_code'=>str_replace("'","",$value[2]),
-                            'trans_no'=>str_replace("'","",$value[6]),
-                            'trans_mode'=>str_replace("'","",$value[7]),
-                            'trans_status'=>str_replace("'","",$value[8]),
-                            'user_trans_no'=>str_replace("'","",$value[10]),
-                            'trans_date'=>Carbon::parse(explode("/",str_replace("'","",$value[11]))[1].'-'.explode("/",str_replace("'","",$value[11]))[0].'-'.explode("/",str_replace("'","",$value[11]))[2])->format('Y-m-d H:i:s'),
-                            'post_date'=>Carbon::parse(explode("/",str_replace("'","",$value[12]))[1].'-'.explode("/",str_replace("'","",$value[12]))[0].'-'.explode("/",str_replace("'","",$value[12]))[2])->format('Y-m-d H:i:s'),
-                            'pur_price'=>str_replace("'","",$value[13]),
-                            'units'=>str_replace("'","",$value[14]),
-                            'amount'=>str_replace("'","",$value[15]),
-                            'rec_date'=>Carbon::parse(explode("/",str_replace("'","",$value[21]))[1].'-'.explode("/",str_replace("'","",$value[21]))[0].'-'.explode("/",str_replace("'","",$value[21]))[2])->format('Y-m-d H:i:s'),
-                            'trxn_type'=>str_replace("'","",$value[5]),
-                            'trxn_type_flag'=>str_replace("'","",$value[45]),
-                            'trxn_nature'=>str_replace("'","",$value[25]),
-                            'te_15h'=>str_replace("'","",$value[28]),
-                            'micr_code'=>str_replace("'","",$value[29]),
-                            'remarks'=>str_replace("'","",$value[30]),
-                            'sw_flag'=>str_replace("'","",$value[31]),
-                            'old_folio'=>str_replace("'","",$value[32]),
-                            'seq_no'=>str_replace("'","",$value[33]),
-                            'reinvest_flag'=>str_replace("'","",$value[34]),
-                            'stt'=>str_replace("'","",$value[36]),
-                            'stamp_duty'=>str_replace("'","",$value[74]),
-                            'tds'=>NULL,
-                            'acc_no'=>str_replace("'","",$value[63]),
-                            'bank_name'=>str_replace("'","",$value[64]),
-                            'created_at'=>date('Y-m-d H:i:s'),
-                            'updated_at'=>date('Y-m-d H:i:s'),
-                        ];
-                        array_push($array_set,$single_array);
-                    }
-                    $array_trans_no = array_map(function ($result){
-                        return $result['trans_no'];
-                    }, $array_set);
-                    // DB::enableQueryLog();
-                    $array_set_form_db=BrokerChangeTrans::where('rnt_id',$rnt_id)
-                            ->whereIn('trans_no',array_unique($array_trans_no)) 
-                            ->get()
-                            ->toArray();
-                    // return $array_set_form_db;
-                    // return $array_set;
+
                     $final_array=[];
                     foreach ($array_set as $key => $value) {
                         // return $value;
-                        if (in_array($value['trans_no'], array_column($array_set_form_db, 'trans_no')) ) {
-                            $var1=$value['mailback_process_id'];
+                        if (in_array($value['trans_no'], array_column($array_set_form_db, 'trans_no'))) {
+                            // return 
+                            $var1=date('Y-m-d',strtotime($value['created_at']));
                             $var2=$value['trans_no'];
                             $filtered_array = array_filter($array_set_form_db, function($val) use($var1, $var2){
-                                return ($val['mailback_process_id']==$var1 && $val['trans_no']==$var2);
+                                return ($val['aa_for_create_at']==$var1 && $val['trans_no']==$var2);
                             });
                             if ($filtered_array) {
                                 array_push($final_array,$value);
@@ -489,7 +501,6 @@ class MailBackController extends Controller
                     // return $TotalArray[0];
                     // $value=explode("\t",$TotalArray[0]);
                     // return $value;
-                    $array_set=[];
                     for ($i=$start_count; $i <= $end_count; $i++) { 
                         $value=explode("\t",$TotalArray[$i]);
                         // return $value[31];
@@ -501,6 +512,7 @@ class MailBackController extends Controller
                             }else {
                                 $folio_dt=Carbon::parse(explode("/",str_replace("'","",$folio_date))[1].'-'.explode("/",str_replace("'","",$folio_date))[0].'-'.explode("/",str_replace("'","",$folio_date))[2])->format('Y-m-d H:i:s');
                             }
+
                             $dob=str_replace("'","",$value[31]);
                             $dd=explode("/",str_replace("'","",$dob));
                             if (!isset($dd[1])) {
@@ -508,6 +520,7 @@ class MailBackController extends Controller
                             }else {
                                 $mydob=Carbon::parse(explode("/",str_replace("'","",$dob))[1].'-'.explode("/",str_replace("'","",$dob))[0].'-'.explode("/",str_replace("'","",$dob))[2])->format('Y-m-d');
                             }
+
                             $dob_2nd_holder=str_replace("'","",$value[52]);
                             $dd2=explode("/",str_replace("'","",$dob_2nd_holder));
                             if (!isset($dd2[1])) {
@@ -515,6 +528,7 @@ class MailBackController extends Controller
                             }else {
                                 $mydob2=Carbon::parse(explode("/",str_replace("'","",$dob_2nd_holder))[1].'-'.explode("/",str_replace("'","",$dob_2nd_holder))[0].'-'.explode("/",str_replace("'","",$dob_2nd_holder))[2])->format('Y-m-d');
                             }
+
                             $dob_3rd_holder=str_replace("'","",$value[53]);
                             $dd3=explode("/",str_replace("'","",$dob_3rd_holder));
                             if (!isset($dd3[1])) {
@@ -522,6 +536,7 @@ class MailBackController extends Controller
                             }else {
                                 $mydob3=Carbon::parse(explode("/",str_replace("'","",$dob_3rd_holder))[1].'-'.explode("/",str_replace("'","",$dob_3rd_holder))[0].'-'.explode("/",str_replace("'","",$dob_3rd_holder))[2])->format('Y-m-d');
                             }
+
                             $guardian_dob=str_replace("'","",$value[54]);
                             $dd4=explode("/",str_replace("'","",$guardian_dob));
                             if (!isset($dd4[1])) {
@@ -529,7 +544,8 @@ class MailBackController extends Controller
                             }else {
                                 $mydob4=Carbon::parse(explode("/",str_replace("'","",$guardian_dob))[1].'-'.explode("/",str_replace("'","",$guardian_dob))[0].'-'.explode("/",str_replace("'","",$guardian_dob))[2])->format('Y-m-d');
                             }
-                            $single_array=[
+                            
+                            TempFolioDetails::create(array(
                                 'rnt_id'=>$rnt_id,
                                 'product_code'=>str_replace("'","",$value[1]),
                                 'amc_code'=>str_replace("'","",$value[0]),
@@ -648,42 +664,8 @@ class MailBackController extends Controller
                                 'kyc_status_2nd'=>str_replace("'","",$value[70]),
                                 'kyc_status_3rd'=>str_replace("'","",$value[71]),
                                 'guardian_kyc_status'=>str_replace("'","",$value[69]),
-                            ];
-                            array_push($array_set,$single_array);
+                            ));
                         }
-                    }
-                    $array_folio_no = array_map(function ($result){
-                        return $result['folio_no'];
-                    }, $array_set);
-                    $array_product_code = array_map(function ($result){
-                        return $result['product_code'];
-                    }, $array_set);
-                    // return $array_product_code;
-                    $array_set_form_db=FolioDetails::where('rnt_id',$rnt_id)
-                        ->whereIn('folio_no',array_unique($array_folio_no))
-                        ->whereIn('product_code',array_unique($array_product_code)) 
-                        ->get()
-                        ->toArray();
-                    // return $array_set_form_db;
-                    $final_array=[];
-                    foreach ($array_set as $key => $value) {
-                        if (in_array($value['folio_no'], array_column($array_set_form_db, 'folio_no')) ) {
-                            $var1=$value['product_code'];
-                            $var2=$value['folio_no'];
-                            $var3=$value['folio_date'];
-                            $filtered_array = array_filter($array_set_form_db, function($val) use($var1, $var2, $var3){
-                                return ($val['product_code']==$var1 && $val['folio_no']==$var2 && $val['folio_date']==$var3);
-                            });
-                            if (!$filtered_array) {
-                                array_push($final_array,$value);
-                            }
-                        }else {
-                            array_push($final_array,$value);
-                        }
-                    }
-                    // return $final_array;
-                    if (count($final_array) > 0) {
-                        TempFolioDetails::insert($final_array);
                     }
                 }elseif ($file_type_id=='3' && $file_id=='10') {  // folio master report WBR9
                     TempFolioDetails::truncate();
@@ -859,8 +841,10 @@ class MailBackController extends Controller
                     $array_set=[];
                     for ($i=$start_count; $i <= $end_count; $i++) { 
                         $value=explode("~",$TotalArray[$i]);
+                        // $value=explode("~",$TotalArray[0]);
+                        // return $value;
+                        // TempMutualFundTransaction::create(array(
                         $single_array=[
-                            'mailback_process_id'=>$id,
                             'rnt_id'=>$rnt_id,
                             'arn_no'=>$value[19],
                             'sub_brk_cd'=>isset($value[20])?$value[20]:NULL,
@@ -900,25 +884,33 @@ class MailBackController extends Controller
                             'created_at'=>date('Y-m-d H:i:s'),
                             'updated_at'=>date('Y-m-d H:i:s'),
                         ];
+                        // ));
                         array_push($array_set,$single_array);
                     }
 
                     $array_trans_no = array_map(function ($result){
                         return $result['trans_no'];
                     }, $array_set);
-                    $array_set_form_db=MutualFundTransaction::where('rnt_id',$rnt_id)
+                    // DB::enableQueryLog();
+                    $array_set_form_db=MutualFundTransaction::select('*')
+                            ->selectRaw('DATE(created_at) as aa_for_create_at')->where('rnt_id',$rnt_id)
                             ->whereIn('trans_no',array_unique($array_trans_no)) 
-                            ->get()
-                            ->toArray();
+                            // ->whereDate('created_at',date('Y-m-d'))
+                            ->get()->toArray();
+                            // ->get();
+                    // dd(DB::getQueryLog());
                     // return $array_set_form_db;
                     // return $array_set;
                     $final_array=[];
+                    
                     foreach ($array_set as $key => $value) {
-                        if (in_array($value['trans_no'], array_column($array_set_form_db, 'trans_no')) ) {
-                            $var1=$value['mailback_process_id'];
+                        // return $value;
+                        if (in_array($value['trans_no'], array_column($array_set_form_db, 'trans_no'))) {
+                            // return 
+                            $var1=date('Y-m-d',strtotime($value['created_at']));
                             $var2=$value['trans_no'];
                             $filtered_array = array_filter($array_set_form_db, function($val) use($var1, $var2){
-                                return ($val['mailback_process_id']==$var1 && $val['trans_no']==$var2);
+                                return ($val['aa_for_create_at']==$var1 && $val['trans_no']==$var2);
                             });
                             if ($filtered_array) {
                                 array_push($final_array,$value);
@@ -1097,18 +1089,20 @@ class MailBackController extends Controller
                 }elseif ($file_type_id==3 && $file_id==7) {  // folio master report MFSD211
                     TempFolioDetails::truncate();
                     // return $TotalArray[0];
-                    // $value=explode("~",$TotalArray[0]);
+                    $value=explode("~",$TotalArray[0]);
                     // return $value;
-                    $array_set=[];
                     for ($i=$start_count; $i <= $end_count; $i++) { 
+                        // return $TotalArray[$i];
                         $value=explode("~",$TotalArray[$i]);
+
                         $dd=str_replace("/","-",$value[15]);
                         if ($dd=='' || $dd==' ') {
                             $mydob=NULL;
                         }else {
                             $mydob=Carbon::parse($dd)->format('Y-m-d');
+                            // DATE_FORMAT($mydob,"Y-m-d")
                         }
-                        $single_array=[
+                        TempFolioDetails::create(array(
                             'rnt_id'=>$rnt_id,
                             'product_code'=>$value[0],
                             'amc_code'=>$value[1],
@@ -1190,41 +1184,7 @@ class MailBackController extends Controller
                             'ckyc_no_2nd'=>$value[103],
                             'ckyc_no_3rd'=>$value[104],
                             'guardian_ckyc_no'=>$value[105]
-                        ];
-                        array_push($array_set,$single_array);
-                    }
-                    $array_folio_no = array_map(function ($result){
-                        return $result['folio_no'];
-                    }, $array_set);
-                    $array_product_code = array_map(function ($result){
-                        return $result['product_code'];
-                    }, $array_set);
-                    // return $array_product_code;
-                    $array_set_form_db=FolioDetails::where('rnt_id',$rnt_id)
-                        ->whereIn('folio_no',array_unique($array_folio_no))
-                        ->whereIn('product_code',array_unique($array_product_code)) 
-                        ->get()
-                        ->toArray();
-                    // return $array_set_form_db;
-                    $final_array=[];
-                    foreach ($array_set as $key => $value) {
-                        if (in_array($value['folio_no'], array_column($array_set_form_db, 'folio_no')) ) {
-                            $var1=$value['product_code'];
-                            $var2=$value['folio_no'];
-                            $var3=$value['folio_date'];
-                            $filtered_array = array_filter($array_set_form_db, function($val) use($var1, $var2, $var3){
-                                return ($val['product_code']==$var1 && $val['folio_no']==$var2 && $val['folio_date']==$var3);
-                            });
-                            if (!$filtered_array) {
-                                array_push($final_array,$value);
-                            }
-                        }else {
-                            array_push($final_array,$value);
-                        }
-                    }
-                    // return $final_array;
-                    if (count($final_array) > 0) {
-                        TempFolioDetails::insert($final_array);
+                        ));
                     }
                 }elseif ($file_type_id==5 && $file_id==11) {  // sip stp pause report MFSD231
                     // $value=explode("~",$TotalArray[1]);
@@ -1559,44 +1519,6 @@ class MailBackController extends Controller
                             'plan_option_flag'=>'N',
                             'plan_option_lock_flag'=>'L'
                         ]);
-                    }elseif ($sub_file_type=='B') {
-                        // return $request;
-                        $up_data=FolioDetails::where('folio_no',$request->folio_no)
-                            ->where('product_code',$request->product_code)
-                            ->where('bu_type_flag','Y')
-                            ->get();
-                        // return $up_data;
-                        foreach ($up_data as $key => $single_data) {
-                            $single_data_update=FolioDetails::find($single_data->id);
-                            $single_data_update->old_euin_no=$single_data_update->euin_no;
-                            $single_data_update->euin_no=$request->new_euin_no;
-                            $single_data_update->bu_type_flag='N';
-                            $single_data_update->bu_type_lock_flag='L';
-                            $single_data_update->update();
-                        }
-                    }
-                    break;
-                case 'B':
-                    if ($sub_file_type=='B') {
-                        $up_data=BrokerChangeTrans::where('folio_no',$request->folio_no)
-                            ->where('product_code',$request->product_code)
-                            ->where('bu_type_flag','Y')
-                            ->get();
-                        // return $up_data;
-                        foreach ($up_data as $key => $single_data) {
-                            $single_data_update=BrokerChangeTrans::find($single_data->id);
-                            $single_data_update->old_euin_no=$single_data_update->euin_no;
-                            $single_data_update->euin_no=$request->new_euin_no;
-                            $single_data_update->sub_brk_cd=NULL;
-                            $single_data_update->bu_type_flag='N';
-                            $single_data_update->bu_type_lock_flag='L';
-                            $single_data_update->update();
-                        }
-                    }elseif ($sub_file_type=='D') {
-                        $up_data=BrokerChangeTrans::find($id);
-                        $up_data->divi_mismatch_flag='N';
-                        $up_data->divi_lock_flag='L';
-                        $up_data->save();
                     }
                     break;
                 default:
@@ -1837,8 +1759,6 @@ class MailBackController extends Controller
                 $rawQuery="scheme_flag='Y'";
             }elseif ($mismatch_flag=='P/O') {
                 $rawQuery="plan_option_flag='Y'";
-            }elseif ($mismatch_flag=='B') {
-                $rawQuery="bu_type_flag='Y'";
             }
             $data=[];
             $data=FolioDetailsReport::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','tt_folio_details_reports.product_code')
@@ -1914,120 +1834,6 @@ class MailBackController extends Controller
         return Helper::SuccessResponse($data);
     }
 
-    public function misMatchBroker(Request $request)
-    {
-        try {
-            $mismatch_flag=$request->mismatch_flag;
-            // return $mismatch_flag;
-            if ($mismatch_flag=='A') {
-                $rawQuery="amc_flag='Y'";
-            }elseif ($mismatch_flag=='S') {
-                $rawQuery="scheme_flag='Y'";
-            }elseif ($mismatch_flag=='P/O') {
-                $rawQuery="plan_option_flag='Y'";
-            }elseif ($mismatch_flag=='B') {
-                $rawQuery="bu_type_flag='Y'";
-            }elseif ($mismatch_flag=='D') {
-                $rawQuery="divi_mismatch_flag='Y'";
-            }
-
-            $all_data=BrokerChangeTransReport::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','tt_broker_change_trans_report.product_code')
-                    ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
-                    ->leftJoin('md_category','md_category.id','=','md_scheme.category_id')
-                    ->leftJoin('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
-                    ->leftJoin('md_amc','md_amc.amc_code','=','tt_broker_change_trans_report.amc_code')
-                    ->leftJoin('md_plan','md_plan.id','=','md_scheme_isin.plan_id')
-                    ->leftJoin('md_option','md_option.id','=','md_scheme_isin.option_id')
-                    ->leftJoin('md_employee','md_employee.euin_no','=','tt_broker_change_trans_report.euin_no')
-                    ->leftJoin('md_branch','md_branch.id','=','md_employee.branch_id')
-                    ->select('tt_broker_change_trans_report.*','md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name','md_amc.amc_short_name as amc_name',
-                    'md_plan.plan_name as plan_name','md_option.opt_name as option_name','md_amc.id as amc_id',
-                    'md_employee.emp_name as rm_name','md_branch.brn_name as branch','md_employee.bu_type_id as bu_type_id','md_employee.branch_id as branch_id')
-                    // ->selectRaw('sum(amount) as tot_amount')
-                    // ->selectRaw('sum(stamp_duty) as tot_stamp_duty')
-                    // ->selectRaw('sum(tds) as tot_tds')
-                    ->selectRaw('amount as tot_amount')
-                    ->selectRaw('stamp_duty as tot_stamp_duty')
-                    ->selectRaw('tds as tot_tds')
-                    ->selectRaw('(select bu_type from md_business_type where bu_code=md_employee.bu_type_id and branch_id=md_employee.branch_id limit 1) as bu_type')
-                    ->where('tt_broker_change_trans_report.delete_flag','N')
-                    ->whereRaw($rawQuery)
-                    ->orderBy('tt_broker_change_trans_report.created_at','desc')
-                    // ->groupBy('tt_broker_change_trans_report.trans_no')
-                    // ->groupBy('tt_broker_change_trans_report.trxn_type_flag')
-                    // ->groupByRaw('IF(substr(trxn_nature,1,19)="Systematic-Reversed","Systematic-Reversed",trxn_nature)')
-                    // ->groupBy('tt_broker_change_trans_report.trans_desc')
-                    // ->groupBy('tt_broker_change_trans_report.kf_trans_type')
-                    // ->inRandomOrder()
-                    // ->take(5)
-                    ->get();
-
-                    $data=[];
-                    foreach ($all_data as $key => $value) {
-                        $euin=$value->euin_no;
-                        $trans_no=$value->trans_no;
-                        $trans_date=$value->trans_date;
-                        // ====================start trans type & sub type=========================
-                        $trxn_type=$value->trxn_type;
-                        $trxn_type_flag=$value->trxn_type_flag;
-                        $trxn_nature=$value->trxn_nature;
-                        $amount=$value->amount;
-                        $transaction_type='';
-                        $transaction_subtype='';
-                        if ($trxn_type && $trxn_type_flag && $trxn_nature) {  //for cams
-                            $trxn_code=TransHelper::transTypeToCodeCAMS($trxn_type);
-                            $trxn_nature_code=TransHelper::trxnNatureCodeCAMS($trxn_nature);
-    
-                            $value->trxn_code=$trxn_code;
-                            $value->trxn_type_flag_code=$trxn_type_flag;
-                            $value->trxn_nature_code=$trxn_nature_code;
-                            
-                            $get_type_subtype=MFTransTypeSubType::where('c_trans_type_code',$trxn_code)
-                                ->where('c_k_trans_type',$trxn_type_flag)
-                                ->where('c_k_trans_sub_type',$trxn_nature_code)
-                                ->first();
-                            
-                            if ($amount > 0) {
-                                if ($get_type_subtype) {
-                                    $transaction_type=$get_type_subtype->trans_type;
-                                    $transaction_subtype=$get_type_subtype->trans_sub_type;
-                                }
-                            }else{
-                                if ($get_type_subtype) {
-                                    $transaction_type=$get_type_subtype->trans_type." Rejection";
-                                    $transaction_subtype=$get_type_subtype->trans_sub_type." Rejection";
-                                }
-                            }
-                        }else {
-                            $kf_trans_type=$value->kf_trans_type;
-                            $trans_flag=$value->trans_flag;
-                            if ($trans_flag=='DP' || $trans_flag=='DR') {
-                                $get_type_subtype=MFTransTypeSubType::where('c_k_trans_sub_type',$kf_trans_type)
-                                    ->where('k_divident_flag',$trans_flag)
-                                    ->first();
-                            } else {
-                                $get_type_subtype=MFTransTypeSubType::where('c_k_trans_sub_type',$kf_trans_type)
-                                    ->first();
-                            }
-                            
-                            if ($get_type_subtype) {
-                                $transaction_type=$get_type_subtype->trans_type;
-                                $transaction_subtype=$get_type_subtype->trans_sub_type;
-                            }
-                        }
-                        $value->gross_amount= number_format((float)((float)$amount + (float)$value->stamp_duty + (float)$value->tds), 2, '.', '');
-                        $value->tot_gross_amount= number_format((float)((float)$value->tot_amount + (float)$value->tot_stamp_duty + (float)$value->tot_tds), 2, '.', '');
-                        $value->transaction_type=$transaction_type;
-                        $value->transaction_subtype=$transaction_subtype;
-
-                        array_push($data,$value);
-                    }
-        } catch (\Throwable $th) {
-            throw $th;
-            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
-        }
-        return Helper::SuccessResponse($data);
-    }
 
     public function allMismatch(Request $request)
     {
