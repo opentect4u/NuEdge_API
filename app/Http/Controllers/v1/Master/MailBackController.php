@@ -1113,7 +1113,7 @@ class MailBackController extends Controller
                             'product_code'=>$value[0],
                             'amc_code'=>$value[1],
                             'folio_no'=>$value[2],
-                            // 'folio_date'=>NULL,
+                            'folio_date'=>NULL,
                             'dividend_option'=>$value[46],
                             'first_client_name'=>$value[4],
                             'joint_name_1'=>$value[5],
@@ -1213,7 +1213,9 @@ class MailBackController extends Controller
                             $var2=$value['folio_no'];
                             $var3=$value['folio_date'];
                             $filtered_array = array_filter($array_set_form_db, function($val) use($var1, $var2, $var3){
-                                return ($val['product_code']==$var1 && $val['folio_no']==$var2 && $val['folio_date']==$var3);
+                                return ($val['product_code']==$var1 && $val['folio_no']==$var2 
+                                    && $val['folio_date']==$var3
+                                );
                             });
                             if (!$filtered_array) {
                                 array_push($final_array,$value);
