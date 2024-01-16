@@ -442,6 +442,11 @@ Route::prefix('v1')->group(function () {
 
             /*************************************************End TAB sub TAB Show api************************************************/
 
+            /*************************************************Start Dashboard Report************************************************/
+            Route::get('showLiveSIPAmount',[App\Http\Controllers\v1\Reports\HomeController::class,'liveSIPAmount']);  // Search sip stp details
+            Route::get('showLiveSIPTrend',[App\Http\Controllers\v1\Reports\HomeController::class,'liveSIPTrend']);  // Search sip stp details
+            /*************************************************End Dashboard Report************************************************/
+
             Route::prefix('client')->group(function () {
 
             });
