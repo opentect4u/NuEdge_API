@@ -257,7 +257,7 @@ class FolioDetailsController extends Controller
                 ->selectRaw('IF(tt_folio_details_reports.guardian_kyc_status IS NULL || tt_folio_details_reports.guardian_kyc_status="" || tt_folio_details_reports.guardian_kyc_status="",
                 IF(tt_folio_details_reports.guardian_pan!="",(SELECT kyc_status_1st FROM td_folio_details WHERE pan=tt_folio_details_reports.guardian_pan and kyc_status_1st!="" limit 1),""),
                 tt_folio_details_reports.guardian_kyc_status) as guardian_kyc_status')
-
+                //PAN Aadhar link status
                 ->selectRaw('IF(tt_folio_details_reports.pa_link_ststus_1st IS NULL || tt_folio_details_reports.pa_link_ststus_1st="" || tt_folio_details_reports.pa_link_ststus_1st=" ",
                 IF(tt_folio_details_reports.pan!="",(SELECT pa_link_ststus_1st FROM td_folio_details WHERE pan=tt_folio_details_reports.pan and pa_link_ststus_1st!="" limit 1),""),
                 tt_folio_details_reports.pa_link_ststus_1st) as pa_link_ststus_1st')
@@ -290,8 +290,6 @@ class FolioDetailsController extends Controller
                         $value->pa_link_ststus_1st="Aadhaar Not Linked";
                     }elseif ($value->pa_link_ststus_1st=="Blank" || $value->pa_link_ststus_1st=="BLANK") {
                         $value->pa_link_ststus_1st="Not Applicable";
-                    }else {
-                        $value->pa_link_ststus_1st="";
                     }
                     // pa_link_ststus_2nd
                     if ($value->pa_link_ststus_2nd=="Y") {
@@ -300,8 +298,6 @@ class FolioDetailsController extends Controller
                         $value->pa_link_ststus_2nd="Aadhaar Not Linked";
                     }elseif ($value->pa_link_ststus_2nd=="Blank" || $value->pa_link_ststus_2nd=="BLANK") {
                         $value->pa_link_ststus_2nd="Not Applicable";
-                    }else {
-                        $value->pa_link_ststus_2nd="";
                     }
                     // pa_link_ststus_3rd
                     if ($value->pa_link_ststus_3rd=="Y") {
@@ -310,8 +306,6 @@ class FolioDetailsController extends Controller
                         $value->pa_link_ststus_3rd="Aadhaar Not Linked";
                     }elseif ($value->pa_link_ststus_3rd=="Blank" || $value->pa_link_ststus_3rd=="BLANK") {
                         $value->pa_link_ststus_3rd="Not Applicable";
-                    }else {
-                        $value->pa_link_ststus_3rd="";
                     }
                     // guardian_pa_link_ststus
                     if ($value->guardian_pa_link_ststus=="Y") {
@@ -320,8 +314,6 @@ class FolioDetailsController extends Controller
                         $value->guardian_pa_link_ststus="Aadhaar Not Linked";
                     }elseif ($value->guardian_pa_link_ststus=="Blank" || $value->guardian_pa_link_ststus=="BLANK") {
                         $value->guardian_pa_link_ststus="Not Applicable";
-                    }else {
-                        $value->guardian_pa_link_ststus="";
                     }
                     // kyc_status_1st
                     if ($value->kyc_status_1st=="Y") {
