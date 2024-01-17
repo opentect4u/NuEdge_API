@@ -383,6 +383,9 @@ class FolioDetailsController extends Controller
                 if ($value->nom_relation_1=='Not Provided' || strtolower($value->nom_relation_1)=='na' || $value->nom_relation_1=='Not Given') {
                     $value->nom_relation_1=NULL;
                 }
+                if($value->guardian_name==""){
+                    $value->guardian_dob=NULL;
+                }
                 array_push($data,$value);
             }
         } catch (\Throwable $th) {
