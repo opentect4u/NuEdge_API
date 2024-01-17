@@ -244,7 +244,7 @@ class FolioDetailsController extends Controller
                 ->selectRaw('IF(tt_folio_details_reports.guardian_occu_des IS NULL || tt_folio_details_reports.guardian_occu_des="" || tt_folio_details_reports.guardian_occu_des="" || tt_folio_details_reports.guardian_occu_des="NOT APPLICABLE",
                 IF(tt_folio_details_reports.guardian_pan!="",(SELECT occupation_des FROM td_folio_details WHERE pan=tt_folio_details_reports.guardian_pan and occupation_des!="" and occupation_des!="NOT APPLICABLE" limit 1),""),
                 tt_folio_details_reports.guardian_occu_des) as guardian_occu_des')
-                
+                // kyc status
                 ->selectRaw('IF(tt_folio_details_reports.kyc_status_1st IS NULL || tt_folio_details_reports.kyc_status_1st="" || tt_folio_details_reports.kyc_status_1st="",
                 IF(tt_folio_details_reports.pan!="",(SELECT kyc_status_1st FROM td_folio_details WHERE pan=tt_folio_details_reports.pan and kyc_status_1st!="" limit 1),""),
                 tt_folio_details_reports.kyc_status_1st) as kyc_status_1st')
