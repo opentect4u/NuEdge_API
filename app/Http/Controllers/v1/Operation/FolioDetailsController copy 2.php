@@ -82,6 +82,7 @@ class FolioDetailsController extends Controller
                 ->leftJoin('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
                 ->leftJoin('md_amc','md_amc.amc_code','=','tt_folio_details_reports.amc_code')
                 ->leftJoin('md_employee','md_employee.euin_no','=','tt_folio_details_reports.euin_no')
+                // ->leftJoin('md_employee','md_employee.euin_no','=',DB::raw('(select euin_no from td_mutual_fund_trans where folio_no=tt_folio_details_reports.folio_no and product_code= tt_folio_details_reports.product_code order by trans_date asc limit 1)'))
                 ->leftJoin('md_branch','md_branch.id','=','md_employee.branch_id')
                 ->leftJoin('md_pincode','md_pincode.pincode','=','tt_folio_details_reports.pincode')
                 ->leftJoin('md_states','md_states.id','=','md_pincode.state_id')
@@ -231,17 +232,17 @@ class FolioDetailsController extends Controller
                 ->selectRaw('IF(tt_folio_details_reports.guardian_tax_status IS NULL || tt_folio_details_reports.guardian_tax_status="" || tt_folio_details_reports.guardian_tax_status="",
                 IF(tt_folio_details_reports.guardian_pan!="",(SELECT tax_status FROM td_folio_details WHERE pan=tt_folio_details_reports.guardian_pan and tax_status!="" limit 1),""),
                 tt_folio_details_reports.guardian_tax_status) as guardian_tax_status')
-                //Occupation Description 
-                ->selectRaw('IF(tt_folio_details_reports.occupation_des IS NULL || tt_folio_details_reports.occupation_des="" || tt_folio_details_reports.occupation_des="" || tt_folio_details_reports.occupation_des="NOT APPLICABLE",
+
+                ->selectRaw('IF(tt_folio_details_reports.occupation_des IS NULL || tt_folio_details_reports.occupation_des="" || tt_folio_details_reports.occupation_des="",
                 IF(tt_folio_details_reports.pan!="",(SELECT occupation_des FROM td_folio_details WHERE pan=tt_folio_details_reports.pan and occupation_des!="" and occupation_des!="NOT APPLICABLE" limit 1),""),
                 tt_folio_details_reports.occupation_des) as occupation_des')
-                ->selectRaw('IF(tt_folio_details_reports.occupation_des_2nd IS NULL || tt_folio_details_reports.occupation_des_2nd="" || tt_folio_details_reports.occupation_des_2nd="" || tt_folio_details_reports.occupation_des_2nd="NOT APPLICABLE",
+                ->selectRaw('IF(tt_folio_details_reports.occupation_des_2nd IS NULL || tt_folio_details_reports.occupation_des_2nd="" || tt_folio_details_reports.occupation_des_2nd="",
                 IF(tt_folio_details_reports.pan_2_holder!="",(SELECT occupation_des FROM td_folio_details WHERE pan=tt_folio_details_reports.pan_2_holder and occupation_des!="" and occupation_des!="NOT APPLICABLE" limit 1),""),
                 tt_folio_details_reports.occupation_des_2nd) as occupation_des_2nd')
-                ->selectRaw('IF(tt_folio_details_reports.occupation_des_3rd IS NULL || tt_folio_details_reports.occupation_des_3rd="" || tt_folio_details_reports.occupation_des_3rd="" || tt_folio_details_reports.occupation_des_3rd="NOT APPLICABLE",
+                ->selectRaw('IF(tt_folio_details_reports.occupation_des_3rd IS NULL || tt_folio_details_reports.occupation_des_3rd="" || tt_folio_details_reports.occupation_des_3rd="",
                 IF(tt_folio_details_reports.pan_3_holder!="",(SELECT occupation_des FROM td_folio_details WHERE pan=tt_folio_details_reports.pan_3_holder and occupation_des!="" and occupation_des!="NOT APPLICABLE" limit 1),""),
                 tt_folio_details_reports.occupation_des_3rd) as occupation_des_3rd')
-                ->selectRaw('IF(tt_folio_details_reports.guardian_occu_des IS NULL || tt_folio_details_reports.guardian_occu_des="" || tt_folio_details_reports.guardian_occu_des="" || tt_folio_details_reports.guardian_occu_des="NOT APPLICABLE",
+                ->selectRaw('IF(tt_folio_details_reports.guardian_occu_des IS NULL || tt_folio_details_reports.guardian_occu_des="" || tt_folio_details_reports.guardian_occu_des="",
                 IF(tt_folio_details_reports.guardian_pan!="",(SELECT occupation_des FROM td_folio_details WHERE pan=tt_folio_details_reports.guardian_pan and occupation_des!="" and occupation_des!="NOT APPLICABLE" limit 1),""),
                 tt_folio_details_reports.guardian_occu_des) as guardian_occu_des')
                 

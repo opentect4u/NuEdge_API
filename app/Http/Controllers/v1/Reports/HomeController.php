@@ -46,10 +46,21 @@ class HomeController extends Controller
             // return $my_datas;
             $data=[];
             $total_amount=0;
+            $prev_total_amount=0;
+            $curr_total_amount=0;
+            $date=date('Y-m')."-01";
+            // return $date;
             foreach ($my_datas as $key => $my_data) {
+                if ($my_data->reg_date <= $date) {
+                    $prev_total_amount=$prev_total_amount+$my_data->auto_amount;
+                }else {
+                    $curr_total_amount=$curr_total_amount+$my_data->auto_amount;
+                }
                 $total_amount=$total_amount + $my_data->auto_amount;
             }
             $data['total_amount']=$total_amount;
+            $data['prev_total_amount']=$prev_total_amount;
+            $data['curr_total_amount']=$curr_total_amount;
             $data['flag']=$request->flag;
             // sleep(50);
         } catch (\Throwable $th) {

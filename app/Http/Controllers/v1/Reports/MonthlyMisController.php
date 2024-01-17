@@ -220,7 +220,7 @@ class MonthlyMisController extends Controller
                     $monthly_inflow_amount_set=[];
                     $monthly_outflow_amount_set=[];
                     $monthly_net_inflow_amount_set=[];
-                    for ($i=0; $i < $no_of_month; $i++) { 
+                    for ($i=0; $i <= $no_of_month; $i++) { 
                         $split_date=date('Y-m', strtotime('-'.$i.' months'));
                         array_push($categories,$split_date);
                         // return $rawQuery;
@@ -257,7 +257,7 @@ class MonthlyMisController extends Controller
                             ->groupByRaw('IF(substr(trxn_nature,1,19)="Systematic-Reversed","Systematic-Reversed",trxn_nature)')
                             ->groupBy('td_mutual_fund_trans.trans_desc')
                             ->groupBy('td_mutual_fund_trans.kf_trans_type')
-                            // ->take(50)
+                            ->take(10)
                             ->get();
                         // dd(DB::getQueryLog());
 

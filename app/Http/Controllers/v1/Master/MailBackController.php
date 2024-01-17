@@ -1802,12 +1802,20 @@ class MailBackController extends Controller
                 //     }
                 // }
                 /***************for duration calculation****************************/
-                if ($my_data->auto_trans_type=='R' || $my_data->auto_trans_type=='SWP') {  // if swp 
-                    $my_data->duration =(int)abs((strtotime($my_data->from_date) - strtotime($my_data->to_date))/(60*60*24*30));
-                }else {
+                if ($my_data->auto_trans_type=='P') {  // if sip 
+                //     $my_data->duration =(int)abs((strtotime($my_data->from_date) - strtotime($my_data->to_date))/(60*60*24*30));
+                // }else {
                     $calculation_day =(int)abs((strtotime($my_data->reg_date) - strtotime($my_data->from_date))/(60*60*24));
                     $my_data->calculation_day =$calculation_day;
                     if ($calculation_day <= 30) {
+                        $my_data->duration =(int)abs((strtotime($my_data->from_date) - strtotime($my_data->to_date))/(60*60*24*30));
+                    }else {
+                        $my_data->duration =(int)abs((strtotime($my_data->reg_date) - strtotime($my_data->to_date))/(60*60*24*30));
+                    }
+                }else {
+                    $calculation_day =(int)abs((strtotime($my_data->reg_date) - strtotime($my_data->from_date))/(60*60*24));
+                    $my_data->calculation_day =$calculation_day;
+                    if ($calculation_day <= 15) {  //swp & stp
                         $my_data->duration =(int)abs((strtotime($my_data->from_date) - strtotime($my_data->to_date))/(60*60*24*30));
                     }else {
                         $my_data->duration =(int)abs((strtotime($my_data->reg_date) - strtotime($my_data->to_date))/(60*60*24*30));

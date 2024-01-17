@@ -83,13 +83,23 @@ class SipStpTransController extends Controller
                             // (`from_date` >= ? or `from_date` > ?)
                             // $rawQuery.=' AND tt_sip_stp_swp_report.remarks!=""';
                             // $rawQuery.=' AND date(tt_sip_stp_swp_report.from_date) >= date(tt_sip_stp_swp_report.cease_terminate_date)';
-                            $rawQuery.='AND (
-                                tt_sip_stp_swp_report.from_date >= tt_sip_stp_swp_report.cease_terminate_date 
-                                OR 
-                                (SELECT COUNT(*) FROM `md_systematic_unregistered` WHERE remarks=tt_sip_stp_swp_report.remarks AND rnt_id=tt_sip_stp_swp_report.rnt_id) > 0
-                                OR 
-                                datediff(tt_sip_stp_swp_report.cease_terminate_date, tt_sip_stp_swp_report.from_date) < 30
-                            )';
+                            if ($report_type=='P') {
+                                $rawQuery.='AND (
+                                    tt_sip_stp_swp_report.from_date >= tt_sip_stp_swp_report.cease_terminate_date 
+                                    OR 
+                                    (SELECT COUNT(*) FROM `md_systematic_unregistered` WHERE remarks=tt_sip_stp_swp_report.remarks AND rnt_id=tt_sip_stp_swp_report.rnt_id) > 0
+                                    OR 
+                                    datediff(tt_sip_stp_swp_report.cease_terminate_date, tt_sip_stp_swp_report.from_date) < 30
+                                )';
+                            }else {
+                                $rawQuery.='AND (
+                                    tt_sip_stp_swp_report.from_date >= tt_sip_stp_swp_report.cease_terminate_date 
+                                    OR 
+                                    (SELECT COUNT(*) FROM `md_systematic_unregistered` WHERE remarks=tt_sip_stp_swp_report.remarks AND rnt_id=tt_sip_stp_swp_report.rnt_id) > 0
+                                    OR 
+                                    datediff(tt_sip_stp_swp_report.cease_terminate_date, tt_sip_stp_swp_report.from_date) < 15
+                                )';
+                            }
                         }
                         break;
                     case 'T':
@@ -105,7 +115,11 @@ class SipStpTransController extends Controller
                         // $rawQuery.='AND tt_sip_stp_swp_report.cease_terminate_date!="" AND tt_sip_stp_swp_report.to_date >= tt_sip_stp_swp_report.cease_terminate_date';
                         $rawQuery.=' AND tt_sip_stp_swp_report.from_date <= tt_sip_stp_swp_report.cease_terminate_date';
                         $rawQuery.=' AND (SELECT COUNT(*) FROM `md_systematic_unregistered` WHERE remarks=tt_sip_stp_swp_report.remarks AND rnt_id=tt_sip_stp_swp_report.rnt_id)=0';
-                        $rawQuery.=' AND datediff(tt_sip_stp_swp_report.cease_terminate_date, tt_sip_stp_swp_report.from_date) > 30';
+                        if ($report_type=='P') {
+                            $rawQuery.=' AND datediff(tt_sip_stp_swp_report.cease_terminate_date, tt_sip_stp_swp_report.from_date) > 30';
+                        }else {
+                            $rawQuery.=' AND datediff(tt_sip_stp_swp_report.cease_terminate_date, tt_sip_stp_swp_report.from_date) > 15';
+                        }
                         break;
                     case 'M':
                         if ($sub_type=='MM') {  
@@ -235,12 +249,20 @@ class SipStpTransController extends Controller
                     //     }
                     // }
                     /***************for duration calculation****************************/
-                    if ($report_type=='R') {  // if swp 
-                        $my_data->duration =(int)abs((strtotime($my_data->from_date) - strtotime($my_data->to_date))/(60*60*24*30));
-                    }else {
+                    if ($report_type=='P') {  // if sip 
+                    //     $my_data->duration =(int)abs((strtotime($my_data->from_date) - strtotime($my_data->to_date))/(60*60*24*30));
+                    // }else {
                         $calculation_day =(int)abs((strtotime($my_data->reg_date) - strtotime($my_data->from_date))/(60*60*24));
                         $my_data->calculation_day =$calculation_day;
                         if ($calculation_day <= 30) {
+                            $my_data->duration =(int)abs((strtotime($my_data->from_date) - strtotime($my_data->to_date))/(60*60*24*30));
+                        }else {
+                            $my_data->duration =(int)abs((strtotime($my_data->reg_date) - strtotime($my_data->to_date))/(60*60*24*30));
+                        }
+                    }else {  // swp & stp
+                        $calculation_day =(int)abs((strtotime($my_data->reg_date) - strtotime($my_data->from_date))/(60*60*24));
+                        $my_data->calculation_day =$calculation_day;
+                        if ($calculation_day <= 15) {
                             $my_data->duration =(int)abs((strtotime($my_data->from_date) - strtotime($my_data->to_date))/(60*60*24*30));
                         }else {
                             $my_data->duration =(int)abs((strtotime($my_data->reg_date) - strtotime($my_data->to_date))/(60*60*24*30));
