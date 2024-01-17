@@ -326,8 +326,6 @@ class FolioDetailsController extends Controller
                         $value->kyc_status_1st="KYC Registered-Modified KYC";
                     }elseif ($value->kyc_status_1st=="Blank" || $value->kyc_status_1st=="BLANK" || $value->kyc_status_1st==" ") {
                         $value->kyc_status_1st="Not Applicable";
-                    }else {
-                        $value->kyc_status_1st="";
                     }
                     // kyc_status_2nd
                     if ($value->kyc_status_2nd=="Y") {
@@ -340,8 +338,6 @@ class FolioDetailsController extends Controller
                         $value->kyc_status_2nd="KYC Registered-Modified KYC";
                     }elseif ($value->kyc_status_2nd=="Blank" || $value->kyc_status_2nd=="BLANK" || $value->kyc_status_2nd==" ") {
                         $value->kyc_status_2nd="Not Applicable";
-                    }else {
-                        $value->kyc_status_2nd="";
                     }
                     // kyc_status_3rd
                     if ($value->kyc_status_3rd=="Y") {
@@ -354,8 +350,6 @@ class FolioDetailsController extends Controller
                         $value->kyc_status_3rd="KYC Registered-Modified KYC";
                     }elseif ($value->kyc_status_3rd=="Blank" || $value->kyc_status_3rd=="BLANK" || $value->kyc_status_3rd==" ") {
                         $value->kyc_status_3rd="Not Applicable";
-                    }else {
-                        $value->kyc_status_3rd="";
                     }
                     // guardian_kyc_status
                     if ($value->guardian_kyc_status=="Y") {
@@ -368,8 +362,6 @@ class FolioDetailsController extends Controller
                         $value->guardian_kyc_status="KYC Registered-Modified KYC";
                     }elseif ($value->guardian_kyc_status=="Blank" || $value->guardian_kyc_status=="BLANK" || $value->guardian_kyc_status==" ") {
                         $value->guardian_kyc_status="Not Applicable";
-                    }else {
-                        $value->guardian_kyc_status="";
                     }
                     if ($value->mode_of_holding=="SINGLE") {
                         $value->mode_of_holding="SI";
