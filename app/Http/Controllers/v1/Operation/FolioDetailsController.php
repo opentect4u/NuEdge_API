@@ -379,16 +379,17 @@ class FolioDetailsController extends Controller
                     }else {
                         $value->guardian_kyc_status="";
                     }
-
                     if ($value->mode_of_holding=="SINGLE") {
                         $value->mode_of_holding="SI";
                     }
                 }
-
                 if ($value->guardian_relation=='F') {
                     $value->guardian_relation='Father';
                 }elseif ($value->guardian_relation=='M') {
                     $value->guardian_relation='Mother';
+                }
+                if ($value->nom_relation_1=='Not Provided' || strtolower($value->nom_relation_1)=='na' || $value->nom_relation_1=='Not Given') {
+                    $value->nom_relation_1=NULL;
                 }
                 array_push($data,$value);
             }
