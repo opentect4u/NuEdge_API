@@ -447,9 +447,9 @@ Route::prefix('v1')->group(function () {
             Route::get('showLiveSIPTrend',[App\Http\Controllers\v1\Reports\HomeController::class,'liveSIPTrend']);  // Search sip stp details
             /*************************************************End Dashboard Report************************************************/
 
-            Route::prefix('client')->group(function () {
+            // Route::prefix('client')->group(function () {
 
-            });
+            // });
         });
 
     // });

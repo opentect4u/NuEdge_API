@@ -39,9 +39,26 @@ class FolioDetailsController extends Controller
             $bu_type_id=$request->bu_type_id;
 
             $kyc_status=$request->kyc_status;
+            // switch ($investor_static_type) {
+            //     case 'K':
+            //         if (condition) {
+            //             # code...
+            //         }
+            //         break;
+            //     case 'N':
+            //         break;
+            //     case 'A':
+            //         break;
+            //     default:
+            //         # code...
+            //         break;
+            // }
             $nominee_status=$request->nominee_status;
             $adhaar_pan_link_status=$request->adhaar_pan_link_status;
             $client_name=$request->client_name;
+
+            // investor_static_type
+            // kyc_status
 
             $rawQuery='';
             if ($folio_status || $client_name || $pan_no || $folio_no || $kyc_status || $nominee_status || $adhaar_pan_link_status) {
@@ -60,9 +77,12 @@ class FolioDetailsController extends Controller
                 //     // $rawQuery.=$condition.'(IF((select SUM(amount) from td_mutual_fund_trans where folio_no=td_folio_details.folio_no and product_code=td_folio_details.product_code) > 0,"Active","Inactive"))="'.$folio_status.'"';
                 //     $rawQuery.=$condition.'(IF((select SUM(amount) from td_mutual_fund_trans where folio_no=tt_folio_details_reports.folio_no and product_code=tt_folio_details_reports.product_code) > 0,"Active","Inactive"))="'.$folio_status.'"';
                 // }
-                // if ($kyc_status) {
-                //     $rawQuery.='';
-                // }
+                if ($kyc_status) {
+                    $queryString='tt_folio_details_reports.kyc_status_1st';
+                    $condition=(strlen($rawQuery) > 0)? " AND ":" ";
+                    $rawQuery.=$condition.$queryString."!='KYC OK'";
+                    $rawQuery.=" OR ".$queryString."='H' OR ".$queryString."='R'";
+                }
                 // if ($nominee_status) {
                 //     $rawQuery.='';
                 // }
