@@ -37,28 +37,8 @@ class FolioDetailsController extends Controller
 
             $brn_cd=$request->brn_cd;
             $bu_type_id=$request->bu_type_id;
-
             $kyc_status=$request->kyc_status;
-            // switch ($investor_static_type) {
-            //     case 'K':
-            //         if (condition) {
-            //             # code...
-            //         }
-            //         break;
-            //     case 'N':
-            //         break;
-            //     case 'A':
-            //         break;
-            //     default:
-            //         # code...
-            //         break;
-            // }
-            $nominee_status=$request->nominee_status;
-            $adhaar_pan_link_status=$request->adhaar_pan_link_status;
             $client_name=$request->client_name;
-
-            // investor_static_type
-            // kyc_status
 
             $rawQuery='';
             if ($folio_status || $client_name || $pan_no || $folio_no || $kyc_status || $nominee_status || $adhaar_pan_link_status) {
@@ -79,16 +59,64 @@ class FolioDetailsController extends Controller
                 // }
                 if ($kyc_status) {
                     $queryString='tt_folio_details_reports.kyc_status_1st';
-                    $condition=(strlen($rawQuery) > 0)? " AND ":" ";
-                    $rawQuery.=$condition.$queryString."!='KYC OK'";
-                    $rawQuery.=" OR ".$queryString."='H' OR ".$queryString."='R'";
+                    switch ($kyc_status) {
+                        case 'Y':
+                            $condition=(strlen($rawQuery) > 0)? " AND ":" ";
+                            $rawQuery.=$condition.$queryString."='KYC OK'";
+                            $rawQuery.=" OR ".$queryString."='Y'";
+                            break;
+                        case 'N':
+                            $condition=(strlen($rawQuery) > 0)? " AND ":" ";
+                            $rawQuery.=$condition.$queryString."!='KYC OK'";
+                            $rawQuery.=" OR ".$queryString."='H' OR ".$queryString."='R'";
+                            break;
+                        default:
+                            # code...
+                            break;
+                    }
                 }
-                // if ($nominee_status) {
-                //     $rawQuery.='';
-                // }
-                // if ($adhaar_pan_link_status) {
-                //     $rawQuery.='';
-                // }
+
+                if ($nominee_status) {
+                    $queryString='tt_folio_details_reports.nom_optout_status';
+                    switch ($nominee_status) {
+                        case 'Opt-Out':
+                            $condition=(strlen($rawQuery) > 0)? " AND ":" ";
+                            $rawQuery.=$condition.$queryString."='Y'";
+                            break;
+                        case 'Opt-In':
+                            $condition=(strlen($rawQuery) > 0)? " AND ":" ";
+                            $rawQuery.=$condition.$queryString."='N'";
+                            break;
+                        case 'Pending':
+                            $condition=(strlen($rawQuery) > 0)? " AND ":" ";
+                            $rawQuery.=$condition.$queryString."=''";
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                if ($adhaar_pan_link_status) {
+                    $queryString='tt_folio_details_reports.pa_link_ststus_1st';
+                    switch ($adhaar_pan_link_status) {
+                        case 'N':
+                            $condition=(strlen($rawQuery) > 0)? " AND ":" ";
+                            $rawQuery.=$condition.$queryString."='N'";
+                            $rawQuery.=" OR ".$queryString."='Aadhaar Not Linked'";
+                            break;
+                        case 'Y':
+                            $condition=(strlen($rawQuery) > 0)? " AND ":" ";
+                            $rawQuery.=$condition.$queryString."='Y'";
+                            $rawQuery.=" OR ".$queryString."='Aadhaar Linked'";
+                            break;
+                        case 'N/A':
+                            $condition=(strlen($rawQuery) > 0)? " AND ":" ";
+                            $rawQuery.=$condition.$queryString."='Blank'";
+                            $rawQuery.=" OR ".$queryString."='Not Applicable' OR ".$queryString."='BLANK'";
+                            break;
+                        default:
+                            break;
+                    }
+                }
             }
             // return $rawQuery;
             $data=[];
@@ -292,6 +320,8 @@ class FolioDetailsController extends Controller
                 tt_folio_details_reports.guardian_pa_link_ststus) as guardian_pa_link_ststus')
 
                 // ->selectRaw('IF(td_folio_details.bank_micr="" || td_folio_details.bank_micr IS NULL,(SELECT micr_code FROM md_deposit_bank WHERE ifs_code=td_folio_details.bank_ifsc limit 1),td_folio_details.bank_micr) as bank_micr')
+                ->selectRaw('IF(tt_folio_details_reports.nom_optout_status="",IF(tt_folio_details_reports.nom_name_1!="","N",""),tt_folio_details_reports.nom_optout_status) as nom_optout_status')
+
                 ->where('tt_folio_details_reports.amc_flag','N')
                 ->where('tt_folio_details_reports.scheme_flag','N')
                 ->where('tt_folio_details_reports.bu_type_flag','N')

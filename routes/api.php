@@ -300,6 +300,8 @@ Route::prefix('v1')->group(function () {
             Route::post('documentEdit',[App\Http\Controllers\v1\Master\DocumentController::class,'update']);
             Route::post('documentimport',[App\Http\Controllers\v1\Master\DocumentController::class,'import']);
 
+            Route::post('clientFamilyAddEdit',[App\Http\Controllers\v1\Master\ClientFamilyController::class,'createUpdate']);
+
 
             Route::get('kyc',[App\Http\Controllers\v1\Operation\KYCController::class,'index']);
             Route::get('kycshowadd',[App\Http\Controllers\v1\Operation\KYCController::class,'showAdd']);
