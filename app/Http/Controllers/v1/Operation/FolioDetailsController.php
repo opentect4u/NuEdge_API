@@ -110,14 +110,14 @@ class FolioDetailsController extends Controller
                         case 'N':
                             $condition=(strlen($rawQuery) > 0)? " AND ":" ";
                             $rawQuery.=$condition.$queryString."='N'";
-                            $rawQuery.=" OR ".$queryString."='Aadhaar Not Linked'";
+                            $rawQuery.=" OR ".$queryString."='Not Linked'";
 
                             $rawQuery.=" OR ".$queryString1."='N'";
-                            $rawQuery.=" OR ".$queryString1."='Aadhaar Not Linked'";
+                            $rawQuery.=" OR ".$queryString1."='Not Linked'";
                             $rawQuery.=" OR ".$queryString2."='N'";
-                            $rawQuery.=" OR ".$queryString2."='Aadhaar Not Linked'";
+                            $rawQuery.=" OR ".$queryString2."='Not Linked'";
                             $rawQuery.=" OR ".$queryString3."='N'";
-                            $rawQuery.=" OR ".$queryString3."='Aadhaar Not Linked'";
+                            $rawQuery.=" OR ".$queryString3."='Not Linked'";
                             break;
                         case 'Y':
                             $condition=(strlen($rawQuery) > 0)? " AND ":" ";
