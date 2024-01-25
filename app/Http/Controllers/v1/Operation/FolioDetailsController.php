@@ -102,11 +102,22 @@ class FolioDetailsController extends Controller
                 }
                 if ($adhaar_pan_link_status) {
                     $queryString='tt_folio_details_reports.pa_link_ststus_1st';
+                    $queryString1='tt_folio_details_reports.pa_link_ststus_2nd';
+                    $queryString2='tt_folio_details_reports.pa_link_ststus_3rd';
+                    $queryString3='tt_folio_details_reports.guardian_pa_link_ststus';
+                    
                     switch ($adhaar_pan_link_status) {
                         case 'N':
                             $condition=(strlen($rawQuery) > 0)? " AND ":" ";
                             $rawQuery.=$condition.$queryString."='N'";
                             $rawQuery.=" OR ".$queryString."='Aadhaar Not Linked'";
+
+                            $rawQuery.=" OR ".$queryString1."='N'";
+                            $rawQuery.=" OR ".$queryString1."='Aadhaar Not Linked'";
+                            $rawQuery.=" OR ".$queryString2."='N'";
+                            $rawQuery.=" OR ".$queryString2."='Aadhaar Not Linked'";
+                            $rawQuery.=" OR ".$queryString3."='N'";
+                            $rawQuery.=" OR ".$queryString3."='Aadhaar Not Linked'";
                             break;
                         case 'Y':
                             $condition=(strlen($rawQuery) > 0)? " AND ":" ";
