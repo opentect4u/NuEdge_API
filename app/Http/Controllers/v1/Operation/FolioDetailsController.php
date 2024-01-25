@@ -63,11 +63,14 @@ class FolioDetailsController extends Controller
                         case 'Y':
                             $condition=(strlen($rawQuery) > 0)? " AND ":" ";
                             $rawQuery.=$condition.$queryString."='KYC OK'";
-                            $rawQuery.=" OR ".$queryString."='Y'";
+                            $rawQuery.=" OR ".$queryString."='Y' OR ".$queryString."='M'";
                             break;
                         case 'N':
+                            // KYC Failed
+                            // KYC Not Verified
+
                             $condition=(strlen($rawQuery) > 0)? " AND ":" ";
-                            $rawQuery.=$condition.$queryString."!='KYC OK'";
+                            $rawQuery.=$condition.$queryString."='KYC Failed' OR ".$queryString."='KYC Not Verified'";
                             $rawQuery.=" OR ".$queryString."='H' OR ".$queryString."='R'";
                             break;
                         default:
@@ -366,50 +369,42 @@ class FolioDetailsController extends Controller
                         $value->guardian_pa_link_ststus="Not Applicable";
                     }
                     // kyc_status_1st
-                    if ($value->kyc_status_1st=="Y") {
+                    if ($value->kyc_status_1st=="Y" || $value->kyc_status_1st=="M") {
                         $value->kyc_status_1st="KYC OK";
                     }elseif ($value->kyc_status_1st=="H") {
                         $value->kyc_status_1st="KYC HOLD";
                     }elseif ($value->kyc_status_1st=="R") {
                         $value->kyc_status_1st="KYC REJECTED";
-                    }elseif ($value->kyc_status_1st=="R") {
-                        $value->kyc_status_1st="KYC Registered-Modified KYC";
                     }elseif ($value->kyc_status_1st=="Blank" || $value->kyc_status_1st=="BLANK" || $value->kyc_status_1st==" ") {
                         $value->kyc_status_1st="Not Applicable";
                     }
                     // kyc_status_2nd
-                    if ($value->kyc_status_2nd=="Y") {
+                    if ($value->kyc_status_2nd=="Y" || $value->kyc_status_2nd=="M") {
                         $value->kyc_status_2nd="KYC OK";
                     }elseif ($value->kyc_status_2nd=="H") {
                         $value->kyc_status_2nd="KYC HOLD";
                     }elseif ($value->kyc_status_2nd=="R") {
                         $value->kyc_status_2nd="KYC REJECTED";
-                    }elseif ($value->kyc_status_2nd=="R") {
-                        $value->kyc_status_2nd="KYC Registered-Modified KYC";
                     }elseif ($value->kyc_status_2nd=="Blank" || $value->kyc_status_2nd=="BLANK" || $value->kyc_status_2nd==" ") {
                         $value->kyc_status_2nd="Not Applicable";
                     }
                     // kyc_status_3rd
-                    if ($value->kyc_status_3rd=="Y") {
+                    if ($value->kyc_status_3rd=="Y" || $value->kyc_status_3rd=="M") {
                         $value->kyc_status_3rd="KYC OK";
                     }elseif ($value->kyc_status_3rd=="H") {
                         $value->kyc_status_3rd="KYC HOLD";
                     }elseif ($value->kyc_status_3rd=="R") {
                         $value->kyc_status_3rd="KYC REJECTED";
-                    }elseif ($value->kyc_status_3rd=="R") {
-                        $value->kyc_status_3rd="KYC Registered-Modified KYC";
                     }elseif ($value->kyc_status_3rd=="Blank" || $value->kyc_status_3rd=="BLANK" || $value->kyc_status_3rd==" ") {
                         $value->kyc_status_3rd="Not Applicable";
                     }
                     // guardian_kyc_status
-                    if ($value->guardian_kyc_status=="Y") {
+                    if ($value->guardian_kyc_status=="Y" || $value->guardian_kyc_status=="M") {
                         $value->guardian_kyc_status="KYC OK";
                     }elseif ($value->guardian_kyc_status=="H") {
                         $value->guardian_kyc_status="KYC HOLD";
                     }elseif ($value->guardian_kyc_status=="R") {
                         $value->guardian_kyc_status="KYC REJECTED";
-                    }elseif ($value->guardian_kyc_status=="R") {
-                        $value->guardian_kyc_status="KYC Registered-Modified KYC";
                     }elseif ($value->guardian_kyc_status=="Blank" || $value->guardian_kyc_status=="BLANK" || $value->guardian_kyc_status==" ") {
                         $value->guardian_kyc_status="Not Applicable";
                     }
