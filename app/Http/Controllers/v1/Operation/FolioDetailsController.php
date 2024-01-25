@@ -118,6 +118,9 @@ class FolioDetailsController extends Controller
                             $rawQuery.=" OR ".$queryString2."='Not Linked'";
                             $rawQuery.=" OR ".$queryString3."='N'";
                             $rawQuery.=" OR ".$queryString3."='Not Linked'";
+                            $rawQuery.=" AND tt_folio_details_reports.tax_status NOT LIKE '%NRI%'";
+                            // $a="some text";
+                            // return strpos( $a, 'text' );
                             break;
                         case 'Y':
                             $condition=(strlen($rawQuery) > 0)? " AND ":" ";
@@ -423,6 +426,10 @@ class FolioDetailsController extends Controller
                     }
                     if ($value->mode_of_holding=="SINGLE") {
                         $value->mode_of_holding="SI";
+                    }
+                }else {
+                    if (strpos($value->tax_status, 'NRI')>0) {
+                        $value->pa_link_ststus_1st="Not Applicable";
                     }
                 }
                 if ($value->guardian_relation=='F') {
