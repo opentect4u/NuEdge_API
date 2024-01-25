@@ -93,6 +93,8 @@ class FolioDetailsController extends Controller
                         case 'Pending':
                             $condition=(strlen($rawQuery) > 0)? " AND ":" ";
                             $rawQuery.=$condition.$queryString."=''";
+                            $queryString='tt_folio_details_reports.nom_name_1';
+                            $rawQuery.=$condition.$queryString."=''";
                             break;
                         default:
                             break;
