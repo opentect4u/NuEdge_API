@@ -111,7 +111,7 @@ class FolioDetailsController extends Controller
                             // $rawQuery.=" AND tt_folio_details_reports.tax_status NOT LIKE '%NRI%'";
                             // $rawQuery.=" AND ".$queryString."='Not Linked'";
                             $condition=(strlen($rawQuery) > 0)? " AND ":" ";
-                            $rawQuery.=$condition."LOCATE('NRI', tt_folio_details_reports.tax_status) < 0";
+                            $rawQuery.=$condition."LOCATE('NRI', tt_folio_details_reports.tax_status)=0";
                             $condition1=(strlen($rawQuery) > 0)? " AND ":" ";
                             $rawQuery.=$condition1."(".$queryString."='N'";
                             $rawQuery.=" OR ".$queryString."='Not Linked' )";
