@@ -586,5 +586,35 @@ class ClientController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
+
+    public function searchWithClient(Request $request)
+    {
+        try {
+            // return $request;
+            $search=$request->search;
+            $view_type=$request->view_type;
+            if ($view_type=='C') {
+                $data=Client::where('client_name','like', '%' . $search . '%')
+                    ->orWhere('client_code','like', '%' . $search . '%')
+                    ->orWhere('pan','like', '%' . $search . '%')
+                    ->orWhere('mobile','like', '%' . $search . '%')
+                    ->orWhere('email','like', '%' . $search . '%')
+                    ->get();      
+            } else {
+                $data=Client::join('md_client_family','md_client_family.family_id','=','md_client.id')
+                    ->where('md_client_family.relationship','Head')
+                    ->whereRaw('(md_client.client_name LIKE "%'.$search.'%" 
+                    OR md_client.pan LIKE "%'.$search.'%" 
+                    OR md_client.client_code LIKE "%'.$search.'%"
+                    OR md_client.mobile LIKE "%'.$search.'%"
+                    OR md_client.email LIKE "%'.$search.'%")')
+                    ->get(); 
+            }
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($data);
+    }
     
 }

@@ -428,11 +428,12 @@ class FolioDetailsController extends Controller
                     if ($value->mode_of_holding=="SINGLE") {
                         $value->mode_of_holding="SI";
                     }
-                }else {
-                    if (strpos($value->tax_status, 'NRI')>0) {
-                        $value->pa_link_ststus_1st="Not Applicable";
-                    }
-                }
+                } 
+                // else {
+                //     if (strpos($value->tax_status, 'NRI')>0) {
+                //         $value->pa_link_ststus_1st="Not Applicable";
+                //     }
+                // }
                 if ($value->guardian_relation=='F') {
                     $value->guardian_relation='Father';
                 }elseif ($value->guardian_relation=='M') {

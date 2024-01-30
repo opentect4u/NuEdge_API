@@ -285,11 +285,11 @@ Route::prefix('v1')->group(function () {
             Route::get('subbrocodeUsingarn',[App\Http\Controllers\v1\Operation\CommonController::class,'showSubBrokerCode']);
             Route::get('showTransInFormRec',[App\Http\Controllers\v1\Operation\CommonController::class,'showTransInFormRec']);
 
+            Route::get('searchWithClient',[App\Http\Controllers\v1\Master\ClientController::class,'searchWithClient']);
             Route::get('client',[App\Http\Controllers\v1\Master\ClientController::class,'index']);
             Route::post('clientAddEdit',[App\Http\Controllers\v1\Master\ClientController::class,'createUpdate']);
             Route::post('clientimport',[App\Http\Controllers\v1\Master\ClientController::class,'import']);
-            Route::get('clientDetailSearch',[App\Http\Controllers\v1\Master\ClientController::class,'searchDetails']);
-            Route::post('clientDetailSearch',[App\Http\Controllers\v1\Master\ClientController::class,'searchDetails']);
+            Route::any('clientDetailSearch',[App\Http\Controllers\v1\Master\ClientController::class,'searchDetails']);
             Route::post('clientExport',[App\Http\Controllers\v1\Master\ClientController::class,'export']);
             Route::post('clientDelete', [App\Http\Controllers\v1\Master\ClientController::class,'delete']);
             
@@ -300,6 +300,8 @@ Route::prefix('v1')->group(function () {
             Route::post('documentEdit',[App\Http\Controllers\v1\Master\DocumentController::class,'update']);
             Route::post('documentimport',[App\Http\Controllers\v1\Master\DocumentController::class,'import']);
 
+            Route::get('clientFamilyDetailSearch',[App\Http\Controllers\v1\Master\ClientFamilyController::class,'searchDetails']);
+            Route::get('clientFamilyDetail',[App\Http\Controllers\v1\Master\ClientFamilyController::class,'familyDetail']);
             Route::post('clientFamilyAddEdit',[App\Http\Controllers\v1\Master\ClientFamilyController::class,'createUpdate']);
 
 

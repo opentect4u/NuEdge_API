@@ -21,70 +21,61 @@ class ClientFamilyController extends Controller
     public function searchDetails(Request $request)
     {
         try {
-            $paginate=$request->paginate;
-            $cat_name=$request->cat_name;
-            $sort_by=$request->sort_by;
-            $column_name=$request->column_name;
-            $client_type=$request->client_type;
-
-            $birth_date_month=$request->birth_date_month;
-            $anniversary_date_month=$request->anniversary_date_month;
-
-
-            // ->whereMonth('created_at', '=', $month)
-
-            if ($sort_by && $column_name) {
-                $data=Client::with('ClientDoc')->with('PertnerDetails')
-                    ->leftJoin('md_city','md_city.id','=','md_client.city')
-                    ->leftJoin('md_district','md_district.id','=','md_client.dist')
-                    ->leftJoin('md_states','md_states.id','=','md_client.state')
-                    ->leftJoin('md_client_type','md_client_type.id','=','md_client.client_type_mode')
-                    ->leftJoin('md_pincode','md_pincode.id','=','md_client.pincode')
-                    ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name','md_pincode.pincode as pincode')
-                    ->where('md_client.client_type',$client_type)
-                    ->orderBy('md_client.'.$column_name,$sort_by)
-                    ->orderBy('md_client.created_at','desc')
-                    ->paginate($paginate);    
-            }elseif ($birth_date_month) {
-                
-                $data=Client::with('ClientDoc')->with('PertnerDetails')
-                    ->leftJoin('md_city','md_city.id','=','md_client.city')
-                    ->leftJoin('md_district','md_district.id','=','md_client.dist')
-                    ->leftJoin('md_states','md_states.id','=','md_client.state')
-                    ->leftJoin('md_client_type','md_client_type.id','=','md_client.client_type_mode')
-                    ->leftJoin('md_pincode','md_pincode.id','=','md_client.pincode')
-                    ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name','md_pincode.pincode as pincode')
-                    ->where('md_client.client_type',$client_type)
-                    ->whereMonth('md_client.dob',$birth_date_month)
-                    // ->whereMonth('md_client.dob_actual',$birth_date_month)
-                    ->orderBy('md_client.created_at','desc')
-                    ->paginate($paginate);    
-            }elseif ($anniversary_date_month) {
-                $data=Client::with('ClientDoc')->with('PertnerDetails')
-                    ->leftJoin('md_city','md_city.id','=','md_client.city')
-                    ->leftJoin('md_district','md_district.id','=','md_client.dist')
-                    ->leftJoin('md_states','md_states.id','=','md_client.state')
-                    ->leftJoin('md_client_type','md_client_type.id','=','md_client.client_type_mode')
-                    ->leftJoin('md_pincode','md_pincode.id','=','md_client.pincode')
-                    ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name','md_pincode.pincode as pincode')
-                    ->where('md_client.client_type',$client_type)
-                    ->whereMonth('md_client.anniversary_date',$anniversary_date_month)
-                    ->orderBy('md_client.created_at','desc')
-                    ->paginate($paginate);    
-            } else {
-                $data=Client::with('ClientDoc')->with('PertnerDetails')
-                    ->leftJoin('md_city','md_city.id','=','md_client.city')
-                    ->leftJoin('md_district','md_district.id','=','md_client.dist')
-                    ->leftJoin('md_states','md_states.id','=','md_client.state')
-                    ->leftJoin('md_client_type','md_client_type.id','=','md_client.client_type_mode')
-                    ->leftJoin('md_pincode','md_pincode.id','=','md_client.pincode')
-                    ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name','md_pincode.pincode as pincode')
-                    ->where('md_client.client_type',$client_type)
-                    ->orderBy('md_client.created_at','desc')
-                    ->paginate($paginate);    
-            }  
+            $data=ClientFamily::leftJoin('md_client','md_client.id','=','md_client_family.client_id')
+                ->leftJoin('md_city','md_city.id','=','md_client.city')
+                ->leftJoin('md_district','md_district.id','=','md_client.dist')
+                ->leftJoin('md_states','md_states.id','=','md_client.state')
+                ->leftJoin('md_client_type','md_client_type.id','=','md_client.client_type_mode')
+                ->leftJoin('md_pincode','md_pincode.id','=','md_client.pincode')
+                ->select('md_client_family.*','md_client.client_name as client_name','md_client.client_code as client_code',
+                'md_client.pan as pan','md_client.mobile as mobile','md_client.email as email','md_client.add_line_1 as add_line_1','md_client.add_line_2 as add_line_2',
+                'md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name','md_pincode.pincode as pincode'
+                )
+                ->where('relationship','Head')
+                ->get();
+            // return $data;
         } catch (\Throwable $th) {
             throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($data);
+    }
+
+    public function familyDetail(Request $request)
+    {
+        try {
+            $family_head_id=$request->family_head_id;
+            $view_type=$request->view_type;
+            if ($view_type=='F') {
+                $data=ClientFamily::leftJoin('md_client','md_client.id','=','md_client_family.family_id')
+                    ->leftJoin('md_city','md_city.id','=','md_client.city')
+                    ->leftJoin('md_district','md_district.id','=','md_client.dist')
+                    ->leftJoin('md_states','md_states.id','=','md_client.state')
+                    ->leftJoin('md_client_type','md_client_type.id','=','md_client.client_type_mode')
+                    ->leftJoin('md_pincode','md_pincode.id','=','md_client.pincode')
+                    ->select('md_client_family.*','md_client.client_name as client_name','md_client.client_code as client_code',
+                    'md_client.pan as pan','md_client.mobile as mobile','md_client.email as email','md_client.add_line_1 as add_line_1','md_client.add_line_2 as add_line_2',
+                    'md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name','md_pincode.pincode as pincode'
+                    )
+                    ->where('md_client_family.client_id',$family_head_id)
+                    ->get();
+            }else {
+                $data=ClientFamily::leftJoin('md_client','md_client.id','=','md_client_family.family_id')
+                    ->leftJoin('md_city','md_city.id','=','md_client.city')
+                    ->leftJoin('md_district','md_district.id','=','md_client.dist')
+                    ->leftJoin('md_states','md_states.id','=','md_client.state')
+                    ->leftJoin('md_client_type','md_client_type.id','=','md_client.client_type_mode')
+                    ->leftJoin('md_pincode','md_pincode.id','=','md_client.pincode')
+                    ->select('md_client_family.*','md_client.client_name as client_name','md_client.client_code as client_code',
+                    'md_client.pan as pan','md_client.mobile as mobile','md_client.email as email','md_client.add_line_1 as add_line_1','md_client.add_line_2 as add_line_2',
+                    'md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name','md_pincode.pincode as pincode'
+                    )
+                    ->where('md_client_family.client_id',$family_head_id)
+                    ->where('relationship','!=','Head')
+                    ->get();
+            }
+        } catch (\Throwable $th) {
+            //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
         return Helper::SuccessResponse($data);
