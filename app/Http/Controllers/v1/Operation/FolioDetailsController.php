@@ -437,7 +437,7 @@ class FolioDetailsController extends Controller
                         $value->mode_of_holding="SI";
                     }
                 } 
-                
+                return strpos($value->tax_status, "NRI");
                 if (strpos($value->tax_status, "NRI")!=0) {
                     $value->pa_link_ststus_1st="Not Applicable";
                 }
