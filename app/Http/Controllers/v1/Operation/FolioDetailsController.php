@@ -132,8 +132,8 @@ class FolioDetailsController extends Controller
                             break;
                         case 'N/A':
                             $condition=(strlen($rawQuery) > 0)? " AND ":" ";
-                            $rawQuery.=$condition.$queryString."='Blank'";
-                            $rawQuery.=" OR ".$queryString."='Not Applicable' OR ".$queryString."='BLANK'";
+                            $rawQuery.=$condition."(".$queryString."='Blank'";
+                            $rawQuery.=" OR ".$queryString."='Not Applicable' OR ".$queryString."='BLANK' )";
                             break;
                         default:
                             break;
