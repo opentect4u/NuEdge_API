@@ -347,7 +347,7 @@ class FolioDetailsController extends Controller
                 ->selectRaw('IF(tt_folio_details_reports.nom_optout_status="",IF(tt_folio_details_reports.nom_name_1!="","N",""),tt_folio_details_reports.nom_optout_status) as nom_optout_status')
 
                 ->selectRaw('IF(tt_folio_details_reports.tax_status!="",
-                IF(LOCATE("NRI", tt_folio_details_reports.tax_status)==0,tt_folio_details_reports.pa_link_ststus_1st,"Not Applicable"),
+                IF(LOCATE("NRI", tt_folio_details_reports.tax_status)=0,tt_folio_details_reports.pa_link_ststus_1st,"Not Applicable"),
                 tt_folio_details_reports.pa_link_ststus_1st) as pa_link_ststus_1st')
 
                 ->where('tt_folio_details_reports.amc_flag','N')
