@@ -111,15 +111,16 @@ class FolioDetailsController extends Controller
                             // $rawQuery.=" AND tt_folio_details_reports.tax_status NOT LIKE '%NRI%'";
                             // $rawQuery.=" AND ".$queryString."='Not Linked'";
                             $condition=(strlen($rawQuery) > 0)? " AND ":" ";
+                            $rawQuery.=" AND tt_folio_details_reports.tax_status NOT LIKE '%NRI%'";
                             $rawQuery.=$condition.$queryString."='N'";
                             $rawQuery.=" OR ".$queryString."='Not Linked'";
 
-                            $rawQuery.=" OR ".$queryString1."='N'";
-                            $rawQuery.=" OR ".$queryString1."='Not Linked'";
-                            $rawQuery.=" OR ".$queryString2."='N'";
-                            $rawQuery.=" OR ".$queryString2."='Not Linked'";
-                            $rawQuery.=" OR ".$queryString3."='N'";
-                            $rawQuery.=" OR ".$queryString3."='Not Linked'";
+                            // $rawQuery.=" OR ".$queryString1."='N'";
+                            // $rawQuery.=" OR ".$queryString1."='Not Linked'";
+                            // $rawQuery.=" OR ".$queryString2."='N'";
+                            // $rawQuery.=" OR ".$queryString2."='Not Linked'";
+                            // $rawQuery.=" OR ".$queryString3."='N'";
+                            // $rawQuery.=" OR ".$queryString3."='Not Linked'";
                             // $a="some text";
                             // return strpos( $a, 'text' );
                             break;
