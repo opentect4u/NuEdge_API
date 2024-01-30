@@ -438,7 +438,7 @@ class FolioDetailsController extends Controller
                     }
                 } 
                 
-                if (strpos($value->tax_status, 'NRI') > 0) {
+                if (strpos($value->tax_status, 'NRI')!=0) {
                     $value->pa_link_ststus_1st="Not Applicable";
                 }
                 if (strpos($value->tax_status_2_holder, 'NRI') > 0) {
