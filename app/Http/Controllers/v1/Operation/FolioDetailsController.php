@@ -135,7 +135,7 @@ class FolioDetailsController extends Controller
                             // $rawQuery.=$condition1."LOCATE('NRI', tt_folio_details_reports.tax_status) > 0";
                             $condition=(strlen($rawQuery) > 0)? " AND ":" ";
                             $rawQuery.=$condition."(".$queryString."='Blank'";
-                            $rawQuery.=" OR ".$queryString."='Not Applicable' OR ".$queryString."='BLANK' OR LOCATE('NRI', tt_folio_details_reports.tax_status) > 0)";
+                            $rawQuery.=" OR ".$queryString."='Not Applicable' OR ".$queryString."='BLANK' OR LOCATE('NRI', tt_folio_details_reports.tax_status) > 0 )";
                             break;
                         default:
                             break;
