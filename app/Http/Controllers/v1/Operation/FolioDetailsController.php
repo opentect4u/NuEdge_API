@@ -437,11 +437,20 @@ class FolioDetailsController extends Controller
                         $value->mode_of_holding="SI";
                     }
                 } 
-                // else {
-                //     if (strpos($value->tax_status, 'NRI')>0) {
-                //         $value->pa_link_ststus_1st="Not Applicable";
-                //     }
-                // }
+                
+                if (strpos($value->tax_status, 'NRI') > 0) {
+                    $value->pa_link_ststus_1st="Not Applicable";
+                }
+                if (strpos($value->tax_status_2_holder, 'NRI') > 0) {
+                    $value->pa_link_ststus_2nd="Not Applicable";
+                }
+                if (strpos($value->tax_status_3_holder, 'NRI') > 0) {
+                    $value->pa_link_ststus_3rd="Not Applicable";
+                }
+                if (strpos($value->guardian_tax_status, 'NRI') > 0) {
+                    $value->guardian_pa_link_ststus="Not Applicable";
+                }
+
                 if ($value->guardian_relation=='F') {
                     $value->guardian_relation='Father';
                 }elseif ($value->guardian_relation=='M') {
