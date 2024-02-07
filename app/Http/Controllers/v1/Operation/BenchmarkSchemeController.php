@@ -410,16 +410,17 @@ class BenchmarkSchemeController extends Controller
     {
         try {
             // return $request;
-            // $path = $request->file('file')->getRealPath();
-            // $data = array_map('str_getcsv', file($path));
-            // return $data[0][0];
-
-            $datas = Excel::toArray([],  $request->file('file'));
-            // return $datas;
-            $data=$datas[0];
+            $file_extention=$request->file('file')->getClientOriginalExtension();
+            if ($file_extention=='csv') {
+                $path = $request->file('file')->getRealPath();
+                $data = array_map('str_getcsv', file($path));
+            }else{
+                $datas = Excel::toArray([],  $request->file('file'));
+                // return $datas;
+                $data=$datas[0];
+            }
             // return count($data);
             // return $data[0];
-
 
             $start_count=$request->start_count;
             $end_count=$request->end_count;
