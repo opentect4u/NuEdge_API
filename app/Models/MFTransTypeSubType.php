@@ -18,5 +18,6 @@ class MFTransTypeSubType extends Model
         'c_k_trans_sub_type',
         'k_divident_flag',
         'process_type',
+        'xirr_process_type',
     ];
 }
