@@ -24,6 +24,7 @@ Route::get('/login', function () {
 
 Route::get('stringPosition',[App\Http\Controllers\TestController::class,'index']);
 Route::get('test',[App\Http\Controllers\TestController::class,'test']);
+Route::get('xirr',[App\Http\Controllers\TestController::class,'xirr']);
 
 
 Route::get('transFileUpload',[App\Http\Controllers\v1\Cron\TransFileUploadController::class,'upload']);

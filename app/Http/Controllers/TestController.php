@@ -152,4 +152,132 @@ class TestController extends Controller
         dd(DB::getQueryLog());
         // return $euin_no;
     }
+
+
+
+    public function xirr__()
+    {
+        $cf=[];
+        $cf[0]= -4999.75;
+        $cf[1]= -4999.75;
+        $cf[2]= 10246.82;
+        $cf[3]= -4999.75;
+        $cf[4]= -4999.75;
+        $cf[5]= -4999.75;
+        $cf[6]= -4999.75;
+        $cf[7]= -4999.75;
+        $cf[8]= -4999.75;
+        $cf[9]= -4999.75;
+        $cf[10]= -4999.75;
+        $cf[11]= -4999.75;
+        $cf[12]= -4999.75;
+        $cf[13]= -4999.75;
+        $cf[14]= -4999.75;
+        $cf[15]= -4999.75;
+        $cf[16]= 65905.17;
+        $cf[17]= -4999.75;
+        $cf[18]= -4999.75;
+        $cf[19]= -4999.75;
+        $cf[20]= 14672.61;
+        $cf[21]= -4999.75;
+        $cf[22]= -4999.75;
+        $cf[23]= -4999.75;
+        $cf[24]= -4999.75;
+        $cf[25]= -4999.75;
+        $cf[26]= -4999.75;
+        $cf[27]= -4999.75;
+        $cf[28]= -4999.75;
+        $cf[29]= -4999.75;
+        $cf[30]= -4999.75;
+        $cf[31]= 20934.67;
+        $cf[32]= -4999.75;
+        $cf[33]= 4846.07;
+        $cf[34]= -4999.75;
+        $cf[35]= 4884;
+        $cf[36]= -4999.75;
+        $cf[37]= -4999.75;
+        $cf[38]= 52307;
+
+        // return $cf;
+        $numOfFlows = 39;
+        $xirr=$this->computeIRR($cf, $numOfFlows);
+        return $xirr;
+        return 'hii';
+    }
+    
+    public function xirr()
+    {
+        // $cf=[];
+        // $cf[]= -5000;
+        // $cf[]= -5000;
+        // $cf[]= -5000;
+        // $cf[]= -5000;
+        // $cf[]= -5000;
+        // $cf[]= -5000;
+        // $cf[]= 31000;
+        // // return $cf;
+        // $numOfFlows = 7;
+        // $xirr=$this->computeIRR($cf, $numOfFlows);
+        // return $xirr ;
+        // return 'hii';
+        return view('index');
+    }
+    public function computeIRR($cf, $numOfFlows)
+    {
+        $LOW_RATE=0.01;
+        $HIGH_RATE=0.01;
+        $MAX_ITERATION=1000;
+        $PRECISION_REQ=0.00000001;
+        // $LOW_RATE=0;
+        // $HIGH_RATE=0;
+        // $MAX_ITERATION=1000;
+        // $PRECISION_REQ=0;
+        $i = 0;
+        $j = 0;
+        $m = 0.0;
+        $old = 0.00;
+        $new = 0.00;
+        $oldguessRate = $LOW_RATE;
+        $newguessRate = $LOW_RATE;
+        $guessRate = $LOW_RATE;
+        $lowGuessRate = $LOW_RATE;
+        $highGuessRate = $HIGH_RATE;
+        $npv = 0.0;
+        $denom = 0.0;
+        for($i=0; $i<$MAX_ITERATION; $i++){
+            $npv = 0.00;
+            for($j=0; $j<$numOfFlows; $j++){
+                $denom = pow((1 + $guessRate),$j);
+                $npv = $npv + ($cf[$j]/$denom);
+            }
+            /* Stop checking once the required precision is achieved */
+            if(($npv > 0) && ($npv < $PRECISION_REQ))
+            break;
+            if($old == 0){
+                $old = $npv;
+            }else{
+                $old = $new;
+                $new = $npv;
+            }
+            if($i > 0){
+                if($old < $new){
+                    if($old < 0 && $new < 0){
+                        $highGuessRate = $newguessRate;
+                    }else{
+                        $lowGuessRate = $newguessRate;
+                    }
+                }else{
+                    if($old > 0 && $new > 0){
+                        $lowGuessRate = $newguessRate;
+                    }else{
+                        $highGuessRate = $newguessRate;
+                    }
+                }
+            }
+            $oldguessRate = $guessRate;
+            $guessRate = ($lowGuessRate + $highGuessRate) / 2;
+            $newguessRate = $guessRate;
+        }
+        return $guessRate;
+    }
 }

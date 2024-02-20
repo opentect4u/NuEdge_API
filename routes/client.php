@@ -8,6 +8,7 @@ Route::prefix('v1')->group(function () {
         Route::prefix('clients')->group(function () {
             Route::middleware(['auth:api'])->group(function () {
                 Route::post('liveMFPortfolio',[App\Http\Controllers\v1\Client\LiveMFPController::class,'search']);
+                Route::get('liveMFShowDetails',[App\Http\Controllers\v1\Client\LiveMFPController::class,'showDetails']);
                 Route::get('liveMFPortfolioDetails',[App\Http\Controllers\v1\Client\LiveMFPController::class,'searchDetails']);
             });
         });
