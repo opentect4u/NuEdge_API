@@ -179,7 +179,11 @@ class LiveMFPController extends Controller
 
                     $value->curr_val=$value->curr_nav * $value->tot_units;
                     $value->gain_loss=$value->curr_val - $value->inv_cost;
-                    $value->ret_abs=($value->gain_loss / $value->inv_cost) * 100;
+                    if ($value->gain_loss==0 || $value->inv_cost==0) {
+                        $value->ret_abs=0;
+                    }else {
+                        $value->ret_abs=($value->gain_loss / $value->inv_cost) * 100;
+                    }
 
                     $value->idcw_reinv=0;
                     $value->idcwp=0;
