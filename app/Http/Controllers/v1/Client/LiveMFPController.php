@@ -89,7 +89,7 @@ class LiveMFPController extends Controller
                 // ->groupBy('td_mutual_fund_trans.trans_desc')
                 // ->groupBy('td_mutual_fund_trans.kf_trans_type')
                 ->orderBy('md_scheme.scheme_name','ASC')
-                // ->take(4)
+                ->take(5)
                 ->get();
             // dd(DB::getQueryLog());
             // return $all_data;
