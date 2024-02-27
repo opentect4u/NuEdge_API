@@ -616,5 +616,27 @@ class ClientController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
+
+    public function clientWithoutFamily(Request $request)
+    {
+        try {  
+            $search=$request->search;
+            if ($search!='') {
+                $data=Client::leftJoin('md_client_family','md_client_family.family_id','=','md_client.id')
+                    ->select('md_client.*','md_client_family.family_id as family_id','md_client_family.relationship as relationship')
+                    ->selectRaw('(select count(*) from md_client_family where family_id=md_client.id)as family_count')
+                    ->whereRaw('(md_client.client_name LIKE "%'.$search.'%" 
+                    OR md_client.pan LIKE "%'.$search.'%" 
+                    OR md_client.client_code LIKE "%'.$search.'%"
+                    OR md_client.mobile LIKE "%'.$search.'%"
+                    OR md_client.email LIKE "%'.$search.'%")')
+                    ->get(); 
+            }
+        } catch (\Throwable $th) {
+            throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($data);
+    }
     
 }

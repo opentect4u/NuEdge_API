@@ -4,7 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use DB;
-use App\Models\{Scheme,MutualFundTransaction,SipStpTransaction};
+use App\Models\{
+    Scheme,
+    MutualFundTransaction,
+    SipStpTransaction,
+    MFTransTypeSubType
+};
+use App\Helpers\TransHelper;
+use App\Helpers\Helper;
 
 class TestController extends Controller
 {
@@ -279,5 +286,214 @@ class TestController extends Controller
             $newguessRate = $guessRate;
         }
         return $guessRate;
+    }
+
+
+
+
+
+    public function testing(Request $request)
+    {
+        // return $request;
+        $fin_year='2023-2024';
+        // $fin_year='2022-2023';
+        // return explode('-',$fin_year);
+        $start_date=explode('-',$fin_year)[0]."-04-01";
+        $lastday = date('t',strtotime(explode('-',$fin_year)[1]."-03-01"));
+        $end_date = explode('-',$fin_year)[1]."-03-".$lastday;
+
+        $today=date('Y-m-d');
+        $end_date = (strtotime($today) >= strtotime($end_date)) ? explode('-',$fin_year)[1]."-03-".$lastday : date('Y-m-d');
+
+        // $today='2024-03-31';
+        // return $start_date."  -  ".$end_date ;
+        $rawQuery='';
+        $categories=[];
+        if (date('Y')==explode('-',$fin_year)[0] || date('Y')==explode('-',$fin_year)[1]) {
+            $split_date=date("Y-m",strtotime($end_date));
+            array_push($categories,$split_date);
+
+                $rawQuery1='';
+                $queryString='td_mutual_fund_trans.trans_date';
+                $rawQuery1.=(strlen($rawQuery) > 0)?" AND ":" ";
+                $rawQuery1.=' MONTH('.$queryString.')="'.explode("-",$split_date)[1].'" ';
+                $rawQuery1.=' AND YEAR('.$queryString.')="'.explode("-",$split_date)[0].'" ';
+                $myrawQuery=$rawQuery.$rawQuery1;
+
+                $all_data=MutualFundTransaction::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_mutual_fund_trans.product_code')
+                    ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
+                    ->leftJoin('md_category','md_category.id','=','md_scheme.category_id')
+                    ->leftJoin('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
+                    ->leftJoin('md_amc','md_amc.amc_code','=','td_mutual_fund_trans.amc_code')
+                    ->leftJoin('md_plan','md_plan.id','=','md_scheme_isin.plan_id')
+                    ->leftJoin('md_option','md_option.id','=','md_scheme_isin.option_id')
+                    ->select('td_mutual_fund_trans.*','md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name','md_amc.amc_short_name as amc_name',
+                    'md_plan.plan_name as plan_name','md_option.opt_name as option_name')
+                    ->selectRaw('sum(amount) as tot_amount')
+                    ->selectRaw('sum(stamp_duty) as tot_stamp_duty')
+                    ->selectRaw('sum(tds) as tot_tds')
+                    ->selectRaw('count(*) as tot_rows')
+                    ->where('td_mutual_fund_trans.delete_flag','N')
+                    ->where('td_mutual_fund_trans.amc_flag','N')
+                    ->where('td_mutual_fund_trans.scheme_flag','N')
+                    ->where('td_mutual_fund_trans.plan_option_flag','N')
+                    ->where('td_mutual_fund_trans.bu_type_flag','N')
+                    ->where('td_mutual_fund_trans.divi_mismatch_flag','N')
+                    ->whereRaw($myrawQuery)
+                    ->groupBy('td_mutual_fund_trans.trans_no')
+                    ->groupBy('td_mutual_fund_trans.trxn_type_flag')
+                    ->groupByRaw('IF(substr(trxn_nature,1,19)="Systematic-Reversed","Systematic-Reversed",trxn_nature)')
+                    ->groupBy('td_mutual_fund_trans.trans_desc')
+                    ->groupBy('td_mutual_fund_trans.kf_trans_type')
+                    ->take(10)
+                    ->get();
+                // dd(DB::getQueryLog());
+
+                $inflow_amount=0;
+                $outflow_amount=0;
+                $net_inflow_amount=0;
+                foreach ($all_data as $key => $value) {
+                    $euin=$value->euin_no;
+                    $trans_no=$value->trans_no;
+                    $trans_date=$value->trans_date;
+                    // ====================start trans type & sub type=========================
+                    $trxn_type=$value->trxn_type;
+                    $trxn_type_flag=$value->trxn_type_flag;
+                    $trxn_nature=$value->trxn_nature;
+                    $amount=$value->amount;
+                    $transaction_type='';
+                    $transaction_subtype='';
+
+                    if ($trxn_type && $trxn_type_flag && $trxn_nature) {  //for cams
+                        $trxn_code=TransHelper::transTypeToCodeCAMS($trxn_type);
+                        $trxn_nature_code=TransHelper::trxnNatureCodeCAMS($trxn_nature);
+
+                        $value->trxn_code=$trxn_code;
+                        $value->trxn_type_flag_code=$trxn_type_flag;
+                        $value->trxn_nature_code=$trxn_nature_code;
+                        
+                        $get_type_subtype=MFTransTypeSubType::where('c_trans_type_code',$trxn_code)
+                            ->where('c_k_trans_type',$trxn_type_flag)
+                            ->where('c_k_trans_sub_type',$trxn_nature_code)
+                            ->first();
+                        
+                        if ($amount > 0) {
+                            if ($get_type_subtype) {
+                                $transaction_type=$get_type_subtype->trans_type;
+                                $transaction_subtype=$get_type_subtype->trans_sub_type;
+                                $process_type=$get_type_subtype->process_type;
+                            }
+                        }else{
+                            if ($get_type_subtype) {
+                                $transaction_type=$get_type_subtype->trans_type." Rejection";
+                                $transaction_subtype=$get_type_subtype->trans_sub_type." Rejection";
+                                if ($transaction_subtype=='Refund Rejection') {
+                                    $process_type='O';
+                                }else {
+                                    $process_type='';
+                                }
+                            }
+                        }
+                    }else {
+                        $kf_trans_type=$value->kf_trans_type;
+                        $trans_flag=$value->trans_flag;
+                        if ($trans_flag=='DP' || $trans_flag=='DR') {
+                            $get_type_subtype=MFTransTypeSubType::where('c_k_trans_sub_type',$kf_trans_type)
+                                ->where('k_divident_flag',$trans_flag)
+                                ->first();
+                        }elseif ($trans_flag=='TI') {
+                            $get_type_subtype='';
+                            $transaction_type='Transfer In';
+                            $transaction_subtype='Transfer In';
+                            $process_type='I';
+                        }elseif ($trans_flag=='TO') {
+                            $get_type_subtype='';
+                            $transaction_type='Transfer Out';
+                            $transaction_subtype='Transfer Out';
+                            $process_type='O';
+                        } else {
+                            $get_type_subtype=MFTransTypeSubType::where('c_k_trans_sub_type',$kf_trans_type)
+                                ->first();
+                        }
+                        
+                        if ($get_type_subtype) {
+                            $transaction_type=$get_type_subtype->trans_type;
+                            $transaction_subtype=$get_type_subtype->trans_sub_type;
+                            $process_type=$get_type_subtype->process_type;
+                        }
+                    }
+                    $value->gross_amount= number_format((float)((float)$amount + (float)$value->stamp_duty + (float)$value->tds), 2, '.', '');
+                    // number_format((float)$foo, 2, '.', '')
+                    $value->tot_gross_amount= number_format((float)((float)$value->tot_amount + (float)$value->tot_stamp_duty + (float)$value->tot_tds), 2, '.', '');
+                    $value->transaction_type=$transaction_type;
+                    $value->transaction_subtype=$transaction_subtype;
+                    $value->process_type=$process_type;
+
+                    if (!empty($trans_type) && in_array($transaction_type ,$trans_type) && !empty($trans_sub_type) && in_array($transaction_subtype ,$trans_sub_type)) {
+                        array_push($data,$value);
+                    }else if (!empty($trans_type) && in_array($transaction_type ,$trans_type)) {
+                        array_push($data,$value);
+                    }else if (!empty($transaction_subtype) && in_array($transaction_subtype ,$trans_sub_type)) {
+                        array_push($data,$value);
+                    }else{
+                        array_push($data,$value);
+                    }
+
+                    if ($value->process_type=='I') {
+                        $inflow_amount=$inflow_amount + $value->tot_gross_amount;
+                    }elseif ($value->process_type=='O') {
+                        $outflow_amount=$outflow_amount + $value->tot_gross_amount;
+                    }
+                }
+
+                $net_inflow_amount=$inflow_amount - $outflow_amount;
+                array_push($monthly_inflow_amount_set,$inflow_amount);
+                array_push($monthly_outflow_amount_set,$outflow_amount);
+                array_push($monthly_net_inflow_amount_set,$net_inflow_amount);
+                $myset_data=[];
+                $myset_data['monthly']=$split_date;
+                $myset_data['monthly_inflow']=$inflow_amount;
+                $myset_data['monthly_outflow']=$outflow_amount;
+                $myset_data['monthly_net_inflow']=$net_inflow_amount;
+                $myset_data['per_of_growth']=0;
+                $myset_data['trend']=0;
+                array_push($table_data,$myset_data);
+                // return $myset_data;
+            
+        }
+        return $table_data;
+
+        // while(strtotime($end_date) >= strtotime($start_date))
+        // {
+        //     echo $end_date= date("Y-m",strtotime("-1 month",strtotime($end_date)));
+        //     echo "\n\n---";
+        // }
+
+        // $loop_dates='2024-01-01';
+        // $last_day_this_month='2024-02-26';
+        // $data=[];
+        // for($i = 0; $i <= date('m',strtotime($end_date)); $i++)
+        // {
+        //     // echo $i;
+        //     // echo '<br>';
+        //     array_push($data,$i);
+        // }
+        // return $data;
+        
+    }
+
+
+    function dateRange( $first, $last, $step = '+1 day', $format = 'Y-m-d' ) {
+        $dates = [];
+        $current = strtotime( $first );
+        $last = strtotime( $last );
+    
+        while( $current <= $last ) {
+    
+            $dates[] = date( $format, $current );
+            $current = strtotime( $step, $current );
+        }
+    
+        return $dates;
     }
 }

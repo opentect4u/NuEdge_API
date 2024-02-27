@@ -286,6 +286,7 @@ Route::prefix('v1')->group(function () {
             Route::get('showTransInFormRec',[App\Http\Controllers\v1\Operation\CommonController::class,'showTransInFormRec']);
 
             Route::get('searchWithClient',[App\Http\Controllers\v1\Master\ClientController::class,'searchWithClient']);
+            Route::get('searchClientWithoutFamily',[App\Http\Controllers\v1\Master\ClientController::class,'clientWithoutFamily']);
             Route::get('client',[App\Http\Controllers\v1\Master\ClientController::class,'index']);
             Route::post('clientAddEdit',[App\Http\Controllers\v1\Master\ClientController::class,'createUpdate']);
             Route::post('clientimport',[App\Http\Controllers\v1\Master\ClientController::class,'import']);
