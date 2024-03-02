@@ -563,7 +563,7 @@ class SchemeController extends Controller
             return Helper::ErrorResponse(parent::VALIDATION_ERROR);
         }
         try {
-            // return $request;
+            return $request;
             // $request->swp_date
             // $request->stp_date
             if ($request->sip_date!='') {
