@@ -17,7 +17,6 @@ use Illuminate\Support\Carbon;
 use Excel;
 use App\Helpers\TransHelper;
 use DB;
-use Illuminate\Support\Facades\Http;
 
 class LiveMFPController extends Controller
 {
@@ -118,7 +117,29 @@ class LiveMFPController extends Controller
             }
             $string_version_product_code = implode(',', $all_product_code);
             $string_version_nav_date = implode(',', $all_trans_date);
-            $response = Http::get('https://sia72vzf17.execute-api.ap-south-1.amazonaws.com/dev/showData?product_code='.$string_version_product_code.'&nav_date='.$string_version_nav_date);
+            // return $string_version_product_code;
+            // return $string_version_nav_date;
+            $curl = curl_init();
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => 'https://sia72vzf17.execute-api.ap-south-1.amazonaws.com/dev/showData',
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 0,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => 'GET',
+                CURLOPT_POSTFIELDS =>'{
+                    "product_code":"'.$string_version_product_code.'",
+                    "nav_date":"'.$string_version_nav_date.'"
+                }',
+                CURLOPT_HTTPHEADER => array(
+                    'x-api-key: '.env('AWS_LAMBDA_API_KEY').'',
+                    'Content-Type: text/plain'
+                ),
+            ));
+            $response = curl_exec($curl);
+            curl_close($curl);
             // return $response;
             $res_array = json_decode($response, true);
             // return $res_array;
