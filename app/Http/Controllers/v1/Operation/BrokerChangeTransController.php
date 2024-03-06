@@ -32,6 +32,8 @@ class BrokerChangeTransController extends Controller
             $pan_no=$request->pan_no;
             $type=$request->type;
             $all_client=$request->all_client;
+            $view_type=$request->view_type;
+            $client_name=$request->client_name;
             // $pan_no=json_decode($request->pan_no);
             $amc_id=json_decode($request->amc_id);
             $cat_id=json_decode($request->cat_id);
@@ -39,13 +41,15 @@ class BrokerChangeTransController extends Controller
             $scheme_id=json_decode($request->scheme_id);
             $trans_type=json_decode($request->trans_type);
             $trans_sub_type=json_decode($request->trans_sub_type);
+            $family_members_pan=json_decode($request->family_members_pan);
+            $family_members_name=json_decode($request->family_members_name);
 
             $rawQuery='';
-            if ($folio_no || $pan_no || !empty($amc_id) || !empty($cat_id) || !empty($sub_cat_id) || !empty($scheme_id)) {
+            if ($folio_no || $view_type || !empty($amc_id) || !empty($cat_id) || !empty($sub_cat_id) || !empty($scheme_id)) {
                 $queryString='tt_broker_change_trans_report.folio_no';
                 $rawQuery.=Helper::WhereRawQuery($folio_no,$rawQuery,$queryString);
-                $queryString='tt_broker_change_trans_report.first_client_pan';
-                $rawQuery.=Helper::WhereRawQuery($pan_no,$rawQuery,$queryString);
+                // $queryString='tt_broker_change_trans_report.first_client_pan';
+                // $rawQuery.=Helper::WhereRawQuery($pan_no,$rawQuery,$queryString);
                 // $queryString='tt_broker_change_trans_report.first_client_name';
                 // $rawQuery.=Helper::RawQueryOR($pan_no,$rawQuery,$queryString);
                 $queryString='md_scheme.amc_id';
@@ -56,6 +60,25 @@ class BrokerChangeTransController extends Controller
                 $rawQuery.=Helper::WhereRawQuery($sub_cat_id,$rawQuery,$queryString);
                 $queryString='md_scheme_isin.scheme_id';
                 $rawQuery.=Helper::WhereRawQuery($scheme_id,$rawQuery,$queryString);
+
+                if ($view_type=='F') {
+                    $queryString='tt_broker_change_trans_report.first_client_pan';
+                    $condition=(strlen($rawQuery) > 0)? " AND (":" (";
+                    $row_name_string=  "'" .implode("','", $family_members_pan). "'";
+                    $rawQuery.=$condition.$queryString." IN (".$row_name_string.")";
+                    $queryString='tt_broker_change_trans_report.first_client_name';
+                    $condition1=(strlen($rawQuery) > 0)? " OR ":" ";
+                    $row_name_string1=  "'" .implode("','", $family_members_name). "'";
+                    $rawQuery.=$condition1.$queryString." IN (".$row_name_string1."))";
+                }else {
+                    if ($pan_no) {
+                        $queryString='tt_broker_change_trans_report.first_client_pan';
+                        $rawQuery.=Helper::WhereRawQuery($pan_no,$rawQuery,$queryString);
+                    }else {
+                        $queryString='tt_broker_change_trans_report.first_client_name';
+                        $rawQuery.=Helper::WhereRawQuery($client_name,$rawQuery,$queryString);
+                    }
+                }
                 // return $rawQuery;
                 // return $request;
                 // DB::enableQueryLog();

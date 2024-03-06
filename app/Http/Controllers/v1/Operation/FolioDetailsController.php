@@ -39,19 +39,42 @@ class FolioDetailsController extends Controller
             $bu_type_id=$request->bu_type_id;
             $kyc_status=$request->kyc_status;
             $client_name=$request->client_name;
+            $view_type=$request->view_type;
+            $family_members_pan=json_decode($request->family_members_pan);
+            $family_members_name=json_decode($request->family_members_name);
 
             $rawQuery='';
-            if ($folio_status || $client_name || $pan_no || $folio_no || $kyc_status || $nominee_status || $adhaar_pan_link_status) {
-                if (!$pan_no) {
-                    $queryString='tt_folio_details_reports.first_client_name';
-                    $rawQuery.=Helper::WhereRawQuery($client_name,$rawQuery,$queryString);
-                }
-                $queryString='tt_folio_details_reports.pan';
-                $rawQuery.=Helper::WhereRawQuery($pan_no,$rawQuery,$queryString);
+            if ($folio_status || $client_name || $view_type || $folio_no || $kyc_status || $nominee_status || $adhaar_pan_link_status) {
+                // if (!$pan_no) {
+                //     $queryString='tt_folio_details_reports.first_client_name';
+                //     $rawQuery.=Helper::WhereRawQuery($client_name,$rawQuery,$queryString);
+                // }
+                // $queryString='tt_folio_details_reports.pan';
+                // $rawQuery.=Helper::WhereRawQuery($pan_no,$rawQuery,$queryString);
+
                 $queryString='tt_folio_details_reports.folio_no';
                 $rawQuery.=Helper::WhereRawQuery($folio_no,$rawQuery,$queryString);
                 $queryString='tt_folio_details_reports.folio_status';
                 $rawQuery.=Helper::WhereRawQuery($folio_status,$rawQuery,$queryString);
+
+                if ($view_type=='F') {
+                    $queryString='tt_folio_details_reports.pan';
+                    $condition=(strlen($rawQuery) > 0)? " AND (":" (";
+                    $row_name_string=  "'" .implode("','", $family_members_pan). "'";
+                    $rawQuery.=$condition.$queryString." IN (".$row_name_string.")";
+                    $queryString='tt_folio_details_reports.first_client_name';
+                    $condition1=(strlen($rawQuery) > 0)? " OR ":" ";
+                    $row_name_string1=  "'" .implode("','", $family_members_name). "'";
+                    $rawQuery.=$condition1.$queryString." IN (".$row_name_string1."))";
+                }else {
+                    if ($pan_no) {
+                        $queryString='tt_folio_details_reports.pan';
+                        $rawQuery.=Helper::WhereRawQuery($pan_no,$rawQuery,$queryString);
+                    }else {
+                        $queryString='tt_folio_details_reports.first_client_name';
+                        $rawQuery.=Helper::WhereRawQuery($client_name,$rawQuery,$queryString);
+                    }
+                }
                 // if ($folio_status) {
                 //     $condition=(strlen($rawQuery) > 0)? " AND ":" ";
                 //     // $rawQuery.=$condition.'(IF((select SUM(amount) from td_mutual_fund_trans where folio_no=td_folio_details.folio_no and product_code=td_folio_details.product_code) > 0,"Active","Inactive"))="'.$folio_status.'"';

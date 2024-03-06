@@ -949,13 +949,15 @@ class SchemeController extends Controller
                                     $cv_path_extension=$file->getClientOriginalExtension();
                                     $doc_names=microtime(true).$cv_path_extension;
                                     $file->move(public_path('application-forms/'),$doc_names);
+
+                                    SchemeOtherForm::create(array(
+                                        'scheme_id'=>$data->id,
+                                        'form_name'=>$request->form_name[$key],
+                                        'form_upload'=>$doc_names,
+                                        // 'created_by'=>Helper::modifyUser($request->user()),
+                                    ));
                                 }
-                                SchemeOtherForm::create(array(
-                                    'scheme_id'=>$data->id,
-                                    'form_name'=>$request->form_name[$key],
-                                    'form_upload'=>$doc_names,
-                                    // 'created_by'=>Helper::modifyUser($request->user()),
-                                ));      
+                                      
                             }
                         }
                     }  

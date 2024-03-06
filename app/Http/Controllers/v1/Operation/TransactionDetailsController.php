@@ -119,7 +119,9 @@ class TransactionDetailsController extends Controller
             $folio_no=$request->folio_no;
             $client_id=$request->client_id;
             $pan_no=$request->pan_no;
+            $pan_no=$request->pan_no;
             $view_type=$request->view_type;
+            $client_name=$request->client_name;
             // $pan_no=json_decode($request->pan_no);
             $amc_id=json_decode($request->amc_id);
             $cat_id=json_decode($request->cat_id);
@@ -164,8 +166,13 @@ class TransactionDetailsController extends Controller
                     // $queryString='td_mutual_fund_trans.first_client_name';
                     // $rawQuery.=Helper::WhereRawQueryOR($family_members_name,$rawQuery,$queryString);
                 }else {
-                    $queryString='td_mutual_fund_trans.first_client_pan';
-                    $rawQuery.=Helper::WhereRawQuery($pan_no,$rawQuery,$queryString);
+                    if ($pan_no) {
+                        $queryString='td_mutual_fund_trans.first_client_pan';
+                        $rawQuery.=Helper::WhereRawQuery($pan_no,$rawQuery,$queryString);
+                    }else {
+                        $queryString='td_mutual_fund_trans.first_client_name';
+                        $rawQuery.=Helper::WhereRawQuery($client_name,$rawQuery,$queryString);
+                    }
                 }
                 // return $rawQuery;
                 // $rawQuery=$this->filterCriteria($rawQuery,$from_date,$to_date,$tin_no,$proposer_name,$ins_type_id,$company_id,$product_type_id,$product_id,$insured_bu_type,$ack_status);

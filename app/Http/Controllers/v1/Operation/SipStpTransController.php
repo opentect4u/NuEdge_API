@@ -34,6 +34,8 @@ class SipStpTransController extends Controller
             $folio_no=$request->folio_no;
             $client_id=$request->client_id;
             $pan_no=$request->pan_no;
+            $view_type=$request->view_type;
+            $client_name=$request->client_name;
             // $pan_no=json_decode($request->pan_no);
             $amc_id=json_decode($request->amc_id);
             $cat_id=json_decode($request->cat_id);
@@ -41,6 +43,8 @@ class SipStpTransController extends Controller
             $scheme_id=json_decode($request->scheme_id);
             $sub_type=$request->sub_type;
             $sip_swp_stp_type=$request->sip_swp_stp_type;
+            $family_members_pan=json_decode($request->family_members_pan);
+            $family_members_name=json_decode($request->family_members_name);
 
             $data=[];
             $rawQuery='';
@@ -59,7 +63,7 @@ class SipStpTransController extends Controller
                 $rawQuery.=Helper::WhereRawQuery($my_array,$rawQuery,$queryString);
             }
             
-            if ($sip_type || $date_range || $folio_no || $pan_no || !empty($amc_id) || !empty($cat_id) || !empty($sub_cat_id) || !empty($scheme_id)) {
+            if ($sip_type || $date_range || $folio_no || $view_type || !empty($amc_id) || !empty($cat_id) || !empty($sub_cat_id) || !empty($scheme_id)) {
                 switch ($sip_type) {
                     case 'L':
                         $rawQuery.=' AND tt_sip_stp_swp_report.cease_terminate_date IS NULL ';
@@ -173,7 +177,37 @@ class SipStpTransController extends Controller
                         break;
                 }
                 // return $rawQuery;
-                $rawQuery=$this->filterCriteria($rawQuery,$folio_no,$pan_no,$amc_id,$cat_id,$sub_cat_id,$scheme_id);
+                $queryString='tt_sip_stp_swp_report.folio_no';
+                $rawQuery.=Helper::WhereRawQuery($folio_no,$rawQuery,$queryString);
+                // $queryString='tt_sip_stp_swp_report.first_client_pan';
+                // $rawQuery.=Helper::WhereRawQuery($pan_no,$rawQuery,$queryString);
+                $queryString='md_scheme.amc_id';
+                $rawQuery.=Helper::WhereRawQuery($amc_id,$rawQuery,$queryString);
+                $queryString='md_scheme.category_id';
+                $rawQuery.=Helper::WhereRawQuery($cat_id,$rawQuery,$queryString);
+                $queryString='md_scheme.subcategory_id';
+                $rawQuery.=Helper::WhereRawQuery($sub_cat_id,$rawQuery,$queryString);
+                $queryString='md_scheme_isin.scheme_id';
+                $rawQuery.=Helper::WhereRawQuery($scheme_id,$rawQuery,$queryString);
+
+                if ($view_type=='F') {
+                    $queryString='tt_sip_stp_swp_report.first_client_pan';
+                    $condition=(strlen($rawQuery) > 0)? " AND (":" (";
+                    $row_name_string=  "'" .implode("','", $family_members_pan). "'";
+                    $rawQuery.=$condition.$queryString." IN (".$row_name_string.")";
+                    $queryString='tt_sip_stp_swp_report.first_client_name';
+                    $condition1=(strlen($rawQuery) > 0)? " OR ":" ";
+                    $row_name_string1=  "'" .implode("','", $family_members_name). "'";
+                    $rawQuery.=$condition1.$queryString." IN (".$row_name_string1."))";
+                }else {
+                    if ($pan_no) {
+                        $queryString='tt_sip_stp_swp_report.first_client_pan';
+                        $rawQuery.=Helper::WhereRawQuery($pan_no,$rawQuery,$queryString);
+                    }else {
+                        $queryString='tt_sip_stp_swp_report.first_client_name';
+                        $rawQuery.=Helper::WhereRawQuery($client_name,$rawQuery,$queryString);
+                    }
+                }
             }
             // return $rawQuery;
             // $my_datas=[];
