@@ -1364,6 +1364,44 @@ class MailBackController extends Controller
         return Helper::SuccessResponse($dataArray);
     }
 
+    public function uploadusingPython(Request $request)
+    {
+        // $validator = Validator::make(request()->all(),[
+        //     'rnt_id'=>'required',
+        //     'file_type_id'=>'required',
+        //     'file_id'=>'required',
+        //     'original_file_name'=>'required',
+        //     'upload_file_name'=>'required',
+        // ]);
+        // if($validator->fails()) {
+        //     $errors = $validator->errors();
+        //     return Helper::ErrorResponse(parent::VALIDATION_ERROR);
+        // }
+        try {
+            // return "hii";
+            return $request;
+            $rnt_id=$request->rnt_id;
+            $file_type_id=$request->file_type_id;
+            $file_id=$request->file_id;
+            $original_file_name=$request->original_file_name;
+            $upload_file_name=$request->upload_file_name;
+            $create_dt=MailbackProcess::create(array(
+                'rnt_id'=>$rnt_id,
+                'file_type_id'=>$file_type_id,
+                'file_id'=>$file_id,
+                'original_file_name'=>$original_file_name,
+                'upload_file'=>$upload_file_name,
+                'process_date'=>date('Y-m-d H:i:s'),
+                'process_type'=>'M',
+                'created_by'=>Helper::modifyUser($request->user()),
+            ));
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($dataArray);
+    }
+
     public function misMatch(Request $request)
     {
         try {

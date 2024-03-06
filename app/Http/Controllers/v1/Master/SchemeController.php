@@ -563,7 +563,7 @@ class SchemeController extends Controller
             return Helper::ErrorResponse(parent::VALIDATION_ERROR);
         }
         try {
-            return $request;
+            // return $request;
             // $request->swp_date
             // $request->stp_date
             if ($request->sip_date!='') {
@@ -744,6 +744,17 @@ class SchemeController extends Controller
                 $data->ava_special_sip=$request->ava_special_sip;
                 $data->special_sip_name=$request->special_sip_name;
                 $data->benchmark_id=isset($request->benchmark_id)?$request->benchmark_id:NULL;
+
+                $data->purchase_allowed=isset($request->purchase_allowed)?$request->purchase_allowed:NULL;
+                $data->pip_multiple_amount=isset($request->pip_multiple_amount)?$request->pip_multiple_amount:NULL;
+                $data->sip_allowed=isset($request->sip_allowed)?$request->sip_allowed:NULL;
+                $data->swp_allowed=isset($request->swp_allowed)?$request->swp_allowed:NULL;
+                $data->stp_allowed=isset($request->stp_allowed)?$request->stp_allowed:NULL;
+                $data->switch_allowed=isset($request->switch_allowed)?$request->switch_allowed:NULL;
+                $data->switch_min_amt=isset($request->switch_min_amt)?$request->switch_min_amt:NULL;
+                $data->switch_mul_amt=isset($request->switch_mul_amt)?$request->switch_mul_amt:NULL;
+                $data->exit_load=isset($request->exit_load)?$request->exit_load:NULL;
+
                 $data->updated_by=Helper::modifyUser($request->user());
                 $data->save();
 
@@ -813,6 +824,17 @@ class SchemeController extends Controller
                             'ava_special_sip'=>$request->ava_special_sip,
                             'special_sip_name'=>$request->special_sip_name,
                             'benchmark_id'=>isset($request->benchmark_id)?$request->benchmark_id:NULL,
+
+                            'purchase_allowed'=>isset($request->purchase_allowed)?$request->purchase_allowed:NULL,
+                            'pip_multiple_amount'=>isset($request->pip_multiple_amount)?$request->pip_multiple_amount:NULL,
+                            'sip_allowed'=>isset($request->sip_allowed)?$request->sip_allowed:NULL,
+                            'swp_allowed'=>isset($request->swp_allowed)?$request->swp_allowed:NULL,
+                            'stp_allowed'=>isset($request->stp_allowed)?$request->stp_allowed:NULL,
+                            'switch_allowed'=>isset($request->switch_allowed)?$request->switch_allowed:NULL,
+                            'switch_min_amt'=>isset($request->switch_min_amt)?$request->switch_min_amt:NULL,
+                            'switch_mul_amt'=>isset($request->switch_mul_amt)?$request->switch_mul_amt:NULL,
+                            'exit_load'=>isset($request->exit_load)?$request->exit_load:NULL,
+
                             'created_by'=>Helper::modifyUser($request->user()),
                         ));    
                     }elseif ($request->scheme_type=='N') {
@@ -904,6 +926,17 @@ class SchemeController extends Controller
                             // 'growth_isin'=>$request->growth_isin,
                             // 'idcw_payout_isin'=>$request->idcw_payout_isin,
                             // 'idcw_reinvestment_isin'=>$request->idcw_reinvestment_isin,
+
+                            'purchase_allowed'=>isset($request->purchase_allowed)?$request->purchase_allowed:NULL,
+                            'pip_multiple_amount'=>isset($request->pip_multiple_amount)?$request->pip_multiple_amount:NULL,
+                            'sip_allowed'=>isset($request->sip_allowed)?$request->sip_allowed:NULL,
+                            'swp_allowed'=>isset($request->swp_allowed)?$request->swp_allowed:NULL,
+                            'stp_allowed'=>isset($request->stp_allowed)?$request->stp_allowed:NULL,
+                            'switch_allowed'=>isset($request->switch_allowed)?$request->switch_allowed:NULL,
+                            'switch_min_amt'=>isset($request->switch_min_amt)?$request->switch_min_amt:NULL,
+                            'switch_mul_amt'=>isset($request->switch_mul_amt)?$request->switch_mul_amt:NULL,
+                            'exit_load'=>isset($request->exit_load)?$request->exit_load:NULL,
+
                             'created_by'=>Helper::modifyUser($request->user()),
                         ));  
 

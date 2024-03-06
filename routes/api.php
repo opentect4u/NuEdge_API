@@ -304,6 +304,9 @@ Route::prefix('v1')->group(function () {
             Route::get('clientFamilyDetailSearch',[App\Http\Controllers\v1\Master\ClientFamilyController::class,'searchDetails']);
             Route::get('clientFamilyDetail',[App\Http\Controllers\v1\Master\ClientFamilyController::class,'familyDetail']);
             Route::post('clientFamilyAddEdit',[App\Http\Controllers\v1\Master\ClientFamilyController::class,'createUpdate']);
+            Route::post('updateFamilymembers',[App\Http\Controllers\v1\Master\ClientFamilyController::class,'update']);
+            Route::post('familyDelete',[App\Http\Controllers\v1\Master\ClientFamilyController::class,'delete']);
+            Route::get('nonFamilylist',[App\Http\Controllers\v1\Master\ClientFamilyController::class,'nonFamilylist']);
 
 
             Route::get('kyc',[App\Http\Controllers\v1\Operation\KYCController::class,'index']);
@@ -374,6 +377,7 @@ Route::prefix('v1')->group(function () {
             // Route::post('uploadTransDetails',[App\Http\Controllers\v1\Operation\TransactionDetailsController::class,'upload']);
             Route::post('mailbackProcess',[App\Http\Controllers\v1\Master\MailBackController::class,'upload']);
             Route::any('mailbackProcessDetails',[App\Http\Controllers\v1\Master\MailBackController::class,'Details']);
+            Route::post('mailbackProcessPython',[App\Http\Controllers\v1\Master\MailBackController::class,'uploadusingPython']);
 
             /*********************************** start Mail Back Process ************************ */
 

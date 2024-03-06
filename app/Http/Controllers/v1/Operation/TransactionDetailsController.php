@@ -119,6 +119,7 @@ class TransactionDetailsController extends Controller
             $folio_no=$request->folio_no;
             $client_id=$request->client_id;
             $pan_no=$request->pan_no;
+            $view_type=$request->view_type;
             // $pan_no=json_decode($request->pan_no);
             $amc_id=json_decode($request->amc_id);
             $cat_id=json_decode($request->cat_id);
@@ -126,8 +127,10 @@ class TransactionDetailsController extends Controller
             $scheme_id=json_decode($request->scheme_id);
             $trans_type=json_decode($request->trans_type);
             $trans_sub_type=json_decode($request->trans_sub_type);
-
-            if ($date_range || $folio_no || $pan_no || !empty($amc_id) || !empty($cat_id) || !empty($sub_cat_id) || !empty($scheme_id)) {
+            $family_members_pan=json_decode($request->family_members_pan);
+            $family_members_name=json_decode($request->family_members_name);
+            
+            if ($date_range || $folio_no || $view_type || !empty($amc_id) || !empty($cat_id) || !empty($sub_cat_id) || !empty($scheme_id)) {
                 $rawQuery='';
                 if ($date_range) {
                     $from_date=Carbon::parse(str_replace('/','-',explode("-",$date_range)[0]))->format('Y-m-d') ;
@@ -136,14 +139,9 @@ class TransactionDetailsController extends Controller
                     $queryString='td_mutual_fund_trans.trans_date';
                     $rawQuery.=Helper::FrmToDateRawQuery($from_date,$to_date,$rawQuery,$queryString);
                 }
-
                 
                 $queryString='td_mutual_fund_trans.folio_no';
                 $rawQuery.=Helper::WhereRawQuery($folio_no,$rawQuery,$queryString);
-                $queryString='td_mutual_fund_trans.first_client_pan';
-                $rawQuery.=Helper::WhereRawQuery($pan_no,$rawQuery,$queryString);
-                // $queryString='td_mutual_fund_trans.first_client_name';
-                // $rawQuery.=Helper::RawQueryOR($pan_no,$rawQuery,$queryString);
                 $queryString='md_scheme.amc_id';
                 $rawQuery.=Helper::WhereRawQuery($amc_id,$rawQuery,$queryString);
                 $queryString='md_scheme.category_id';
@@ -152,6 +150,23 @@ class TransactionDetailsController extends Controller
                 $rawQuery.=Helper::WhereRawQuery($sub_cat_id,$rawQuery,$queryString);
                 $queryString='md_scheme_isin.scheme_id';
                 $rawQuery.=Helper::WhereRawQuery($scheme_id,$rawQuery,$queryString);
+
+                if ($view_type=='F') {
+                    $queryString='td_mutual_fund_trans.first_client_pan';
+                    $condition=(strlen($rawQuery) > 0)? " AND (":" (";
+                    $row_name_string=  "'" .implode("','", $family_members_pan). "'";
+                    $rawQuery.=$condition.$queryString." IN (".$row_name_string.")";
+                    $queryString='td_mutual_fund_trans.first_client_name';
+                    $condition1=(strlen($rawQuery) > 0)? " OR ":" ";
+                    $row_name_string1=  "'" .implode("','", $family_members_name). "'";
+                    $rawQuery.=$condition1.$queryString." IN (".$row_name_string1."))";
+                    // $rawQuery.=Helper::WhereRawQuery($family_members_pan,$rawQuery,$queryString);
+                    // $queryString='td_mutual_fund_trans.first_client_name';
+                    // $rawQuery.=Helper::WhereRawQueryOR($family_members_name,$rawQuery,$queryString);
+                }else {
+                    $queryString='td_mutual_fund_trans.first_client_pan';
+                    $rawQuery.=Helper::WhereRawQuery($pan_no,$rawQuery,$queryString);
+                }
                 // return $rawQuery;
                 // $rawQuery=$this->filterCriteria($rawQuery,$from_date,$to_date,$tin_no,$proposer_name,$ins_type_id,$company_id,$product_type_id,$product_id,$insured_bu_type,$ack_status);
                 // return $request;

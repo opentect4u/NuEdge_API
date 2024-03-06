@@ -163,6 +163,21 @@ class Helper{
         return $Query;
     }
 
+    public static function WhereRawQueryOR($row_name,$rawQuery,$queryString)
+    {
+
+        $Query='';
+        $condition=(strlen($rawQuery) > 0)? " OR ":" ";
+        if (is_array($row_name) && !empty($row_name)) {
+            $row_name_string=  "'" .implode("','", $row_name). "'";
+            // $row_name_string= implode(',', $row_name);
+            $Query.=$condition.$queryString." IN (".$row_name_string.")";
+        } elseif($row_name) {
+            $Query.=$condition.$queryString."='".$row_name."'";
+        }
+        return $Query;
+    }
+
     public static function RawQueryLike($row_name,$rawQuery,$queryString)
     {
         $Query='';

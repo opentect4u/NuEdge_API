@@ -51,6 +51,18 @@ class Scheme extends Model
         'merge_flag',
         'merge_id',
         'effective_date',
+
+        'purchase_allowed',
+        'pip_multiple_amount',
+        'sip_allowed',
+        'swp_allowed',
+        'stp_allowed',
+        'switch_allowed',
+        'switch_min_amt',
+        'switch_mul_amt',
+        'exit_load',
+
+
         'delete_flag',
         'deleted_date',
         'deleted_by',

@@ -83,47 +83,129 @@ class ClientFamilyController extends Controller
 
     public function createUpdate(Request $request)
     {
-        // $validator = Validator::make(request()->all(),[
-        //     'client_name'=>'required',
-        //     // 'mobile'=>'required',
-        //     // 'email'=>'required',
-        // ]);
+        $validator = Validator::make(request()->all(),[
+            'family_head_id'=>'required',
+        ]);
     
-        // if($validator->fails()) {
-        //     $errors = $validator->errors();
-        //     return Helper::ErrorResponse(parent::VALIDATION_ERROR);
-        // }
+        if($validator->fails()) {
+            $errors = $validator->errors();
+            return Helper::ErrorResponse(parent::VALIDATION_ERROR);
+        }
         try {
             // return $request;
             $family_members=json_decode($request->family_members);
             $family_head_id=$request->family_head_id;
             $data=[];
-            if ($request->id > 0) {
-                // return $request;
-            }else{
-                // return $request;
-                $is_has=ClientFamily::where('client_id',$request->family_head_id)->where('family_id',$request->family_head_id)->get();
+            $is_has=ClientFamily::where('client_id',$request->family_head_id)->where('family_id',$request->family_head_id)->get();
+            if (count($is_has)==0) {
+                ClientFamily::create(array(
+                    'client_id'=>$family_head_id,
+                    'family_id'=>$family_head_id,
+                    'relationship'=>"Head",
+                    'created_by'=>Helper::modifyUser($request->user()),
+                )); 
+            }
+            foreach ($family_members as $key => $value) {
+                // return $value;
+                $is_has=ClientFamily::where('client_id',$request->family_head_id)->where('family_id',$value->id)->get();
                 if (count($is_has)==0) {
                     ClientFamily::create(array(
                         'client_id'=>$family_head_id,
-                        'family_id'=>$family_head_id,
-                        'relationship'=>"Head",
+                        'family_id'=>$value->id,
+                        'relationship'=>$value->relationship,
                         'created_by'=>Helper::modifyUser($request->user()),
                     )); 
                 }
-                foreach ($family_members as $key => $value) {
-                    // return $value;
-                    $is_has=ClientFamily::where('client_id',$request->family_head_id)->where('family_id',$value->id)->get();
-                    if (count($is_has)==0) {
-                        ClientFamily::create(array(
-                            'client_id'=>$family_head_id,
-                            'family_id'=>$value->id,
-                            'relationship'=>$value->relationship,
-                            'created_by'=>Helper::modifyUser($request->user()),
-                        )); 
-                    }
+            }
+        } catch (\Throwable $th) {
+            throw $th;
+            return Helper::ErrorResponse(parent::DATA_SAVE_ERROR);
+        }
+        return Helper::SuccessResponse($data);
+    }
+
+    public function update(Request $request)
+    {
+        $validator = Validator::make(request()->all(),[
+            'family_head_id'=>'required',
+        ]);
+    
+        if($validator->fails()) {
+            $errors = $validator->errors();
+            return Helper::ErrorResponse(parent::VALIDATION_ERROR);
+        }
+        try {
+            // return $request;
+            $existing_members=json_decode($request->existing_members);
+            $new_members=json_decode($request->new_members);
+            $family_head_id=$request->family_head_id;
+            $data=[];
+            $is_has=ClientFamily::where('client_id',$request->family_head_id)->where('family_id',$request->family_head_id)->get();
+            // return $existing_members;
+            // if (count($is_has)==0) {
+            //     ClientFamily::create(array(
+            //         'client_id'=>$family_head_id,
+            //         'family_id'=>$family_head_id,
+            //         'relationship'=>"Head",
+            //         'created_by'=>Helper::modifyUser($request->user()),
+            //     )); 
+            // }
+            foreach ($existing_members as $key => $value1) {
+                if ($value1->relationship!='Head') {
+                    $up=ClientFamily::find($value1->id);
+                    $up->relationship=$value1->relationship;
+                    $up->save();
                 }
-            }  
+            }
+            foreach ($new_members as $key => $value) {
+                // return $value;
+                ClientFamily::create(array(
+                    'client_id'=>$family_head_id,
+                    'family_id'=>$value->id,
+                    'relationship'=>$value->relationship,
+                    'created_by'=>Helper::modifyUser($request->user()),
+                )); 
+            }
+        } catch (\Throwable $th) {
+            // throw $th;
+            return Helper::ErrorResponse(parent::DATA_SAVE_ERROR);
+        }
+        return Helper::SuccessResponse($data);
+    }
+
+    public function delete(Request $request)
+    {
+        try {
+            // return $request;
+            $id=$request->id;
+            $client_id=$request->client_id;
+            if ($client_id) {
+                $data=ClientFamily::where('client_id',$id)->delete();
+            }else {
+                $data=ClientFamily::where('id',$id)->delete();
+            }
+        } catch (\Throwable $th) {
+            // throw $th;
+            return Helper::ErrorResponse(parent::DATA_SAVE_ERROR);
+        }
+        return Helper::SuccessResponse($data);
+    }
+
+    public function nonFamilylist(Request $request)
+    {
+        try {
+            // return $request;
+            $mydata=Client::leftJoin('md_client_family','md_client_family.family_id','=','md_client.id')
+                    ->select('md_client.*','md_client_family.family_id as family_id','md_client_family.relationship as relationship')
+                    ->selectRaw('(select count(*) from md_client_family where family_id=md_client.id)as family_count')
+                    ->get(); 
+            // return $data;
+            $data=[];
+            foreach ($mydata as $key => $value) {
+                if ($value->family_count==0) {
+                    array_push($data,$value);
+                }
+            }
         } catch (\Throwable $th) {
             // throw $th;
             return Helper::ErrorResponse(parent::DATA_SAVE_ERROR);
