@@ -1366,20 +1366,20 @@ class MailBackController extends Controller
 
     public function uploadusingPython(Request $request)
     {
-        // $validator = Validator::make(request()->all(),[
-        //     'rnt_id'=>'required',
-        //     'file_type_id'=>'required',
-        //     'file_id'=>'required',
-        //     'original_file_name'=>'required',
-        //     'upload_file_name'=>'required',
-        // ]);
-        // if($validator->fails()) {
-        //     $errors = $validator->errors();
-        //     return Helper::ErrorResponse(parent::VALIDATION_ERROR);
-        // }
+        $validator = Validator::make(request()->all(),[
+            'rnt_id'=>'required',
+            'file_type_id'=>'required',
+            'file_id'=>'required',
+            'original_file_name'=>'required',
+            'upload_file_name'=>'required',
+        ]);
+        if($validator->fails()) {
+            $errors = $validator->errors();
+            return Helper::ErrorResponse(parent::VALIDATION_ERROR);
+        }
         try {
             // return "hii";
-            return $request;
+            // return $request;
             $rnt_id=$request->rnt_id;
             $file_type_id=$request->file_type_id;
             $file_id=$request->file_id;
@@ -1399,7 +1399,7 @@ class MailBackController extends Controller
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
-        return Helper::SuccessResponse($dataArray);
+        return Helper::SuccessResponse($create_dt);
     }
 
     public function misMatch(Request $request)

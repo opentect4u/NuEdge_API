@@ -21,31 +21,18 @@ class ClientController extends Controller
     public function searchDetails(Request $request)
     {
         try {
-            $paginate=$request->paginate;
             $cat_name=$request->cat_name;
-            $sort_by=$request->sort_by;
-            $column_name=$request->column_name;
             $client_type=$request->client_type;
-
             $birth_date_month=$request->birth_date_month;
             $anniversary_date_month=$request->anniversary_date_month;
 
+            $rawQuery='';
+            if ($client_type || $birth_date_month || $anniversary_date_month) {
+                $queryString='md_client.client_type';
+                $rawQuery.=Helper::WhereRawQuery($client_type,$rawQuery,$queryString);
+            }
 
-            // ->whereMonth('created_at', '=', $month)
-
-            if ($sort_by && $column_name) {
-                $data=Client::with('ClientDoc')->with('PertnerDetails')
-                    ->leftJoin('md_city','md_city.id','=','md_client.city')
-                    ->leftJoin('md_district','md_district.id','=','md_client.dist')
-                    ->leftJoin('md_states','md_states.id','=','md_client.state')
-                    ->leftJoin('md_client_type','md_client_type.id','=','md_client.client_type_mode')
-                    ->leftJoin('md_pincode','md_pincode.id','=','md_client.pincode')
-                    ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name','md_pincode.pincode as pincode')
-                    ->where('md_client.client_type',$client_type)
-                    ->orderBy('md_client.'.$column_name,$sort_by)
-                    ->orderBy('md_client.created_at','desc')
-                    ->paginate($paginate);    
-            }elseif ($birth_date_month) {
+            if ($birth_date_month) {
                 
                 $data=Client::with('ClientDoc')->with('PertnerDetails')
                     ->leftJoin('md_city','md_city.id','=','md_client.city')
@@ -58,7 +45,7 @@ class ClientController extends Controller
                     ->whereMonth('md_client.dob',$birth_date_month)
                     // ->whereMonth('md_client.dob_actual',$birth_date_month)
                     ->orderBy('md_client.created_at','desc')
-                    ->paginate($paginate);    
+                    ->get();
             }elseif ($anniversary_date_month) {
                 $data=Client::with('ClientDoc')->with('PertnerDetails')
                     ->leftJoin('md_city','md_city.id','=','md_client.city')
@@ -70,21 +57,32 @@ class ClientController extends Controller
                     ->where('md_client.client_type',$client_type)
                     ->whereMonth('md_client.anniversary_date',$anniversary_date_month)
                     ->orderBy('md_client.created_at','desc')
-                    ->paginate($paginate);    
-            } else {
-                $data=Client::with('ClientDoc')->with('PertnerDetails')
+                    ->get();
+            } 
+            // else {
+            //     $data=Client::with('ClientDoc')->with('PertnerDetails')
+            //         ->leftJoin('md_city','md_city.id','=','md_client.city')
+            //         ->leftJoin('md_district','md_district.id','=','md_client.dist')
+            //         ->leftJoin('md_states','md_states.id','=','md_client.state')
+            //         ->leftJoin('md_client_type','md_client_type.id','=','md_client.client_type_mode')
+            //         ->leftJoin('md_pincode','md_pincode.id','=','md_client.pincode')
+            //         ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name','md_pincode.pincode as pincode')
+            //         ->where('md_client.client_type',$client_type)
+            //         ->orderBy('md_client.created_at','desc')
+            //         ->get();
+            // }
+            $data=Client::with('ClientDoc')->with('PertnerDetails')
                     ->leftJoin('md_city','md_city.id','=','md_client.city')
                     ->leftJoin('md_district','md_district.id','=','md_client.dist')
                     ->leftJoin('md_states','md_states.id','=','md_client.state')
                     ->leftJoin('md_client_type','md_client_type.id','=','md_client.client_type_mode')
                     ->leftJoin('md_pincode','md_pincode.id','=','md_client.pincode')
                     ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name','md_pincode.pincode as pincode')
-                    ->where('md_client.client_type',$client_type)
+                    ->whereRaw($rawQuery)
                     ->orderBy('md_client.created_at','desc')
-                    ->paginate($paginate);    
-            }  
+                    ->get();  
         } catch (\Throwable $th) {
-            throw $th;
+            // throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
         return Helper::SuccessResponse($data);
@@ -219,7 +217,7 @@ class ClientController extends Controller
     {
         $validator = Validator::make(request()->all(),[
             'client_name'=>'required',
-            // 'dob'=>'required',
+            'dob'=>'required',
             // 'add_line_1'=>'required',
             // 'city'=>'required',
             // 'dist'=>'required',
@@ -238,21 +236,31 @@ class ClientController extends Controller
             // return $request;
             if ($request->id > 0) {
                 // return $request;
-                if ($request->client_type=='E') {
-                    // return $request;
-                    $id=$request->id;
-                    $client_name=ucwords($request->client_name);
-                    $words = explode(" ",$client_name);
-                    $client_code="";
-                    $client_code_1 = mb_substr($words[0], 0, 1).mb_substr($words[(count($words)-1)], 0, 1);;
-                    
-                    $is_has=Client::where('client_code',$client_code)->get();
-                    if (count($is_has)>0) {
-                        $client_code=$client_code_1.date('dmy',strtotime($request->dob)).count($is_has);
-                    }else {
-                        $client_code=$client_code_1.date('dmy',strtotime($request->dob));
-                    }
+                $id=$request->id;
+                $data=[];
+                $client_name=ucwords($request->client_name);
+                if ($request->client_type=='P') {
                     $datas=Client::find($id);
+                    $data['previous_type']=$datas->client_type;
+
+                    if ($datas->pan!=$request->pan && $datas->pan!='') {
+                        $ms="PAN can not modified!";
+                        return Helper::WarningResponse($ms);
+                    }
+                    if ($datas->client_code=='' || $datas->client_code==NULL) {
+                        $words = explode(" ",$client_name);
+                        $client_code="";
+                        $client_code_1 = mb_substr($words[0], 0, 1).mb_substr($words[(count($words)-1)], 0, 1);;
+                        
+                        $is_has=Client::where('client_code',$client_code)->get();
+                        if (count($is_has)>0) {
+                            $client_code=$client_code_1.date('dmy',strtotime($request->dob)).count($is_has);
+                        }else {
+                            $client_code=$client_code_1.date('dmy',strtotime($request->dob));
+                        }
+                    }else {
+                        $client_code=$datas->client_code;
+                    }
                     $datas->client_code=$client_code;
                     $datas->client_name=$client_name;
                     $datas->dob=$request->dob;
@@ -267,40 +275,91 @@ class ClientController extends Controller
                     $datas->sec_mobile=$request->sec_mobile;
                     $datas->email=$request->email;
                     $datas->sec_email=$request->sec_email;
-                    $datas->client_type='P';
-                    $data->updated_by=Helper::modifyUser($request->user());
+                    $datas->client_type=$request->client_type;
+                    $datas->karta_name=isset($request->karta_name)?$request->karta_name:NULL;
+                    $datas->inc_date=isset($request->inc_date)?$request->inc_date:NULL;
+                    $datas->proprietor_name=isset($request->proprietor_name)?$request->proprietor_name:NULL;
+                    $datas->date_of_incorporation=isset($request->date_of_incorporation)?$request->date_of_incorporation:NULL;
+                    $datas->dob_actual=$request->dob_actual;
+                    $datas->anniversary_date=isset($request->anniversary_date)?$request->anniversary_date:NULL;
+                    $datas->country_id=$request->country_id;
+                    $datas->client_type_mode=$request->client_type_mode;
+                    // $data->updated_by=Helper::modifyUser($request->user());
                     $datas->save();
-
-                    $doc_name='';
-                        $files=$request->file;
-                        // return $files;
-                        if ($files!='') {
-                            foreach ($files as $key => $file) {
-                                // return $file;
-                                if ($file) {
-                                    $cv_path_extension=$file->getClientOriginalExtension();
-                                    $doc_name=microtime(true).'_'.$datas->id.".".$cv_path_extension;
-                                    $file->move(public_path('client-doc/'.$datas->id."/"),$doc_name);
-                                }
-                                Document::create(array(
-                                    'client_id'=>$datas->id,
-                                    'doc_type_id'=>$request->doc_type_id[$key],
-                                    'doc_name'=>$doc_name,
-                                    'created_by'=>Helper::modifyUser($request->user()),
-                                ));      
-                            }
-                        }
-                    $data=Client::with('ClientDoc')->where('id',$datas->id)->first();    
-                }else {
-                    if ($request->client_type=='P') {
-
-                    }elseif ($request->client_type=='N') {
-
-                    }elseif ($request->client_type=='M') {
-
-                    }
-                    $data='';
+                }elseif ($request->client_type=='N') {
+                    $datas=Client::find($id);
+                    $data['previous_type']=$datas->client_type;
+                    $datas->client_name=$client_name;
+                    $datas->karta_name=isset($request->karta_name)?$request->karta_name:NULL;
+                    $datas->inc_date=isset($request->inc_date)?$request->inc_date:NULL;
+                    $datas->proprietor_name=isset($request->proprietor_name)?$request->proprietor_name:NULL;
+                    $datas->date_of_incorporation=isset($request->date_of_incorporation)?$request->date_of_incorporation:NULL;
+                    $datas->dob=$request->dob;
+                    $datas->dob_actual=$request->dob_actual;
+                    $datas->anniversary_date=isset($request->anniversary_date)?$request->anniversary_date:NULL;
+                    $datas->add_line_1=$request->add_line_1;
+                    $datas->add_line_2=$request->add_line_2;
+                    $datas->country_id=$request->country_id;
+                    $datas->city=$request->city;
+                    $datas->dist=$request->dist;
+                    $datas->state=$request->state;
+                    $datas->pincode=$request->pincode;
+                    $datas->mobile=$request->mobile;
+                    $datas->sec_mobile=$request->sec_mobile;
+                    $datas->email=$request->email;
+                    $datas->sec_email=$request->sec_email;
+                    $datas->client_type=$request->client_type;
+                    $datas->client_type_mode=$request->client_type_mode;
+                    $datas->save();
+                }elseif ($request->client_type=='M') {
+                    $datas=Client::find($id);
+                    $data['previous_type']=$datas->client_type;
+                    $datas->client_name=$client_name;
+                    $datas->dob=$request->dob;
+                    $datas->dob_actual=$request->dob_actual;
+                    $datas->anniversary_date=isset($request->anniversary_date)?$request->anniversary_date:NULL;
+                    $datas->add_line_1=$request->add_line_1;
+                    $datas->add_line_2=$request->add_line_2;
+                    $datas->country_id=$request->country_id;
+                    $datas->city=$request->city;
+                    $datas->dist=$request->dist;
+                    $datas->state=$request->state;
+                    $datas->pincode=$request->pincode;
+                    $datas->pan=$request->pan;
+                    $datas->mobile=$request->mobile;
+                    $datas->sec_mobile=$request->sec_mobile;
+                    $datas->email=$request->email;
+                    $datas->sec_email=$request->sec_email;
+                    $datas->client_type=$request->client_type;
+                    $datas->guardians_pan=$request->guardians_pan;
+                    $datas->guardians_name=$request->guardians_name;
+                    $datas->relation=$request->relation;
+                    $datas->client_type_mode=$request->client_type_mode;
+                    $datas->save();
                 }
+
+                $doc_name='';
+                $files=$request->file;
+                // return $files;
+                if ($files!='') {
+                    foreach ($files as $key => $file) {
+                        // return $file;
+                        if ($file) {
+                            $cv_path_extension=$file->getClientOriginalExtension();
+                            $doc_name=microtime(true).'_'.$datas->id.".".$cv_path_extension;
+                            $file->move(public_path('client-doc/'.$datas->id."/"),$doc_name);
+
+                            Document::create(array(
+                                'client_id'=>$datas->id,
+                                'doc_type_id'=>$request->doc_type_id[$key],
+                                'doc_name'=>$doc_name,
+                                'created_by'=>Helper::modifyUser($request->user()),
+                            )); 
+                        }
+                    }
+                }
+                $set_data=Client::with('ClientDoc')->where('id',$datas->id)->first();    
+                $data['data']=$set_data;
             }else{
                 // return $request;
                 
@@ -518,7 +577,7 @@ class ClientController extends Controller
                 
             }  
         } catch (\Throwable $th) {
-            // throw $th;
+            throw $th;
             return Helper::ErrorResponse(parent::DATA_SAVE_ERROR);
         }
         return Helper::SuccessResponse($data);
