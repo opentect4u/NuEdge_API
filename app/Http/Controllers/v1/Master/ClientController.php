@@ -23,64 +23,31 @@ class ClientController extends Controller
         try {
             $cat_name=$request->cat_name;
             $client_type=$request->client_type;
+            $client_code=$request->client_code;
             $birth_date_month=$request->birth_date_month;
             $anniversary_date_month=$request->anniversary_date_month;
 
             $rawQuery='';
-            if ($client_type || $birth_date_month || $anniversary_date_month) {
+            if ($client_type || $client_code || $birth_date_month || $anniversary_date_month) {
                 $queryString='md_client.client_type';
                 $rawQuery.=Helper::WhereRawQuery($client_type,$rawQuery,$queryString);
-            }
-
-            if ($birth_date_month) {
-                
-                $data=Client::with('ClientDoc')->with('PertnerDetails')
-                    ->leftJoin('md_city','md_city.id','=','md_client.city')
-                    ->leftJoin('md_district','md_district.id','=','md_client.dist')
-                    ->leftJoin('md_states','md_states.id','=','md_client.state')
-                    ->leftJoin('md_client_type','md_client_type.id','=','md_client.client_type_mode')
-                    ->leftJoin('md_pincode','md_pincode.id','=','md_client.pincode')
-                    ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name','md_pincode.pincode as pincode')
-                    ->where('md_client.client_type',$client_type)
-                    ->whereMonth('md_client.dob',$birth_date_month)
-                    // ->whereMonth('md_client.dob_actual',$birth_date_month)
-                    ->orderBy('md_client.created_at','desc')
-                    ->get();
-            }elseif ($anniversary_date_month) {
-                $data=Client::with('ClientDoc')->with('PertnerDetails')
-                    ->leftJoin('md_city','md_city.id','=','md_client.city')
-                    ->leftJoin('md_district','md_district.id','=','md_client.dist')
-                    ->leftJoin('md_states','md_states.id','=','md_client.state')
-                    ->leftJoin('md_client_type','md_client_type.id','=','md_client.client_type_mode')
-                    ->leftJoin('md_pincode','md_pincode.id','=','md_client.pincode')
-                    ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name','md_pincode.pincode as pincode')
-                    ->where('md_client.client_type',$client_type)
-                    ->whereMonth('md_client.anniversary_date',$anniversary_date_month)
-                    ->orderBy('md_client.created_at','desc')
-                    ->get();
-            } 
-            // else {
-            //     $data=Client::with('ClientDoc')->with('PertnerDetails')
-            //         ->leftJoin('md_city','md_city.id','=','md_client.city')
-            //         ->leftJoin('md_district','md_district.id','=','md_client.dist')
-            //         ->leftJoin('md_states','md_states.id','=','md_client.state')
-            //         ->leftJoin('md_client_type','md_client_type.id','=','md_client.client_type_mode')
-            //         ->leftJoin('md_pincode','md_pincode.id','=','md_client.pincode')
-            //         ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name','md_pincode.pincode as pincode')
-            //         ->where('md_client.client_type',$client_type)
-            //         ->orderBy('md_client.created_at','desc')
-            //         ->get();
-            // }
+                $queryString='md_client.id';
+                $rawQuery.=Helper::WhereRawQuery($client_code,$rawQuery,$queryString);
+                $queryString='md_client.dob';
+                $rawQuery.=Helper::WhereRawQueryMonth($birth_date_month,$rawQuery,$queryString);
+                $queryString='md_client.anniversary_date';
+                $rawQuery.=Helper::WhereRawQueryMonth($anniversary_date_month,$rawQuery,$queryString);
+            }            
             $data=Client::with('ClientDoc')->with('PertnerDetails')
-                    ->leftJoin('md_city','md_city.id','=','md_client.city')
-                    ->leftJoin('md_district','md_district.id','=','md_client.dist')
-                    ->leftJoin('md_states','md_states.id','=','md_client.state')
-                    ->leftJoin('md_client_type','md_client_type.id','=','md_client.client_type_mode')
-                    ->leftJoin('md_pincode','md_pincode.id','=','md_client.pincode')
-                    ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name','md_pincode.pincode as pincode')
-                    ->whereRaw($rawQuery)
-                    ->orderBy('md_client.created_at','desc')
-                    ->get();  
+                ->leftJoin('md_city','md_city.id','=','md_client.city')
+                ->leftJoin('md_district','md_district.id','=','md_client.dist')
+                ->leftJoin('md_states','md_states.id','=','md_client.state')
+                ->leftJoin('md_client_type','md_client_type.id','=','md_client.client_type_mode')
+                ->leftJoin('md_pincode','md_pincode.id','=','md_client.pincode')
+                ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name','md_pincode.pincode as pincode')
+                ->whereRaw($rawQuery)
+                ->orderBy('md_client.created_at','desc')
+                ->get();  
         } catch (\Throwable $th) {
             // throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);

@@ -163,6 +163,16 @@ class Helper{
         return $Query;
     }
 
+    public static function WhereRawQueryMonth($row_name,$rawQuery,$queryString)
+    {
+        $Query='';
+        $condition=(strlen($rawQuery) > 0)? " AND ":" ";
+        if($row_name) {
+            $Query.=$condition." MONTH(".$queryString.")='".$row_name."'";
+        }
+        return $Query;
+    }
+
     public static function WhereRawQueryOR($row_name,$rawQuery,$queryString)
     {
 

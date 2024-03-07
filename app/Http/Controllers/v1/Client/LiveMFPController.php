@@ -95,8 +95,7 @@ class LiveMFPController extends Controller
                 ORDER BY scheme_name ASC");
             // dd(DB::getQueryLog());
             // return $all_data;
-            $all_trans_date=[];
-            $all_product_code=[];
+            $all_trans_product=[];
             $data=[];
             foreach ($all_data as $key => $value) {
                 $value->nifty50=0;
@@ -106,8 +105,8 @@ class LiveMFPController extends Controller
                     ->select('trans_date')
                     ->orderBy('trans_date','ASC')
                     ->first();
-                array_push($all_trans_date,date('Y-m-d',strtotime($value->inv_since->trans_date)));
-                array_push($all_product_code,$value->product_code);
+                $f_trans_product="(product_code='".$value->product_code."' and nav_date=DATE '".date('Y-m-d',strtotime($value->inv_since->trans_date))."')";
+                array_push($all_trans_product,$f_trans_product);
                 $value->pur_nav=MutualFundTransaction::where('folio_no',$value->folio_no)
                     ->where('product_code',$value->product_code)
                     ->select('pur_price')
@@ -115,10 +114,8 @@ class LiveMFPController extends Controller
                     ->first();
                 array_push($data,$value);
             }
-            $string_version_product_code = implode(',', $all_product_code);
-            $string_version_nav_date = implode(',', $all_trans_date);
+            $string_version_product_code = implode(',', $all_trans_product);
             // return $string_version_product_code;
-            // return $string_version_nav_date;
             $curl = curl_init();
             curl_setopt_array($curl, array(
                 CURLOPT_URL => 'https://sia72vzf17.execute-api.ap-south-1.amazonaws.com/dev/showData',
@@ -131,7 +128,7 @@ class LiveMFPController extends Controller
                 CURLOPT_CUSTOMREQUEST => 'GET',
                 CURLOPT_POSTFIELDS =>'{
                     "product_code":"'.$string_version_product_code.'",
-                    "nav_date":"'.$string_version_nav_date.'"
+                    "nav_date":""
                 }',
                 CURLOPT_HTTPHEADER => array(
                     'x-api-key: '.env('AWS_LAMBDA_API_KEY').'',
