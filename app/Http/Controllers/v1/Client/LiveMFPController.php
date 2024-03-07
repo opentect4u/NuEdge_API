@@ -144,9 +144,13 @@ class LiveMFPController extends Controller
             foreach ($data as $key => $value1) {
                 $inv_since=date('Y-m-d',strtotime($value1->inv_since->trans_date));
                 $product_code=$value1->product_code;
-                $new = array_filter($res_array, function ($var) use ($inv_since,$product_code) {
-                    return ($var['nav_date'] == $inv_since && $var['product_code'] == $product_code);
-                });
+                if (count($res_array) >0) {
+                    $new = array_filter($res_array, function ($var) use ($inv_since,$product_code) {
+                        return ($var['nav_date'] == $inv_since && $var['product_code'] == $product_code);
+                    });
+                }else {
+                    $new='';
+                }
                 // return $new;
                 $value1->new=$new;
 
