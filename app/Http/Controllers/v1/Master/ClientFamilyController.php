@@ -180,7 +180,7 @@ class ClientFamilyController extends Controller
             $id=$request->id;
             $client_id=$request->client_id;
             if ($client_id) {
-                $data=ClientFamily::where('client_id',$id)->delete();
+                $data=ClientFamily::where('client_id',$client_id)->delete();
             }else {
                 $data=ClientFamily::where('id',$id)->delete();
             }
