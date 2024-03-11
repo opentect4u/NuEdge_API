@@ -12,6 +12,7 @@ class ClientFamily extends Model
     protected $fillable = [
         'client_id',
         'family_id',
+        'type',
         'relationship',
         'created_by',
         'updated_by',

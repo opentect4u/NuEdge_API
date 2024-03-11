@@ -71,7 +71,7 @@ class ClientFamilyController extends Controller
                     'md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name','md_pincode.pincode as pincode'
                     )
                     ->where('md_client_family.client_id',$family_head_id)
-                    ->where('md_client_family.relationship','!=','Head')
+                    ->where('md_client_family.type','=','M')
                     ->get();
             }
         } catch (\Throwable $th) {
@@ -102,6 +102,7 @@ class ClientFamilyController extends Controller
                     'client_id'=>$family_head_id,
                     'family_id'=>$family_head_id,
                     'relationship'=>"Head",
+                    'type'=>'H',
                     'created_by'=>Helper::modifyUser($request->user()),
                 )); 
             }
@@ -112,6 +113,7 @@ class ClientFamilyController extends Controller
                     ClientFamily::create(array(
                         'client_id'=>$family_head_id,
                         'family_id'=>$value->id,
+                        'type'=>'M',
                         'relationship'=>$value->relationship,
                         'created_by'=>Helper::modifyUser($request->user()),
                     )); 
