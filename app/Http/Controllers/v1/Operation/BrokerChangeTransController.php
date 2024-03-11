@@ -78,9 +78,11 @@ class BrokerChangeTransController extends Controller
                     if ($pan_no) {
                         $queryString='tt_broker_change_trans_report.first_client_pan';
                         $rawQuery.=Helper::WhereRawQuery($pan_no,$rawQuery,$queryString);
-                    }else {
-                        $queryString='tt_broker_change_trans_report.first_client_name';
-                        $rawQuery.=Helper::WhereRawQuery($client_name,$rawQuery,$queryString);
+                    }elseif($client_name) {
+                        if ($client_name!='undefined') {
+                            $queryString='tt_broker_change_trans_report.first_client_name';
+                            $rawQuery.=Helper::WhereRawQuery($client_name,$rawQuery,$queryString);
+                        }
                     }
                 }
                 // return $rawQuery;
