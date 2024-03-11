@@ -71,7 +71,7 @@ class ClientFamilyController extends Controller
                     'md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name','md_pincode.pincode as pincode'
                     )
                     ->where('md_client_family.client_id',$family_head_id)
-                    ->where('relationship','!=','Head')
+                    ->where('md_client_family.relationship','!=','Head')
                     ->get();
             }
         } catch (\Throwable $th) {
