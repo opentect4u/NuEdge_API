@@ -1014,16 +1014,19 @@ class MonthlyMisController extends Controller
                                         $start_date=explode('-',$fin_year)[0]."-04-01";
                                         $end_date=$end_date;
                                         // return $end_date;
+                                        $split_date="QTR-I";
                                     }elseif($i==1) {
                                         $start_date=explode('-',$fin_year)[0]."-01-01";
                                         $end_date=explode('-',$fin_year)[0]."-03-".date('t',strtotime(explode('-',$fin_year)[0]."-03-01"));
                                         // return $end_date;
+                                        $split_date="QTR-IV";
                                     }elseif($i==2) {
                                         $start_date=(explode('-',$fin_year)[0] - 1)."-09-01";
                                         $end_date=(explode('-',$fin_year)[0] - 1)."-12-".date('t',strtotime((explode('-',$fin_year)[0] - 1)."-12-01"));
                                         // return $end_date;
+                                        $split_date="QTR-III";
                                     }
-                                    $split_date=$start_date." - ".$end_date;
+                                    $split_date=$split_date;
                                     array_push($categories,$split_date);
 
                                     $rawQuery1='';
@@ -1180,16 +1183,19 @@ class MonthlyMisController extends Controller
                                         $end_date=$end_date;
                                         $end_date=explode('-',$fin_year)[0]."-07-01";
                                         // return $end_date;
+                                        $split_date="QTR-II";
                                     }elseif($i==1) {
                                         $start_date=explode('-',$fin_year)[0]."-04-01";
                                         $end_date=explode('-',$fin_year)[0]."-06-".date('t',strtotime(explode('-',$fin_year)[0]."-06-01"));
                                         // return $end_date;
+                                        $split_date="QTR-I";
                                     }elseif($i==2) {
                                         $start_date=explode('-',$fin_year)[0]."-01-01";
                                         $end_date=explode('-',$fin_year)[0]."-03-".date('t',strtotime(explode('-',$fin_year)[0]."-03-01"));
                                         // return $end_date;
+                                        $split_date="QTR-I";
                                     }
-                                    $split_date=$start_date." - ".$end_date;
+                                    $split_date=$split_date;
                                     array_push($categories,$split_date);
 
                                     $rawQuery1='';
@@ -1345,21 +1351,25 @@ class MonthlyMisController extends Controller
                                     if($i==0) {
                                         $end_date=$end_date;
                                         $start_date=explode('-',$fin_year)[0]."-10-01";
+                                        $split_date="QTR-III";
                                         // return $end_date;
                                     }elseif($i==1) {
                                         $start_date=explode('-',$fin_year)[0]."-07-01";
                                         $end_date=explode('-',$fin_year)[0]."-09-".date('t',strtotime(explode('-',$fin_year)[0]."-09-01"));
+                                        $split_date="QTR-II";
                                         // return $end_date;
                                     }elseif($i==2) {
                                         $start_date=explode('-',$fin_year)[0]."-04-01";
                                         $end_date=explode('-',$fin_year)[0]."-06-".date('t',strtotime(explode('-',$fin_year)[0]."-06-01"));
                                         // return $end_date;
+                                        $split_date="QTR-I";
                                     }elseif($i==3) {
                                         $start_date=explode('-',$fin_year)[0]."-01-01";
                                         $end_date=explode('-',$fin_year)[0]."-03-".date('t',strtotime(explode('-',$fin_year)[0]."-03-01"));
                                         // return $end_date;
+                                        $split_date="QTR-I";
                                     }
-                                    $split_date=$start_date." - ".$end_date;
+                                    $split_date=$split_date;
                                     array_push($categories,$split_date);
 
                                     $rawQuery1='';
@@ -1518,24 +1528,29 @@ class MonthlyMisController extends Controller
                                     if ($i==0) {
                                         $end_date=$end_date;
                                         $start_date=explode('-',$fin_year)[1]."-01-01";
+                                        $split_date="QTR-IV";
                                     }elseif($i==1) {
                                         $start_date=explode('-',$fin_year)[0]."-10-01";
                                         $end_date=explode('-',$fin_year)[0]."-12-".date('t',strtotime(explode('-',$fin_year)[0]."-12-01"));
                                         // return $end_date;
+                                        $split_date="QTR-III";
                                     }elseif($i==2) {
                                         $start_date=explode('-',$fin_year)[0]."-07-01";
                                         $end_date=explode('-',$fin_year)[0]."-09-".date('t',strtotime(explode('-',$fin_year)[0]."-09-01"));
                                         // return $end_date;
+                                        $split_date="QTR-II";
                                     }elseif($i==3) {
                                         $start_date=explode('-',$fin_year)[0]."-04-01";
                                         $end_date=explode('-',$fin_year)[0]."-06-".date('t',strtotime(explode('-',$fin_year)[0]."-06-01"));
                                         // return $end_date;
+                                        $split_date="QTR-I";
                                     }elseif($i==4) {
                                         $start_date=explode('-',$fin_year)[0]."-01-01";
                                         $end_date=explode('-',$fin_year)[0]."-03-".date('t',strtotime(explode('-',$fin_year)[0]."-03-01"));
                                         // return $end_date;
+                                        $split_date="QTR-I";
                                     }
-                                    $split_date=$start_date." - ".$end_date;
+                                    $split_date=$split_date;
                                     array_push($categories,$split_date);
                                     // return $categories;
                                     $rawQuery1='';
@@ -1697,14 +1712,17 @@ class MonthlyMisController extends Controller
                                     if($i==0) {
                                         $start_date=explode('-',$fin_year)[0]."-10-01";
                                         $end_date=$end_date;
+                                        $split_date="2nd-HALF";
                                     }elseif($i==1) {
                                         $start_date=explode('-',$fin_year)[0]."-04-01";
                                         $end_date=explode('-',$fin_year)[0]."-09-".date('t',strtotime(explode('-',$fin_year)[0]."-09-01"));
+                                        $split_date="1st-HALF";
                                     }elseif($i==2) {
                                         $start_date=(explode('-',$fin_year)[0] - 1)."-10-01";
                                         $end_date=explode('-',$fin_year)[0]."-03-".date('t',strtotime(explode('-',$fin_year)[0]."-03-01"));
+                                        $split_date="1st-HALF";
                                     }
-                                    $split_date=$start_date." - ".$end_date;
+                                    $split_date=$split_date;
                                     array_push($categories,$split_date);
                                     // return $split_date;
                                     $rawQuery1='';
@@ -1858,14 +1876,17 @@ class MonthlyMisController extends Controller
                                     if($i==0) {
                                         $start_date=explode('-',$fin_year)[0]."-10-01";
                                         $end_date=$end_date;
+                                        $split_date="2nd-HALF";
                                     }elseif($i==1) {
                                         $start_date=explode('-',$fin_year)[0]."-04-01";
                                         $end_date=explode('-',$fin_year)[0]."-09-".date('t',strtotime(explode('-',$fin_year)[0]."-09-01"));
+                                        $split_date="1st-HALF";
                                     }elseif($i==2) {
                                         $start_date=(explode('-',$fin_year)[0] - 1)."-10-01";
                                         $end_date=explode('-',$fin_year)[0]."-03-".date('t',strtotime((explode('-',$fin_year)[0] - 1)."-03-01"));
+                                        $split_date="1st-HALF";
                                     }
-                                    $split_date=$start_date." - ".$end_date;
+                                    $split_date=$split_date;
                                     array_push($categories,$split_date);
 
                                     $rawQuery1='';

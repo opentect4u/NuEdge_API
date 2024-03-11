@@ -34,6 +34,7 @@ class BrokerChangeTransController extends Controller
             $all_client=$request->all_client;
             $view_type=$request->view_type;
             $client_name=$request->client_name;
+            $all_client=$request->all_client;
             // $pan_no=json_decode($request->pan_no);
             $amc_id=json_decode($request->amc_id);
             $cat_id=json_decode($request->cat_id);
@@ -71,6 +72,9 @@ class BrokerChangeTransController extends Controller
                     $row_name_string1=  "'" .implode("','", $family_members_name). "'";
                     $rawQuery.=$condition1.$queryString." IN (".$row_name_string1."))";
                 }else {
+                    // if ($all_client==true) {
+                    //     # code...
+                    // }
                     if ($pan_no) {
                         $queryString='tt_broker_change_trans_report.first_client_pan';
                         $rawQuery.=Helper::WhereRawQuery($pan_no,$rawQuery,$queryString);
