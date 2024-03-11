@@ -705,7 +705,7 @@ class MonthlyMisController extends Controller
                         if ($period_type=='M') {
                             if (date('Y')==explode('-',$fin_year)[0] || date('Y')==explode('-',$fin_year)[1]) {
                                 $split_date=date("Y-m",strtotime($end_date));
-                                array_push($categories,$split_date);
+                                array_push($categories,date('M-Y',strtotime($split_date)));
 
                                 $rawQuery1='';
                                 $queryString='td_mutual_fund_trans.trans_date';
@@ -843,7 +843,7 @@ class MonthlyMisController extends Controller
                                 array_push($monthly_outflow_amount_set,$outflow_amount);
                                 array_push($monthly_net_inflow_amount_set,$net_inflow_amount);
                                 $myset_data=[];
-                                $myset_data['monthly']=$split_date;
+                                $myset_data['monthly']=date('M-Y',strtotime($split_date));
                                 $myset_data['monthly_inflow']=$inflow_amount;
                                 $myset_data['monthly_outflow']=$outflow_amount;
                                 $myset_data['monthly_net_inflow']=$net_inflow_amount;
@@ -854,7 +854,7 @@ class MonthlyMisController extends Controller
                             while(strtotime($end_date) >= strtotime($start_date))
                             {
                                 $end_date= date("Y-m",strtotime("-1 month",strtotime($end_date)));
-                                array_push($categories,$end_date);
+                                array_push($categories,date('M-Y',strtotime($end_date)));
                                 // return $end_date;
 
                                 $rawQuery1='';
@@ -994,7 +994,7 @@ class MonthlyMisController extends Controller
                                 array_push($monthly_outflow_amount_set,$outflow_amount);
                                 array_push($monthly_net_inflow_amount_set,$net_inflow_amount);
                                 $myset_data=[];
-                                $myset_data['monthly']=$end_date;
+                                $myset_data['monthly']=date('M-Y',strtotime($end_date));
                                 $myset_data['monthly_inflow']=$inflow_amount;
                                 $myset_data['monthly_outflow']=$outflow_amount;
                                 $myset_data['monthly_net_inflow']=$net_inflow_amount;
