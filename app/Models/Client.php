@@ -18,6 +18,7 @@ class Client extends Model
         'anniversary_date',
         'add_line_1',
         'add_line_2',
+        'add_line_3',
         'city',
         'dist',
         'state',
@@ -32,7 +33,6 @@ class Client extends Model
         'guardians_name',
         'relation',
         'client_type_mode',
-
 
         'country_id',
         'karta_name',
