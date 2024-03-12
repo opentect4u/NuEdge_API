@@ -8,6 +8,7 @@ use App\Helpers\Helper;
 use App\Models\Client;
 use App\Models\Document;
 use App\Models\ClientPertner;
+use App\Models\ClientFamily;
 use Validator;
 use Excel;
 use App\Imports\ClientImport;
@@ -638,6 +639,25 @@ class ClientController extends Controller
             }
         } catch (\Throwable $th) {
             //throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($data);
+    }
+
+    public function searchWithClientMem(Request $request)
+    {
+        try {
+            // return $request;
+            $id=$request->id;
+            $data=[];
+            $data_first=ClientFamily::where('family_id',$id)->first();
+            if ($data_first) {
+                $data=Client::join('md_client_family','md_client_family.family_id','=','md_client.id')
+                    ->where('md_client_family.client_id',$data_first->client_id)
+                    ->get();
+            }
+        } catch (\Throwable $th) {
+            throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
         return Helper::SuccessResponse($data);

@@ -2041,14 +2041,29 @@ class MonthlyMisController extends Controller
                     case 'F':
                         // return $request;
                         for ($i=0; $i <= $upto; $i++) { 
-                            $split_date=date('Y', strtotime('-'.$i.' Years'));
+                            $date=date('Y-m-d', strtotime('-'.$i.' Years'));
+                            // $date='2024-04-10';
+                            if ( date('m',strtotime($date)) > 3 ) {
+                                $year = date('Y',strtotime($date));
+                                $start_date=$year.'-04-01';
+                                $e_day=($year + 1).'-03-01';
+                                $end_date=date("Y-m-t", strtotime($e_day));
+                                $split_date=$year.' - '.($year + 1);
+                            }else {
+                                $year = date('Y',strtotime($date));
+                                $start_date=($year - 1).'-04-01';
+                                $e_day=$year.'-03-01';
+                                $end_date=date("Y-m-t", strtotime($e_day));
+                                $split_date=($year - 1).' - '.$year;
+                            }
+                            // return $start_date.'  -   '.$end_date;
                             array_push($categories,$split_date);
                             // return $split_date;
                             // return $rawQuery;
                             $rawQuery1='';
                             $queryString='td_mutual_fund_trans.trans_date';
                             $rawQuery1.=(strlen($rawQuery) > 0)?" AND ":" ";
-                            $rawQuery1.=' YEAR('.$queryString.')="'.$split_date.'" ';
+                            $rawQuery1.=$queryString.'>="'.$start_date.'" AND '.$queryString.'<="'.$end_date.'"';
                             $myrawQuery=$rawQuery.$rawQuery1;
                             // return $myrawQuery;
                             $all_data=MutualFundTransaction::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_mutual_fund_trans.product_code')
@@ -2076,10 +2091,10 @@ class MonthlyMisController extends Controller
                                 ->groupByRaw('IF(substr(trxn_nature,1,19)="Systematic-Reversed","Systematic-Reversed",trxn_nature)')
                                 ->groupBy('td_mutual_fund_trans.trans_desc')
                                 ->groupBy('td_mutual_fund_trans.kf_trans_type')
-                                ->take(10)
+                                // ->take(10)
                                 ->get();
                             // dd(DB::getQueryLog());
-    
+                            // return $all_data;
                             $inflow_amount=0;
                             $outflow_amount=0;
                             $net_inflow_amount=0;
