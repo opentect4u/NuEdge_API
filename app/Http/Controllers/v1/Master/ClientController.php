@@ -653,6 +653,13 @@ class ClientController extends Controller
             $data_first=ClientFamily::where('family_id',$id)->first();
             if ($data_first) {
                 $data=Client::join('md_client_family','md_client_family.family_id','=','md_client.id')
+                    ->leftJoin('md_city','md_city.id','=','md_client.city')
+                    ->leftJoin('md_district','md_district.id','=','md_client.dist')
+                    ->leftJoin('md_states','md_states.id','=','md_client.state')
+                    ->leftJoin('md_client_type','md_client_type.id','=','md_client.client_type_mode')
+                    ->leftJoin('md_pincode','md_pincode.id','=','md_client.pincode')
+                    ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name',
+                    'md_client_type.type_name as type_name','md_pincode.pincode as pincode','md_client_family.relationship as relationship')
                     ->where('md_client_family.client_id',$data_first->client_id)
                     ->get();
             }
