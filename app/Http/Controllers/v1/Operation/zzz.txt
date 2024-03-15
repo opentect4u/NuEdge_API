@@ -1,0 +1,41 @@
+[
+    "tot_gross_amount",
+    "tot_stamp_duty",
+    "tot_tds",
+    "tot_amount",
+
+
+]
+
+divi_lock_flag,option_name,plan_name
+
+rnt_id
+
+
+rnt_id,
+sub_brk_cd,
+first_client_name,
+first_client_pan,
+trans_date,
+folio_no,
+trans_no,
+units,
+pur_price,
+bank_name,
+acc_no,
+stt,
+trans_mode,
+remarks,
+divi_lock_flag,
+scheme_name,
+cat_name,
+subcat_name,
+amc_name,
+plan_name,
+option_name,
+rm_name,
+branch,
+euin_no,
+bu_type,
+transaction_type,
+transaction_subtype

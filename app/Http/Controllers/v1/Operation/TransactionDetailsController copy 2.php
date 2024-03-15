@@ -176,17 +176,16 @@ class TransactionDetailsController extends Controller
                 // $rawQuery=$this->filterCriteria($rawQuery,$from_date,$to_date,$tin_no,$proposer_name,$ins_type_id,$company_id,$product_type_id,$product_id,$insured_bu_type,$ack_status);
                 // return $request;
                 // DB::enableQueryLog();
-
-                $all_data=MutualFundTransaction::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_mutual_fund_trans.product_code')
+                $all_data=MutualFundTransactionReport::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','tt_mutual_fund_trans_report.product_code')
                     ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
                     ->leftJoin('md_category','md_category.id','=','md_scheme.category_id')
                     ->leftJoin('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
-                    ->leftJoin('md_amc','md_amc.amc_code','=','td_mutual_fund_trans.amc_code')
+                    ->leftJoin('md_amc','md_amc.amc_code','=','tt_mutual_fund_trans_report.amc_code')
                     ->leftJoin('md_plan','md_plan.id','=','md_scheme_isin.plan_id')
                     ->leftJoin('md_option','md_option.id','=','md_scheme_isin.option_id')
-                    ->leftJoin('md_employee','md_employee.euin_no','=',DB::raw('IF(td_mutual_fund_trans.euin_no!="",td_mutual_fund_trans.euin_no,(select euin_no from td_mutual_fund_trans where folio_no=td_mutual_fund_trans.folio_no and product_code=td_mutual_fund_trans.product_code AND euin_no!="" limit 1))'))
+                    ->leftJoin('md_employee','md_employee.euin_no','=','tt_mutual_fund_trans_report.euin_no')
                     ->leftJoin('md_branch','md_branch.id','=','md_employee.branch_id')
-                    ->select('td_mutual_fund_trans.*','md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name','md_amc.amc_short_name as amc_name',
+                    ->select('tt_mutual_fund_trans_report.*','md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name','md_amc.amc_short_name as amc_name',
                     'md_plan.plan_name as plan_name','md_option.opt_name as option_name',
                     'md_employee.emp_name as rm_name','md_branch.brn_name as branch','md_employee.bu_type_id as bu_type_id','md_employee.branch_id as branch_id','md_employee.euin_no as euin_no')
                     ->selectRaw('sum(amount) as tot_amount')
@@ -194,61 +193,54 @@ class TransactionDetailsController extends Controller
                     ->selectRaw('sum(tds) as tot_tds')
                     ->selectRaw('count(*) as tot_rows')
                     ->selectRaw('(select bu_type from md_business_type where bu_code=md_employee.bu_type_id and branch_id=md_employee.branch_id limit 1) as bu_type')
-                    ->where('td_mutual_fund_trans.delete_flag','N')
-                    ->where('td_mutual_fund_trans.amc_flag','N')
-                    ->where('td_mutual_fund_trans.scheme_flag','N')
-                    ->where('td_mutual_fund_trans.plan_option_flag','N')
-                    ->where('td_mutual_fund_trans.bu_type_flag','N')
-                    ->where('td_mutual_fund_trans.divi_mismatch_flag','N')
+                    
+                    // ->selectRaw('IF(tt_mutual_fund_trans_report.rnt_id=1,
+                    // (select trans_type from md_mf_trans_type_subtype where c_trans_type_code=tt_mutual_fund_trans_report.trxn_code and c_k_trans_type=tt_mutual_fund_trans_report.trxn_type_flag and c_k_trans_sub_type=tt_mutual_fund_trans_report.trxn_nature_code limit 1),
+                    // CASE 
+                    //     WHEN tt_mutual_fund_trans_report.trans_flag="DP" || tt_mutual_fund_trans_report.trans_flag="DR" THEN 
+                    //     (select trans_type from md_mf_trans_type_subtype where c_k_trans_sub_type=tt_mutual_fund_trans_report.kf_trans_type and k_divident_flag=tt_mutual_fund_trans_report.trans_flag limit 1)
+                    //     WHEN tt_mutual_fund_trans_report.trans_flag="TI" THEN 
+                    //     "Transfer In"
+                    //     WHEN tt_mutual_fund_trans_report.trans_flag="TO" THEN 
+                    //     "Transfer Out"
+                    //     ELSE 
+                    //     (select trans_type from md_mf_trans_type_subtype where c_k_trans_sub_type=tt_mutual_fund_trans_report.kf_trans_type limit 1)
+                    // END)as transaction_type')
+
+                    // ->selectRaw('IF(tt_mutual_fund_trans_report.rnt_id=1,
+                    // (select trans_sub_type from md_mf_trans_type_subtype where c_trans_type_code=tt_mutual_fund_trans_report.trxn_code and c_k_trans_type=tt_mutual_fund_trans_report.trxn_type_flag and c_k_trans_sub_type=tt_mutual_fund_trans_report.trxn_nature_code limit 1),
+                    // CASE 
+                    //     WHEN tt_mutual_fund_trans_report.trans_flag="DP" || tt_mutual_fund_trans_report.trans_flag="DR" THEN 
+                    //     (select trans_sub_type from md_mf_trans_type_subtype where c_k_trans_sub_type=tt_mutual_fund_trans_report.kf_trans_type and k_divident_flag=tt_mutual_fund_trans_report.trans_flag limit 1)
+                    //     WHEN tt_mutual_fund_trans_report.trans_flag="TI" THEN 
+                    //     "Transfer In"
+                    //     WHEN tt_mutual_fund_trans_report.trans_flag="TO" THEN 
+                    //     "Transfer Out"
+                    //     ELSE 
+                    //     (select trans_sub_type from md_mf_trans_type_subtype where c_k_trans_sub_type=tt_mutual_fund_trans_report.kf_trans_type limit 1)
+                    // END)as transaction_subtype')
+
+                    ->where('tt_mutual_fund_trans_report.delete_flag','N')
+                    ->where('tt_mutual_fund_trans_report.amc_flag','N')
+                    ->where('tt_mutual_fund_trans_report.scheme_flag','N')
+                    ->where('tt_mutual_fund_trans_report.plan_option_flag','N')
+                    ->where('tt_mutual_fund_trans_report.bu_type_flag','N')
+                    ->where('tt_mutual_fund_trans_report.divi_mismatch_flag','N')
                     ->whereRaw($rawQuery)
-                    ->groupBy('td_mutual_fund_trans.trans_no')
-                    ->groupBy('td_mutual_fund_trans.trxn_type_flag')
-                    ->groupByRaw('IF(substr(trxn_nature,1,19)="Systematic-Reversed","Systematic-Reversed",trxn_nature)')
-                    ->groupBy('td_mutual_fund_trans.trans_desc')
-                    ->groupBy('td_mutual_fund_trans.kf_trans_type')
+                    ->groupBy('tt_mutual_fund_trans_report.trans_no')
+                    ->groupBy('tt_mutual_fund_trans_report.trxn_type_flag')
+                    ->groupBy('tt_mutual_fund_trans_report.trxn_nature_code')
+                    ->groupBy('tt_mutual_fund_trans_report.trans_desc')
+                    ->groupBy('tt_mutual_fund_trans_report.kf_trans_type')
                     ->get();
-
-
-                // $all_data=MutualFundTransactionReport::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','tt_mutual_fund_trans_report.product_code')
-                //     ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
-                //     ->leftJoin('md_category','md_category.id','=','md_scheme.category_id')
-                //     ->leftJoin('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
-                //     ->leftJoin('md_amc','md_amc.amc_code','=','tt_mutual_fund_trans_report.amc_code')
-                //     ->leftJoin('md_plan','md_plan.id','=','md_scheme_isin.plan_id')
-                //     ->leftJoin('md_option','md_option.id','=','md_scheme_isin.option_id')
-                //     ->leftJoin('md_employee','md_employee.euin_no','=','tt_mutual_fund_trans_report.euin_no')
-                //     ->leftJoin('md_branch','md_branch.id','=','md_employee.branch_id')
-                //     ->select('tt_mutual_fund_trans_report.*','md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name','md_amc.amc_short_name as amc_name',
-                //     'md_plan.plan_name as plan_name','md_option.opt_name as option_name',
-                //     'md_employee.emp_name as rm_name','md_branch.brn_name as branch','md_employee.bu_type_id as bu_type_id','md_employee.branch_id as branch_id','md_employee.euin_no as euin_no')
-                //     ->selectRaw('sum(amount) as tot_amount')
-                //     ->selectRaw('sum(stamp_duty) as tot_stamp_duty')
-                //     ->selectRaw('sum(tds) as tot_tds')
-                //     ->selectRaw('count(*) as tot_rows')
-                //     ->selectRaw('(select bu_type from md_business_type where bu_code=md_employee.bu_type_id and branch_id=md_employee.branch_id limit 1) as bu_type')
-                //     ->where('tt_mutual_fund_trans_report.delete_flag','N')
-                //     ->where('tt_mutual_fund_trans_report.amc_flag','N')
-                //     ->where('tt_mutual_fund_trans_report.scheme_flag','N')
-                //     ->where('tt_mutual_fund_trans_report.plan_option_flag','N')
-                //     ->where('tt_mutual_fund_trans_report.bu_type_flag','N')
-                //     ->where('tt_mutual_fund_trans_report.divi_mismatch_flag','N')
-                //     ->whereRaw($rawQuery)
-                //     ->groupBy('tt_mutual_fund_trans_report.trans_no')
-                //     ->groupBy('tt_mutual_fund_trans_report.trxn_type_flag')
-                //     ->groupBy('tt_mutual_fund_trans_report.trxn_nature_code')
-                //     ->groupBy('tt_mutual_fund_trans_report.trans_desc')
-                //     ->groupBy('tt_mutual_fund_trans_report.kf_trans_type')
-                //     ->get();
                 // dd(DB::getQueryLog());
-
-
 
                 // $all_data=DB::select('SELECT rnt_id,sub_brk_cd,first_client_name,first_client_pan,trans_date,folio_no,trans_no,units,pur_price,
                 // bank_name,acc_no,stt,trans_mode,remarks,divi_lock_flag,scheme_name,cat_name,subcat_name,amc_name,plan_name,option_name,rm_name,
-                // branch,euin_no,bu_type,transaction_type,transaction_subtype,amount,stamp_duty,tds,sum(amount) as tot_amount,
-                // sum(stamp_duty) as tot_stamp_duty,sum(tds) as tot_tds 
+                // branch,euin_no,bu_type,transaction_type,transaction_subtype,amount,sum(amount) as tot_amount,sum(stamp_duty) as tot_stamp_duty,
+                // sum(tds) as tot_tds 
                 // FROM transaction_report
-                // WHERE date(trans_date) >= "2023-10-01" AND date(trans_date) <= "2024-03-13"
+                // WHERE date(trans_date) >= '2023-10-01' AND date(trans_date) <= '2024-03-13'
                 // GROUP BY trans_no,trxn_type_flag,trxn_nature_code,trans_desc,kf_trans_type');
             } 
             // else {
@@ -281,7 +273,7 @@ class TransactionDetailsController extends Controller
             //         ->take(100)
             //         ->get();
             // }
-            // return $all_data;
+            return $all_data;
                 $data=[];
                 foreach ($all_data as $key => $value) {
                     $euin=$value->euin_no;
@@ -321,12 +313,6 @@ class TransactionDetailsController extends Controller
                     $amount=$value->amount;
                     $transaction_type='';
                     $transaction_subtype='';
-                    // if ($value->rnt_id=1) {
-                    //     if ($amount < 0) {
-                    //         $transaction_type=$value->transaction_type." Rejection";
-                    //         $transaction_subtype=$value->transaction_subtype." Rejection";
-                    //     }
-                    // }
 
                     if ($trxn_type && $trxn_type_flag && $trxn_nature) {  //for cams
                         $trxn_code=TransHelper::transTypeToCodeCAMS($trxn_type);

@@ -685,4 +685,45 @@ class ClientController extends Controller
         return Helper::SuccessResponse($data);
     }
     
+    public function searchMergeClient(Request $request)
+    {
+        try {
+            // return $request;
+            $data=[];
+            $all_data=Client::select('md_client.*')
+                ->selectRaw('count(*) as tot_rows')
+                ->groupByRaw('IF(client_type="P",pan,client_name)')
+                ->orderBy('md_client.created_at','desc')
+                ->get();  
+            // return $all_data;
+            foreach ($all_data as $key => $value) {
+                if ($value->tot_rows > 1) {
+                    if ($value->client_type=='P') {
+                        $data1=Client::leftJoin('md_city','md_city.id','=','md_client.city')
+                            ->leftJoin('md_district','md_district.id','=','md_client.dist')
+                            ->leftJoin('md_states','md_states.id','=','md_client.state')
+                            ->leftJoin('md_client_type','md_client_type.id','=','md_client.client_type_mode')
+                            ->leftJoin('md_pincode','md_pincode.id','=','md_client.pincode')
+                            ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name','md_pincode.pincode as pincode')
+                            ->where('md_client.pan',$value->pan)
+                            ->get()->toArray(); 
+                    }else {
+                        $data1=Client::leftJoin('md_city','md_city.id','=','md_client.city')
+                            ->leftJoin('md_district','md_district.id','=','md_client.dist')
+                            ->leftJoin('md_states','md_states.id','=','md_client.state')
+                            ->leftJoin('md_client_type','md_client_type.id','=','md_client.client_type_mode')
+                            ->leftJoin('md_pincode','md_pincode.id','=','md_client.pincode')
+                            ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name','md_pincode.pincode as pincode')
+                            ->where('md_client.client_name',$value->client_name)
+                            ->get()->toArray(); 
+                    }
+                    $data=[...$data,...$data1];
+                }
+            }
+        } catch (\Throwable $th) {
+            // throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($data);
+    }
 }
