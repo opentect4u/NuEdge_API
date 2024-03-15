@@ -139,11 +139,11 @@ class TransactionDetailsController extends Controller
                     $from_date=Carbon::parse(str_replace('/','-',explode("-",$date_range)[0]))->format('Y-m-d') ;
                     $to_date=Carbon::parse(str_replace('/','-',explode("-",$date_range)[1]))->format('Y-m-d') ;
                     // return $to_date;
-                    $queryString='tt_mutual_fund_trans_report.trans_date';
+                    $queryString='td_mutual_fund_trans.trans_date';
                     $rawQuery.=Helper::FrmToDateRawQuery($from_date,$to_date,$rawQuery,$queryString);
                 }
                 
-                $queryString='tt_mutual_fund_trans_report.folio_no';
+                $queryString='td_mutual_fund_trans.folio_no';
                 $rawQuery.=Helper::WhereRawQuery($folio_no,$rawQuery,$queryString);
                 $queryString='md_scheme.amc_id';
                 $rawQuery.=Helper::WhereRawQuery($amc_id,$rawQuery,$queryString);
@@ -155,20 +155,20 @@ class TransactionDetailsController extends Controller
                 $rawQuery.=Helper::WhereRawQuery($scheme_id,$rawQuery,$queryString);
 
                 if ($view_type=='F') {
-                    $queryString='tt_mutual_fund_trans_report.first_client_pan';
+                    $queryString='td_mutual_fund_trans.first_client_pan';
                     $condition=(strlen($rawQuery) > 0)? " AND (":" (";
                     $row_name_string=  "'" .implode("','", $family_members_pan). "'";
                     $rawQuery.=$condition.$queryString." IN (".$row_name_string.")";
-                    $queryString='tt_mutual_fund_trans_report.first_client_name';
+                    $queryString='td_mutual_fund_trans.first_client_name';
                     $condition1=(strlen($rawQuery) > 0)? " OR ":" ";
                     $row_name_string1=  "'" .implode("','", $family_members_name). "'";
                     $rawQuery.=$condition1.$queryString." IN (".$row_name_string1."))";
                 }else {
                     if ($pan_no) {
-                        $queryString='tt_mutual_fund_trans_report.first_client_pan';
+                        $queryString='td_mutual_fund_trans.first_client_pan';
                         $rawQuery.=Helper::WhereRawQuery($pan_no,$rawQuery,$queryString);
                     }else {
-                        $queryString='tt_mutual_fund_trans_report.first_client_name';
+                        $queryString='td_mutual_fund_trans.first_client_name';
                         $rawQuery.=Helper::WhereRawQuery($client_name,$rawQuery,$queryString);
                     }
                 }
