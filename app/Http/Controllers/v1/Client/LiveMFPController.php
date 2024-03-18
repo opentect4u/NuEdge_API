@@ -116,9 +116,11 @@ class LiveMFPController extends Controller
             }
             $string_version_product_code = implode(',', $all_trans_product);
             // return $string_version_product_code;
+            // $response =DB::connection('mysql_nav')->select('SELECT * FROM td_nav_details where '.str_replace(",","  OR  ",$string_version_product_code) );
+            // return $response;
             $curl = curl_init();
             curl_setopt_array($curl, array(
-                CURLOPT_URL => 'https://sia72vzf17.execute-api.ap-south-1.amazonaws.com/dev/showData',
+                CURLOPT_URL => env('AWS_LAMBDA_URL'),
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_ENCODING => '',
                 CURLOPT_MAXREDIRS => 10,
