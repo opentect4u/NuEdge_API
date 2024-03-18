@@ -105,7 +105,8 @@ class LiveMFPController extends Controller
                     ->select('trans_date')
                     ->orderBy('trans_date','ASC')
                     ->first();
-                $f_trans_product="(product_code='".$value->product_code."' and nav_date=DATE '".date('Y-m-d',strtotime($value->inv_since->trans_date))."')";
+                // $f_trans_product="(product_code='".$value->product_code."' and nav_date=DATE '".date('Y-m-d',strtotime($value->inv_since->trans_date))."')";
+                $f_trans_product="(product_code='".$value->product_code."' and nav_date='".$value->inv_since->trans_date."')";
                 array_push($all_trans_product,$f_trans_product);
                 $value->pur_nav=MutualFundTransaction::where('folio_no',$value->folio_no)
                     ->where('product_code',$value->product_code)
@@ -116,8 +117,8 @@ class LiveMFPController extends Controller
             }
             $string_version_product_code = implode(',', $all_trans_product);
             // return $string_version_product_code;
-            // $response =DB::connection('mysql_nav')->select('SELECT * FROM td_nav_details where '.str_replace(",","  OR  ",$string_version_product_code) );
-            // return $response;
+            $response =DB::connection('mysql_nav')->select('SELECT * FROM td_nav_details where '.str_replace(",","  OR  ",$string_version_product_code) );
+            return $response;
             $curl = curl_init();
             curl_setopt_array($curl, array(
                 CURLOPT_URL => env('AWS_LAMBDA_URL'),
