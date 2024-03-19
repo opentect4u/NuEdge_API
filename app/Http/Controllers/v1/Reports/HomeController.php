@@ -51,7 +51,7 @@ class HomeController extends Controller
             $date=date('Y-m')."-01";
             // return $date;
             foreach ($my_datas as $key => $my_data) {
-                if ($my_data->reg_date <= $date) {
+                if ($my_data->from_date < $date) {
                     $prev_total_amount=$prev_total_amount+$my_data->auto_amount;
                 }else {
                     $curr_total_amount=$curr_total_amount+$my_data->auto_amount;
@@ -86,14 +86,16 @@ class HomeController extends Controller
                 $my_array=['P','SIP','ISIP'];
                 $rawQuery.=Helper::WhereRawQuery($my_array,$rawQuery,$queryString);
                 $rawQuery.=' AND tt_sip_stp_swp_report.cease_terminate_date IS NULL ';
-                $rawQuery.=' AND tt_sip_stp_swp_report.from_date <="'.date('Y-m-d').'"';
+                // $rawQuery.=' AND tt_sip_stp_swp_report.from_date <="'.date('Y-m-d').'"';
                 $rawQuery.=' AND tt_sip_stp_swp_report.to_date >="'.date('Y-m-d').'" ';
 
                 $rawQuery1='';
-                $queryString='tt_sip_stp_swp_report.reg_date';
-                $rawQuery1.=(strlen($rawQuery) > 0)?" AND ":" ";
-                $rawQuery1.=' MONTH('.$queryString.')="'.explode("-",$split_date)[1].'" ';
-                $rawQuery1.=' AND YEAR('.$queryString.')="'.explode("-",$split_date)[0].'" ';
+                if ($i > 0) {
+                    $f_date=date('Y-m-t', strtotime('-'.$i.' months'));
+                    $rawQuery1.=' AND tt_sip_stp_swp_report.from_date <="'.$f_date.'"';
+                }else{
+                    $rawQuery1.=' AND tt_sip_stp_swp_report.from_date <="'.date('Y-m-d').'"';
+                }
                 $myrawQuery=$rawQuery.$rawQuery1;
                 // return $myrawQuery;
                 $my_datas=SipStpSwpReport::where('tt_sip_stp_swp_report.amc_flag','N')
@@ -107,6 +109,7 @@ class HomeController extends Controller
                 foreach ($my_datas as $key => $my_data) {
                     $total_amount=$total_amount + $my_data->auto_amount;
                 }
+                // return $total_amount;
                 array_push($chart_data,$total_amount);
             }
             // return $categories;

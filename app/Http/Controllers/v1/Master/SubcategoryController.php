@@ -23,44 +23,45 @@ class SubcategoryController extends Controller
             if ($paginate=='A') {
                 $paginate=999999999;
             }
-            if ($order && $field) {
-                $rawOrderBy='';
-                if ($order > 0) {
-                    $rawOrderBy=$field.' ASC';
-                } else {
-                    $rawOrderBy=$field.' DESC';
-                }
-                if ($subcat_id || $cat_id) {
-                    $rawQuery='';
-                    if (!empty($cat_id)) {
-                        $cat_id_string= implode(',', $cat_id);
-                        if (strlen($rawQuery) > 0) {
-                            $rawQuery.=" AND md_subcategory.category_id IN (".$cat_id_string.")";
-                        }else {
-                            $rawQuery.=" md_subcategory.category_id IN (".$cat_id_string.")";
-                        }
-                    }
-                    if ($subcat_id) {
-                        if (strlen($rawQuery) > 0) {
-                            $rawQuery.=" AND md_subcategory.id=".$subcat_id;
-                        }else {
-                            $rawQuery.=" md_subcategory.id=".$subcat_id;
-                        }
-                    }
-                    $data=SubCategory::join('md_category','md_category.id','=','md_subcategory.category_id')
-                        ->select('md_subcategory.*','md_category.cat_name as cat_name')
-                        ->where('md_subcategory.delete_flag','N')
-                        ->whereRaw($rawQuery)
-                        ->orderByRaw($rawOrderBy)
-                        ->paginate($paginate);    
-                }else {
-                    $data=SubCategory::join('md_category','md_category.id','=','md_subcategory.category_id')
-                        ->select('md_subcategory.*','md_category.cat_name as cat_name')
-                        ->where('md_subcategory.delete_flag','N')
-                        ->orderByRaw($rawOrderBy)
-                        ->paginate($paginate);     
-                } 
-            }else if ($subcat_id || $cat_id) {
+            // if ($order && $field) {
+            //     $rawOrderBy='';
+            //     if ($order > 0) {
+            //         $rawOrderBy=$field.' ASC';
+            //     } else {
+            //         $rawOrderBy=$field.' DESC';
+            //     }
+            //     if ($subcat_id || $cat_id) {
+            //         $rawQuery='';
+            //         if (!empty($cat_id)) {
+            //             $cat_id_string= implode(',', $cat_id);
+            //             if (strlen($rawQuery) > 0) {
+            //                 $rawQuery.=" AND md_subcategory.category_id IN (".$cat_id_string.")";
+            //             }else {
+            //                 $rawQuery.=" md_subcategory.category_id IN (".$cat_id_string.")";
+            //             }
+            //         }
+            //         if ($subcat_id) {
+            //             if (strlen($rawQuery) > 0) {
+            //                 $rawQuery.=" AND md_subcategory.id=".$subcat_id;
+            //             }else {
+            //                 $rawQuery.=" md_subcategory.id=".$subcat_id;
+            //             }
+            //         }
+            //         $data=SubCategory::join('md_category','md_category.id','=','md_subcategory.category_id')
+            //             ->select('md_subcategory.*','md_category.cat_name as cat_name')
+            //             ->where('md_subcategory.delete_flag','N')
+            //             ->whereRaw($rawQuery)
+            //             ->orderByRaw($rawOrderBy)
+            //             ->paginate($paginate);    
+            //     }else {
+            //         $data=SubCategory::join('md_category','md_category.id','=','md_subcategory.category_id')
+            //             ->select('md_subcategory.*','md_category.cat_name as cat_name')
+            //             ->where('md_subcategory.delete_flag','N')
+            //             ->orderByRaw($rawOrderBy)
+            //             ->paginate($paginate);     
+            //     } 
+            // }else 
+            if ($subcat_id || $cat_id) {
                 $rawQuery='';
                 if (!empty($cat_id)) {
                     $cat_id_string= implode(',', $cat_id);
@@ -84,13 +85,13 @@ class SubcategoryController extends Controller
                     // ->where('md_subcategory.category_id',$cat_id)
                     ->whereRaw($rawQuery)
                     ->orderBy('updated_at','DESC')
-                    ->paginate($paginate);    
+                    ->get();   
             }else {
                 $data=SubCategory::join('md_category','md_category.id','=','md_subcategory.category_id')
                     ->select('md_subcategory.*','md_category.cat_name as cat_name')
                     ->where('md_subcategory.delete_flag','N')
                     ->orderBy('updated_at','DESC')
-                    ->paginate($paginate);     
+                    ->get();     
             }
         } catch (\Throwable $th) {
             //throw $th;

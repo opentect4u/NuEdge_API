@@ -22,9 +22,9 @@ class SIPTypeController extends Controller
             }
             if ($sip_type_name) {
                 $data=SIPType::where('sip_type_name','like', '%' . $sip_type_name . '%')
-                    ->paginate($paginate); 
+                    ->get(); 
             }else {
-                $data=SIPType::paginate($paginate); 
+                $data=SIPType::get(); 
             }
         } catch (\Throwable $th) {
             //throw $th;

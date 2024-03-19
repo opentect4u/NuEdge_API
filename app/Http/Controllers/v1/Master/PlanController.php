@@ -22,16 +22,18 @@ class PlanController extends Controller
             if ($paginate=='A') {
                 $paginate=999999999;
             }
-            if ($sort_by && $column_name) {
-                $data=Plan::where('plan_name','like', '%' . $plan_name . '%')
-                    ->orderBy($column_name,$sort_by)
-                    ->paginate($paginate); 
-            }elseif ($plan_name) {
+            // if ($sort_by && $column_name) {
+            //     $data=Plan::where('plan_name','like', '%' . $plan_name . '%')
+            //         ->orderBy($column_name,$sort_by)
+            //         ->paginate($paginate); 
+            // }else
+            if ($plan_name) {
                 $data=Plan::where('plan_name','like', '%' . $plan_name . '%')
                     ->orderBy('updated_at','DESC')
-                    ->paginate($paginate);  
+                    ->get();  
             } else {
-                $data=Plan::orderBy('updated_at','DESC')->paginate($paginate);  
+                $data=Plan::orderBy('updated_at','DESC')
+                    ->get();  
             }
         } catch (\Throwable $th) {
             //throw $th;

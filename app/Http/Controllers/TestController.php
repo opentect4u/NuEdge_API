@@ -496,4 +496,40 @@ class TestController extends Controller
     
         return $dates;
     }
+
+
+
+    public function ttttt()
+    {
+        // ALTER TABLE td_nav_details_part_yearly PARTITION BY RANGE (YEAR(`nav_date`)) (
+        //     PARTITION p_1999 VALUES LESS THAN (1999),
+        //     PARTITION p_2000 VALUES LESS THAN (2000),
+        //     PARTITION p_2001 VALUES LESS THAN (2001),
+        //     PARTITION p_2002 VALUES LESS THAN (2002),
+        //     PARTITION p_2003 VALUES LESS THAN (2003),
+        //     PARTITION p_2004 VALUES LESS THAN (2004),
+        //     PARTITION p_2005 VALUES LESS THAN (2005),
+        //     PARTITION p_2006 VALUES LESS THAN (2006),
+        //     PARTITION p_2007 VALUES LESS THAN (2007),
+        //     PARTITION p_2008 VALUES LESS THAN (2008),
+        //     PARTITION p_2009 VALUES LESS THAN (2009),
+        //     PARTITION p_2010 VALUES LESS THAN (2010),
+        //     PARTITION p_2011 VALUES LESS THAN (2011),
+        //     PARTITION p_2012 VALUES LESS THAN (2012),
+        //     PARTITION p_2013 VALUES LESS THAN (2013),
+        //     PARTITION p_2014 VALUES LESS THAN (2014),
+        //     PARTITION p_2015 VALUES LESS THAN (2015),
+        //     PARTITION p_2016 VALUES LESS THAN (2016),
+        //     PARTITION p_2017 VALUES LESS THAN (2017),
+        //     PARTITION p_2018 VALUES LESS THAN (2018),
+        //     PARTITION p_2019 VALUES LESS THAN (2019),
+        //     PARTITION p_2020 VALUES LESS THAN (2020),
+        //     PARTITION p_2021 VALUES LESS THAN (2021),
+        //     PARTITION p_2022 VALUES LESS THAN (2022),
+        //     PARTITION p_2023 VALUES LESS THAN (2023),
+        //     PARTITION p_2024 VALUES LESS THAN (2024),
+        //     PARTITION p_2025 VALUES LESS THAN (2025),
+        //     PARTITION p_2026 VALUES LESS THAN (2026)
+        // );
+    }
 }

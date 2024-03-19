@@ -22,17 +22,18 @@ class OptionController extends Controller
             if ($paginate=='A') {
                 $paginate=999999999;
             }
-            if ($sort_by && $column_name) {
-                $data=Option::where('opt_name','like', '%' . $opt_name . '%')
-                    ->orderBy($column_name,$sort_by)
-                    ->paginate($paginate); 
-            }elseif ($opt_name) {
+            // if ($sort_by && $column_name) {
+            //     $data=Option::where('opt_name','like', '%' . $opt_name . '%')
+            //         ->orderBy($column_name,$sort_by)
+            //         ->paginate($paginate); 
+            // }else
+            if ($opt_name) {
                 $data=Option::where('opt_name','like', '%' . $opt_name . '%')
                     ->orderBy('updated_at','DESC')
-                    ->paginate($paginate); 
+                    ->get(); 
             } else {
                 $data=Option::orderBy('updated_at','DESC')
-                    ->paginate($paginate); 
+                    ->get(); 
             }
         } catch (\Throwable $th) {
             //throw $th;
@@ -182,4 +183,3 @@ class OptionController extends Controller
     }
     
 }
-

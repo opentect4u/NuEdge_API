@@ -23,10 +23,14 @@ class CategoryController extends Controller
                 $paginate=999999999;
             }
             if ($cat_name) {
-                $data=Category::where('delete_flag','N')->where('cat_name','like', '%' . $cat_name . '%')
-                ->orderBy('updated_at','DESC')->paginate($paginate);  
+                $data=Category::where('delete_flag','N')
+                    ->where('cat_name','like', '%' . $cat_name . '%')
+                    ->orderBy('updated_at','DESC')
+                    ->get();  
             } else {
-                $data=Category::where('delete_flag','N')->orderBy('updated_at','DESC')->paginate($paginate);  
+                $data=Category::where('delete_flag','N')
+                    ->orderBy('updated_at','DESC')
+                    ->get();  
             }
         } catch (\Throwable $th) {
             //throw $th;

@@ -23,30 +23,30 @@ class BenchmarkController extends Controller
             if ($paginate=='A') {
                 $paginate=999999999;
             }
-            if ($order && $field) {
-                $rawOrderBy='';
-                if ($order > 0) {
-                    $rawOrderBy=$field.' ASC';
-                } else {
-                    $rawOrderBy=$field.' DESC';
-                }
-                $data=Benchmark::leftJoin('md_exchange','md_exchange.id','=','md_benchmark.ex_id')
-                    ->leftJoin('md_category','md_category.id','=','md_benchmark.category_id')
-                    ->leftJoin('md_subcategory','md_subcategory.id','=','md_benchmark.subcat_id')
-                    ->select('md_benchmark.*','md_exchange.ex_name as exchange_name','md_category.cat_name as category_name','md_subcategory.subcategory_name as subcategory_name')
-                    ->where('md_benchmark.delete_flag','N')
-                    ->orderByRaw($rawOrderBy)
-                    ->paginate($paginate);
+            // if ($order && $field) {
+            //     $rawOrderBy='';
+            //     if ($order > 0) {
+            //         $rawOrderBy=$field.' ASC';
+            //     } else {
+            //         $rawOrderBy=$field.' DESC';
+            //     }
+            //     $data=Benchmark::leftJoin('md_exchange','md_exchange.id','=','md_benchmark.ex_id')
+            //         ->leftJoin('md_category','md_category.id','=','md_benchmark.category_id')
+            //         ->leftJoin('md_subcategory','md_subcategory.id','=','md_benchmark.subcat_id')
+            //         ->select('md_benchmark.*','md_exchange.ex_name as exchange_name','md_category.cat_name as category_name','md_subcategory.subcategory_name as subcategory_name')
+            //         ->where('md_benchmark.delete_flag','N')
+            //         ->orderByRaw($rawOrderBy)
+            //         ->paginate($paginate);
                
-            }else {
+            // }else {
                 $data=Benchmark::leftJoin('md_exchange','md_exchange.id','=','md_benchmark.ex_id')
                     ->leftJoin('md_category','md_category.id','=','md_benchmark.category_id')
                     ->leftJoin('md_subcategory','md_subcategory.id','=','md_benchmark.subcat_id')
                     ->select('md_benchmark.*','md_exchange.ex_name as exchange_name','md_category.cat_name as category_name','md_subcategory.subcategory_name as subcategory_name')
                     ->where('md_benchmark.delete_flag','N')
                     ->orderBy('md_benchmark.created_at','desc')
-                    ->paginate($paginate);
-            }
+                    ->get();
+            // }
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);

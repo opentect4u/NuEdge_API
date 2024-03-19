@@ -24,46 +24,47 @@ class AMCController extends Controller
             if ($paginate=='A') {
                 $paginate=999999999;
             }
-            if ($order && $field) {
-                $rawOrderBy='';
-                if ($order > 0) {
-                    $rawOrderBy=$field.' ASC';
-                } else {
-                    $rawOrderBy=$field.' DESC';
-                }
+            // if ($order && $field) {
+            //     $rawOrderBy='';
+            //     if ($order > 0) {
+            //         $rawOrderBy=$field.' ASC';
+            //     } else {
+            //         $rawOrderBy=$field.' DESC';
+            //     }
 
-                if ($amc_id || $rnt_id ) {
-                    $rawQuery='';
-                    if (!empty($rnt_id)) {
-                        $rnt_id_string= implode(',', $rnt_id);
-                        if (strlen($rawQuery) > 0) {
-                            $rawQuery.=" AND md_amc.rnt_id IN (".$rnt_id_string.")";
-                        }else {
-                            $rawQuery.=" md_amc.rnt_id IN (".$rnt_id_string.")";
-                        }
-                    }
-                    if (!empty($amc_id)) {
-                        $amc_id_string= implode(',', $amc_id);
-                        if (strlen($rawQuery) > 0) {
-                            $rawQuery.=" AND md_amc.id IN (".$amc_id_string.")";
-                        }else {
-                            $rawQuery.=" md_amc.id IN (".$amc_id_string.")";
-                        }
-                    }
-                    $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
-                            ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
-                            ->where('md_amc.delete_flag','N')
-                            ->whereRaw($rawQuery)
-                            ->orderByRaw($rawOrderBy)
-                            ->paginate($paginate);      
-                } else {
-                    $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
-                            ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
-                            ->where('md_amc.delete_flag','N')
-                            ->orderByRaw($rawOrderBy)
-                            ->paginate($paginate);    
-                }  
-            }elseif ($amc_id || $rnt_id ) {
+            //     if ($amc_id || $rnt_id ) {
+            //         $rawQuery='';
+            //         if (!empty($rnt_id)) {
+            //             $rnt_id_string= implode(',', $rnt_id);
+            //             if (strlen($rawQuery) > 0) {
+            //                 $rawQuery.=" AND md_amc.rnt_id IN (".$rnt_id_string.")";
+            //             }else {
+            //                 $rawQuery.=" md_amc.rnt_id IN (".$rnt_id_string.")";
+            //             }
+            //         }
+            //         if (!empty($amc_id)) {
+            //             $amc_id_string= implode(',', $amc_id);
+            //             if (strlen($rawQuery) > 0) {
+            //                 $rawQuery.=" AND md_amc.id IN (".$amc_id_string.")";
+            //             }else {
+            //                 $rawQuery.=" md_amc.id IN (".$amc_id_string.")";
+            //             }
+            //         }
+            //         $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+            //                 ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+            //                 ->where('md_amc.delete_flag','N')
+            //                 ->whereRaw($rawQuery)
+            //                 ->orderByRaw($rawOrderBy)
+            //                 ->paginate($paginate);      
+            //     } else {
+            //         $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
+            //                 ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
+            //                 ->where('md_amc.delete_flag','N')
+            //                 ->orderByRaw($rawOrderBy)
+            //                 ->paginate($paginate);    
+            //     }  
+            // }else
+            if ($amc_id || $rnt_id ) {
                 $rawQuery='';
                 if (!empty($rnt_id)) {
                     $rnt_id_string= implode(',', $rnt_id);
@@ -86,13 +87,13 @@ class AMCController extends Controller
                         ->where('md_amc.delete_flag','N')
                         ->whereRaw($rawQuery)
                         ->orderBy('md_amc.updated_at','DESC')
-                        ->paginate($paginate);      
+                        ->get();      
             } else {
                 $data=AMC::join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
                         ->select('md_amc.*','md_rnt.rnt_name as rnt_name')
                         ->where('md_amc.delete_flag','N')
                         ->orderBy('md_amc.updated_at','DESC')
-                        ->paginate($paginate);    
+                        ->get();    
             }  
         } catch (\Throwable $th) {
             // throw $th;

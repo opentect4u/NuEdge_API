@@ -10,7 +10,8 @@ use App\Models\{
     Client,
     FormReceived,
     MutualFundTransaction,
-    MFTransTypeSubType
+    MFTransTypeSubType,
+    NAVDetailsSec
 };
 use Validator;
 use Illuminate\Support\Carbon;
@@ -105,6 +106,8 @@ class LiveMFPController extends Controller
                     ->select('trans_date')
                     ->orderBy('trans_date','ASC')
                     ->first();
+                // $value->inv_since=DB::table('td_mutual_fund_trans')
+                //     ->select('SELECT trans_date FROM td_nav_details_part_yearly WHERE folio_no="'.$value->folio_no.'" AND product_code="'.$value->product_code.'" ORDER BY ASC limit 1');
                 // $f_trans_product="(product_code='".$value->product_code."' and nav_date=DATE '".date('Y-m-d',strtotime($value->inv_since->trans_date))."')";
                 $f_trans_product="(product_code='".$value->product_code."' and nav_date='".$value->inv_since->trans_date."')";
                 array_push($all_trans_product,$f_trans_product);
@@ -117,31 +120,34 @@ class LiveMFPController extends Controller
             }
             $string_version_product_code = implode(',', $all_trans_product);
             // return $string_version_product_code;
-            $response =DB::connection('mysql_nav')->select('SELECT * FROM td_nav_details where '.str_replace(",","  OR  ",$string_version_product_code) );
-            return $response;
-            $curl = curl_init();
-            curl_setopt_array($curl, array(
-                CURLOPT_URL => env('AWS_LAMBDA_URL'),
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_ENCODING => '',
-                CURLOPT_MAXREDIRS => 10,
-                CURLOPT_TIMEOUT => 0,
-                CURLOPT_FOLLOWLOCATION => true,
-                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                CURLOPT_CUSTOMREQUEST => 'GET',
-                CURLOPT_POSTFIELDS =>'{
-                    "product_code":"'.$string_version_product_code.'",
-                    "nav_date":""
-                }',
-                CURLOPT_HTTPHEADER => array(
-                    'x-api-key: '.env('AWS_LAMBDA_API_KEY').'',
-                    'Content-Type: text/plain'
-                ),
-            ));
-            $response = curl_exec($curl);
-            curl_close($curl);
+            // $response =DB::connection('mysql_nav')->select('SELECT * FROM td_nav_details where '.str_replace(",","  OR  ",$string_version_product_code) );
+            // $response =DB::connection('mysql_nav')->select('SELECT * FROM td_nav_details_partition where '.str_replace(",","  OR  ",$string_version_product_code) );
+            $res_array =DB::connection('mysql_nav')
+                ->select('SELECT * FROM td_nav_details_part_yearly where '.str_replace(",","  OR  ",$string_version_product_code));
             // return $response;
-            $res_array = json_decode($response, true);
+            // $curl = curl_init();
+            // curl_setopt_array($curl, array(
+            //     CURLOPT_URL => env('AWS_LAMBDA_URL'),
+            //     CURLOPT_RETURNTRANSFER => true,
+            //     CURLOPT_ENCODING => '',
+            //     CURLOPT_MAXREDIRS => 10,
+            //     CURLOPT_TIMEOUT => 0,
+            //     CURLOPT_FOLLOWLOCATION => true,
+            //     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            //     CURLOPT_CUSTOMREQUEST => 'GET',
+            //     CURLOPT_POSTFIELDS =>'{
+            //         "product_code":"'.$string_version_product_code.'",
+            //         "nav_date":""
+            //     }',
+            //     CURLOPT_HTTPHEADER => array(
+            //         'x-api-key: '.env('AWS_LAMBDA_API_KEY').'',
+            //         'Content-Type: text/plain'
+            //     ),
+            // ));
+            // $response = curl_exec($curl);
+            // curl_close($curl);
+            // return $response;
+            // $res_array = json_decode($response, true);
             // return $res_array;
             $filter_data=[];
             foreach ($data as $key => $value1) {
@@ -149,7 +155,8 @@ class LiveMFPController extends Controller
                 $product_code=$value1->product_code;
                 if ($res_array) {
                     $new = array_filter($res_array, function ($var) use ($inv_since,$product_code) {
-                        return ($var['nav_date'] == $inv_since && $var['product_code'] == $product_code);
+                        // return ($var['nav_date'] == $inv_since && $var['product_code'] == $product_code);
+                        return ($var->nav_date == $inv_since && $var->product_code == $product_code);
                     });
                 }else {
                     $new='';

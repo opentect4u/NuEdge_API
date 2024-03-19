@@ -24,42 +24,43 @@ class RNTController extends Controller
             if ($paginate=='A') {
                 $paginate=999999999;
             }
-            if ($order && $field) {
-                $rawOrderBy='';
-                if ($order > 0) {
-                    $rawOrderBy=$field.' ASC';
-                } else {
-                    $rawOrderBy=$field.' DESC';
-                }
+            // if ($order && $field) {
+            //     $rawOrderBy='';
+            //     if ($order > 0) {
+            //         $rawOrderBy=$field.' ASC';
+            //     } else {
+            //         $rawOrderBy=$field.' DESC';
+            //     }
 
-                if ($rnt_id ||  $contact_person) {
-                    $rawQuery='';
-                    if (!empty($rnt_id)) {
-                        $rnt_id_string= implode(',', $rnt_id);
-                        if (strlen($rawQuery) > 0) {
-                            $rawQuery.=" AND id IN (".$rnt_id_string.")";
-                        }else {
-                            $rawQuery.=" id IN (".$rnt_id_string.")";
-                        }
-                    }
-                    if ($contact_person) {
-                        if (strlen($rawQuery) > 0) {
-                            $rawQuery.=" AND head_ofc_contact_per LIKE'%".$contact_person."%'";
-                        }else {
-                            $rawQuery.=" head_ofc_contact_per LIKE '%".$contact_person."%'";
-                        }
-                        $rawQuery.=" OR head_ofc_contact_per LIKE'%".$contact_person."%'";
-                    }
-                    $data=RNT::where('delete_flag','N')
-                        ->whereRaw($rawQuery)
-                        ->orderByRaw($rawOrderBy)
-                        ->paginate($paginate);
-                }else {
-                    $data=RNT::where('delete_flag','N')
-                        ->orderByRaw($raw)
-                        ->paginate($paginate);
-                }
-            }elseif (!empty($rnt_id) || $contact_person) {
+            //     if ($rnt_id ||  $contact_person) {
+            //         $rawQuery='';
+            //         if (!empty($rnt_id)) {
+            //             $rnt_id_string= implode(',', $rnt_id);
+            //             if (strlen($rawQuery) > 0) {
+            //                 $rawQuery.=" AND id IN (".$rnt_id_string.")";
+            //             }else {
+            //                 $rawQuery.=" id IN (".$rnt_id_string.")";
+            //             }
+            //         }
+            //         if ($contact_person) {
+            //             if (strlen($rawQuery) > 0) {
+            //                 $rawQuery.=" AND head_ofc_contact_per LIKE'%".$contact_person."%'";
+            //             }else {
+            //                 $rawQuery.=" head_ofc_contact_per LIKE '%".$contact_person."%'";
+            //             }
+            //             $rawQuery.=" OR head_ofc_contact_per LIKE'%".$contact_person."%'";
+            //         }
+            //         $data=RNT::where('delete_flag','N')
+            //             ->whereRaw($rawQuery)
+            //             ->orderByRaw($rawOrderBy)
+            //             ->paginate($paginate);
+            //     }else {
+            //         $data=RNT::where('delete_flag','N')
+            //             ->orderByRaw($raw)
+            //             ->paginate($paginate);
+            //     }
+            // }else
+            if (!empty($rnt_id) || $contact_person) {
                 $rawQuery='';
                 if (!empty($rnt_id)) {
                     $rnt_id_string= implode(',', $rnt_id);
@@ -81,11 +82,11 @@ class RNTController extends Controller
                 $data=RNT::where('delete_flag','N')
                     ->whereRaw($rawQuery)
                     ->orderBy('updated_at','DESC')
-                    ->paginate($paginate);
+                    ->get();
             } else {
                 $data=RNT::where('delete_flag','N')
                     ->orderBy('updated_at','DESC')
-                    ->paginate($paginate);
+                    ->get();
             }
 
         } catch (\Throwable $th) {

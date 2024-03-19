@@ -22,9 +22,9 @@ class SWPTypeController extends Controller
             }
             if ($swp_type_name) {
                 $data=SWPType::where('swp_type_name','like', '%' . $swp_type_name . '%')
-                    ->paginate($paginate); 
+                    ->get(); 
             }else {
-                $data=SWPType::paginate($paginate); 
+                $data=SWPType::get(); 
             }
         } catch (\Throwable $th) {
             //throw $th;

@@ -25,11 +25,11 @@ class TransctionTypeController extends Controller
                 $data=TransctionType::where('product_id',$product_id)
                     ->where('trns_type','like', '%' . $trns_type . '%')
                     ->orderBy('updated_at','DESC')
-                    ->paginate($paginate); 
+                    ->get(); 
             } else {
                 $data=TransctionType::where('product_id',$product_id)
                     ->orderBy('updated_at','DESC')
-                    ->paginate($paginate); 
+                    ->get(); 
             }
         } catch (\Throwable $th) {
             //throw $th;

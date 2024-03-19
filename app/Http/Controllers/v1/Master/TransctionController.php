@@ -29,27 +29,27 @@ class TransctionController extends Controller
                     ->where('md_trans.trans_type_id',$trns_type_id)
                     ->where('md_trans.trns_name','like', '%' . $trns_name . '%')
                     ->orderBy('md_trans.updated_at','DESC')
-                    ->paginate($paginate); 
+                    ->get(); 
             } elseif ($trns_name) {
                 $data=Transction::join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
                     ->select('md_trans.*','md_trns_type.trns_type as trns_type')
                     ->where('md_trns_type.product_id',$product_id)
                     ->where('md_trans.trns_name','like', '%' . $trns_name . '%')
                     ->orderBy('md_trans.updated_at','DESC')
-                    ->paginate($paginate); 
+                    ->get(); 
             }elseif ($trns_type_id) {
                 $data=Transction::join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
                     ->select('md_trans.*','md_trns_type.trns_type as trns_type')
                     ->where('md_trns_type.product_id',$product_id)
                     ->where('md_trans.trans_type_id',$trns_type_id)
                     ->orderBy('md_trans.updated_at','DESC')
-                    ->paginate($paginate); 
+                    ->get(); 
             } else {
                 $data=Transction::join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
                     ->select('md_trans.*','md_trns_type.trns_type as trns_type')
                     ->where('md_trns_type.product_id',$product_id)
                     ->orderBy('md_trans.updated_at','DESC')
-                    ->paginate($paginate);    
+                    ->get();    
             }   
         } catch (\Throwable $th) {
             //throw $th;

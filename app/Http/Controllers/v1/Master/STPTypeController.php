@@ -20,15 +20,16 @@ class STPTypeController extends Controller
             if ($paginate=='A') {
                 $paginate=999999999;
             }
-            if ($sort_by && $column_name) {
+            // if ($sort_by && $column_name) {
+            //     $data=STPType::where('stp_type_name','like', '%' . $stp_type_name . '%')
+            //         ->orderBy($column_name,$sort_by)
+            //         ->paginate($paginate); 
+            // }else
+            if ($stp_type_name) {
                 $data=STPType::where('stp_type_name','like', '%' . $stp_type_name . '%')
-                    ->orderBy($column_name,$sort_by)
-                    ->paginate($paginate); 
-            }elseif ($stp_type_name) {
-                $data=STPType::where('stp_type_name','like', '%' . $stp_type_name . '%')
-                    ->paginate($paginate); 
+                    ->get(); 
             }else {
-                $data=STPType::paginate($paginate); 
+                $data=STPType::get(); 
             }
         } catch (\Throwable $th) {
             //throw $th;

@@ -20,7 +20,8 @@ class DocumentTypeController extends Controller
             $sort_by=$request->sort_by;
             $column_name=$request->column_name;
             $data=DocumentType::where('doc_type','like', '%' . $doc_type . '%')
-                ->orderBy('updated_at','DESC')->paginate($paginate);      
+                ->orderBy('updated_at','DESC')
+                ->get();      
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
