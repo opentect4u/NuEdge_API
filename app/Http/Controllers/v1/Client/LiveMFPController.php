@@ -83,7 +83,7 @@ class LiveMFPController extends Controller
             //     // ->take(5)
             //     ->get();
             // dd(DB::getQueryLog());
-            $all_data=DB::select("SELECT  folio_no,scheme_name,cat_name,product_code,
+            $all_data=DB::select("SELECT rnt_id,folio_no,scheme_name,cat_name,product_code,
                 subcat_name,amc_name,plan_name,option_name,isin_no,nifty50,sensex,
                 SUM(units) AS tot_units, 
                 SUM(amount) AS inv_cost, 
@@ -91,8 +91,9 @@ class LiveMFPController extends Controller
                 SUM(tds) AS tot_tds, 
                 COUNT(*) AS tot_rows FROM `portfolio_report` 
                 WHERE first_client_pan='".$pan_no."'
+                and trans_date <='".$valuation_as_on."'
                 GROUP BY scheme_name,cat_name,product_code,
-                subcat_name,amc_name,plan_name,option_name,isin_no,nifty50,sensex
+                subcat_name,amc_name,plan_name,option_name,isin_no
                 ORDER BY scheme_name ASC");
             // dd(DB::getQueryLog());
             // return $all_data;
@@ -101,71 +102,44 @@ class LiveMFPController extends Controller
             foreach ($all_data as $key => $value) {
                 $value->nifty50=0;
                 $value->sensex=0;
-                $value->inv_since=MutualFundTransaction::where('folio_no',$value->folio_no)
+                $fetch=MutualFundTransaction::where('folio_no',$value->folio_no)
                     ->where('product_code',$value->product_code)
-                    ->select('trans_date')
+                    ->select('trans_date','pur_price')
                     ->orderBy('trans_date','ASC')
                     ->first();
-                // $value->inv_since=DB::table('td_mutual_fund_trans')
-                //     ->select('SELECT trans_date FROM td_nav_details_part_yearly WHERE folio_no="'.$value->folio_no.'" AND product_code="'.$value->product_code.'" ORDER BY ASC limit 1');
-                // $f_trans_product="(product_code='".$value->product_code."' and nav_date=DATE '".date('Y-m-d',strtotime($value->inv_since->trans_date))."')";
-                $f_trans_product="(product_code='".$value->product_code."' and nav_date='".$value->inv_since->trans_date."')";
+                // return $fetch;
+                $value->inv_since=$fetch->trans_date;
+                $value->pur_nav=$fetch->pur_price;
+                $f_trans_product="(product_code='".$value->product_code."' and nav_date='".$value->inv_since."')";
                 array_push($all_trans_product,$f_trans_product);
-                $value->pur_nav=MutualFundTransaction::where('folio_no',$value->folio_no)
-                    ->where('product_code',$value->product_code)
-                    ->select('pur_price')
-                    ->orderBy('trans_date','ASC')
-                    ->first();
                 array_push($data,$value);
             }
+            // return $data;
             $string_version_product_code = implode(',', $all_trans_product);
             // return $string_version_product_code;
             // $response =DB::connection('mysql_nav')->select('SELECT * FROM td_nav_details where '.str_replace(",","  OR  ",$string_version_product_code) );
             // $response =DB::connection('mysql_nav')->select('SELECT * FROM td_nav_details_partition where '.str_replace(",","  OR  ",$string_version_product_code) );
             $res_array =DB::connection('mysql_nav')
-                ->select('SELECT * FROM td_nav_details_part_yearly where '.str_replace(",","  OR  ",$string_version_product_code));
-            // return $response;
-            // $curl = curl_init();
-            // curl_setopt_array($curl, array(
-            //     CURLOPT_URL => env('AWS_LAMBDA_URL'),
-            //     CURLOPT_RETURNTRANSFER => true,
-            //     CURLOPT_ENCODING => '',
-            //     CURLOPT_MAXREDIRS => 10,
-            //     CURLOPT_TIMEOUT => 0,
-            //     CURLOPT_FOLLOWLOCATION => true,
-            //     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            //     CURLOPT_CUSTOMREQUEST => 'GET',
-            //     CURLOPT_POSTFIELDS =>'{
-            //         "product_code":"'.$string_version_product_code.'",
-            //         "nav_date":""
-            //     }',
-            //     CURLOPT_HTTPHEADER => array(
-            //         'x-api-key: '.env('AWS_LAMBDA_API_KEY').'',
-            //         'Content-Type: text/plain'
-            //     ),
-            // ));
-            // $response = curl_exec($curl);
-            // curl_close($curl);
-            // return $response;
-            // $res_array = json_decode($response, true);
+                ->select('SELECT product_code,isin_no,DATE_FORMAT(nav_date, "%Y-%m-%d") as nav_date,nav FROM td_nav_details_part_yearly where '.str_replace(",","  OR  ",$string_version_product_code));
             // return $res_array;
             $filter_data=[];
             foreach ($data as $key => $value1) {
-                $inv_since=date('Y-m-d',strtotime($value1->inv_since->trans_date));
+                $inv_since=date('Y-m-d',strtotime($value1->inv_since));
                 $product_code=$value1->product_code;
+                // return $inv_since.$product_code;
                 if ($res_array) {
                     $new = array_filter($res_array, function ($var) use ($inv_since,$product_code) {
                         // return ($var['nav_date'] == $inv_since && $var['product_code'] == $product_code);
                         return ($var->nav_date == $inv_since && $var->product_code == $product_code);
                     });
+                    // return $new;
                 }else {
                     $new='';
                 }
                 // return $new;
                 $value1->new=$new;
-
-                $value1->curr_nav=0;
-                $value1->nav_date=NULL;
+                $value1->curr_nav=isset($new[0]->nav)?$new[0]->nav:0;
+                $value1->nav_date=isset($new[0]->nav_date)?$new[0]->nav_date:NULL;
                 $value1->curr_val=$value1->curr_nav * $value1->tot_units;
                 $value1->gain_loss=$value1->curr_val - $value1->inv_cost;
                 if ($value1->gain_loss==0 || $value1->inv_cost==0) {
@@ -201,7 +175,8 @@ class LiveMFPController extends Controller
             $isin_no=$request->isin_no;
             $product_code=$request->product_code;
             $nav_date=$request->nav_date;
-           
+            $valuation_as_on=$request->valuation_as_on;
+
             $rawQuery='';
             $queryString='td_mutual_fund_trans.folio_no';
             $rawQuery.=Helper::WhereRawQuery($folio_no,$rawQuery,$queryString);
@@ -211,7 +186,14 @@ class LiveMFPController extends Controller
                 $queryString='td_mutual_fund_trans.isin_no';
                 $rawQuery.=Helper::WhereRawQuery($isin_no,$rawQuery,$queryString);
             } 
-            $current_nav=DB::select('SELECT nav,nav_date FROM td_nav_details WHERE product_code="'.$request->product_code.'" AND DATE(nav_date) = (SELECT MAX(DATE(nav_date)) FROM td_nav_details WHERE product_code="'.$request->product_code.'" AND DATE(nav_date) <= DATE("'.$nav_date.'"))');
+            $condition=(strlen($rawQuery) > 0)? " AND ":" ";
+            $queryString='td_mutual_fund_trans.trans_date';
+            $rawQuery.=$condition.$queryString." <= '".$valuation_as_on."'";
+            // return $rawQuery;
+
+
+            $current_nav=DB::connection('mysql_nav')
+                ->select('SELECT nav,nav_date FROM td_nav_details WHERE product_code="'.$request->product_code.'" AND DATE(nav_date) = (SELECT MAX(DATE(nav_date)) FROM td_nav_details WHERE product_code="'.$request->product_code.'" AND DATE(nav_date) <= DATE("'.$nav_date.'"))');
             // return $current_nav;
             // DB::enableQueryLog();
             $all_data=MutualFundTransaction::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_mutual_fund_trans.product_code')

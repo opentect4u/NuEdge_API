@@ -12,6 +12,7 @@ use App\Models\{
 };
 use App\Helpers\TransHelper;
 use App\Helpers\Helper;
+use Hash;
 
 class TestController extends Controller
 {
@@ -294,6 +295,42 @@ class TestController extends Controller
 
     public function testing(Request $request)
     {
+        // td_nav_details_part_yearly
+        // $data=DB::connection('mysql_nav')
+        //     ->table('td_nav_details_part_yearly as n')
+        //     ->select([
+        //         'n.nav_date as nav_date',
+        //         'n.nav as nav',
+        //         'm.plan_id as plan_id',
+        //         'm.option_id as option_id',
+        //         'm.scheme_id as scheme_id'
+        //     ])
+        //     ->leftJoin('md_scheme_isin as m', 'n.product_code', 'm.product_code')
+        //     // ->leftJoin('updates as u', 'p.ID', 'u.related_product')
+        //     ->where('n.product_code', 'FTI025')
+        //     ->whereDate('n.nav_date', '2024-01-01')
+        //     // ->where('old_version', '!=', 'new_version')
+        //     // ->groupBy('p.ID')
+        //     // ->orderBy('id', 'ASC')
+        //     ->take(10)
+        //     ->get();
+        DB::enableQueryLog();
+        // DATE_FORMAT(nav_date, "%Y-%m-%d")
+        $data=DB::select('select 
+        admin_nav.td_nav_details_part_yearly.nav_date as nav_date,
+        admin_nav.td_nav_details_part_yearly.nav as nav,
+        nuedge.md_scheme_isin.plan_id as plan_id,
+        nuedge.md_scheme_isin.option_id as option_id,
+        nuedge.md_scheme_isin.scheme_id as scheme_id
+        from admin_nav.td_nav_details_part_yearly
+        LEFT JOIN nuedge.md_scheme_isin
+        ON admin_nav.td_nav_details_part_yearly.product_code = nuedge.md_scheme_isin.product_code
+        where admin_nav.td_nav_details_part_yearly.product_code="FTI025"
+        AND date(admin_nav.td_nav_details_part_yearly.nav_date)="2024-01-01" limit 1');
+        // $data=DB::select('select * from admin_nav.td_nav_details_part_yearly limit 1');
+        dd(DB::getQueryLog());
+        return $data;
+        return Hash::make('@Laptop123');
         // return $request;
         $fin_year='2023-2024';
         // $fin_year='2022-2023';
