@@ -139,7 +139,7 @@ class LiveMFPController extends Controller
                 // return $new;
                 $value1->new=$new;
                 $value1->curr_nav=isset($new[0]->nav)?$new[0]->nav:0;
-                $value1->nav_date=isset($new[0]->nav_date)?$new[0]->nav_date:NULL;
+                $value1->nav_date=isset($new[0]->nav_date)?$new[0]->nav_date:$valuation_as_on;
                 $value1->curr_val=$value1->curr_nav * $value1->tot_units;
                 $value1->gain_loss=$value1->curr_val - $value1->inv_cost;
                 if ($value1->gain_loss==0 || $value1->inv_cost==0) {

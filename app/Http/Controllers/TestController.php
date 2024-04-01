@@ -295,6 +295,14 @@ class TestController extends Controller
 
     public function testing(Request $request)
     {
+
+        // return 'hii';
+
+        $data=DB::connection('mysql_nav')
+                ->select('SELECT * FROM td_nav_details WHERE scheme_flag="Y" GROUP BY product_code');
+
+        return $data;
+        
         // td_nav_details_part_yearly
         // $data=DB::connection('mysql_nav')
         //     ->table('td_nav_details_part_yearly as n')
