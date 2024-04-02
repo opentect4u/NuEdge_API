@@ -120,7 +120,7 @@ class LiveMFPController extends Controller
             // $response =DB::connection('mysql_nav')->select('SELECT * FROM td_nav_details where '.str_replace(",","  OR  ",$string_version_product_code) );
             // $response =DB::connection('mysql_nav')->select('SELECT * FROM td_nav_details_partition where '.str_replace(",","  OR  ",$string_version_product_code) );
             $res_array =DB::connection('mysql_nav')
-                ->select('SELECT product_code,isin_no,DATE_FORMAT(nav_date, "%Y-%m-%d") as nav_date,nav FROM td_nav_details where '.str_replace(",","  OR  ",$string_version_product_code));
+                ->select('SELECT product_code,isin_no,DATE_FORMAT(nav_date, "%Y-%m-%d") as nav_date,nav FROM td_nav_details_part_yearly where '.str_replace(",","  OR  ",$string_version_product_code));
             // return $res_array;
             $filter_data=[];
             foreach ($data as $key => $value1) {
