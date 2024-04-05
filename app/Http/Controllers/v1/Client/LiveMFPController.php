@@ -77,6 +77,10 @@ class LiveMFPController extends Controller
                 ->selectRaw('sum(td_mutual_fund_trans.stamp_duty) as tot_stamp_duty')
                 ->selectRaw('sum(td_mutual_fund_trans.tds) as tot_tds')
                 ->selectRaw('count(*) as tot_rows')
+                
+                ->selectRaw('(select close from td_benchmark_scheme where benchmark=1 AND date=td_mutual_fund_trans.trans_date) as nifty50')
+                ->selectRaw('(select close from td_benchmark_scheme where benchmark=70 AND date=td_mutual_fund_trans.trans_date) as sensex')
+
                 ->where('td_mutual_fund_trans.delete_flag','N')
                 ->where('td_mutual_fund_trans.amc_flag','N')
                 ->where('td_mutual_fund_trans.scheme_flag','N')
