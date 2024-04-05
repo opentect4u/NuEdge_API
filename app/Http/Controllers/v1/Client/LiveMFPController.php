@@ -86,7 +86,8 @@ class LiveMFPController extends Controller
                 ->whereRaw($rawQuery)
                 ->groupBy('td_mutual_fund_trans.product_code')
                 ->groupBy('td_mutual_fund_trans.isin_no')
-                ->orderBy('md_scheme.trans_date','ASC')
+                // ->orderBy('md_scheme.scheme_name','ASC')
+                ->orderBy('td_mutual_fund_trans.trans_date','ASC')
                 ->get();
             // dd(DB::getQueryLog());
             // $all_data=DB::select("SELECT rnt_id,folio_no,scheme_name,cat_name,product_code,
