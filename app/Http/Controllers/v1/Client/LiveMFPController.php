@@ -386,7 +386,7 @@ class LiveMFPController extends Controller
                 // return  $deduct_unit_array;
                 $purchase_data=$deduct_unit_array;
             }
-            // return $purchase_data;
+            return $purchase_data;
             // $purchase_data=[];
             // $redemption_data=[];
             $final_arr=array_merge($purchase_data,$redemption_data);
