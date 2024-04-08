@@ -327,6 +327,7 @@ class LiveMFPController extends Controller
                     }
                 }
             // return $purchase_data;
+            return $redemption_data;
             // $deduct_unit_array=[];
             foreach ($redemption_data as $redemption_key => $redemption_value) {
                 $rdm_tot_units=$redemption_value->tot_units;
