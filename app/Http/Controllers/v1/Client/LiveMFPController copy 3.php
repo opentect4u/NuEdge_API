@@ -31,15 +31,10 @@ class LiveMFPController extends Controller
             $client_name=$request->client_name;
 
             $client_details='';
-            if ($view_type || $valuation_as_on) {
+            if ($view_type ) {
                 $rawQuery='';
-                if ($valuation_as_on) {
-                    $condition_v=(strlen($rawQuery) > 0)? " AND ":" ";
-                    $queryString='td_mutual_fund_trans.trans_date';
-                    $rawQuery.=$condition_v.$queryString."<= '".$valuation_as_on."'";
-                }
+                $client_rawQuery='';
                 if ($view_type=='C') {
-                    $client_rawQuery='';
                     if (!$pan_no) {
                         $queryString='td_mutual_fund_trans.first_client_name';
                         $rawQuery.=Helper::WhereRawQuery($client_name,$rawQuery,$queryString);
@@ -83,6 +78,7 @@ class LiveMFPController extends Controller
                 ->selectRaw('count(*) as tot_rows')
                 ->selectRaw('(select close from td_benchmark_scheme where benchmark=1 AND DATE(date)=DATE(td_mutual_fund_trans.trans_date)) as nifty50')
                 ->selectRaw('(select close from td_benchmark_scheme where benchmark=70 AND DATE(date)=DATE(td_mutual_fund_trans.trans_date)) as sensex')
+
                 ->where('td_mutual_fund_trans.delete_flag','N')
                 ->where('td_mutual_fund_trans.amc_flag','N')
                 ->where('td_mutual_fund_trans.scheme_flag','N')
@@ -114,38 +110,47 @@ class LiveMFPController extends Controller
             $all_trans_product=[];
             $data=[];
             foreach ($all_data as $key => $value) {
+                // $fetch=MutualFundTransaction::where('folio_no',$value->folio_no)
+                //     ->where('product_code',$value->product_code)
+                //     ->select('trans_date','pur_price')
+                //     ->orderBy('trans_date','ASC')
+                //     ->first();
+                // return $fetch;
+                // $value['inv_since']=date('Y-m-d',strtotime($value['trans_date']));
+                // $value['pur_nav']=$value['pur_price'];
                 $value->inv_since=date('Y-m-d',strtotime($value->trans_date));
                 $value->pur_nav=$value->pur_price;
-                $f_trans_product="(nav_date=(SELECT MAX(nav_date) FROM td_nav_details WHERE product_code='".$value->product_code."' AND DATE(nav_date) <= DATE('".$valuation_as_on."')) AND product_code='".$value->product_code."')";
+                $f_trans_product="(nav_date='".$value->inv_since."' AND product_code='".$value->product_code."')";
                 array_push($all_trans_product,$f_trans_product);
                 array_push($data,$value);
+                // $data->push($value);
             }
+            // return $data;
             $string_version_product_code = implode(',', $all_trans_product);
             // return $string_version_product_code;
+            // $response =DB::connection('mysql_nav')->select('SELECT * FROM td_nav_details where '.str_replace(",","  OR  ",$string_version_product_code) );
+            // $response =DB::connection('mysql_nav')->select('SELECT * FROM td_nav_details_partition where '.str_replace(",","  OR  ",$string_version_product_code) );
             $res_array =DB::connection('mysql_nav')
                 ->select('SELECT product_code,isin_no,DATE_FORMAT(nav_date, "%Y-%m-%d") as nav_date,nav FROM td_nav_details where '.str_replace(",","  OR  ",$string_version_product_code));
             // return $res_array;
             $filter_data=[];
             foreach ($data as $key => $value1) {
-                $isin_no=$value1->isin_no;
+                $inv_since=date('Y-m-d',strtotime($value1->inv_since));
                 $product_code=$value1->product_code;
-                $new='';
+                // return $inv_since.$product_code;
                 if (count($res_array) > 0) {
-                    foreach($res_array as $val_nav){
-                        if($val_nav->product_code==$product_code){
-                            $new=$val_nav;
-                        }
-                    }
-                    // $new = array_filter($res_array, function ($var) use ($product_code) {
-                    //     return  $var->product_code == $product_code;
-                    // });
+                    $new = array_filter($res_array, function ($var) use ($inv_since,$product_code) {
+                        // return ($var['nav_date'] == $inv_since && $var['product_code'] == $product_code);
+                        return ($var->nav_date == $inv_since && $var->product_code == $product_code);
+                    });
+                    // return $new;
+                }else {
+                    $new='';
                 }
-                // return $new;
+                // return $new->nav;
                 $value1->new=$new;
-                // $value1->curr_nav=isset($new[0]->nav)?$new[0]->nav:0;
-                // $value1->nav_date=isset($new[0]->nav_date)?$new[0]->nav_date:0;
-                $value1->curr_nav=isset($new->nav)?$new->nav:0;
-                $value1->nav_date=isset($new->nav_date)?$new->nav_date:0;
+                $value1->curr_nav=isset($new[0]->nav)?$new[0]->nav:0;
+                $value1->nav_date=isset($new[0]->nav_date)?$new[0]->nav_date:$valuation_as_on;
                 $value1->curr_val=$value1->curr_nav * $value1->tot_units;
                 $value1->gain_loss=$value1->curr_val - $value1->inv_cost;
                 if ($value1->gain_loss==0 || $value1->inv_cost==0) {
@@ -199,7 +204,7 @@ class LiveMFPController extends Controller
 
 
             $current_nav=DB::connection('mysql_nav')
-                ->select('SELECT nav,nav_date FROM td_nav_details WHERE product_code="'.$request->product_code.'" AND DATE(nav_date) = (SELECT MAX(DATE(nav_date)) FROM td_nav_details WHERE product_code="'.$request->product_code.'" AND DATE(nav_date) <= DATE("'.$valuation_as_on.'"))');
+                ->select('SELECT nav,nav_date FROM td_nav_details WHERE product_code="'.$request->product_code.'" AND DATE(nav_date) = (SELECT MAX(DATE(nav_date)) FROM td_nav_details WHERE product_code="'.$request->product_code.'" AND DATE(nav_date) <= DATE("'.$nav_date.'"))');
             // return $current_nav;
             // DB::enableQueryLog();
             $all_data=MutualFundTransaction::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_mutual_fund_trans.product_code')
@@ -214,8 +219,10 @@ class LiveMFPController extends Controller
                 ->selectRaw('sum(stamp_duty) as tot_stamp_duty')
                 ->selectRaw('sum(tds) as tot_tds')
                 ->selectRaw('count(*) as tot_rows')
+
                 ->selectRaw('(select close from td_benchmark_scheme where benchmark=1 AND date=td_mutual_fund_trans.trans_date) as nifty50')
                 ->selectRaw('(select close from td_benchmark_scheme where benchmark=70 AND date=td_mutual_fund_trans.trans_date) as sensex')
+
                 ->where('td_mutual_fund_trans.delete_flag','N')
                 ->where('td_mutual_fund_trans.amc_flag','N')
                 ->where('td_mutual_fund_trans.scheme_flag','N')
@@ -232,9 +239,7 @@ class LiveMFPController extends Controller
                 ->get();
             // dd(DB::getQueryLog());
             // return $all_data;
-            $data=[];
-            $purchase_data=[];
-            $redemption_data=[];
+                $data=[];
                 foreach ($all_data as $key => $value) {
                     $euin=$value->euin_no;
                     $trans_no=$value->trans_no;
@@ -313,88 +318,12 @@ class LiveMFPController extends Controller
                     $cagr = pow((6193.43/4561),(1/$nper)) - 1; */
 
                     array_push($data,$value);
-                    if( strpos($value->transaction_subtype, 'Purchase' )!== false ) {
-                        if ($key > 0) {
-                            $value->cumml_units=$value->tot_units + $all_data[($key-1)]->cumml_units ;
-                        }else {
-                            $value->cumml_units=$value->tot_units;
-                        }
-                        array_push($purchase_data,$value);
-                    }
-                    if( strpos($value->transaction_subtype, 'Redemption' )!== false ) {
-                        $value->cumml_units=0;
-                        array_push($redemption_data,$value);
-                    }
                 }
-            // return $purchase_data;
-            // $deduct_unit_array=[];
-            foreach ($redemption_data as $redemption_key => $redemption_value) {
-                $rdm_tot_units=$redemption_value->tot_units;
-                // $rdm_tot_units=57.247;
-                $deduct_unit_array=[];
-                foreach ($purchase_data as $purchase_key => $purchase_value) {
-                    if ($purchase_value['cumml_units'] >= 0) {
-                        // if ($purchase_key==0) {
-                        //     return $purchase_value['cumml_units']."-----".$rdm_tot_units;
-                        // }
-                        $purchase_cumml_units=$purchase_value['cumml_units'];
-                        $purchase_value['cumml_units']=$purchase_cumml_units - $rdm_tot_units;
-                        // return $purchase_value['cumml_units'];
-                        if ($purchase_cumml_units==$rdm_tot_units) {
-                            // return 'if';
-                            $set_units=$purchase_value['cumml_units'];
-                            $purchase_value['cumml_units']=0;
-                            array_push($deduct_unit_array,$purchase_value);
-                            $rdm_tot_units=0;
-                            $newarr=[];
-                            $newarr['id']=$purchase_value['id'];
-                            $newarr['transaction_type']="Remaining";
-                            $newarr['transaction_subtype']="Remaining";
-                            $newarr['tot_units']=$set_units;
-                            $newarr['cumml_units']=$set_units;
-                            array_push($deduct_unit_array,$newarr);
-                            // return $deduct_unit_array;
-                        } else {
-                            // return 'else';
-                            if ($purchase_value['cumml_units'] > 0 ) {
-                                if ($purchase_data[($purchase_key - 1)]['cumml_units'] < 0) {
-                                    $set_units=$purchase_value['cumml_units'];
-                                    $purchase_value['cumml_units']=0;
-                                    array_push($deduct_unit_array,$purchase_value);
-                                    $rdm_tot_units=0;
-                                    $newarr=[];
-                                    $newarr['id']=$purchase_value['id'];
-                                    $newarr['transaction_type']="Remaining";
-                                    $newarr['transaction_subtype']="Remaining";
-                                    $newarr['tot_units']=$set_units;
-                                    $newarr['cumml_units']=$set_units;
-                                    array_push($deduct_unit_array,$newarr);
-                                }else {
-                                    $purchase_value['cumml_units']=$purchase_value['tot_units'] + $deduct_unit_array[(count($deduct_unit_array)-1)]['cumml_units'] ;
-                                    array_push($deduct_unit_array,$purchase_value);
-                                }
-                            }else {
-                                // return 'else1';
-                                array_push($deduct_unit_array,$purchase_value);
-                                // return $deduct_unit_array;
-                            }
-                        }
-                    }else {
-                        array_push($deduct_unit_array,$purchase_value);
-                    }
-                }
-                // return  $deduct_unit_array;
-                $purchase_data=$deduct_unit_array;
-            }
-            // return $purchase_data;
-            // $purchase_data=[];
-            // $redemption_data=[];
-            $final_arr=array_merge($purchase_data,$redemption_data);
         } catch (\Throwable $th) {
             throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
-        return Helper::SuccessResponse($final_arr);
+        return Helper::SuccessResponse($data);
     }
 
     public function searchDetails(Request $request)
