@@ -240,8 +240,8 @@ class MonthlyMisController extends Controller
                         while(strtotime($end_date) >= strtotime($start_date))
                         {
                             if ($my_start_date==strtotime($end_date)) {
-                                $split_date=date("Y-m",strtotime($end_date));
-                                array_push($categories,date('M-Y',strtotime($split_date)));
+                                $split_date=date("Y-m-d",strtotime($end_date));
+                                array_push($categories,$split_date);
                                 // return $split_date;
                                 $rawQuery1='';
                                 $queryString='td_mutual_fund_trans.trans_date';
@@ -389,8 +389,8 @@ class MonthlyMisController extends Controller
                                 array_push($table_data,$myset_data);
                                 // return $myset_data;
                             }
-                            $end_date= date("Y-m",strtotime("-1 month",strtotime($end_date)));
-                            array_push($categories,date('M-Y',strtotime($end_date)));
+                            $end_date= date("Y-m-d",strtotime("-1 month",strtotime($end_date)));
+                            array_push($categories,$end_date);
 
                             $rawQuery1='';
                             $queryString='td_mutual_fund_trans.trans_date';

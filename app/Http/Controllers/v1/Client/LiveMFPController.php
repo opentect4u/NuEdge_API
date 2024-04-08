@@ -58,55 +58,41 @@ class LiveMFPController extends Controller
                     $rawQuery.=$condition1.$queryString." IN (".$row_name_string1."))";
                 }
             } 
-            // return $pan_no;
+            // return $rawQuery;
             // return $client_details;
             // DB::enableQueryLog();
-            // $all_data=MutualFundTransaction::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_mutual_fund_trans.product_code')
-            //     ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
-            //     ->leftJoin('md_category','md_category.id','=','md_scheme.category_id')
-            //     ->leftJoin('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
-            //     ->leftJoin('md_amc','md_amc.amc_code','=','td_mutual_fund_trans.amc_code')
-            //     ->leftJoin('md_plan','md_plan.id','=','md_scheme_isin.plan_id')
-            //     ->leftJoin('md_option','md_option.id','=','md_scheme_isin.option_id')
-            //     ->select('td_mutual_fund_trans.*','md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name','md_amc.amc_short_name as amc_name',
-            //     'md_plan.plan_name as plan_name','md_option.opt_name as option_name'
-            //     )
-            //     ->selectRaw('IF(td_mutual_fund_trans.rnt_id=1,md_scheme_isin.isin_no,td_mutual_fund_trans.isin_no) as isin_no')
-            //     ->selectRaw('sum(td_mutual_fund_trans.units) as tot_units')
-            //     ->selectRaw('sum(td_mutual_fund_trans.amount) as inv_cost')
-            //     ->selectRaw('sum(td_mutual_fund_trans.stamp_duty) as tot_stamp_duty')
-            //     ->selectRaw('sum(td_mutual_fund_trans.tds) as tot_tds')
-            //     ->selectRaw('count(*) as tot_rows')
-                
-            //     ->selectRaw('(select close from td_benchmark_scheme where benchmark=1 AND DATE(date)=DATE(td_mutual_fund_trans.trans_date)) as nifty50')
-            //     ->selectRaw('(select close from td_benchmark_scheme where benchmark=70 AND DATE(date)=DATE(td_mutual_fund_trans.trans_date)) as sensex')
+            $all_data=MutualFundTransaction::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_mutual_fund_trans.product_code')
+                ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
+                ->leftJoin('md_category','md_category.id','=','md_scheme.category_id')
+                ->leftJoin('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
+                ->leftJoin('md_amc','md_amc.amc_code','=','td_mutual_fund_trans.amc_code')
+                ->leftJoin('md_plan','md_plan.id','=','md_scheme_isin.plan_id')
+                ->leftJoin('md_option','md_option.id','=','md_scheme_isin.option_id')
+                ->select('td_mutual_fund_trans.*','md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name','md_amc.amc_short_name as amc_name',
+                'md_plan.plan_name as plan_name','md_option.opt_name as option_name')
+                ->selectRaw('IF(td_mutual_fund_trans.rnt_id=1,md_scheme_isin.isin_no,td_mutual_fund_trans.isin_no) as isin_no')
+                ->selectRaw('sum(td_mutual_fund_trans.units) as tot_units')
+                ->selectRaw('sum(td_mutual_fund_trans.amount) as inv_cost')
+                ->selectRaw('sum(td_mutual_fund_trans.stamp_duty) as tot_stamp_duty')
+                ->selectRaw('sum(td_mutual_fund_trans.tds) as tot_tds')
+                ->selectRaw('count(*) as tot_rows')
+                ->selectRaw('(select close from td_benchmark_scheme where benchmark=1 AND DATE(date)=DATE(td_mutual_fund_trans.trans_date)) as nifty50')
+                ->selectRaw('(select close from td_benchmark_scheme where benchmark=70 AND DATE(date)=DATE(td_mutual_fund_trans.trans_date)) as sensex')
 
-            //     ->where('td_mutual_fund_trans.delete_flag','N')
-            //     ->where('td_mutual_fund_trans.amc_flag','N')
-            //     ->where('td_mutual_fund_trans.scheme_flag','N')
-            //     ->where('td_mutual_fund_trans.plan_option_flag','N')
-            //     ->where('td_mutual_fund_trans.bu_type_flag','N')
-            //     ->where('td_mutual_fund_trans.divi_mismatch_flag','N')
-            //     ->whereRaw($rawQuery)
-            //     ->groupBy('td_mutual_fund_trans.product_code')
-            //     ->groupBy('td_mutual_fund_trans.isin_no')
-            //     // ->orderBy('md_scheme.scheme_name','ASC')
-            //     ->orderBy('td_mutual_fund_trans.trans_date','ASC')
-            //     ->get();
+                ->where('td_mutual_fund_trans.delete_flag','N')
+                ->where('td_mutual_fund_trans.amc_flag','N')
+                ->where('td_mutual_fund_trans.scheme_flag','N')
+                ->where('td_mutual_fund_trans.plan_option_flag','N')
+                ->where('td_mutual_fund_trans.bu_type_flag','N')
+                ->where('td_mutual_fund_trans.divi_mismatch_flag','N')
+                ->whereRaw($rawQuery)
+                ->groupBy('td_mutual_fund_trans.product_code')
+                ->groupBy('td_mutual_fund_trans.isin_no')
+                // ->orderBy('md_scheme.scheme_name','ASC')
+                ->orderBy('td_mutual_fund_trans.trans_date','ASC')
+                ->get();
             // dd(DB::getQueryLog());
-            $all_data=DB::select("SELECT rnt_id,folio_no,scheme_name,cat_name,product_code,
-                subcat_name,amc_name,plan_name,option_name,isin_no,nifty50,sensex,
-                SUM(units) AS tot_units, 
-                SUM(amount) AS inv_cost, 
-                SUM(stamp_duty) AS tot_stamp_duty, 
-                SUM(tds) AS tot_tds, 
-                COUNT(*) AS tot_rows FROM `portfolio_report` 
-                WHERE first_client_pan='".$pan_no."'
-                and trans_date <='".$valuation_as_on."'
-                GROUP BY scheme_name,cat_name,product_code,
-                subcat_name,amc_name,plan_name,option_name,isin_no
-                ORDER BY scheme_name ASC");
-            // $all_data=DB::select("SELECT trans_date,rnt_id,folio_no,scheme_name,cat_name,product_code,
+            // $all_data=DB::select("SELECT rnt_id,folio_no,scheme_name,cat_name,product_code,
             //     subcat_name,amc_name,plan_name,option_name,isin_no,nifty50,sensex,
             //     SUM(units) AS tot_units, 
             //     SUM(amount) AS inv_cost, 
@@ -117,25 +103,27 @@ class LiveMFPController extends Controller
             //     and trans_date <='".$valuation_as_on."'
             //     GROUP BY scheme_name,cat_name,product_code,
             //     subcat_name,amc_name,plan_name,option_name,isin_no
-            //     ORDER BY trans_date ASC");
+            //     ORDER BY scheme_name ASC");
             // dd(DB::getQueryLog());
             // return $all_data;
+            
             $all_trans_product=[];
             $data=[];
             foreach ($all_data as $key => $value) {
-                $value->nifty50=0;
-                $value->sensex=0;
-                $fetch=MutualFundTransaction::where('folio_no',$value->folio_no)
-                    ->where('product_code',$value->product_code)
-                    ->select('trans_date','pur_price')
-                    ->orderBy('trans_date','ASC')
-                    ->first();
+                // $fetch=MutualFundTransaction::where('folio_no',$value->folio_no)
+                //     ->where('product_code',$value->product_code)
+                //     ->select('trans_date','pur_price')
+                //     ->orderBy('trans_date','ASC')
+                //     ->first();
                 // return $fetch;
-                $value->inv_since=$fetch->trans_date;
-                $value->pur_nav=$fetch->pur_price;
-                $f_trans_product="(product_code='".$value->product_code."' and nav_date='".$value->inv_since."')";
+                // $value['inv_since']=date('Y-m-d',strtotime($value['trans_date']));
+                // $value['pur_nav']=$value['pur_price'];
+                $value->inv_since=date('Y-m-d',strtotime($value->trans_date));
+                $value->pur_nav=$value->pur_price;
+                $f_trans_product="(nav_date='".$value->inv_since."' AND product_code='".$value->product_code."')";
                 array_push($all_trans_product,$f_trans_product);
                 array_push($data,$value);
+                // $data->push($value);
             }
             // return $data;
             $string_version_product_code = implode(',', $all_trans_product);
@@ -150,7 +138,7 @@ class LiveMFPController extends Controller
                 $inv_since=date('Y-m-d',strtotime($value1->inv_since));
                 $product_code=$value1->product_code;
                 // return $inv_since.$product_code;
-                if ($res_array) {
+                if (count($res_array) > 0) {
                     $new = array_filter($res_array, function ($var) use ($inv_since,$product_code) {
                         // return ($var['nav_date'] == $inv_since && $var['product_code'] == $product_code);
                         return ($var->nav_date == $inv_since && $var->product_code == $product_code);
@@ -159,7 +147,7 @@ class LiveMFPController extends Controller
                 }else {
                     $new='';
                 }
-                // return $new;
+                // return $new->nav;
                 $value1->new=$new;
                 $value1->curr_nav=isset($new[0]->nav)?$new[0]->nav:0;
                 $value1->nav_date=isset($new[0]->nav_date)?$new[0]->nav_date:$valuation_as_on;
@@ -224,19 +212,13 @@ class LiveMFPController extends Controller
                 ->leftJoin('md_category','md_category.id','=','md_scheme.category_id')
                 ->leftJoin('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
                 ->leftJoin('md_amc','md_amc.amc_code','=','td_mutual_fund_trans.amc_code')
-                ->leftJoin('md_plan','md_plan.id','=','md_scheme_isin.plan_id')
-                ->leftJoin('md_option','md_option.id','=','md_scheme_isin.option_id')
-                ->leftJoin('md_employee','md_employee.euin_no','=',DB::raw('IF(td_mutual_fund_trans.euin_no!="",td_mutual_fund_trans.euin_no,(select euin_no from td_mutual_fund_trans where folio_no=td_mutual_fund_trans.folio_no and product_code=td_mutual_fund_trans.product_code AND euin_no!="" limit 1))'))
-                ->leftJoin('md_branch','md_branch.id','=','md_employee.branch_id')
-                ->select('td_mutual_fund_trans.*','md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name','md_amc.amc_short_name as amc_name',
-                'md_plan.plan_name as plan_name','md_option.opt_name as option_name',
-                'md_employee.emp_name as rm_name','md_branch.brn_name as branch','md_employee.bu_type_id as bu_type_id','md_employee.branch_id as branch_id','md_employee.euin_no as euin_no')
+                ->select('td_mutual_fund_trans.*','md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name',
+                'md_subcategory.subcategory_name as subcat_name','md_amc.amc_short_name as amc_name')
                 ->selectRaw('sum(units) as tot_units')
                 ->selectRaw('sum(amount) as tot_amount')
                 ->selectRaw('sum(stamp_duty) as tot_stamp_duty')
                 ->selectRaw('sum(tds) as tot_tds')
                 ->selectRaw('count(*) as tot_rows')
-                ->selectRaw('(select bu_type from md_business_type where bu_code=md_employee.bu_type_id and branch_id=md_employee.branch_id limit 1) as bu_type')
 
                 ->selectRaw('(select close from td_benchmark_scheme where benchmark=1 AND date=td_mutual_fund_trans.trans_date) as nifty50')
                 ->selectRaw('(select close from td_benchmark_scheme where benchmark=70 AND date=td_mutual_fund_trans.trans_date) as sensex')
