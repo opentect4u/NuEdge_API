@@ -542,7 +542,7 @@ class MonthlyMisController extends Controller
                         break;
                     case 'D':
                         for ($i=0; $i <= $upto; $i++) { 
-                            $split_date=date('Y-m', strtotime('-'.$i.' months'));
+                            $split_date=date('Y-m-d', strtotime('-'.$i.' months'));
                             array_push($categories,date('M-Y',strtotime($split_date)));
                             // return $rawQuery;
                             $rawQuery1='';
@@ -685,7 +685,7 @@ class MonthlyMisController extends Controller
                             array_push($monthly_outflow_amount_set,$outflow_amount);
                             array_push($monthly_net_inflow_amount_set,$net_inflow_amount);
                             $myset_data=[];
-                            $myset_data['monthly']=date('M-Y',strtotime($split_date));
+                            $myset_data['monthly']=$split_date;
                             $myset_data['monthly_inflow']=$inflow_amount;
                             $myset_data['monthly_outflow']=$outflow_amount;
                             $myset_data['monthly_net_inflow']=$net_inflow_amount;
