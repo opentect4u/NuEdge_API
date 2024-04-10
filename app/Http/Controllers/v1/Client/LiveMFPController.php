@@ -151,6 +151,8 @@ class LiveMFPController extends Controller
                 //     for
 
                 // }
+
+                
                 
                 $value1->curr_val=$value1->curr_nav * $value1->tot_units;
                 $value1->gain_loss=$value1->curr_val - $value1->inv_cost;
