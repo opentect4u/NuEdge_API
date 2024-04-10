@@ -201,4 +201,158 @@ class TransHelper{
         }
         return $trxn_nature_code;
     }
+
+
+    // public function my_xirr()
+    // {
+    //     $values = [
+    //         -4999.75,
+    //         -4999.75,
+    //         10246.82,
+    //         -4999.75,
+    //         -4999.75,
+    //         -4999.75,
+    //         -4999.75,
+    //         -4999.75,
+    //         -4999.75,
+    //         -4999.75,
+    //         -4999.75,
+    //         -4999.75,
+    //         -4999.75,
+    //         -4999.75,
+    //         -4999.75,
+    //         -4999.75,
+    //         65905.17,
+    //         -4999.75,
+    //         -4999.75,
+    //         -4999.75,
+    //         14672.61,
+    //         -4999.75,
+    //         -4999.75,
+    //         -4999.75,
+    //         -4999.75,
+    //         -4999.75,
+    //         -4999.75,
+    //         -4999.75,
+    //         -4999.75,
+    //         -4999.75,
+    //         -4999.75,
+    //         20934.67,
+    //         -4999.75,
+    //         4846.07,
+    //         -4999.75,
+    //         4884,
+    //         -4999.75,
+    //         -4999.75,
+    //         52307
+    //     ];
+            
+    //     $dates = [
+    //         "2021-06-01",
+    //         "2021-07-12",
+    //         "2021-08-10",
+    //         "2021-08-10",
+    //         "2021-09-13",
+    //         "2021-10-11",
+    //         "2021-11-10",
+    //         "2021-12-13",
+    //         "2022-01-11",
+    //         "2022-02-10",
+    //         "2022-03-10",
+    //         "2022-04-11",
+    //         "2022-05-10",
+    //         "2022-06-13",
+    //         "2022-07-11",
+    //         "2022-08-10",
+    //         "2022-09-07",
+    //         "2022-09-13",
+    //         "2022-10-10",
+    //         "2022-11-10",
+    //         "2022-11-14",
+    //         "2022-12-13",
+    //         "2023-01-10",
+    //         "2023-02-10",
+    //         "2023-03-10",
+    //         "2023-04-10",
+    //         "2023-05-10",
+    //         "2023-06-12",
+    //         "2023-07-11",
+    //         "2023-08-10",
+    //         "2023-09-11",
+    //         "2023-10-09",
+    //         "2023-10-10",
+    //         "2023-11-02",
+    //         "2023-11-10",
+    //         "2023-11-13",
+    //         "2023-12-11",
+    //         "2024-01-10",
+    //         "2024-02-06"
+    //         ];
+            
+    //     $guess = 0;
+    //     $xirr = $this->XIRR($values,$dates,$guess);
+    //     return ($xirr *100);
+    // }
+
+    // public function XIRR($values, $dates, $guess) {
+            
+    //     $irrResult = function($values, $dates, $rate) {
+    //         $r=$rate + 1;
+    //         $result = $values[0];
+    //         for ($i = 1; $i < count($values); $i++) {
+    //             $result += $values[i] / pow($r, moment($dates[$i]).diff(moment($dates[0]), 'days') / 365);
+    //         }
+    //         return result;
+    //     }
+      
+    //     var irrResultDeriv = function($values, $dates, rate) {
+    //       var r = rate + 1;
+    //       var result = 0;
+    //       for (var i = 1; i < $values.length; i++) {
+    //         var frac = moment($dates[i]).diff(moment($dates[0]), 'days') / 365;
+    //         result -= frac * $values[i] / Math.pow(r, frac + 1);
+    //       }
+    //       return result;
+    //     }
+       
+      
+    //     var positive = false;
+    //     var negative = false;
+    //     for (var i = 0; i < $values.length; i++) {
+    //       if ($values[i] > 0) positive = true;
+    //       if ($values[i] < 0) negative = true;
+    //     }
+       
+    //     if (!positive || !negative)
+    //     {
+    //         console.log('asdasdsad')
+    //         return '#NUM!';
+           
+    //     }
+      
+    //     var $guess = (typeof $guess === 'undefined') ? 0.1 : $guess;
+    //     var resultRate = $guess;
+       
+    //     console.log(resultRate)
+       
+    //     var epsMax = 1e-10;
+       
+    //     var iterMax = 20;
+      
+    //     var newRate, epsRate, resultValue;
+    //     var iteration = 0;
+    //     var contLoop = true;
+    //     do {
+    //       resultValue = irrResult($values, $dates, resultRate);
+    //       newRate = resultRate - resultValue / irrResultDeriv($values, $dates, resultRate);
+    //       epsRate = Math.abs(newRate - resultRate);
+    //       resultRate = newRate;
+    //       contLoop = (epsRate > epsMax) && (Math.abs(resultValue) > epsMax);
+    //     } while(contLoop && (++iteration < iterMax));
+    //     if(contLoop)return '#NUM!';
+      
+    //     // Return internal rate of return
+    //     console.log(resultRate)
+    //     return resultRate  ;
+    // }
 }
