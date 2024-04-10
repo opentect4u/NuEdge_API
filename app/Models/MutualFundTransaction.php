@@ -76,7 +76,7 @@ class MutualFundTransaction extends Model
         'deleted_date',
     ];
 
-    use \Awobaz\Compoships\Compoships;
+    // use \Awobaz\Compoships\Compoships;
     public function foliotrans()
     {
         $all_flag='N';
