@@ -19,5 +19,7 @@ class MFTransTypeSubType extends Model
         'k_divident_flag',
         'process_type',
         'xirr_process_type',
+        'lmf_pl',
     ];
+    
 }

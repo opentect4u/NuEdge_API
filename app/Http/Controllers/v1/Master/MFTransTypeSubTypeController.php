@@ -83,6 +83,7 @@ class MFTransTypeSubTypeController extends Controller
                 $c_data->k_divident_flag=$request->k_divident_flag;
                 $c_data->process_type=$request->process_type;
                 $c_data->xirr_process_type=$request->xirr_process_type;
+                $c_data->lmf_pl=$request->lmf_pl;
                 // $data->updated_by=Helper::modifyUser($request->user());
                 $c_data->save();
             }else {
@@ -117,6 +118,7 @@ class MFTransTypeSubTypeController extends Controller
                         'k_divident_flag'=>isset($request->k_divident_flag)?$request->k_divident_flag:NULL,
                         'process_type'=>isset($request->process_type)?$request->process_type:NULL,
                         'xirr_process_type'=>isset($request->xirr_process_type)?$request->xirr_process_type:NULL,
+                        'lmf_pl'=>isset($request->lmf_pl)?$request->lmf_pl:NULL,
                         // 'created_by'=>Helper::modifyUser($request->user()),
                     ));
                 }

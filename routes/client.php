@@ -10,6 +10,11 @@ Route::prefix('v1')->group(function () {
                 Route::post('liveMFPortfolio',[App\Http\Controllers\v1\Client\LiveMFPController::class,'search']);
                 Route::get('liveMFShowDetails',[App\Http\Controllers\v1\Client\LiveMFPController::class,'showDetails']);
                 Route::get('liveMFPortfolioDetails',[App\Http\Controllers\v1\Client\LiveMFPController::class,'searchDetails']);
+                Route::post('liveMFPL',[App\Http\Controllers\v1\Client\LiveMFPLController::class,'search']);
+                Route::post('liveMFRecentTrans',[App\Http\Controllers\v1\Client\LiveMFPController::class,'recentTrans']);
+                Route::post('liveMFSIP',[App\Http\Controllers\v1\Client\LiveMFSIPController::class,'search']);
+                Route::post('liveMFSTP',[App\Http\Controllers\v1\Client\LiveMFSTPController::class,'search']);
+                Route::post('liveMFSWP',[App\Http\Controllers\v1\Client\LiveMFSWPController::class,'search']);
             });
         });
     // })

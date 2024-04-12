@@ -18,6 +18,7 @@ use Illuminate\Support\Carbon;
 use Excel;
 use App\Helpers\TransHelper;
 use DB;
+use Session;
 
 class LiveMFPController extends Controller
 {
@@ -30,6 +31,9 @@ class LiveMFPController extends Controller
             $pan_no=$request->pan_no;
             $client_name=$request->client_name;
 
+            session()->forget('valuation_as_on');
+            session(['valuation_as_on' => $valuation_as_on]);
+            // return Session::get('valuation_as_on');
             $client_details='';
             if ($view_type || $valuation_as_on) {
                 $rawQuery='';
@@ -66,19 +70,19 @@ class LiveMFPController extends Controller
             // return $rawQuery;
             // return $client_details;
             // DB::enableQueryLog();
-            $all_data=MutualFundTransaction::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_mutual_fund_trans.product_code')
+            $all_data=MutualFundTransaction::with('foliotrans')->leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_mutual_fund_trans.product_code')
                 ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
                 ->leftJoin('md_category','md_category.id','=','md_scheme.category_id')
                 ->leftJoin('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
                 ->leftJoin('md_amc','md_amc.amc_code','=','td_mutual_fund_trans.amc_code')
                 ->leftJoin('md_plan','md_plan.id','=','md_scheme_isin.plan_id')
                 ->leftJoin('md_option','md_option.id','=','md_scheme_isin.option_id')
-                ->select('td_mutual_fund_trans.rnt_id','td_mutual_fund_trans.folio_no','td_mutual_fund_trans.product_code',
+                ->select('td_mutual_fund_trans.rnt_id','td_mutual_fund_trans.folio_no','td_mutual_fund_trans.product_code','td_mutual_fund_trans.pur_price','td_mutual_fund_trans.trans_date',
                 'md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name','md_amc.amc_short_name as amc_name',
                 'md_plan.plan_name as plan_name','md_option.opt_name as option_name')
                 ->selectRaw('IF(td_mutual_fund_trans.rnt_id=1,md_scheme_isin.isin_no,td_mutual_fund_trans.isin_no) as isin_no')
                 ->selectRaw('sum(td_mutual_fund_trans.units) as tot_units')
-                ->selectRaw('sum(td_mutual_fund_trans.amount) as inv_cost')
+                ->selectRaw('sum(td_mutual_fund_trans.amount) as tot_amount')
                 ->selectRaw('sum(td_mutual_fund_trans.stamp_duty) as tot_stamp_duty')
                 ->selectRaw('sum(td_mutual_fund_trans.tds) as tot_tds')
                 ->selectRaw('count(*) as tot_rows')
@@ -146,12 +150,22 @@ class LiveMFPController extends Controller
                 $value1->curr_nav=isset($new->nav)?$new->nav:0;
                 $value1->nav_date=isset($new->nav_date)?$new->nav_date:0;
                 //calculation
-                // if ($data_key==10) {
-                //     return $value1->foliotrans;
-                //     for
+                $mydata='';
+                // $foliotrans=$value1->foliotrans;
 
+                // if ($foliotrans[(count($foliotrans)-1)]->transaction_subtype=='Full Redemption' || $data_key==19) {
+                // }else {
+                //     $mydata=$this->calculate($value1->foliotrans);
                 // }
-
+                if ($data_key==10) {
+                    // return $value1->foliotrans;
+                    // $mydata=$this->calculate($value1->foliotrans);
+                    // return $mydata;
+                }
+                // $mydata=$this->calculate($value1->foliotrans);
+                $value1->mydata=$mydata;
+                $value1->inv_cost=isset($mydata['inv_cost'])?number_format((float)$mydata['inv_cost'], 2, '.', ''):0;
+                $value1->tot_units=isset($mydata['tot_units'])?$mydata['tot_units']:0;
                 $value1->curr_val=$value1->curr_nav * $value1->tot_units;
                 $value1->gain_loss=$value1->curr_val - $value1->inv_cost;
                 if ($value1->gain_loss==0 || $value1->inv_cost==0) {
@@ -591,5 +605,208 @@ class LiveMFPController extends Controller
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
         return Helper::SuccessResponse($data);
+    }
+
+
+    public function calculate($mydata)
+    {
+        $purchase_data=[];
+        $redemption_data=[];
+        $purchase_amt_arr=[];
+        $redemption_amt_arr=[];
+        foreach ($mydata as $key => $value) {
+            if(strpos($value->transaction_subtype, 'Purchase' )!== false ) {
+                if ($key > 0) {
+                    $value->cumml_units=$value->tot_units + $mydata[($key-1)]->cumml_units ;
+                }else {
+                    $value->cumml_units=$value->tot_units;
+                }
+                array_push($purchase_data,$value);
+                array_push($purchase_amt_arr,$value->tot_amount);
+            }elseif (strpos($value->transaction_subtype, 'Redemption' )!== false ) {
+                $value->cumml_units=0;
+                array_push($redemption_data,$value);
+                array_push($redemption_amt_arr,$value->tot_amount);
+            }
+        }
+
+        /*******************************************start purchase and redemption case******************************************/
+        $deduct_unit_array=[];
+        foreach ($redemption_data as $key => $redemption_value) {
+            $rdm_tot_units=$redemption_value->tot_units;
+            $after_remaining_array=[];
+            foreach ($purchase_data as $purchase_key => $purchase_value) {
+                $purchase_cumml_units=$purchase_value['cumml_units'];
+                $purchase_value['cumml_units']=$purchase_cumml_units - $rdm_tot_units;
+                if ($purchase_value['cumml_units'] >=0) {
+                    if ($deduct_unit_array[(count($deduct_unit_array)-1)]['cumml_units'] <=  0) {
+                        $set_units=$purchase_value['cumml_units'];
+                        $purchase_value['cumml_units']=$set_units;
+                        $deduct_unit_array=[...$deduct_unit_array,$purchase_value];
+                        $rdm_tot_units=0;
+                        $newarr=[];
+                        $newarr['id']=$purchase_value['id'];
+                        $newarr['trans_date']=$purchase_value['trans_date'];
+                        $newarr['pur_price']=$purchase_value['pur_price'];
+                        $newarr['transaction_type']="Remaining";
+                        $newarr['transaction_subtype']="Remaining";
+                        $newarr['tot_units']=$set_units;
+                        $newarr['cumml_units']=$set_units;
+                        $newarr['tot_amount']= number_format((float)($set_units * $purchase_value['pur_price']), 2, '.', '');
+                        $newarr['gross_amount']=number_format((float)($set_units * $purchase_value['pur_price']), 2, '.', '');
+                        array_push($after_remaining_array,$newarr);
+                    }else {
+                        $purchase_value['cumml_units']=$purchase_value['tot_units'] + $after_remaining_array[(count($after_remaining_array)-1)]['cumml_units'] ;
+                        array_push($after_remaining_array,$purchase_value);
+                    }
+                }else {
+                    $deduct_unit_array=[...$deduct_unit_array,$purchase_value];
+                }
+            }
+            $purchase_data=$after_remaining_array;
+        }
+        // return $purchase_data;
+        /*******************************************end purchase and redemption case******************************************/
+
+        $inv_cost=0;
+        foreach ($purchase_data as $key => $value) {
+            $inv_cost +=number_format((float)$value['tot_amount'], 2, '.', '');
+        }
+        // return $inv_cost;
+        // $final_array=array_merge($deduct_unit_array,$purchase_data);
+        // return $final_array;
+                    
+        $ck=[];
+        $ck['inv_cost']=$inv_cost;
+        $ck['tot_units']=(count($purchase_data) > 0)?$purchase_data[(count($purchase_data) - 1)]['cumml_units']:0;
+        $ck['inv_cost']=$inv_cost;
+        $ck['purchase_amt_arr']=$purchase_amt_arr;
+        $ck['redemption_amt_arr']=$redemption_amt_arr;
+        return $ck;
+    }
+
+    public function recentTrans(Request $request)
+    {
+        try {
+            // return $request;
+            $valuation_as_on=$request->valuation_as_on;
+            $view_type=$request->view_type;
+            $pan_no=$request->pan_no;
+            $client_name=$request->client_name;
+            $date_range=$request->date_range;
+
+            // session()->forget('valuation_as_on');
+            // session(['valuation_as_on' => $valuation_as_on]);
+            // return Session::get('valuation_as_on');
+            $client_details='';
+            if ($view_type || $valuation_as_on || $date_range) {
+                $rawQuery='';
+                if ($date_range) {
+                    $from_date=Carbon::parse(str_replace('/','-',explode("-",$date_range)[0]))->format('Y-m-d') ;
+                    $to_date=Carbon::parse(str_replace('/','-',explode("-",$date_range)[1]))->format('Y-m-d') ;
+                    // return $to_date;
+                    $queryString='td_mutual_fund_trans.trans_date';
+                    $rawQuery.=Helper::FrmToDateRawQuery($from_date,$to_date,$rawQuery,$queryString);
+                }
+                // return $rawQuery;
+                if ($valuation_as_on) {
+                    $condition_v=(strlen($rawQuery) > 0)? " AND ":" ";
+                    $queryString='td_mutual_fund_trans.trans_date';
+                    $rawQuery.=$condition_v.$queryString."<= '".$valuation_as_on."'";
+                }
+                if ($view_type=='C') {
+                    $client_rawQuery='';
+                    if (!$pan_no) {
+                        $queryString='td_mutual_fund_trans.first_client_name';
+                        $rawQuery.=Helper::WhereRawQuery($client_name,$rawQuery,$queryString);
+                        $client_queryString='md_client.client_name';
+                        $client_rawQuery.=Helper::WhereRawQuery($client_name,$client_rawQuery,$client_queryString);
+                    }else {
+                        $queryString='td_mutual_fund_trans.first_client_pan';
+                        $rawQuery.=Helper::WhereRawQuery($pan_no,$rawQuery,$queryString);
+                        $client_queryString='md_client.pan';
+                        $client_rawQuery.=Helper::WhereRawQuery($pan_no,$client_rawQuery,$client_queryString);
+                    }
+                    $client_details=Client::whereRaw($client_rawQuery)->first();
+                }else {
+                    $queryString='td_mutual_fund_trans.first_client_pan';
+                    $condition=(strlen($rawQuery) > 0)? " AND (":" (";
+                    $row_name_string=  "'" .implode("','", $family_members_pan). "'";
+                    $rawQuery.=$condition.$queryString." IN (".$row_name_string.")";
+                    $queryString='td_mutual_fund_trans.first_client_name';
+                    $condition1=(strlen($rawQuery) > 0)? " OR ":" ";
+                    $row_name_string1=  "'" .implode("','", $family_members_name). "'";
+                    $rawQuery.=$condition1.$queryString." IN (".$row_name_string1."))";
+                }
+            }
+
+            $all_datas=MutualFundTransaction::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_mutual_fund_trans.product_code')
+                ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
+                ->leftJoin('md_category','md_category.id','=','md_scheme.category_id')
+                ->leftJoin('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
+                ->leftJoin('md_amc','md_amc.amc_code','=','td_mutual_fund_trans.amc_code')
+                ->leftJoin('md_plan','md_plan.id','=','md_scheme_isin.plan_id')
+                ->leftJoin('md_option','md_option.id','=','md_scheme_isin.option_id')
+                ->select('td_mutual_fund_trans.rnt_id','td_mutual_fund_trans.folio_no','td_mutual_fund_trans.product_code','td_mutual_fund_trans.pur_price','td_mutual_fund_trans.trans_date',
+                'trxn_type_code','trxn_type_flag','trxn_nature_code','trans_desc','kf_trans_type','trans_flag',
+                'md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name','md_amc.amc_short_name as amc_name',
+                'md_plan.plan_name as plan_name','md_option.opt_name as option_name')
+                ->selectRaw('IF(td_mutual_fund_trans.rnt_id=1,md_scheme_isin.isin_no,td_mutual_fund_trans.isin_no) as isin_no')
+                ->selectRaw('sum(td_mutual_fund_trans.units) as tot_units')
+                ->selectRaw('sum(td_mutual_fund_trans.amount) as tot_amount')
+                ->selectRaw('sum(td_mutual_fund_trans.stamp_duty) as tot_stamp_duty')
+                ->selectRaw('sum(td_mutual_fund_trans.tds) as tot_tds')
+                ->selectRaw('count(*) as tot_rows')
+                // ->selectRaw('(select close from td_benchmark_scheme where benchmark=1 AND DATE(date)=DATE(td_mutual_fund_trans.trans_date)) as nifty50')
+                // ->selectRaw('(select close from td_benchmark_scheme where benchmark=70 AND DATE(date)=DATE(td_mutual_fund_trans.trans_date)) as sensex')
+                ->selectRaw('IF(td_mutual_fund_trans.rnt_id=1,
+                (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=td_mutual_fund_trans.trxn_type_code AND c_k_trans_type=td_mutual_fund_trans.trxn_type_flag AND c_k_trans_sub_type=td_mutual_fund_trans.trxn_nature_code limit 1),
+                (CASE 
+                    WHEN td_mutual_fund_trans.trans_flag="DP" || td_mutual_fund_trans.trans_flag="DR" THEN (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=td_mutual_fund_trans.kf_trans_type AND k_divident_flag=td_mutual_fund_trans.trans_flag limit 1)
+                    WHEN td_mutual_fund_trans.trans_flag="TI" THEN "Transfer In"
+                    WHEN td_mutual_fund_trans.trans_flag="TO" THEN "Transfer Out"
+                    ELSE (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=td_mutual_fund_trans.kf_trans_type limit 1)
+                END)
+                )as transaction_type')
+                ->selectRaw('IF(td_mutual_fund_trans.rnt_id=1,
+                (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=td_mutual_fund_trans.trxn_type_code AND c_k_trans_type=td_mutual_fund_trans.trxn_type_flag AND c_k_trans_sub_type=td_mutual_fund_trans.trxn_nature_code limit 1),
+                (CASE 
+                    WHEN td_mutual_fund_trans.trans_flag="DP" || td_mutual_fund_trans.trans_flag="DR" THEN (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=td_mutual_fund_trans.kf_trans_type AND k_divident_flag=td_mutual_fund_trans.trans_flag limit 1)
+                    WHEN td_mutual_fund_trans.trans_flag="TI" THEN "Transfer In"
+                    WHEN td_mutual_fund_trans.trans_flag="TO" THEN "Transfer Out"
+                    ELSE (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=td_mutual_fund_trans.kf_trans_type limit 1)
+                END)
+                )as transaction_subtype')
+                ->selectRaw('IF(td_mutual_fund_trans.rnt_id=1,
+                (SELECT process_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=td_mutual_fund_trans.trxn_type_code AND c_k_trans_type=td_mutual_fund_trans.trxn_type_flag AND c_k_trans_sub_type=td_mutual_fund_trans.trxn_nature_code limit 1),
+                (CASE 
+                    WHEN td_mutual_fund_trans.trans_flag="DP" || td_mutual_fund_trans.trans_flag="DR" THEN (SELECT process_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=td_mutual_fund_trans.kf_trans_type AND k_divident_flag=td_mutual_fund_trans.trans_flag limit 1)
+                    WHEN td_mutual_fund_trans.trans_flag="TI" THEN (SELECT process_type FROM md_mf_trans_type_subtype WHERE trans_type="Transfer In" AND trans_sub_type="Transfer In" AND rnt_id=2 limit 1)
+                    WHEN td_mutual_fund_trans.trans_flag="TO" THEN (SELECT process_type FROM md_mf_trans_type_subtype WHERE trans_type="Transfer Out" AND trans_sub_type="Transfer Out" AND rnt_id=2 limit 1)
+                    ELSE (SELECT process_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=td_mutual_fund_trans.kf_trans_type limit 1)
+                END)
+                )as process_type')
+                ->where('td_mutual_fund_trans.delete_flag','N')
+                ->where('td_mutual_fund_trans.amc_flag','N')
+                ->where('td_mutual_fund_trans.scheme_flag','N')
+                ->where('td_mutual_fund_trans.plan_option_flag','N')
+                ->where('td_mutual_fund_trans.bu_type_flag','N')
+                ->where('td_mutual_fund_trans.divi_mismatch_flag','N')
+                ->whereRaw($rawQuery)
+                ->groupBy('td_mutual_fund_trans.product_code')
+                ->groupBy('td_mutual_fund_trans.isin_no')
+                // ->orderBy('md_scheme.scheme_name','ASC')
+                ->orderBy('td_mutual_fund_trans.trans_date','ASC')
+                ->get();
+            
+            $mydata=[];
+            $mydata['client_details']=$client_details;
+            $mydata['data']=$all_datas;
+            $mydata['valuation_as_on']=$valuation_as_on;
+        } catch (\Throwable $th) {
+            throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($mydata);
     }
 }
