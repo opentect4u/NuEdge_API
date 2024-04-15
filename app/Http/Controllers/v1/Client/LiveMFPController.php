@@ -156,10 +156,10 @@ class LiveMFPController extends Controller
                 // if ($foliotrans[(count($foliotrans)-1)]->transaction_subtype=='Full Redemption' || $data_key==19) {
                 // }else {
                 //     $mydata=$this->calculate($value1->foliotrans);
+                // // }
+                // if ($value1->product_code=='D110') {
+                //     $mydata=$this->calculate($value1->foliotrans);
                 // }
-                if ($value1->product_code=='D110') {
-                    $mydata=$this->calculate($value1->foliotrans);
-                }
                 if ($data_key==10) {
                     // return $value1->foliotrans;
                     // $mydata=$this->calculate($value1->foliotrans);
