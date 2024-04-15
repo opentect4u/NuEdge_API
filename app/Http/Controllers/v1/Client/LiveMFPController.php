@@ -157,6 +157,9 @@ class LiveMFPController extends Controller
                 // }else {
                 //     $mydata=$this->calculate($value1->foliotrans);
                 // }
+                if ($value1->product_code=='D110') {
+                    $mydata=$this->calculate($value1->foliotrans);
+                }
                 if ($data_key==10) {
                     // return $value1->foliotrans;
                     // $mydata=$this->calculate($value1->foliotrans);
