@@ -659,7 +659,7 @@ class LiveMFPController extends Controller
                         $newarr['gross_amount']=number_format((float)($set_units * $purchase_value['pur_price']), 2, '.', '');
                         array_push($after_remaining_array,$newarr);
                     }else {
-                        $purchase_value['cumml_units']=$purchase_value['tot_units'] + $after_remaining_array[(count($after_remaining_array)-1)]['cumml_units'] ;
+                        $purchase_value['cumml_units']=$purchase_value['tot_units'] + (count($after_remaining_array)>0)?$after_remaining_array[(count($after_remaining_array)-1)]['cumml_units']:0 ;
                         array_push($after_remaining_array,$purchase_value);
                     }
                 }else {
