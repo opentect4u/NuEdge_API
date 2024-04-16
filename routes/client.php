@@ -16,6 +16,8 @@ Route::prefix('v1')->group(function () {
                 Route::post('liveMFSTP',[App\Http\Controllers\v1\Client\LiveMFSTPController::class,'search']);
                 Route::post('liveMFSWP',[App\Http\Controllers\v1\Client\LiveMFSWPController::class,'search']);
             });
+            Route::get('liveMFPortfolio1',[App\Http\Controllers\v1\Client\LiveMFPController::class,'search1']);
+
         });
     // })
 });
