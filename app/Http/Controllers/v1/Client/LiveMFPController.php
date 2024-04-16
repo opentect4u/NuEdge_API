@@ -160,10 +160,14 @@ class LiveMFPController extends Controller
                 // if ($value1->product_code=='D110' && $value1->rnt_id=1) {
                 //     $mydata=$this->calculate($value1->foliotrans);
                 // }
-                if ($data_key==10) {
-                    // return $value1;
+                if ($data_key==10 || $data_key==3) {
+                    // return $foliotrans;
                     $mydata=$this->calculate($foliotrans);
                 }
+                // if ($value1->tot_amount > 0) {
+                //     $mydata=$this->calculate($foliotrans);
+                //     # code...
+                // }
                 // $mydata=$this->calculate($value1->foliotrans);
                 $value1->mydata=$mydata;
                 $value1->inv_cost=isset($mydata['inv_cost'])?number_format((float)$mydata['inv_cost'], 2, '.', ''):0;
@@ -880,7 +884,32 @@ class LiveMFPController extends Controller
                     // return  $deduct_unit_array;
                     $purchase_data=$deduct_unit_array;
                 }
-                $final_arr=array_merge($purchase_data,$redemption_data);
+
+                $final_data_arr=[];
+                $final_data_arr1=[];
+                foreach ($purchase_data as $key => $value) {
+                    if ($value['cumml_units'] > 0) {
+                        array_push($final_data_arr,$value);
+                    }else {
+                        array_push($final_data_arr1,$value);
+                    }
+                }
+                $final_data_arr2=[];
+                foreach ($final_data_arr as $key => $value) {
+                    if ($key==0) {
+                        $value['tot_amount']=number_format((float)($value['pur_price'] * $value['cumml_units']), 2, '.', '');
+                        $value['gross_amount']=number_format((float)($value['pur_price'] * $value['cumml_units']), 2, '.', '');
+                        // return $value;
+                        array_push($final_data_arr2,$value);
+                    }else {
+                        array_push($final_data_arr2,$value);
+                    }
+                }
+                $final_arr_1=array_merge($final_data_arr1,$final_data_arr2);
+                $final_arr=array_merge($final_arr_1,$redemption_data);
+                usort($final_arr, function($a, $b) {
+                    return $a['trans_date'] <=> $b['trans_date'];
+                });
             }else {
                 $final_arr=[];
                 foreach ($purchase_data as $purchase_key => $purchase_value) {
@@ -1071,84 +1100,91 @@ class LiveMFPController extends Controller
         }
 
         /*******************************************start purchase and redemption case******************************************/
-
-        foreach ($redemption_data as $redemption_key => $redemption_value) {
-            $rdm_tot_units=$redemption_value->tot_units;
-            // $rdm_tot_units=336.3380;
-            $deduct_unit_array=[];
-            foreach ($purchase_data as $purchase_key => $purchase_value) {
-                if ($purchase_value['cumml_units'] >= 0) {
-                    // if ($purchase_key==0) {
-                    //     return $purchase_value['cumml_units']."-----".$rdm_tot_units;
-                    // }
-                    $purchase_cumml_units=$purchase_value['cumml_units'];
-                    $purchase_value['cumml_units']=$purchase_cumml_units - $rdm_tot_units;
-                        // return 'else';
-                        if ($purchase_value['cumml_units'] > 0 ) {
-                            if ($purchase_data[($purchase_key - 1)]['cumml_units'] < 0) {
-                                $set_units=$purchase_value['cumml_units'];
-                                $purchase_value['cumml_units']=0;
-                                array_push($deduct_unit_array,$purchase_value);
-                                $rdm_tot_units=0;
-                                $newarr=[];
-                                $newarr['id']=$purchase_value['id'];
-                                $newarr['trans_date']=$purchase_value['trans_date'];
-                                $newarr['pur_price']=$purchase_value['pur_price'];
-                                $newarr['sensex']=$purchase_value['sensex'];
-                                $newarr['nifty50']=$purchase_value['nifty50'];
-                                $newarr['curr_nav']=$purchase_value['curr_nav'];
-                                $newarr['days']=$purchase_value['days'];
-                                $newarr['trans_mode']=$purchase_value['trans_mode'];
-                                $newarr['transaction_type']="Remaining";
-                                $newarr['transaction_subtype']="Remaining";
-                                $newarr['tot_units']=$set_units;
-                                $newarr['cumml_units']=$set_units;
-                                $newarr['tot_amount']= number_format((float)($set_units * $purchase_value['pur_price']), 2, '.', '');
-                                $newarr['tot_gross_amount']=number_format((float)($set_units * $purchase_value['pur_price']), 2, '.', '');
-                                $newarr['gross_amount']=number_format((float)($set_units * $purchase_value['pur_price']), 2, '.', '');
-                                $newarr['curr_val']=number_format((float)($set_units * $purchase_value['curr_nav']), 2, '.', '');
-                                array_push($deduct_unit_array,$newarr);
+        $inv_cost=0;
+        if (count($redemption_data) > 0) {
+        
+            foreach ($redemption_data as $redemption_key => $redemption_value) {
+                $rdm_tot_units=$redemption_value->tot_units;
+                // $rdm_tot_units=336.3380;
+                $deduct_unit_array=[];
+                foreach ($purchase_data as $purchase_key => $purchase_value) {
+                    if ($purchase_value['cumml_units'] >= 0) {
+                        // if ($purchase_key==0) {
+                        //     return $purchase_value['cumml_units']."-----".$rdm_tot_units;
+                        // }
+                        $purchase_cumml_units=$purchase_value['cumml_units'];
+                        $purchase_value['cumml_units']=$purchase_cumml_units - $rdm_tot_units;
+                            // return 'else';
+                            if ($purchase_value['cumml_units'] > 0 ) {
+                                if ($purchase_data[($purchase_key - 1)]['cumml_units'] < 0) {
+                                    $set_units=$purchase_value['cumml_units'];
+                                    $purchase_value['cumml_units']=0;
+                                    array_push($deduct_unit_array,$purchase_value);
+                                    $rdm_tot_units=0;
+                                    $newarr=[];
+                                    $newarr['id']=$purchase_value['id'];
+                                    $newarr['trans_date']=$purchase_value['trans_date'];
+                                    $newarr['pur_price']=$purchase_value['pur_price'];
+                                    $newarr['sensex']=$purchase_value['sensex'];
+                                    $newarr['nifty50']=$purchase_value['nifty50'];
+                                    $newarr['curr_nav']=$purchase_value['curr_nav'];
+                                    $newarr['days']=$purchase_value['days'];
+                                    $newarr['trans_mode']=$purchase_value['trans_mode'];
+                                    $newarr['transaction_type']="Remaining";
+                                    $newarr['transaction_subtype']="Remaining";
+                                    $newarr['tot_units']=$set_units;
+                                    $newarr['cumml_units']=$set_units;
+                                    $newarr['tot_amount']= number_format((float)($set_units * $purchase_value['pur_price']), 2, '.', '');
+                                    $newarr['tot_gross_amount']=number_format((float)($set_units * $purchase_value['pur_price']), 2, '.', '');
+                                    $newarr['gross_amount']=number_format((float)($set_units * $purchase_value['pur_price']), 2, '.', '');
+                                    $newarr['curr_val']=number_format((float)($set_units * $purchase_value['curr_nav']), 2, '.', '');
+                                    array_push($deduct_unit_array,$newarr);
+                                }else {
+                                    $purchase_value['cumml_units']=$purchase_value['tot_units'] + $deduct_unit_array[(count($deduct_unit_array)-1)]['cumml_units'] ;
+                                    $purchase_value['curr_val']=number_format((float)($purchase_value['tot_units'] * $purchase_value['curr_nav']), 2, '.', '');
+                                    array_push($deduct_unit_array,$purchase_value);
+                                }
                             }else {
-                                $purchase_value['cumml_units']=$purchase_value['tot_units'] + $deduct_unit_array[(count($deduct_unit_array)-1)]['cumml_units'] ;
+                                // return 'else1';
                                 $purchase_value['curr_val']=number_format((float)($purchase_value['tot_units'] * $purchase_value['curr_nav']), 2, '.', '');
                                 array_push($deduct_unit_array,$purchase_value);
+                                // return $deduct_unit_array;
                             }
-                        }else {
-                            // return 'else1';
-                            $purchase_value['curr_val']=number_format((float)($purchase_value['tot_units'] * $purchase_value['curr_nav']), 2, '.', '');
-                            array_push($deduct_unit_array,$purchase_value);
-                            // return $deduct_unit_array;
-                        }
-                }else {
-                    $purchase_value['curr_val']=number_format((float)($purchase_value['tot_units'] * $purchase_value['curr_nav']), 2, '.', '');
-                    array_push($deduct_unit_array,$purchase_value);
+                    }else {
+                        $purchase_value['curr_val']=number_format((float)($purchase_value['tot_units'] * $purchase_value['curr_nav']), 2, '.', '');
+                        array_push($deduct_unit_array,$purchase_value);
+                    }
+                }
+                // return  $deduct_unit_array;
+                $purchase_data=$deduct_unit_array;
+            }
+
+            /*******************************************end purchase and redemption case******************************************/
+            // $final_array=array_merge($purchase_data,$redemption_data);
+            // return $final_array;
+            $final_data_arr=[];
+            foreach ($purchase_data as $key => $value) {
+                if ($value['cumml_units'] > 0) {
+                    array_push($final_data_arr,$value);
                 }
             }
-            // return  $deduct_unit_array;
-            $purchase_data=$deduct_unit_array;
-        }
-
-        /*******************************************end purchase and redemption case******************************************/
-        // $final_array=array_merge($purchase_data,$redemption_data);
-        // return $final_array;
-        $final_data_arr=[];
-        foreach ($purchase_data as $key => $value) {
-            if ($value['cumml_units'] > 0) {
-                array_push($final_data_arr,$value);
+            // foreach ($purchase_data as $key => $value) {
+            //     if ($value['cumml_units'] > 0) {
+            //         $inv_cost +=number_format((float)$value['tot_amount'], 2, '.', '');
+            //     }
+            // }
+            foreach ($final_data_arr as $key => $value) {
+                if ($key==0) {
+                    $value['tot_amount']=number_format((float)($value['pur_price'] * $value['cumml_units']), 2, '.', '');
+                    // return $value;
+                    $inv_cost +=number_format((float)$value['tot_amount'], 2, '.', '');
+                }else {
+                    $inv_cost +=number_format((float)$value['tot_amount'], 2, '.', '');
+                }
             }
-        }
-        $inv_cost=0;
-        // foreach ($purchase_data as $key => $value) {
-        //     if ($value['cumml_units'] > 0) {
-        //         $inv_cost +=number_format((float)$value['tot_amount'], 2, '.', '');
-        //     }
-        // }
-        foreach ($final_data_arr as $key => $value) {
-            if ($key==0) {
-                $value['tot_amount']=number_format((float)($value['pur_price'] * $value['cumml_units']), 2, '.', '');
-                // return $value;
-                $inv_cost +=number_format((float)$value['tot_amount'], 2, '.', '');
-            }else {
+        }else {
+            // $inv_cost=0;
+            foreach ($purchase_data as $key => $value) {
                 $inv_cost +=number_format((float)$value['tot_amount'], 2, '.', '');
             }
         }
