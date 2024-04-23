@@ -228,6 +228,19 @@ class Helper{
         return $Query;
     }
 
+    //get current financial year
+    public static function getFinYear(){
+        $month=date('m');
+        if ( $month > 3 ) {
+            $year = date('Y');
+            $to_year = date('Y')+1;
+        }else {
+            $year = date('Y')-1;
+            $to_year = date('Y');
+        }
+        return $year."-".$to_year;
+    }
+
     public function lambda_api($product_code){
                 // $f_trans_product="(product_code='".$value->product_code."' and nav_date=DATE '".date('Y-m-d',strtotime($value->inv_since))."')";
         // $curl = curl_init();

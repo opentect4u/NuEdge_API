@@ -11,8 +11,7 @@ use App\Models\{
     FormReceived,
     MutualFundTransaction,
     MFTransTypeSubType,
-    NAVDetailsSec,
-    BrokerChangeTransReport
+    NAVDetailsSec
 };
 use Validator;
 use Illuminate\Support\Carbon;
@@ -89,20 +88,6 @@ class LiveMFPController extends Controller
                 ->selectRaw('count(*) as tot_rows')
                 ->selectRaw('(select close from td_benchmark_scheme where benchmark=1 AND DATE(date)=DATE(td_mutual_fund_trans.trans_date)) as nifty50')
                 ->selectRaw('(select close from td_benchmark_scheme where benchmark=70 AND DATE(date)=DATE(td_mutual_fund_trans.trans_date)) as sensex')
-                ->selectRaw('IF(td_mutual_fund_trans.rnt_id=1,
-                (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=td_mutual_fund_trans.trxn_type_code AND c_k_trans_type=td_mutual_fund_trans.trxn_type_flag AND c_k_trans_sub_type=td_mutual_fund_trans.trxn_nature_code limit 1),
-                (CASE 
-                    WHEN td_mutual_fund_trans.trans_flag="DP" || td_mutual_fund_trans.trans_flag="DR" THEN (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=td_mutual_fund_trans.kf_trans_type AND k_divident_flag=td_mutual_fund_trans.trans_flag limit 1)
-                    ELSE (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=td_mutual_fund_trans.kf_trans_type limit 1)
-                END)
-                )as transaction_type')
-                ->selectRaw('IF(td_mutual_fund_trans.rnt_id=1,
-                (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=td_mutual_fund_trans.trxn_type_code AND c_k_trans_type=td_mutual_fund_trans.trxn_type_flag AND c_k_trans_sub_type=td_mutual_fund_trans.trxn_nature_code limit 1),
-                (CASE 
-                    WHEN td_mutual_fund_trans.trans_flag="DP" || td_mutual_fund_trans.trans_flag="DR" THEN (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=td_mutual_fund_trans.kf_trans_type AND k_divident_flag=td_mutual_fund_trans.trans_flag limit 1)
-                    ELSE (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=td_mutual_fund_trans.kf_trans_type limit 1)
-                END)
-                )as transaction_subtype')
                 ->where('td_mutual_fund_trans.delete_flag','N')
                 ->where('td_mutual_fund_trans.amc_flag','N')
                 ->where('td_mutual_fund_trans.scheme_flag','N')
@@ -167,19 +152,31 @@ class LiveMFPController extends Controller
                 //calculation
                 $mydata='';
                 $foliotrans=$value1->foliotrans;
+
+                // if ($foliotrans[(count($foliotrans)-1)]->transaction_subtype=='Full Redemption' || $data_key==19) {
+                // }else {
+                //     $mydata=$this->calculate($value1->foliotrans);
+                // // }
+                // if ($value1->product_code=='D110' && $value1->rnt_id=1) {
+                //     $mydata=$this->calculate($value1->foliotrans);
+                // }
+                // if ($data_key==10 || $data_key==3) {
+                //     // return $foliotrans;
+                //     $mydata=$this->calculate($foliotrans);
+                // }
                 if ($value1->tot_amount > 0) {
                     $mydata=$this->calculate($foliotrans);
                 }
                 // $mydata=$this->calculate($value1->foliotrans);
                 $value1->mydata=$mydata;
                 $value1->inv_cost=isset($mydata['inv_cost'])?number_format((float)$mydata['inv_cost'], 2, '.', ''):0;
-                $value1->tot_units=isset($mydata['tot_units'])?number_format((float)$mydata['tot_units'], 4, '.', ''):0;
+                $value1->tot_units=isset($mydata['tot_units'])?$mydata['tot_units']:0;
                 $value1->curr_val=$value1->curr_nav * $value1->tot_units;
                 $value1->gain_loss=$value1->curr_val - $value1->inv_cost;
                 if ($value1->gain_loss==0 || $value1->inv_cost==0) {
                     $value1->ret_abs=0;
                 }else {
-                    $value1->ret_abs=number_format((float)(($value1->gain_loss / $value1->inv_cost) * 100), 2, '.', '');
+                    $value1->ret_abs=($value1->gain_loss / $value1->inv_cost) * 100;
                 }
                 $value1->idcw_reinv=0;
                 $value1->idcwp=0;
@@ -205,8 +202,8 @@ class LiveMFPController extends Controller
         try {
             // return $request;
             $valuation_as_on= "2024-03-14";
-            $client_name= "Debsishu Nursing Home Pvt Ltd";
-            $pan_no= "AABCD2059G";
+            $client_name= "Tanmay Sarkar";
+            $pan_no= "BPPPS4831C";
             $view_type= "C";
             // trans_type: A
             // view_funds_type: A
@@ -336,8 +333,15 @@ class LiveMFPController extends Controller
                 //calculation
                 $mydata='';
                 $foliotrans=$value1->foliotrans;
-                // 7
-                if ($data_key==8) {
+
+                // if ($foliotrans[(count($foliotrans)-1)]->transaction_subtype=='Full Redemption' || $data_key==19) {
+                // }else {
+                //     $mydata=$this->calculate($value1->foliotrans);
+                // // }
+                // if ($value1->product_code=='D110' && $value1->rnt_id=1) {
+                //     $mydata=$this->calculate($value1->foliotrans);
+                // }
+                if ($data_key==10) {
                     // return $value1;
                     // return $foliotrans;
                     // $mydata=$this->calculate($foliotrans);
@@ -347,44 +351,6 @@ class LiveMFPController extends Controller
                     $purchase_amt_arr=[];
                     $redemption_amt_arr=[];
                     foreach ($foliotrans as $key => $value) {
-                        if ($value->transaction_type=="Transfer In" && $value->transaction_subtype=="Transfer In") {
-                            // return $value;
-                            $rawInnerQuery='';
-                            $queryString='tt_broker_change_trans_report.folio_no';
-                            $rawInnerQuery.=Helper::WhereRawQuery($value->folio_no,$rawInnerQuery,$queryString);
-                            $queryString='tt_broker_change_trans_report.product_code';
-                            $rawInnerQuery.=Helper::WhereRawQuery($value->product_code,$rawInnerQuery,$queryString);
-                            // return $rawInnerQuery;
-
-                            $broker_data=BrokerChangeTransReport::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','tt_broker_change_trans_report.product_code')
-                                ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
-                                ->select('tt_broker_change_trans_report.rnt_id','tt_broker_change_trans_report.folio_no','tt_broker_change_trans_report.product_code',
-                                'tt_broker_change_trans_report.isin_no','tt_broker_change_trans_report.trans_date','tt_broker_change_trans_report.trxn_type',
-                                'tt_broker_change_trans_report.trxn_type_flag','tt_broker_change_trans_report.trxn_nature','tt_broker_change_trans_report.amount',
-                                'tt_broker_change_trans_report.stamp_duty','tt_broker_change_trans_report.tds','tt_broker_change_trans_report.units','tt_broker_change_trans_report.pur_price',
-                                'md_scheme.scheme_name as scheme_name')
-                                ->selectRaw('sum(amount) as tot_amount')
-                                ->selectRaw('sum(stamp_duty) as tot_stamp_duty')
-                                ->selectRaw('sum(tds) as tot_tds')
-                                ->selectRaw('count(*) as tot_rows')
-                                ->selectRaw('(SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=tt_broker_change_trans_report.trxn_type_code AND c_k_trans_type=tt_broker_change_trans_report.trxn_type_flag AND c_k_trans_sub_type=tt_broker_change_trans_report.trxn_nature_code limit 1)as transaction_type')
-                                ->selectRaw('(SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=tt_broker_change_trans_report.trxn_type_code AND c_k_trans_type=tt_broker_change_trans_report.trxn_type_flag AND c_k_trans_sub_type=tt_broker_change_trans_report.trxn_nature_code limit 1)as transaction_subtype')
-                                ->where('tt_broker_change_trans_report.delete_flag','N')
-                                ->where('tt_broker_change_trans_report.amc_flag','N')
-                                ->where('tt_broker_change_trans_report.scheme_flag','N')
-                                ->where('tt_broker_change_trans_report.plan_option_flag','N')
-                                ->where('tt_broker_change_trans_report.bu_type_flag','N')
-                                ->where('tt_broker_change_trans_report.divi_mismatch_flag','N')
-                                ->whereRaw($rawInnerQuery)
-                                ->groupBy('tt_broker_change_trans_report.trans_no')
-                                ->groupBy('tt_broker_change_trans_report.trxn_type_flag')
-                                ->groupByRaw('IF(substr(trxn_nature,1,19)="Systematic-Reversed","Systematic-Reversed",trxn_nature)')
-                                ->groupBy('tt_broker_change_trans_report.trans_desc')
-                                ->groupBy('tt_broker_change_trans_report.kf_trans_type')
-                                ->get();
-                        
-                            return $all_data;
-                        }
                         if(strpos($value->transaction_subtype, 'Purchase' )!== false ) {
                             if ($key > 0) {
                                 $value->cumml_units=number_format((float)($value->tot_units + $foliotrans[($key-1)]->cumml_units) , 4, '.', '') ;
@@ -405,6 +371,151 @@ class LiveMFPController extends Controller
                     /*******************************************start purchase and redemption case******************************************/
                     $deduct_unit_array=[];
 
+                    // foreach ($redemption_data as $key => $redemption_value) {
+                    //     $rdm_tot_units=$redemption_value->tot_units;
+                    //     // return $rdm_tot_units;
+                    //     // df 360.542
+                    //     // $rdm_tot_units=336.338;
+                    //     // $rdm_tot_units=336.338;  // 0
+                    //     // $rdm_tot_units=330.338;  // -4
+                        
+                    //     $after_remaining_array=[];
+                    //     $flag='Y';
+                    //     foreach ($purchase_data as $purchase_key => $purchase_value) {
+                    //         // 336.338  tot_unit
+                    //         // return $rdm_tot_units;
+                    //         // return $purchase_value;
+                    //         // if ( $key==7) {
+                    //         //     return $purchase_data;
+                    //         //     # code...
+                    //         // }
+                            
+                    //         $purchase_cumml_units=number_format((float)$purchase_value['cumml_units'], 4, '.', '');
+                            
+                    //         $purchase_value['cumml_units']=(number_format((float)$purchase_cumml_units, 4, '.', '') - number_format((float)$rdm_tot_units, 4, '.', ''));
+                    //         // if ($rdm_tot_units >= 0) {
+                    //         //     // $rdm_tot_units=(number_format((float)$purchase_cumml_units, 4, '.', '') - number_format((float)$rdm_tot_units, 4, '.', ''));
+                    //         //     $purchase_value['cumml_units']=(number_format((float)$purchase_cumml_units, 4, '.', '') - number_format((float)$rdm_tot_units, 4, '.', ''));
+                    //         // }else {
+                    //         //     $rdm_tot_units=(number_format((float)$purchase_cumml_units, 4, '.', '') + number_format((float)$rdm_tot_units, 4, '.', ''));
+                    //         //     $rdm_tot_units=(number_format((float)$purchase_cumml_units, 4, '.', '') + number_format((float)$rdm_tot_units, 4, '.', ''));
+                    //         //     =
+                    //         // }
+                    //         // return $rdm_tot_units;
+                    //         // if ( $key==7) {
+                    //         //     return $purchase_data;
+                    //         //     # code...
+                    //         // }
+
+                    //         if ($purchase_value['cumml_units'] >=0) {
+                    //             // return 'if';
+                    //             // return $flag; 
+                    //             if ($flag=='Y') {
+                    //                 $set_units=$purchase_value['cumml_units'];
+                    //                 $newarr['trans_date']=$purchase_value['trans_date'];
+                    //                 $newarr['pur_price']=$purchase_value['pur_price'];
+                    //                 $newarr['transaction_type']="Remaining";
+                    //                 $newarr['transaction_subtype']="Remaining";
+                    //                 $newarr['tot_units']=$set_units;
+                    //                 $newarr['cumml_units']=$set_units;
+                    //                 $newarr['tot_amount']= number_format((float)($set_units * $purchase_value['pur_price']), 2, '.', '');
+                    //                 $newarr['gross_amount']=number_format((float)($set_units * $purchase_value['pur_price']), 2, '.', '');
+                    //                 array_push($after_remaining_array,$newarr);
+                    //                 $flag='N';
+                    //             }else {
+                    //                 array_push($after_remaining_array,$purchase_value);
+                    //             }
+                    //         }else {
+                    //             // return 'else';
+                    //             $deduct_unit_array=[...$deduct_unit_array,$purchase_value];
+                    //             # code...
+                    //         }
+                            
+                    //         // $purchase_cumml_units=number_format((float)$purchase_value['cumml_units'], 4, '.', '');
+                    //         // $purchase_value['cumml_units']=(number_format((float)$purchase_cumml_units, 4, '.', '') - number_format((float)$rdm_tot_units, 4, '.', ''));
+                    //         // // return $purchase_value['cumml_units'];
+                    //         // if ($purchase_value['cumml_units']==0) {
+                    //         //     // return 'if';
+                    //         //     $set_units=$purchase_value['cumml_units'];
+                    //         //     $purchase_value['cumml_units']=$set_units;
+                    //         //     $deduct_unit_array=[...$deduct_unit_array,$purchase_value];
+                    //         //     $rdm_tot_units=0;
+                    //         //     $newarr=[];
+                    //         //     // $newarr['id']=$purchase_value['id'];
+                    //         //     $newarr['trans_date']=$purchase_value['trans_date'];
+                    //         //     $newarr['pur_price']=$purchase_value['pur_price'];
+                    //         //     $newarr['transaction_type']="Remaining";
+                    //         //     $newarr['transaction_subtype']="Remaining";
+                    //         //     $newarr['tot_units']=$set_units;
+                    //         //     $newarr['cumml_units']=$set_units;
+                    //         //     $newarr['tot_amount']= number_format((float)($set_units * $purchase_value['pur_price']), 2, '.', '');
+                    //         //     $newarr['gross_amount']=number_format((float)($set_units * $purchase_value['pur_price']), 2, '.', '');
+                    //         //     array_push($after_remaining_array,$newarr);
+                    //         //     // return $deduct_unit_array;
+                    //         //     // return $after_remaining_array;
+                    //         // }else if ($purchase_value['cumml_units'] < 0) {
+                    //         //     // return 'if1';
+                    //         //     // $purchase_value['cumml_units']=$purchase_value['tot_units'] + $after_remaining_array[(count($after_remaining_array)-1)]['cumml_units'] ;
+                    //         //     // array_push($after_remaining_array,$purchase_value);
+                    //         //     $deduct_unit_array=[...$deduct_unit_array,$purchase_value];
+                    //         //     // return $deduct_unit_array;
+                    //         // }else if ($purchase_value['cumml_units'] > 0) {
+                    //         //     // if ( $key==7) {
+                    //         //     //     # code...
+                    //         //     //     return $purchase_data;
+                    //         //     // }
+                    //         //     // return 'if2';
+                    //         //     // return $purchase_cumml_units .'  ---  '.number_format((float)$rdm_tot_units, 4, '.', '');
+                    //         //     // return $purchase_value['cumml_units'];
+                    //         //     if ($flag=='Y') {
+                    //         //         $flag='N';
+                    //         //         $set_units=$purchase_value['cumml_units'];
+                    //         //         $purchase_value['cumml_units']=$set_units;
+                    //         //         $deduct_unit_array=[...$deduct_unit_array,$purchase_value];
+                    //         //         $rdm_tot_units=0;
+                    //         //         $newarr=[];
+                    //         //         // $newarr['id']=$purchase_value['id'];
+                    //         //         $newarr['trans_date']=$purchase_value['trans_date'];
+                    //         //         $newarr['pur_price']=$purchase_value['pur_price'];
+                    //         //         $newarr['transaction_type']="Remaining";
+                    //         //         $newarr['transaction_subtype']="Remaining";
+                    //         //         $newarr['tot_units']=$set_units;
+                    //         //         $newarr['cumml_units']=$set_units;
+                    //         //         $newarr['tot_amount']= number_format((float)($set_units * $purchase_value['pur_price']), 2, '.', '');
+                    //         //         $newarr['gross_amount']=number_format((float)($set_units * $purchase_value['pur_price']), 2, '.', '');
+                    //         //         array_push($after_remaining_array,$newarr);
+                    //         //     }else {
+                    //         //         $purchase_value['cumml_units']=$purchase_value['tot_units'] + $after_remaining_array[(count($after_remaining_array)-1)]['cumml_units'] ;
+                    //         //         array_push($after_remaining_array,$purchase_value);
+                    //         //     }
+                    //         // }
+                    //         // return $deduct_unit_array;
+                    //     }
+                    //     // return $after_remaining_array;
+                    //     // if ($key==7) {
+                    //     //     # code...
+                    //     //     return $after_remaining_array;
+                    //     // }
+                    //     $purchase_data=$after_remaining_array;
+                    // }
+                    // // return $purchase_data;
+                    // // $final_array=array_merge($deduct_unit_array,$purchase_data);
+                    // // return $final_array;
+                    // // return $purchase_data;
+                    // $tot_amount=0;
+                    // foreach ($purchase_data as $key => $value) {
+                    //     $tot_amount +=$value['tot_amount'];
+                    // }
+                    // // foreach ($redemption_data as $key => $value) {
+                    // //     $tot_amount +=$value['tot_amount'];
+                    // // }
+                    
+                    // return $tot_amount;
+
+                    
+
+
+
                     foreach ($redemption_data as $redemption_key => $redemption_value) {
                         $rdm_tot_units=number_format((float)$redemption_value->tot_units, 4, '.', '');
                         $deduct_unit_array=[];
@@ -414,27 +525,17 @@ class LiveMFPController extends Controller
                                 // if ($purchase_key==0) {
                                 //     return $purchase_value['cumml_units']."-----".$rdm_tot_units;
                                 // }
-                                $purchase_cumml_units=number_format((float)$purchase_value['cumml_units'], 4, '.', '');
+                                $purchase_cumml_units=number_format((float)$purchase_value['cumml_units'], 2, '.', '');
                                 $purchase_value['cumml_units']=$purchase_cumml_units - $rdm_tot_units;
                                 
                                     if ($purchase_value['cumml_units'] >= 0 ) {
                                         $calculation_cumml_unit=isset($purchase_data[($purchase_key - 1)]['cumml_units'])?$purchase_data[($purchase_key - 1)]['cumml_units']:0;
                                         if ($calculation_cumml_unit < 0) {
-                                            if (count($deduct_unit_array)>0) {
-                                                $purchase_value['sequence_no']=($deduct_unit_array[(count($deduct_unit_array)-1)]['sequence_no'] + 1); 
-                                            }else {
-                                                $purchase_value['sequence_no']=1;
-                                            }
                                             $set_units=$purchase_value['cumml_units'];
                                             $purchase_value['cumml_units']=0;
                                             array_push($deduct_unit_array,$purchase_value);
                                             $rdm_tot_units=0;
                                             $newarr=[];
-                                            if (count($deduct_unit_array)>0) {
-                                                $newarr['sequence_no']=($deduct_unit_array[(count($deduct_unit_array)-1)]['sequence_no'] + 1); 
-                                            }else {
-                                                $newarr['sequence_no']=1;
-                                            }
                                             $newarr['id']=$purchase_value['id'];
                                             $newarr['trans_date']=$purchase_value['trans_date'];
                                             $newarr['pur_price']=$purchase_value['pur_price'];
@@ -455,21 +556,11 @@ class LiveMFPController extends Controller
                                             $flag='N';
                                         }else {
                                             if ($flag=='Y') {
-                                                if (count($deduct_unit_array)>0) {
-                                                    $purchase_value['sequence_no']=($deduct_unit_array[(count($deduct_unit_array)-1)]['sequence_no'] + 1); 
-                                                }else {
-                                                    $purchase_value['sequence_no']=1;
-                                                }
                                                 $set_units=$purchase_value['cumml_units'];
                                                 $purchase_value['cumml_units']=0;
                                                 array_push($deduct_unit_array,$purchase_value);
                                                 $rdm_tot_units=0;
                                                 $newarr=[];
-                                                if (count($deduct_unit_array)>0) {
-                                                    $newarr['sequence_no']=($deduct_unit_array[(count($deduct_unit_array)-1)]['sequence_no'] + 1); 
-                                                }else {
-                                                    $newarr['sequence_no']=1;
-                                                }
                                                 $newarr['id']=$purchase_value['id'];
                                                 $newarr['trans_date']=$purchase_value['trans_date'];
                                                 $newarr['pur_price']=$purchase_value['pur_price'];
@@ -489,32 +580,17 @@ class LiveMFPController extends Controller
                                                 array_push($deduct_unit_array,$newarr);
                                                 $flag='N';
                                             }else{
-                                                if (count($deduct_unit_array)>0) {
-                                                    $purchase_value['sequence_no']=($deduct_unit_array[(count($deduct_unit_array)-1)]['sequence_no'] + 1); 
-                                                }else {
-                                                    $purchase_value['sequence_no']=1;
-                                                }
                                                 $purchase_value['cumml_units']=number_format((float)$purchase_value['tot_units'], 4, '.', '') + number_format((float)$deduct_unit_array[(count($deduct_unit_array)-1)]['cumml_units'], 4, '.', '') ;
                                                 $purchase_value['curr_val']=number_format((float)($purchase_value['tot_units'] * $purchase_value['curr_nav']), 2, '.', '');
                                                 array_push($deduct_unit_array,$purchase_value);
                                             }
                                         }
                                     }else {
-                                        if (count($deduct_unit_array)>0) {
-                                            $purchase_value['sequence_no']=($deduct_unit_array[(count($deduct_unit_array)-1)]['sequence_no'] + 1); 
-                                        }else {
-                                            $purchase_value['sequence_no']=1;
-                                        }
                                         $purchase_value['curr_val']=number_format((float)($purchase_value['tot_units'] * $purchase_value['curr_nav']), 2, '.', '');
                                         array_push($deduct_unit_array,$purchase_value);
                                         // return $deduct_unit_array;
                                     }
                             }else {
-                                if (count($deduct_unit_array)>0) {
-                                    $purchase_value['sequence_no']=($deduct_unit_array[(count($deduct_unit_array)-1)]['sequence_no'] + 1); 
-                                }else {
-                                    $purchase_value['sequence_no']=1;
-                                }
                                 $purchase_value['curr_val']=number_format((float)($purchase_value['tot_units'] * $purchase_value['curr_nav']), 2, '.', '');
                                 array_push($deduct_unit_array,$purchase_value);
                             }
@@ -526,11 +602,8 @@ class LiveMFPController extends Controller
 
                     // return $purchase_data;
                     /*******************************************end purchase and redemption case******************************************/
-                    $final_arr=array_merge($purchase_data,$redemption_data);
-                    usort($final_arr, function($a, $b) {
-                        return $a['trans_date'] <=> $b['trans_date'];
-                    });
-                    return $final_arr;
+                    // $final_array=array_merge($deduct_unit_array,$purchase_data);
+                    // return $final_array;
                     // $final_data_arr=[];
                     $inv_cost=0;
                     foreach ($purchase_data as $key => $value) {
@@ -687,17 +760,15 @@ class LiveMFPController extends Controller
                             $get_type_subtype=MFTransTypeSubType::where('c_k_trans_sub_type',$kf_trans_type)
                                 ->where('k_divident_flag',$trans_flag)
                                 ->first();
-                        }
-                        // elseif ($trans_flag=='TI') {
-                        //     $get_type_subtype='';
-                        //     $transaction_type='Transfer In';
-                        //     $transaction_subtype='Transfer In';
-                        // }elseif ($trans_flag=='TO') {
-                        //     $get_type_subtype='';
-                        //     $transaction_type='Transfer Out';
-                        //     $transaction_subtype='Transfer Out';
-                        // } 
-                        else {
+                        }elseif ($trans_flag=='TI') {
+                            $get_type_subtype='';
+                            $transaction_type='Transfer In';
+                            $transaction_subtype='Transfer In';
+                        }elseif ($trans_flag=='TO') {
+                            $get_type_subtype='';
+                            $transaction_type='Transfer Out';
+                            $transaction_subtype='Transfer Out';
+                        } else {
                             $get_type_subtype=MFTransTypeSubType::where('c_k_trans_sub_type',$kf_trans_type)
                                 ->first();
                         }
@@ -725,7 +796,7 @@ class LiveMFPController extends Controller
                     $cagr = pow((6193.43/4561),(1/$nper)) - 1; */
 
                     array_push($data,$value);
-                    if( strpos($value->transaction_subtype, 'Purchase' )!== false || strpos($value->transaction_subtype, 'Switch In' )!== false) {
+                    if( strpos($value->transaction_subtype, 'Purchase' )!== false ) {
                         if ($key > 0) {
                             $value->cumml_units=$value->tot_units + $all_data[($key-1)]->cumml_units ;
                         }else {
@@ -733,7 +804,7 @@ class LiveMFPController extends Controller
                         }
                         array_push($purchase_data,$value);
                     }
-                    if( strpos($value->transaction_subtype, 'Redemption' )!== false || strpos($value->transaction_subtype, 'Switch Out' )!== false) {
+                    if( strpos($value->transaction_subtype, 'Redemption' )!== false ) {
                         $value->cumml_units=0;
                         array_push($redemption_data,$value);
                     }
@@ -870,7 +941,7 @@ class LiveMFPController extends Controller
                     foreach ($purchase_data as $purchase_key => $purchase_value) {
                         if ($purchase_value['cumml_units'] >= 0) {
                             
-                            $purchase_cumml_units=number_format((float)$purchase_value['cumml_units'], 4, '.', '');
+                            $purchase_cumml_units=number_format((float)$purchase_value['cumml_units'], 2, '.', '');
                             $purchase_value['cumml_units']=$purchase_cumml_units - $rdm_tot_units;
                             
                                 if ($purchase_value['cumml_units'] >= 0 ) {
@@ -891,9 +962,6 @@ class LiveMFPController extends Controller
                                         $newarr['trans_mode']=$purchase_value['trans_mode'];
                                         $newarr['transaction_type']="Remaining";
                                         $newarr['transaction_subtype']="Remaining";
-                                        // tot_stamp_duty
-                                        // $newarr['tot_stamp_duty']=$purchase_value['tot_stamp_duty'];
-                                        
                                         $newarr['tot_units']=$set_units;
                                         $newarr['cumml_units']=$set_units;
                                         $newarr['tot_amount']= number_format((float)($set_units * $purchase_value['pur_price']), 2, '.', '');
@@ -901,9 +969,9 @@ class LiveMFPController extends Controller
                                         $newarr['gross_amount']=number_format((float)($set_units * $purchase_value['pur_price']), 2, '.', '');
                                         $newarr['curr_val']=number_format((float)($set_units * $purchase_value['curr_nav']), 2, '.', '');
                                         $newarr['gain_loss']=number_format((float)($newarr['curr_val'] - $newarr['tot_amount']), 2, '.', '');
-                                        $newarr['ret_abs']=($newarr['tot_amount']==0)?0:number_format((float)(($newarr['gain_loss'] / $newarr['tot_amount'])*100), 2, '.', '');
+                                        $newarr['ret_abs']=number_format((float)(($newarr['gain_loss'] / $newarr['tot_amount'])*100), 2, '.', '');
                                         $nper =($newarr['days'] / 365);
-                                        $newarr['ret_cagr']=($newarr['tot_amount']==0)?0:number_format((float)((pow(($newarr['curr_val']/$newarr['tot_amount']),(1/$nper)) - 1) * 100), 2, '.', '');
+                                        $newarr['ret_cagr']=number_format((float)((pow(($newarr['curr_val']/$newarr['tot_amount']),(1/$nper)) - 1) * 100), 2, '.', '');
                                         array_push($deduct_unit_array,$newarr);
                                         $flag='N';
                                     }else {
@@ -930,9 +998,9 @@ class LiveMFPController extends Controller
                                             $newarr['gross_amount']=number_format((float)($set_units * $purchase_value['pur_price']), 2, '.', '');
                                             $newarr['curr_val']=number_format((float)($set_units * $purchase_value['curr_nav']), 2, '.', '');
                                             $newarr['gain_loss']=number_format((float)($newarr['curr_val'] - $newarr['tot_amount']), 2, '.', '');
-                                            $newarr['ret_abs']=($newarr['tot_amount']==0)?0:number_format((float)(($newarr['gain_loss'] / $newarr['tot_amount'])*100), 2, '.', '');
+                                            $newarr['ret_abs']=number_format((float)(($newarr['gain_loss'] / $newarr['tot_amount'])*100), 2, '.', '');
                                             $nper =($newarr['days'] / 365);
-                                            $newarr['ret_cagr']=($newarr['tot_amount']==0)?0:number_format((float)((pow(($newarr['curr_val']/$newarr['tot_amount']),(1/$nper)) - 1) * 100), 2, '.', '');
+                                            $newarr['ret_cagr']=number_format((float)((pow(($newarr['curr_val']/$newarr['tot_amount']),(1/$nper)) - 1) * 100), 2, '.', '');
                                             array_push($deduct_unit_array,$newarr);
                                             $flag='N';
                                         }else{
@@ -948,18 +1016,18 @@ class LiveMFPController extends Controller
                                 }else {
                                     $purchase_value['curr_val']=number_format((float)($purchase_value['tot_units'] * $purchase_value['curr_nav']), 2, '.', '');
                                     $purchase_value['gain_loss']=number_format((float)($purchase_value['curr_val'] - $purchase_value['tot_amount']), 2, '.', '');
-                                    $purchase_value['ret_abs']=($purchase_value['tot_amount']==0)?0:number_format((float)(($purchase_value['gain_loss'] / $purchase_value['tot_amount'])*100), 2, '.', '');
+                                    $purchase_value['ret_abs']=number_format((float)(($purchase_value['gain_loss'] / $purchase_value['tot_amount'])*100), 2, '.', '');
                                     $nper =($purchase_value['days'] / 365);
-                                    $purchase_value['ret_cagr']=($purchase_value['tot_amount']==0)?0:number_format((float)((pow(($purchase_value['curr_val']/$purchase_value['tot_amount']),(1/$nper)) - 1) * 100), 2, '.', '');
+                                    $purchase_value['ret_cagr']=number_format((float)((pow(($purchase_value['curr_val']/$purchase_value['tot_amount']),(1/$nper)) - 1) * 100), 2, '.', '');
                                     array_push($deduct_unit_array,$purchase_value);
                                     // return $deduct_unit_array;
                                 }
                         }else {
                             $purchase_value['curr_val']=number_format((float)($purchase_value['tot_units'] * $purchase_value['curr_nav']), 2, '.', '');
                             $purchase_value['gain_loss']=number_format((float)($purchase_value['curr_val'] - $purchase_value['tot_amount']), 2, '.', '');
-                            $purchase_value['ret_abs']=($purchase_value['tot_amount']==0)?0:number_format((float)(($purchase_value['gain_loss'] / $purchase_value['tot_amount'])*100), 2, '.', '');
+                            $purchase_value['ret_abs']=number_format((float)(($purchase_value['gain_loss'] / $purchase_value['tot_amount'])*100), 2, '.', '');
                             $nper =($purchase_value['days'] / 365);
-                            $purchase_value['ret_cagr']=($purchase_value['tot_amount']==0)?0:number_format((float)((pow(($purchase_value['curr_val']/$purchase_value['tot_amount']),(1/$nper)) - 1) * 100), 2, '.', '');
+                            $purchase_value['ret_cagr']=number_format((float)((pow(($purchase_value['curr_val']/$purchase_value['tot_amount']),(1/$nper)) - 1) * 100), 2, '.', '');
                             array_push($deduct_unit_array,$purchase_value);
                         }
                     }
@@ -1141,7 +1209,7 @@ class LiveMFPController extends Controller
         $all_date_arr=[];
 
         foreach ($foliotrans as $key => $value) {
-            if(strpos($value->transaction_subtype, 'Purchase' )!== false || strpos($value->transaction_subtype, 'Switch In' )!== false ) {
+            if(strpos($value->transaction_subtype, 'Purchase' )!== false ) {
                 if ($key > 0) {
                     $value->cumml_units=number_format((float)($value->tot_units + $foliotrans[($key-1)]->cumml_units) , 4, '.', '') ;
                 }else {
@@ -1151,7 +1219,7 @@ class LiveMFPController extends Controller
                 // array_push($purchase_amt_arr,$value->tot_amount);
                 array_push($all_amt_arr,-$value->tot_amount);
                 array_push($all_date_arr,$value->trans_date);
-            }elseif (strpos($value->transaction_subtype, 'Redemption' )!== false || strpos($value->transaction_subtype, 'Switch Out' )!== false) {
+            }elseif (strpos($value->transaction_subtype, 'Redemption' )!== false ) {
                 $value->cumml_units=0;
                 array_push($redemption_data,$value);
                 // array_push($redemption_amt_arr,$value->tot_amount);
@@ -1160,9 +1228,10 @@ class LiveMFPController extends Controller
             }
         }
 
+        /*******************************************start purchase and redemption case******************************************/
         $inv_cost=0;
         if (count($redemption_data) > 0) {
-            /*******************************************start purchase and redemption case******************************************/
+        
             foreach ($redemption_data as $redemption_key => $redemption_value) {
                 $rdm_tot_units=number_format((float)$redemption_value->tot_units, 4, '.', '');
                 $deduct_unit_array=[];
@@ -1170,7 +1239,7 @@ class LiveMFPController extends Controller
                 foreach ($purchase_data as $purchase_key => $purchase_value) {
                     if ($purchase_value['cumml_units'] >= 0) {
                         
-                        $purchase_cumml_units=number_format((float)$purchase_value['cumml_units'], 4, '.', '');
+                        $purchase_cumml_units=number_format((float)$purchase_value['cumml_units'], 2, '.', '');
                         $purchase_value['cumml_units']=$purchase_cumml_units - $rdm_tot_units;
                         
                             if ($purchase_value['cumml_units'] >= 0 ) {
@@ -1243,6 +1312,8 @@ class LiveMFPController extends Controller
                 // return  $deduct_unit_array;
                 $purchase_data=$deduct_unit_array;
             }
+
+
             // return $purchase_data;
             /*******************************************end purchase and redemption case******************************************/
             // $final_array=array_merge($deduct_unit_array,$purchase_data);
@@ -1255,6 +1326,7 @@ class LiveMFPController extends Controller
                     $inv_cost +=number_format((float)$value['tot_amount'], 2, '.', '');
                 }
             }
+            
         }else {
             // $inv_cost=0;
             foreach ($purchase_data as $key => $value) {
@@ -1489,11 +1561,6 @@ class LiveMFPController extends Controller
             $client_name=$request->client_name;
             $date_range=$request->date_range;
 
-            $trans_type=json_decode($request->trans_type);
-            $trans_sub_type=json_decode($request->trans_sub_type);
-            $flow_type=$request->flow_type;
-            // return $trans_type;
-
             // session()->forget('valuation_as_on');
             // session(['valuation_as_on' => $valuation_as_on]);
             // return Session::get('valuation_as_on');
@@ -1598,33 +1665,9 @@ class LiveMFPController extends Controller
                 ->orderBy('td_mutual_fund_trans.trans_date','ASC')
                 ->get();
             
-            $trans_data=[];
-            foreach ($all_datas as $key => $value) {
-                if (!empty($trans_type) || !empty($trans_sub_type)) {
-                    if (!empty($trans_type) && in_array($value->transaction_type ,$trans_type) && !empty($trans_sub_type) && in_array($value->transaction_subtype ,$trans_sub_type)) {
-                        array_push($trans_data,$value);
-                    }else if (!empty($trans_type)  && in_array($value->transaction_type ,$trans_type)) {
-                        array_push($trans_data,$value);
-                    }else if (!empty($trans_sub_type) && in_array($value->transaction_subtype ,$trans_sub_type)) {
-                        array_push($trans_data,$value);
-                    }
-                }else{
-                    array_push($trans_data,$value);
-                }
-            }
-            $data=[];
-            foreach ($trans_data as $key => $value) {
-                if ($flow_type) {
-                    if ($value->process_type==$flow_type) {
-                        array_push($data,$value);
-                    }
-                }else {
-                    array_push($data,$value);
-                }
-            }
             $mydata=[];
             $mydata['client_details']=$client_details;
-            $mydata['data']=$data;
+            $mydata['data']=$all_datas;
             $mydata['valuation_as_on']=$valuation_as_on;
         } catch (\Throwable $th) {
             throw $th;

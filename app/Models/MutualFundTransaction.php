@@ -97,8 +97,6 @@ class MutualFundTransaction extends Model
             (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=trxn_type_code AND c_k_trans_type=trxn_type_flag AND c_k_trans_sub_type=trxn_nature_code limit 1),
             (CASE 
                 WHEN trans_flag="DP" || trans_flag="DR" THEN (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type AND k_divident_flag=trans_flag limit 1)
-                WHEN trans_flag="TI" THEN "Transfer In"
-                WHEN trans_flag="TO" THEN "Transfer Out"
                 ELSE (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type limit 1)
             END)
             )as transaction_type')
@@ -106,8 +104,6 @@ class MutualFundTransaction extends Model
             (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=trxn_type_code AND c_k_trans_type=trxn_type_flag AND c_k_trans_sub_type=trxn_nature_code limit 1),
             (CASE 
                 WHEN trans_flag="DP" || trans_flag="DR" THEN (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type AND k_divident_flag=trans_flag limit 1)
-                WHEN trans_flag="TI" THEN "Transfer In"
-                WHEN trans_flag="TO" THEN "Transfer Out"
                 ELSE (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type limit 1)
             END)
             )as transaction_subtype')
@@ -170,8 +166,6 @@ class MutualFundTransaction extends Model
             (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=trxn_type_code AND c_k_trans_type=trxn_type_flag AND c_k_trans_sub_type=trxn_nature_code limit 1),
             (CASE 
                 WHEN trans_flag="DP" || trans_flag="DR" THEN (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type AND k_divident_flag=trans_flag limit 1)
-                WHEN trans_flag="TI" THEN "Transfer In"
-                WHEN trans_flag="TO" THEN "Transfer Out"
                 ELSE (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type limit 1)
             END)
             )as transaction_type')
@@ -179,8 +173,6 @@ class MutualFundTransaction extends Model
             (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=trxn_type_code AND c_k_trans_type=trxn_type_flag AND c_k_trans_sub_type=trxn_nature_code limit 1),
             (CASE 
                 WHEN trans_flag="DP" || trans_flag="DR" THEN (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type AND k_divident_flag=trans_flag limit 1)
-                WHEN trans_flag="TI" THEN "Transfer In"
-                WHEN trans_flag="TO" THEN "Transfer Out"
                 ELSE (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type limit 1)
             END)
             )as transaction_subtype')
