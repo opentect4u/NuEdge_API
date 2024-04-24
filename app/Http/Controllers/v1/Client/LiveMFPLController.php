@@ -182,7 +182,7 @@ class LiveMFPLController extends Controller
                 if ($value1->tot_amount > 0) {
                     // return $profitloss;
                     // $mydata=$this->calculate($profitloss);
-                    $mydata=LiveMFPController::calculate($profitloss);
+                    $mydata=TransHelper::calculate($profitloss);
                     // return $mydata;
                 }
                 $value1->mydata=$mydata;

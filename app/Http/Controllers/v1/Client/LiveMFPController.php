@@ -1108,7 +1108,7 @@ class LiveMFPController extends Controller
     }
 
 
-    public static function calculate($foliotrans){
+    public function calculate($foliotrans){
         $purchase_data=[];
         $redemption_data=[];
         $purchase_amt_arr=[];
