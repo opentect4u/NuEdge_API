@@ -56,7 +56,12 @@ class LiveMFPController extends Controller
                         $client_queryString='md_client.pan';
                         $client_rawQuery.=Helper::WhereRawQuery($pan_no,$client_rawQuery,$client_queryString);
                     }
-                    $client_details=Client::whereRaw($client_rawQuery)->first();
+                    $client_details=Client::leftJoin('md_pincode','md_pincode.id','=','md_client.pincode')
+                        ->leftJoin('md_city','md_city.id','=','md_client.city')
+                        ->leftJoin('md_states','md_states.id','=','md_client.state')
+                        ->leftJoin('md_district','md_district.id','=','md_client.dist')
+                        ->select('md_client.*','md_pincode.pincode as pincode','md_city.name as city_name','md_states.name as state_name','md_district.name as dist_name')
+                        ->whereRaw($client_rawQuery)->first();
                 }else {
                     $queryString='td_mutual_fund_trans.first_client_pan';
                     $condition=(strlen($rawQuery) > 0)? " AND (":" (";
@@ -239,7 +244,12 @@ class LiveMFPController extends Controller
                         $client_queryString='md_client.pan';
                         $client_rawQuery.=Helper::WhereRawQuery($pan_no,$client_rawQuery,$client_queryString);
                     }
-                    $client_details=Client::whereRaw($client_rawQuery)->first();
+                    $client_details=Client::leftJoin('md_pincode','md_pincode.id','=','md_client.pincode')
+                        ->leftJoin('md_city','md_city.id','=','md_client.city')
+                        ->leftJoin('md_states','md_states.id','=','md_client.state')
+                        ->leftJoin('md_district','md_district.id','=','md_client.dist')
+                        ->select('md_client.*','md_pincode.pincode as pincode','md_city.name as city_name','md_states.name as state_name','md_district.name as dist_name')
+                        ->whereRaw($client_rawQuery)->first();
                 }else {
                     $queryString='td_mutual_fund_trans.first_client_pan';
                     $condition=(strlen($rawQuery) > 0)? " AND (":" (";
@@ -1545,7 +1555,12 @@ class LiveMFPController extends Controller
                         $client_queryString='md_client.pan';
                         $client_rawQuery.=Helper::WhereRawQuery($pan_no,$client_rawQuery,$client_queryString);
                     }
-                    $client_details=Client::whereRaw($client_rawQuery)->first();
+                    $client_details=Client::leftJoin('md_pincode','md_pincode.id','=','md_client.pincode')
+                        ->leftJoin('md_city','md_city.id','=','md_client.city')
+                        ->leftJoin('md_states','md_states.id','=','md_client.state')
+                        ->leftJoin('md_district','md_district.id','=','md_client.dist')
+                        ->select('md_client.*','md_pincode.pincode as pincode','md_city.name as city_name','md_states.name as state_name','md_district.name as dist_name')
+                        ->whereRaw($client_rawQuery)->first();
                 }else {
                     $queryString='td_mutual_fund_trans.first_client_pan';
                     $condition=(strlen($rawQuery) > 0)? " AND (":" (";
