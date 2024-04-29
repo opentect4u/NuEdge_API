@@ -97,6 +97,7 @@ class MutualFundTransaction extends Model
             (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=trxn_type_code AND c_k_trans_type=trxn_type_flag AND c_k_trans_sub_type=trxn_nature_code limit 1),
             (CASE 
                 WHEN trans_flag="DP" || trans_flag="DR" THEN (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type AND k_divident_flag=trans_flag limit 1)
+                WHEN trans_flag="TO" THEN "Transfer Out"
                 ELSE (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type limit 1)
             END)
             )as transaction_type')
@@ -104,13 +105,14 @@ class MutualFundTransaction extends Model
             (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=trxn_type_code AND c_k_trans_type=trxn_type_flag AND c_k_trans_sub_type=trxn_nature_code limit 1),
             (CASE 
                 WHEN trans_flag="DP" || trans_flag="DR" THEN (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type AND k_divident_flag=trans_flag limit 1)
+                WHEN trans_flag="TO" THEN "Transfer Out"
                 ELSE (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type limit 1)
             END)
             )as transaction_subtype')
             ->selectRaw('sum(units) as tot_units')
             ->selectRaw('sum(amount) as tot_amount')
             ->selectRaw('sum(stamp_duty) as tot_stamp_duty')
-            ->selectRaw('sum(tds) as tot_tds')
+            ->selectRaw('IF(tds!="",sum(tds),0.00)as tot_tds')
             ->selectRaw('count(*) as tot_rows')
             ->groupBy('td_mutual_fund_trans.trans_no')
             ->groupBy('td_mutual_fund_trans.trxn_type_flag')
@@ -118,6 +120,7 @@ class MutualFundTransaction extends Model
             // ->groupByRaw('IF(substr(trxn_nature,1,19)="Systematic-Reversed","Systematic-Reversed",trxn_nature)')
             ->groupBy('td_mutual_fund_trans.trans_desc')
             ->groupBy('td_mutual_fund_trans.kf_trans_type')
+            ->groupBy('td_mutual_fund_trans.trans_flag')
             ->orderBy('td_mutual_fund_trans.trans_date','ASC');
 
         // $value->total_rows=DB::select('SELECT * FROM td_mutual_fund_trans WHERE folio_no="'.$value->folio_no.'" AND product_code="'.$value->product_code.'" AND isin_no="'.$value->isin_no.'" AND trans_date<="'.$valuation_as_on.'"');
@@ -188,7 +191,7 @@ class MutualFundTransaction extends Model
             ->selectRaw('sum(units) as tot_units')
             ->selectRaw('sum(amount) as tot_amount')
             ->selectRaw('sum(stamp_duty) as tot_stamp_duty')
-            ->selectRaw('sum(tds) as tot_tds')
+            ->selectRaw('IF(tds!="",sum(tds),0.00)as tot_tds')
             ->selectRaw('count(*) as tot_rows')
             ->groupBy('td_mutual_fund_trans.trans_no')
             ->groupBy('td_mutual_fund_trans.trxn_type_flag')
@@ -196,6 +199,7 @@ class MutualFundTransaction extends Model
             // ->groupByRaw('IF(substr(trxn_nature,1,19)="Systematic-Reversed","Systematic-Reversed",trxn_nature)')
             ->groupBy('td_mutual_fund_trans.trans_desc')
             ->groupBy('td_mutual_fund_trans.kf_trans_type')
+            ->groupBy('td_mutual_fund_trans.trans_flag')
             ->orderBy('td_mutual_fund_trans.trans_date','ASC');
     }
 }

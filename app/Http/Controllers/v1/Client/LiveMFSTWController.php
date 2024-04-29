@@ -12,7 +12,8 @@ use App\Models\{
     MutualFundTransaction,
     MFTransTypeSubType,
     NAVDetailsSec,
-    SipStpSwpReport
+    SipStpSwpReport,
+    BrokerChangeTransReport
 };
 use Validator;
 use Illuminate\Support\Carbon;
@@ -58,7 +59,7 @@ class LiveMFSTWController extends Controller
                         $client_queryString='md_client.pan';
                         $client_rawQuery.=Helper::WhereRawQuery($pan_no,$client_rawQuery,$client_queryString);
                     }
-                    $client_details=Client::whereRaw($client_rawQuery)->first();
+                    $client_details=TransHelper::getClientDetails($client_rawQuery);
                 }else {
                     $queryString='tt_sip_stp_swp_report.first_client_pan';
                     $condition=(strlen($rawQuery) > 0)? " AND (":" (";
@@ -112,8 +113,67 @@ class LiveMFSTWController extends Controller
                         $rawQuery.=' OR (IF(tt_sip_stp_swp_report.rnt_id=1, 
                                 date(tt_sip_stp_swp_report.to_date) <= "'.date('Y-m-d').'" AND tt_sip_stp_swp_report.cease_terminate_date IS NULL, 
                                 date(tt_sip_stp_swp_report.to_date) <= "'.date('Y-m-d').'" AND tt_sip_stp_swp_report.to_date <= tt_sip_stp_swp_report.cease_terminate_date
-                                )))';
+                                ))';
                         // *********************end matured sip logic*********************
+                        /**********************************start unregister sip logic*****************************************/
+                        if ($report_type=='P') {
+                            $rawQuery.=' OR (
+                                tt_sip_stp_swp_report.from_date >= tt_sip_stp_swp_report.cease_terminate_date 
+                                OR 
+                                (SELECT COUNT(*) FROM `md_systematic_unregistered` WHERE remarks=tt_sip_stp_swp_report.remarks AND rnt_id=tt_sip_stp_swp_report.rnt_id) > 0
+                                OR 
+                                datediff(tt_sip_stp_swp_report.cease_terminate_date, tt_sip_stp_swp_report.from_date) < 30
+                            ))';
+                        }else {
+                            $rawQuery.=' OR (
+                                tt_sip_stp_swp_report.from_date >= tt_sip_stp_swp_report.cease_terminate_date 
+                                OR 
+                                (SELECT COUNT(*) FROM `md_systematic_unregistered` WHERE remarks=tt_sip_stp_swp_report.remarks AND rnt_id=tt_sip_stp_swp_report.rnt_id) > 0
+                                OR 
+                                datediff(tt_sip_stp_swp_report.cease_terminate_date, tt_sip_stp_swp_report.from_date) < 15
+                            ))';
+                        }
+                        /*********************************end unregister sip logic*******************************************/
+                        break;
+                    case 'A':
+                        $rawQuery.=' AND ((tt_sip_stp_swp_report.cease_terminate_date IS NULL AND tt_sip_stp_swp_report.from_date <="'.date('Y-m-d').'" AND tt_sip_stp_swp_report.to_date >="'.date('Y-m-d').'")';
+                        // *********************start termination logic*********************
+                        $rawQuery.=' OR ((IF(tt_sip_stp_swp_report.rnt_id=1, 
+                            DATE_FORMAT(tt_sip_stp_swp_report.cease_terminate_date,"Y-m-d")!="", 
+                            DATE_FORMAT(tt_sip_stp_swp_report.cease_terminate_date,"Y-m-d")!="" AND tt_sip_stp_swp_report.to_date > tt_sip_stp_swp_report.cease_terminate_date)';
+                        $rawQuery.=' AND tt_sip_stp_swp_report.from_date <= tt_sip_stp_swp_report.cease_terminate_date';
+                        $rawQuery.=' AND (SELECT COUNT(*) FROM `md_systematic_unregistered` WHERE remarks=tt_sip_stp_swp_report.remarks AND rnt_id=tt_sip_stp_swp_report.rnt_id)=0';
+                        if ($report_type=='P') {
+                            $rawQuery.=' AND (datediff(tt_sip_stp_swp_report.cease_terminate_date, tt_sip_stp_swp_report.from_date) > 30))';
+                        }else {
+                            $rawQuery.=' AND (datediff(tt_sip_stp_swp_report.cease_terminate_date, tt_sip_stp_swp_report.from_date) > 15))';
+                        }
+                        // *********************end termination logic****************************
+                        // *********************start matured sip logic*********************
+                        $rawQuery.=' OR (IF(tt_sip_stp_swp_report.rnt_id=1, 
+                                date(tt_sip_stp_swp_report.to_date) <= "'.date('Y-m-d').'" AND tt_sip_stp_swp_report.cease_terminate_date IS NULL, 
+                                date(tt_sip_stp_swp_report.to_date) <= "'.date('Y-m-d').'" AND tt_sip_stp_swp_report.to_date <= tt_sip_stp_swp_report.cease_terminate_date
+                                ))';
+                        // *********************end matured sip logic*********************
+                        /**********************************start unregister sip logic*****************************************/
+                        if ($report_type=='P') {
+                            $rawQuery.=' OR (
+                                tt_sip_stp_swp_report.from_date >= tt_sip_stp_swp_report.cease_terminate_date 
+                                OR 
+                                (SELECT COUNT(*) FROM `md_systematic_unregistered` WHERE remarks=tt_sip_stp_swp_report.remarks AND rnt_id=tt_sip_stp_swp_report.rnt_id) > 0
+                                OR 
+                                datediff(tt_sip_stp_swp_report.cease_terminate_date, tt_sip_stp_swp_report.from_date) < 30
+                            )) )';
+                        }else {
+                            $rawQuery.=' OR (
+                                tt_sip_stp_swp_report.from_date >= tt_sip_stp_swp_report.cease_terminate_date 
+                                OR 
+                                (SELECT COUNT(*) FROM `md_systematic_unregistered` WHERE remarks=tt_sip_stp_swp_report.remarks AND rnt_id=tt_sip_stp_swp_report.rnt_id) > 0
+                                OR 
+                                datediff(tt_sip_stp_swp_report.cease_terminate_date, tt_sip_stp_swp_report.from_date) < 15
+                            )) )';
+                        }
+                        /*********************************end unregister sip logic*******************************************/
                         break;
                     default:
                         break;
@@ -123,7 +183,7 @@ class LiveMFSTWController extends Controller
             // return $client_details;
             // DB::enableQueryLog();
             $data=[];
-            $my_datas=SipStpSwpReport::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','tt_sip_stp_swp_report.product_code')
+            $my_datas=SipStpSwpReport::with('foliotrans')->leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','tt_sip_stp_swp_report.product_code')
                     ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
                     ->leftJoin('md_plan','md_plan.id','=','md_scheme_isin.plan_id')
                     ->leftJoin('md_option','md_option.id','=','md_scheme_isin.option_id')
@@ -156,20 +216,12 @@ class LiveMFSTWController extends Controller
             // return  $my_datas;  
             // dd(DB::getQueryLog());
 
+            $all_trans_product=[];
             foreach ($my_datas as $key => $my_data) {
                 if ($my_data->cease_terminate_date==null && $my_data->from_date <= date('Y-m-d') && $my_data->to_date >= date('Y-m-d')) {
                     $my_data->activate_status='Active';
                 }else {
-                    if ($my_data->rnt_id==1) {
-                        if ($my_data->cease_terminate_date!="" && $my_data->from_date <= $my_data->cease_terminate_date && $my_data->terminate_logic_count==0 && $my_data->terminate_datediff > 30) {
-                            $my_data->activate_status='Inactive';
-                        }
-                    }else {
-                        if ($my_data->cease_terminate_date!="" && $my_data->to_date > $my_data->cease_terminate_date && $my_data->from_date <= $my_data->cease_terminate_date && $my_data->terminate_logic_count==0 && $my_data->terminate_datediff > 30) {
-                            $my_data->activate_status='Inactive';
-                        }
-                    }
-                    // $my_data->activate_status =$active_status;
+                    $my_data->activate_status='Inactive';
                 }
 
                 $my_data->reg_no =$my_data->auto_trans_no;
@@ -221,16 +273,57 @@ class LiveMFSTWController extends Controller
                     $my_data->pause_end_date=NULL;
                 }
                 array_push($data,$my_data);
+                $f_trans_product="(nav_date=(SELECT MAX(nav_date) FROM td_nav_details WHERE product_code='".$my_data->product_code."' AND nav_date <='".$valuation_as_on."') AND product_code='".$my_data->product_code."')";
+                array_push($all_trans_product,$f_trans_product);
             }
-            $mydata=[];
-            $mydata['client_details']=$client_details;
-            $mydata['data']=$data;
-            $mydata['valuation_as_on']=$valuation_as_on;
+            if (count($my_datas)>0) {
+                $string_version_product_code = implode(',', $all_trans_product);
+                // return $string_version_product_code;
+                $res_array =DB::connection('mysql_nav')
+                    ->select('SELECT product_code,isin_no,DATE_FORMAT(nav_date, "%Y-%m-%d") as nav_date,nav FROM td_nav_details where '.str_replace(",","  OR  ",$string_version_product_code));
+                // return $res_array;
+            }
+            $cal_data=[];
+            foreach ($data as $data_key => $value1) {
+                $isin_no=$value1->isin_no;
+                $product_code=$value1->product_code;
+                $new='';
+                if (count($res_array) > 0) {
+                    foreach($res_array as $val_nav){
+                        if($val_nav->product_code==$product_code){
+                            $new=$val_nav;
+                        }
+                    }
+                }
+                // return $new;
+                $value1->new=$new;
+                $value1->curr_nav=isset($new->nav)?$new->nav:0;
+                $value1->nav_date=isset($new->nav_date)?$new->nav_date:0;
+                $folio_data='';
+                $foliotrans=$value1->foliotrans;
+                if ($value1->activate_status=="Active") {
+                    $folio_data=TransHelper::calculate($foliotrans);
+                }
+                $value1->folio_data=$folio_data;
+                $value1->inv_since=isset($folio_data['inv_since'])? $folio_data['inv_since']:$value1->inv_since;
+                $value1->pur_nav=isset($folio_data['pur_nav'])?$folio_data['pur_nav']:$value1->pur_nav;
+                $value1->transaction_type=isset($folio_data['transaction_type'])?$folio_data['transaction_type']:$value1->transaction_type;
+                $value1->transaction_subtype=isset($folio_data['transaction_subtype'])?$folio_data['transaction_subtype']:$value1->transaction_subtype;
+                $value1->inv_cost=isset($folio_data['inv_cost'])?number_format((float)$folio_data['inv_cost'], 2, '.', ''):0;
+                $value1->tot_units=isset($folio_data['tot_units'])?number_format((float)$folio_data['tot_units'], 2, '.', ''):0;
+                $value1->curr_val= number_format((float)($value1->curr_nav * $value1->tot_units), 2, '.', '');
+                array_push($cal_data,$value1);
+            }
+            
+            $my_data=[];
+            $my_data['client_details']=$client_details;
+            $my_data['data']=$cal_data;
+            $my_data['valuation_as_on']=$valuation_as_on;
         } catch (\Throwable $th) {
             throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
-        return Helper::SuccessResponse($mydata);
+        return Helper::SuccessResponse($my_data);
     }
 
     public function upcomingTrans(Request $request)
@@ -259,7 +352,7 @@ class LiveMFSTWController extends Controller
                         $client_queryString='md_client.pan';
                         $client_rawQuery.=Helper::WhereRawQuery($pan_no,$client_rawQuery,$client_queryString);
                     }
-                    $client_details=Client::whereRaw($client_rawQuery)->first();
+                    $client_details=TransHelper::getClientDetails($client_rawQuery);
                 }else {
                     $queryString='tt_sip_stp_swp_report.first_client_pan';
                     $condition=(strlen($rawQuery) > 0)? " AND (":" (";

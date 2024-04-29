@@ -2,8 +2,10 @@
 namespace App\Helpers;
 use App\Http\Controllers\Controller;
 use DB;
-use App\Models\BrokerChangeTransReport;
-
+use App\Models\{
+    BrokerChangeTransReport,
+    Client
+};
 
 class TransHelper{
 
@@ -357,6 +359,235 @@ class TransHelper{
     //     console.log(resultRate)
     //     return resultRate  ;
     // }
-    
 
+      /* CAGR calculation $nper=271/365;
+                $cagr = pow((6193.43/4561),(1/$nper)) - 1; */
+    
+    public static function getClientDetails($client_rawQuery)
+    {
+        $client_details=Client::leftJoin('md_pincode','md_pincode.id','=','md_client.pincode')
+            ->leftJoin('md_city','md_city.id','=','md_client.city')
+            ->leftJoin('md_states','md_states.id','=','md_client.state')
+            ->leftJoin('md_district','md_district.id','=','md_client.dist')
+            ->select('md_client.*','md_pincode.pincode as pincode','md_city.name as city_name','md_states.name as state_name','md_district.name as dist_name')
+            ->whereRaw($client_rawQuery)->first();
+        return $client_details;
+    }
+
+    public static function calculate($foliotrans){
+        $purchase_data=[];
+        $redemption_data=[];
+        $purchase_amt_arr=[];
+        $redemption_amt_arr=[];
+        $all_amt_arr=[];
+        $all_date_arr=[];
+        $return_data=[];
+        /*******************************************Start CAMS Broker Change Data**********************************************************/
+        if ($foliotrans[0]['rnt_id']==1 && $foliotrans[0]['transaction_type']=='Transfer In' && $foliotrans[0]['transaction_subtype']=='Transfer In') {
+            $final_foliotrans=[];
+            foreach ($foliotrans as $key => $foliotrans_value) {
+                if ($foliotrans_value->transaction_type=="Transfer In" && $foliotrans_value->transaction_subtype=="Transfer In") {
+                    // return $foliotrans_value;
+                    $broker_data=TransHelper::getBrokerData($foliotrans_value);
+                    // return $broker_data;
+                    foreach ($broker_data as $key => $broker_data_value) {
+                        array_push($final_foliotrans,$broker_data_value);
+                    }
+                }else {
+                    array_push($final_foliotrans,$foliotrans_value);
+                }
+            }
+            $foliotrans=$final_foliotrans;
+        }
+        /*******************************************End CAMS Broker Change Data**********************************************************/
+        // return $foliotrans;
+        $return_data['inv_since']=date('Y-m-d',strtotime($foliotrans[0]['trans_date']));
+        $return_data['pur_nav']=$foliotrans[0]['pur_price'];
+        if ($foliotrans[0]['transaction_type']=="Purchase" && $foliotrans[0]['transaction_subtype']=="Fresh Purchase") {
+            if ((isset($foliotrans[1]['transaction_type']) && $foliotrans[1]['transaction_type']=="SIP Purchase") && (isset($foliotrans[1]['transaction_subtype']) && $foliotrans[1]['transaction_subtype']=="SIP Purchase Installment")) {
+                $return_data['transaction_type']=$foliotrans[1]['transaction_type'];
+                $return_data['transaction_subtype']=$foliotrans[1]['transaction_subtype'];
+            }else {
+                $return_data['transaction_type']=$foliotrans[0]['transaction_type'];
+                $return_data['transaction_subtype']=$foliotrans[0]['transaction_subtype'];
+            }
+        }else {
+            $return_data['transaction_type']=$foliotrans[0]['transaction_type'];
+            $return_data['transaction_subtype']=$foliotrans[0]['transaction_subtype'];
+        }
+        /***********************************************************************************************/
+
+        foreach ($foliotrans as $key => $value) {
+            if(strpos($value->transaction_subtype, 'Purchase' )!== false || strpos($value->transaction_subtype, 'Switch In' )!== false || strpos($value->transaction_subtype, 'Dividend Reinvestment')!== false) {
+                if ($key > 0) {
+                    $value->cumml_units=number_format((float)($value->tot_units + $foliotrans[($key-1)]->cumml_units) , 4, '.', '') ;
+                }else {
+                    $value->cumml_units=$value->tot_units;
+                }
+                array_push($purchase_data,$value);
+                // array_push($purchase_amt_arr,$value->tot_amount);
+                array_push($all_amt_arr,-$value->tot_amount);
+                array_push($all_date_arr,$value->trans_date);
+            }elseif (strpos($value->transaction_subtype, 'Redemption' )!== false || strpos($value->transaction_subtype, 'Switch Out' )!== false || strpos($value->transaction_subtype, 'Transfer Out')!== false) {
+                $value->cumml_units=0;
+                array_push($redemption_data,$value);
+                // array_push($redemption_amt_arr,$value->tot_amount);
+                array_push($all_amt_arr,$value->tot_amount);
+                array_push($all_date_arr,$value->trans_date);
+            }
+        }
+        // return $foliotrans;
+
+        $idcw_r=0;
+        $inv_cost=0;
+        if (count($redemption_data) > 0) {
+            /*******************************************start purchase and redemption case******************************************/
+            foreach ($redemption_data as $redemption_key => $redemption_value) {
+                $rdm_tot_units=number_format((float)$redemption_value->tot_units, 4, '.', '');
+                $deduct_unit_array=[];
+                $flag='Y';
+                foreach ($purchase_data as $purchase_key => $purchase_value) {
+                    if ($purchase_value['cumml_units'] >= 0) {
+                        $purchase_cumml_units=number_format((float)$purchase_value['cumml_units'], 4, '.', '');
+                        $purchase_value['cumml_units']=$purchase_cumml_units - $rdm_tot_units;
+                        if ($purchase_value['cumml_units'] >= 0 ) {
+                            $calculation_cumml_unit=isset($purchase_data[($purchase_key - 1)]['cumml_units'])?$purchase_data[($purchase_key - 1)]['cumml_units']:0;
+                            if ($calculation_cumml_unit < 0) {
+                                $set_units=$purchase_value['cumml_units'];
+                                $purchase_value['cumml_units']=0;
+                                array_push($deduct_unit_array,$purchase_value);
+                                $rdm_tot_units=0;
+                                $newarr=[];
+                                $newarr['id']=$purchase_value['id'];
+                                $newarr['trans_date']=$purchase_value['trans_date'];
+                                $newarr['pur_price']=$purchase_value['pur_price'];
+                                $newarr['sensex']=$purchase_value['sensex'];
+                                $newarr['nifty50']=$purchase_value['nifty50'];
+                                $newarr['curr_nav']=$purchase_value['curr_nav'];
+                                $newarr['days']=$purchase_value['days'];
+                                $newarr['trans_mode']=$purchase_value['trans_mode'];
+                                $newarr['transaction_type']="Remaining";
+                                $newarr['transaction_subtype']="Remaining";
+                                $newarr['tot_units']=$set_units;
+                                $newarr['cumml_units']=$set_units;
+                                $newarr['tot_amount']= number_format((float)($set_units * $purchase_value['pur_price']), 2, '.', '');
+                                $newarr['tot_gross_amount']=number_format((float)($set_units * $purchase_value['pur_price']), 2, '.', '');
+                                $newarr['gross_amount']=number_format((float)($set_units * $purchase_value['pur_price']), 2, '.', '');
+                                $newarr['curr_val']=number_format((float)($set_units * $purchase_value['curr_nav']), 2, '.', '');
+                                array_push($deduct_unit_array,$newarr);
+                                $flag='N';
+                            }else {
+                                if ($flag=='Y') {
+                                    $set_units=$purchase_value['cumml_units'];
+                                    $purchase_value['cumml_units']=0;
+                                    array_push($deduct_unit_array,$purchase_value);
+                                    $rdm_tot_units=0;
+                                    $newarr=[];
+                                    $newarr['id']=$purchase_value['id'];
+                                    $newarr['trans_date']=$purchase_value['trans_date'];
+                                    $newarr['pur_price']=$purchase_value['pur_price'];
+                                    $newarr['sensex']=$purchase_value['sensex'];
+                                    $newarr['nifty50']=$purchase_value['nifty50'];
+                                    $newarr['curr_nav']=$purchase_value['curr_nav'];
+                                    $newarr['days']=$purchase_value['days'];
+                                    $newarr['trans_mode']=$purchase_value['trans_mode'];
+                                    $newarr['transaction_type']="Remaining";
+                                    $newarr['transaction_subtype']="Remaining";
+                                    $newarr['tot_units']=$set_units;
+                                    $newarr['cumml_units']=$set_units;
+                                    $newarr['tot_amount']= number_format((float)($set_units * $purchase_value['pur_price']), 2, '.', '');
+                                    $newarr['tot_gross_amount']=number_format((float)($set_units * $purchase_value['pur_price']), 2, '.', '');
+                                    $newarr['gross_amount']=number_format((float)($set_units * $purchase_value['pur_price']), 2, '.', '');
+                                    $newarr['curr_val']=number_format((float)($set_units * $purchase_value['curr_nav']), 2, '.', '');
+                                    array_push($deduct_unit_array,$newarr);
+                                    $flag='N';
+                                }else{
+                                    $purchase_value['cumml_units']=number_format((float)$purchase_value['tot_units'], 4, '.', '') + number_format((float)$deduct_unit_array[(count($deduct_unit_array)-1)]['cumml_units'], 4, '.', '') ;
+                                    $purchase_value['curr_val']=number_format((float)($purchase_value['tot_units'] * $purchase_value['curr_nav']), 2, '.', '');
+                                    array_push($deduct_unit_array,$purchase_value);
+                                }
+                            }
+                        }else {
+                            $purchase_value['curr_val']=number_format((float)($purchase_value['tot_units'] * $purchase_value['curr_nav']), 2, '.', '');
+                            array_push($deduct_unit_array,$purchase_value);
+                            // return $deduct_unit_array;
+                        }
+                    }else {
+                        $purchase_value['curr_val']=number_format((float)($purchase_value['tot_units'] * $purchase_value['curr_nav']), 2, '.', '');
+                        array_push($deduct_unit_array,$purchase_value);
+                    }
+                }
+                // return  $deduct_unit_array;
+                $purchase_data=$deduct_unit_array;
+            }
+            // return $purchase_data;
+            /*******************************************end purchase and redemption case******************************************/
+            // $final_array=array_merge($deduct_unit_array,$purchase_data);
+            // return $final_array;
+            // $final_data_arr=[];
+            $inv_cost=0;
+            foreach ($purchase_data as $key => $value) {
+                if ($value['cumml_units'] > 0) {
+                    if (strpos($value['transaction_subtype'], 'Dividend Reinvestment')!== false) {
+                        $idcw_r +=number_format((float)$value['tot_amount'], 2, '.', '');
+                    }
+                    $inv_cost +=number_format((float)$value['tot_amount'], 2, '.', '');
+                }
+            }
+        }else {
+            // $inv_cost=0;
+            foreach ($purchase_data as $key => $value) {
+                $inv_cost +=number_format((float)$value['tot_amount'], 2, '.', '');
+            }
+        }
+        // return $all_amt_arr;
+        // return $all_date_arr;
+        $return_data['inv_cost']=$inv_cost;
+        $return_data['tot_units']=(count($purchase_data) > 0)?$purchase_data[(count($purchase_data) - 1)]['cumml_units']:0;
+        $return_data['all_amt_arr']=$all_amt_arr;
+        $return_data['all_date_arr']=$all_date_arr;
+        $return_data['idcw_r']=$idcw_r;
+        return $return_data;
+    }
+
+    public static function getBrokerData($foliotrans_value)
+    {
+        $rawInnerQuery='';
+        $queryString='tt_broker_change_trans_report.folio_no';
+        $rawInnerQuery.=Helper::WhereRawQuery($foliotrans_value->folio_no,$rawInnerQuery,$queryString);
+        $queryString='tt_broker_change_trans_report.product_code';
+        $rawInnerQuery.=Helper::WhereRawQuery($foliotrans_value->product_code,$rawInnerQuery,$queryString);
+        // return $rawInnerQuery;
+
+        $broker_data=BrokerChangeTransReport::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','tt_broker_change_trans_report.product_code')
+            ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
+            ->select('tt_broker_change_trans_report.rnt_id','tt_broker_change_trans_report.folio_no','tt_broker_change_trans_report.product_code',
+            'tt_broker_change_trans_report.isin_no','tt_broker_change_trans_report.trans_date','tt_broker_change_trans_report.trxn_type',
+            'tt_broker_change_trans_report.trxn_type_flag','tt_broker_change_trans_report.trxn_nature','tt_broker_change_trans_report.amount',
+            'tt_broker_change_trans_report.stamp_duty','tt_broker_change_trans_report.tds','tt_broker_change_trans_report.units','tt_broker_change_trans_report.pur_price',
+            'tt_broker_change_trans_report.trans_no',
+            'md_scheme.scheme_name as scheme_name')
+            ->selectRaw('sum(units) as tot_units')
+            ->selectRaw('sum(amount) as tot_amount')
+            ->selectRaw('sum(stamp_duty) as tot_stamp_duty')
+            ->selectRaw('IF(tt_broker_change_trans_report.tds!="",sum(tds),0.00)as tot_tds')
+            ->selectRaw('count(*) as tot_rows')
+            ->selectRaw('(SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=tt_broker_change_trans_report.trxn_type_code AND c_k_trans_type=tt_broker_change_trans_report.trxn_type_flag AND c_k_trans_sub_type=tt_broker_change_trans_report.trxn_nature_code limit 1)as transaction_type')
+            ->selectRaw('(SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=tt_broker_change_trans_report.trxn_type_code AND c_k_trans_type=tt_broker_change_trans_report.trxn_type_flag AND c_k_trans_sub_type=tt_broker_change_trans_report.trxn_nature_code limit 1)as transaction_subtype')
+            ->where('tt_broker_change_trans_report.delete_flag','N')
+            ->where('tt_broker_change_trans_report.amc_flag','N')
+            ->where('tt_broker_change_trans_report.scheme_flag','N')
+            ->where('tt_broker_change_trans_report.plan_option_flag','N')
+            ->where('tt_broker_change_trans_report.bu_type_flag','N')
+            ->where('tt_broker_change_trans_report.divi_mismatch_flag','N')
+            ->whereRaw($rawInnerQuery)
+            ->groupBy('tt_broker_change_trans_report.trans_no')
+            ->groupBy('tt_broker_change_trans_report.trxn_type_flag')
+            ->groupBy('tt_broker_change_trans_report.trxn_nature_code')
+            ->groupBy('tt_broker_change_trans_report.trans_desc')
+            ->groupBy('tt_broker_change_trans_report.kf_trans_type')
+            ->orderBy('tt_broker_change_trans_report.trans_date','ASC')
+            ->get();
+        return $broker_data;
+    }
 }

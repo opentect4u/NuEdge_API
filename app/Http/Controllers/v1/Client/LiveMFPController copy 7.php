@@ -93,7 +93,6 @@ class LiveMFPController extends Controller
                 (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=td_mutual_fund_trans.trxn_type_code AND c_k_trans_type=td_mutual_fund_trans.trxn_type_flag AND c_k_trans_sub_type=td_mutual_fund_trans.trxn_nature_code limit 1),
                 (CASE 
                     WHEN td_mutual_fund_trans.trans_flag="DP" || td_mutual_fund_trans.trans_flag="DR" THEN (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=td_mutual_fund_trans.kf_trans_type AND k_divident_flag=td_mutual_fund_trans.trans_flag limit 1)
-                    WHEN td_mutual_fund_trans.trans_flag="TO" THEN "Transfer Out"
                     ELSE (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=td_mutual_fund_trans.kf_trans_type limit 1)
                 END)
                 )as transaction_type')
@@ -101,7 +100,6 @@ class LiveMFPController extends Controller
                 (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=td_mutual_fund_trans.trxn_type_code AND c_k_trans_type=td_mutual_fund_trans.trxn_type_flag AND c_k_trans_sub_type=td_mutual_fund_trans.trxn_nature_code limit 1),
                 (CASE 
                     WHEN td_mutual_fund_trans.trans_flag="DP" || td_mutual_fund_trans.trans_flag="DR" THEN (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=td_mutual_fund_trans.kf_trans_type AND k_divident_flag=td_mutual_fund_trans.trans_flag limit 1)
-                    WHEN td_mutual_fund_trans.trans_flag="TO" THEN "Transfer Out"
                     ELSE (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=td_mutual_fund_trans.kf_trans_type limit 1)
                 END)
                 )as transaction_subtype')
@@ -112,9 +110,9 @@ class LiveMFPController extends Controller
                 ->where('td_mutual_fund_trans.bu_type_flag','N')
                 ->where('td_mutual_fund_trans.divi_mismatch_flag','N')
                 ->whereRaw($rawQuery)
-                ->groupBy('td_mutual_fund_trans.folio_no')
                 ->groupBy('td_mutual_fund_trans.product_code')
                 ->groupBy('td_mutual_fund_trans.isin_no')
+                // ->orderBy('md_scheme.scheme_name','ASC')
                 ->orderBy('td_mutual_fund_trans.trans_date','ASC')
                 ->get();
             // dd(DB::getQueryLog());
@@ -170,12 +168,10 @@ class LiveMFPController extends Controller
                 $mydata='';
                 $foliotrans=$value1->foliotrans;
                 if ($value1->tot_amount > 0) {
-                    $mydata=TransHelper::calculate($foliotrans);
+                    $mydata=$this->calculate($foliotrans);
                 }
                 // $mydata=$this->calculate($value1->foliotrans);
                 $value1->mydata=$mydata;
-                $value1->idcwr=isset($mydata['idcw_r'])? $mydata['idcw_r']:0;
-                $value1->idcw_reinv=isset($mydata['idcw_r'])? $mydata['idcw_r']:0;
                 $value1->inv_since=isset($mydata['inv_since'])? $mydata['inv_since']:$value1->inv_since;
                 $value1->pur_nav=isset($mydata['pur_nav'])?$mydata['pur_nav']:$value1->pur_nav;
                 $value1->transaction_type=isset($mydata['transaction_type'])?$mydata['transaction_type']:$value1->transaction_type;
@@ -183,14 +179,15 @@ class LiveMFPController extends Controller
                 $value1->inv_cost=isset($mydata['inv_cost'])?number_format((float)$mydata['inv_cost'], 2, '.', ''):0;
                 $value1->tot_units=isset($mydata['tot_units'])?number_format((float)$mydata['tot_units'], 2, '.', ''):0;
                 $value1->curr_val= number_format((float)($value1->curr_nav * $value1->tot_units), 2, '.', '');
-                $value1->gain_loss=number_format((float)(($value1->curr_val - $value1->inv_cost) + $value1->idcw_reinv), 2, '.', '');
+                $value1->gain_loss=number_format((float)($value1->curr_val - $value1->inv_cost), 2, '.', '');
                 if ($value1->gain_loss==0 || $value1->inv_cost==0) {
                     $value1->ret_abs=0;
                 }else {
                     $value1->ret_abs=number_format((float)(($value1->gain_loss / $value1->inv_cost) * 100), 2, '.', '');
                 }
-                
+                $value1->idcw_reinv=0;
                 $value1->idcwp=0;
+                $value1->idcwr=0;
                 $value1->xirr=0;
                 $value1->trans_mode=0;
                 array_push($filter_data,$value1);
@@ -516,7 +513,7 @@ class LiveMFPController extends Controller
                     }
 
 
-                    return $purchase_data;
+                    // return $purchase_data;
                     /*******************************************end purchase and redemption case******************************************/
                     $final_arr=array_merge($purchase_data,$redemption_data);
                     usort($final_arr, function($a, $b) {
@@ -583,7 +580,6 @@ class LiveMFPController extends Controller
             $product_code=$request->product_code;
             $nav_date=$request->nav_date;
             $valuation_as_on=$request->valuation_as_on;
-            $trans_type=$request->trans_type;
 
             $rawQuery='';
             $queryString='td_mutual_fund_trans.folio_no';
@@ -614,7 +610,7 @@ class LiveMFPController extends Controller
                 ->selectRaw('sum(units) as tot_units')
                 ->selectRaw('sum(amount) as tot_amount')
                 ->selectRaw('sum(stamp_duty) as tot_stamp_duty')
-                ->selectRaw('IF(td_mutual_fund_trans.tds!="",sum(tds),0.00)as tot_tds')
+                ->selectRaw('sum(tds) as tot_tds')
                 ->selectRaw('count(*) as tot_rows')
                 ->selectRaw('(select close from td_benchmark_scheme where benchmark=1 AND date=td_mutual_fund_trans.trans_date) as nifty50')
                 ->selectRaw('(select close from td_benchmark_scheme where benchmark=70 AND date=td_mutual_fund_trans.trans_date) as sensex')
@@ -622,7 +618,6 @@ class LiveMFPController extends Controller
                 (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=td_mutual_fund_trans.trxn_type_code AND c_k_trans_type=td_mutual_fund_trans.trxn_type_flag AND c_k_trans_sub_type=td_mutual_fund_trans.trxn_nature_code limit 1),
                 (CASE 
                     WHEN td_mutual_fund_trans.trans_flag="DP" || td_mutual_fund_trans.trans_flag="DR" THEN (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=td_mutual_fund_trans.kf_trans_type AND k_divident_flag=td_mutual_fund_trans.trans_flag limit 1)
-                    WHEN td_mutual_fund_trans.trans_flag="TO" THEN "Transfer Out"
                     ELSE (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=td_mutual_fund_trans.kf_trans_type limit 1)
                 END)
                 )as transaction_type')
@@ -630,7 +625,6 @@ class LiveMFPController extends Controller
                 (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=td_mutual_fund_trans.trxn_type_code AND c_k_trans_type=td_mutual_fund_trans.trxn_type_flag AND c_k_trans_sub_type=td_mutual_fund_trans.trxn_nature_code limit 1),
                 (CASE 
                     WHEN td_mutual_fund_trans.trans_flag="DP" || td_mutual_fund_trans.trans_flag="DR" THEN (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=td_mutual_fund_trans.kf_trans_type AND k_divident_flag=td_mutual_fund_trans.trans_flag limit 1)
-                    WHEN td_mutual_fund_trans.trans_flag="TO" THEN "Transfer Out"
                     ELSE (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=td_mutual_fund_trans.kf_trans_type limit 1)
                 END)
                 )as transaction_subtype')
@@ -638,7 +632,6 @@ class LiveMFPController extends Controller
                 (SELECT xirr_process_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=td_mutual_fund_trans.trxn_type_code AND c_k_trans_type=td_mutual_fund_trans.trxn_type_flag AND c_k_trans_sub_type=td_mutual_fund_trans.trxn_nature_code limit 1),
                 (CASE 
                     WHEN td_mutual_fund_trans.trans_flag="DP" || td_mutual_fund_trans.trans_flag="DR" THEN (SELECT xirr_process_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=td_mutual_fund_trans.kf_trans_type AND k_divident_flag=td_mutual_fund_trans.trans_flag limit 1)
-                    WHEN td_mutual_fund_trans.trans_flag="TO" THEN (SELECT xirr_process_type FROM md_mf_trans_type_subtype WHERE trans_type="Transfer Out" AND trans_sub_type="Transfer Out" AND rnt_id=2 limit 1)
                     ELSE (SELECT xirr_process_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=td_mutual_fund_trans.kf_trans_type limit 1)
                 END)
                 )as xirr_process_type')
@@ -654,7 +647,6 @@ class LiveMFPController extends Controller
                 ->groupByRaw('IF(substr(trxn_nature,1,19)="Systematic-Reversed","Systematic-Reversed",trxn_nature)')
                 ->groupBy('td_mutual_fund_trans.trans_desc')
                 ->groupBy('td_mutual_fund_trans.kf_trans_type')
-                ->groupBy('td_mutual_fund_trans.trans_flag')
                 ->orderBy('td_mutual_fund_trans.trans_date','asc')
                 ->get();
             // dd(DB::getQueryLog());
@@ -662,8 +654,7 @@ class LiveMFPController extends Controller
             $after_get_broker_data=[];
             foreach ($all_data as $key1 => $value1) {
                 if ($value1->rnt_id==1 && $value1->transaction_type=="Transfer In" && $value1->transaction_subtype=="Transfer In") {
-                    // $broker_data=$this->getBrokerData($value1);
-                    $broker_data=TransHelper::getBrokerData($value1);
+                    $broker_data=$this->getBrokerData($value1);
                     foreach ($broker_data as $key => $broker_data_value) {
                         if ($broker_data_value->amount < 0) {
                             $broker_data_value->transaction_type=$value1->transaction_type." Rejection";
@@ -683,7 +674,7 @@ class LiveMFPController extends Controller
                     }
                 }
             }
-            return $after_get_broker_data;
+            // return $after_get_broker_data;
             $data=[];
             $purchase_data=[];
             $redemption_data=[];
@@ -700,7 +691,7 @@ class LiveMFPController extends Controller
                 $value->curr_nav=$current_nav[0]->nav;
                 array_push($data,$value);
                 // return $value;
-                if(strpos($value->transaction_subtype, 'Purchase')!== false || strpos($value->transaction_subtype, 'Switch In')!== false || strpos($value->transaction_subtype, 'Dividend Reinvestment')!== false) {
+                if( strpos($value->transaction_subtype, 'Purchase' )!== false || strpos($value->transaction_subtype, 'Switch In' )!== false) {
                     if ($key > 0) {
                         $value->cumml_units=number_format((float)($value->tot_units + $after_get_broker_data[($key-1)]->cumml_units) , 2, '.', '');;
                     }else {
@@ -708,17 +699,137 @@ class LiveMFPController extends Controller
                     }
                     array_push($purchase_data,$value);
                 }
-                if(strpos($value->transaction_subtype, 'Redemption')!== false || strpos($value->transaction_subtype, 'Switch Out')!== false || strpos($value->transaction_subtype, 'Transfer Out')!== false) {
+                if( strpos($value->transaction_subtype, 'Redemption' )!== false || strpos($value->transaction_subtype, 'Switch Out' )!== false) {
                     $value->cumml_units=0;
                     array_push($redemption_data,$value);
                 }
             }
 
-            // return $purchase_data;
+            // return $data;
             // return $all_dates;
             // return $redemption_data;
             // $deduct_unit_array=[];
             if (count($redemption_data)> 0) {
+                // foreach ($redemption_data as $redemption_key => $redemption_value) {
+                //     $rdm_tot_units=$redemption_value->tot_units;
+                //     // $rdm_tot_units=336.3380;
+                //     $deduct_unit_array=[];
+                //     foreach ($purchase_data as $purchase_key => $purchase_value) {
+                //         if ($purchase_value['cumml_units'] >= 0) {
+                //             // if ($purchase_key==0) {
+                //             //     return $purchase_value['cumml_units']."-----".$rdm_tot_units;
+                //             // }
+                //             $purchase_cumml_units=$purchase_value['cumml_units'];
+                //             $purchase_value['cumml_units']=$purchase_cumml_units - $rdm_tot_units;
+                //             // return $purchase_value['cumml_units'];
+                //             // if ($purchase_cumml_units == $rdm_tot_units) {
+                //             //     // return 'if';
+                //             //     $set_units=$purchase_value['cumml_units'];
+                //             //     $purchase_value['cumml_units']=0;
+                //             //     array_push($deduct_unit_array,$purchase_value);
+                //             //     $rdm_tot_units=0;
+                //             //     $newarr=[];
+                //             //     $newarr['id']=$purchase_value['id'];
+                //             //     $newarr['trans_date']=$purchase_value['trans_date'];
+                //             //     $newarr['pur_price']=$purchase_value['pur_price'];
+                //             //     $newarr['sensex']=$purchase_value['sensex'];
+                //             //     $newarr['nifty50']=$purchase_value['nifty50'];
+                //             //     $newarr['curr_nav']=$purchase_value['curr_nav'];
+                //             //     $newarr['transaction_type']="Remaining";
+                //             //     $newarr['transaction_subtype']="Remaining";
+                //             //     $newarr['tot_units']=$set_units;
+                //             //     $newarr['cumml_units']=$set_units;
+                //             //     $newarr['tot_amount']= ($set_units * $purchase_value['pur_price']);
+                //             //     $newarr['tot_gross_amount']=($set_units * $purchase_value['pur_price']);
+                //             //     $newarr['gross_amount']=($set_units * $purchase_value['pur_price']);
+                //             //     array_push($deduct_unit_array,$newarr);
+                //             //     // return $deduct_unit_array;
+                //             // } else {
+                //                 // return 'else';
+                //                 if ($purchase_value['cumml_units'] > 0 ) {
+                //                     if ($purchase_data[($purchase_key - 1)]['cumml_units'] < 0) {
+                //                         $set_units=$purchase_value['cumml_units'];
+                //                         $purchase_value['cumml_units']=0;
+                //                         array_push($deduct_unit_array,$purchase_value);
+                //                         $rdm_tot_units=0;
+                //                         $newarr=[];
+                //                         $newarr['id']=$purchase_value['id'];
+                //                         $newarr['trans_date']=$purchase_value['trans_date'];
+                //                         $newarr['pur_price']=$purchase_value['pur_price'];
+                //                         $newarr['sensex']=$purchase_value['sensex'];
+                //                         $newarr['nifty50']=$purchase_value['nifty50'];
+                //                         $newarr['curr_nav']=$purchase_value['curr_nav'];
+                //                         $newarr['days']=$purchase_value['days'];
+                //                         $newarr['trans_mode']=$purchase_value['trans_mode'];
+                //                         $newarr['transaction_type']="Remaining";
+                //                         $newarr['transaction_subtype']="Remaining";
+                //                         $newarr['tot_units']=$set_units;
+                //                         $newarr['cumml_units']=$set_units;
+                //                         $newarr['tot_amount']= number_format((float)($set_units * $purchase_value['pur_price']), 2, '.', '');
+                //                         $newarr['tot_gross_amount']=number_format((float)($set_units * $purchase_value['pur_price']), 2, '.', '');
+                //                         $newarr['gross_amount']=number_format((float)($set_units * $purchase_value['pur_price']), 2, '.', '');
+                //                         $newarr['curr_val']=number_format((float)($set_units * $purchase_value['curr_nav']), 2, '.', '');
+                //                         $newarr['gain_loss']=number_format((float)($newarr['curr_val'] - $newarr['tot_amount']), 2, '.', '');
+                //                         $newarr['ret_abs']=number_format((float)(($newarr['gain_loss'] / $newarr['tot_amount'])*100), 2, '.', '');
+                //                         $nper =($newarr['days'] / 365);
+                //                         $newarr['ret_cagr']=number_format((float)((pow(($newarr['curr_val']/$newarr['tot_amount']),(1/$nper)) - 1) * 100), 2, '.', '');
+                //                         array_push($deduct_unit_array,$newarr);
+                //                     }else {
+                //                         $purchase_value['cumml_units']=$purchase_value['tot_units'] + $deduct_unit_array[(count($deduct_unit_array)-1)]['cumml_units'] ;
+                //                         $purchase_value['curr_val']=number_format((float)($purchase_value['tot_units'] * $purchase_value['curr_nav']), 2, '.', '');
+                //                         $purchase_value['gain_loss']=number_format((float)($purchase_value['curr_val'] - $purchase_value['tot_amount']), 2, '.', '');
+                //                         $purchase_value['ret_abs']=number_format((float)(($purchase_value['gain_loss'] / $purchase_value['tot_amount'])*100), 2, '.', '');
+                //                         $nper =($purchase_value['days'] / 365);
+                //                         $purchase_value['ret_cagr']=number_format((float)((pow(($purchase_value['curr_val']/$purchase_value['tot_amount']),(1/$nper)) - 1) * 100), 2, '.', '');
+                //                         array_push($deduct_unit_array,$purchase_value);
+                //                     }
+                //                 }else {
+                //                     // return 'else1';
+                //                     $purchase_value['curr_val']=number_format((float)($purchase_value['tot_units'] * $purchase_value['curr_nav']), 2, '.', '');
+                //                     $purchase_value['gain_loss']=number_format((float)($purchase_value['curr_val'] - $purchase_value['tot_amount']), 2, '.', '');
+                //                     $purchase_value['ret_abs']=number_format((float)(($purchase_value['gain_loss'] / $purchase_value['tot_amount'])*100), 2, '.', '');
+                //                     $nper =($purchase_value['days'] / 365);
+                //                     $purchase_value['ret_cagr']=number_format((float)((pow(($purchase_value['curr_val']/$purchase_value['tot_amount']),(1/$nper)) - 1) * 100), 2, '.', '');
+                //                     array_push($deduct_unit_array,$purchase_value);
+                //                     // return $deduct_unit_array;
+                //                 }
+                //             // }
+                //         }else {
+                //             $purchase_value['curr_val']=number_format((float)($purchase_value['tot_units'] * $purchase_value['curr_nav']), 2, '.', '');
+                //             $purchase_value['gain_loss']=number_format((float)($purchase_value['curr_val'] - $purchase_value['tot_amount']), 2, '.', '');
+                //             $purchase_value['ret_abs']=number_format((float)(($purchase_value['gain_loss'] / $purchase_value['tot_amount'])*100), 2, '.', '');
+                //             $nper =($purchase_value['days'] / 365);
+                //             $purchase_value['ret_cagr']=number_format((float)((pow(($purchase_value['curr_val']/$purchase_value['tot_amount']),(1/$nper)) - 1) * 100), 2, '.', '');
+                //             array_push($deduct_unit_array,$purchase_value);
+                //         }
+                //     }
+                //     // return  $deduct_unit_array;
+                //     $purchase_data=$deduct_unit_array;
+                // }
+
+                // $final_data_arr=[];
+                // $final_data_arr1=[];
+                // foreach ($purchase_data as $key => $value) {
+                //     if ($value['cumml_units'] > 0) {
+                //         array_push($final_data_arr,$value);
+                //     }else {
+                //         array_push($final_data_arr1,$value);
+                //     }
+                // }
+                // $final_data_arr2=[];
+                // foreach ($final_data_arr as $key => $value) {
+                //     if ($key==0) {
+                //         $value['tot_amount']=number_format((float)($value['pur_price'] * $value['cumml_units']), 2, '.', '');
+                //         $value['gross_amount']=number_format((float)($value['pur_price'] * $value['cumml_units']), 2, '.', '');
+                //         // return $value;
+                //         array_push($final_data_arr2,$value);
+                //     }else {
+                //         array_push($final_data_arr2,$value);
+                //     }
+                // }
+                // $final_arr_1=array_merge($final_data_arr1,$final_data_arr2);
+
+
                 foreach ($redemption_data as $redemption_key => $redemption_value) {
                     $rdm_tot_units=number_format((float)$redemption_value->tot_units, 4, '.', '');
                     $deduct_unit_array=[];
@@ -745,12 +856,13 @@ class LiveMFPController extends Controller
                                         $newarr['curr_nav']=$purchase_value['curr_nav'];
                                         $newarr['days']=$purchase_value['days'];
                                         $newarr['trans_mode']=$purchase_value['trans_mode'];
-                                        $newarr['transaction_type']=($trans_type=='A')?"Remaining":$purchase_value['transaction_type'];
-                                        $newarr['transaction_subtype']=($trans_type=='A')?"Remaining":$purchase_value['transaction_subtype'];
-                                        $newarr['tot_stamp_duty']=$purchase_value['tot_stamp_duty'];
-                                        $newarr['tot_tds']=$purchase_value['tot_tds'];
-                                        $newarr['tot_units']=number_format((float)$set_units, 4, '.', '');
-                                        $newarr['cumml_units']=number_format((float)$set_units, 4, '.', '');
+                                        $newarr['transaction_type']="Remaining";
+                                        $newarr['transaction_subtype']="Remaining";
+                                        // tot_stamp_duty
+                                        // $newarr['tot_stamp_duty']=$purchase_value['tot_stamp_duty'];
+                                        
+                                        $newarr['tot_units']=number_format((float)$set_units, 2, '.', '');;
+                                        $newarr['cumml_units']=number_format((float)$set_units, 2, '.', '');;
                                         $newarr['tot_amount']= number_format((float)($set_units * $purchase_value['pur_price']), 2, '.', '');
                                         $newarr['tot_gross_amount']=number_format((float)($set_units * $purchase_value['pur_price']), 2, '.', '');
                                         $newarr['gross_amount']=number_format((float)($set_units * $purchase_value['pur_price']), 2, '.', '');
@@ -776,12 +888,10 @@ class LiveMFPController extends Controller
                                             $newarr['curr_nav']=$purchase_value['curr_nav'];
                                             $newarr['days']=$purchase_value['days'];
                                             $newarr['trans_mode']=$purchase_value['trans_mode'];
-                                            $newarr['transaction_type']=($trans_type=='A')?"Remaining":$purchase_value['transaction_type'];
-                                            $newarr['transaction_subtype']=($trans_type=='A')?"Remaining":$purchase_value['transaction_subtype'];
-                                            $newarr['tot_stamp_duty']=$purchase_value['tot_stamp_duty'];
-                                            $newarr['tot_tds']=$purchase_value['tot_tds'];
-                                            $newarr['tot_units']=number_format((float)$set_units, 4, '.', '');
-                                            $newarr['cumml_units']=number_format((float)$set_units, 4, '.', '');
+                                            $newarr['transaction_type']="Remaining";
+                                            $newarr['transaction_subtype']="Remaining";
+                                            $newarr['tot_units']=number_format((float)$set_units, 2, '.', '');
+                                            $newarr['cumml_units']=number_format((float)$set_units, 2, '.', '');
                                             $newarr['tot_amount']= number_format((float)($set_units * $purchase_value['pur_price']), 2, '.', '');
                                             $newarr['tot_gross_amount']=number_format((float)($set_units * $purchase_value['pur_price']), 2, '.', '');
                                             $newarr['gross_amount']=number_format((float)($set_units * $purchase_value['pur_price']), 2, '.', '');
@@ -793,13 +903,13 @@ class LiveMFPController extends Controller
                                             array_push($deduct_unit_array,$newarr);
                                             $flag='N';
                                         }else{
-                                            $purchase_value['cumml_units']=number_format((float)($purchase_value['tot_units'] + $deduct_unit_array[(count($deduct_unit_array)-1)]['cumml_units'] ), 4, '.', '') ;
+                                            $purchase_value['cumml_units']=number_format((float)($purchase_value['tot_units'] + $deduct_unit_array[(count($deduct_unit_array)-1)]['cumml_units'] ), 2, '.', '') ;
                                             // $purchase_value['cumml_units']=number_format((float)$purchase_value['tot_units'], 4, '.', '') + number_format((float)$deduct_unit_array[(count($deduct_unit_array)-1)]['cumml_units'], 4, '.', '') ;
                                             $purchase_value['curr_val']=number_format((float)($purchase_value['tot_units'] * $purchase_value['curr_nav']), 2, '.', '');
                                             $purchase_value['gain_loss']=number_format((float)($purchase_value['curr_val'] - $purchase_value['tot_amount']), 2, '.', '');
                                             $purchase_value['ret_abs']=($purchase_value['tot_amount']==0)?0:number_format((float)(($purchase_value['gain_loss'] / $purchase_value['tot_amount'])*100), 2, '.', '');
                                             $nper =($purchase_value['days'] / 365);
-                                            $purchase_value['ret_cagr']=($purchase_value['tot_amount']==0 || $nper==0)?0:number_format((float)((pow(($purchase_value['curr_val']/$purchase_value['tot_amount']),(1/$nper)) - 1) * 100), 2, '.', '');
+                                            $purchase_value['ret_cagr']=($purchase_value['tot_amount']==0)?0:number_format((float)((pow(($purchase_value['curr_val']/$purchase_value['tot_amount']),(1/$nper)) - 1) * 100), 2, '.', '');
                                             array_push($deduct_unit_array,$purchase_value);
                                         }
                                     }
@@ -824,51 +934,11 @@ class LiveMFPController extends Controller
                     // return  $deduct_unit_array;
                     $purchase_data=$deduct_unit_array;
                 }
-                // return $purchase_data;
-                /*********************calaculation redemption gain loss*******************************************/
-                if ($trans_type=='A') {
-                    $ana_purchase_data=$purchase_data;
-                    $final_redemption_data=[];
-                    foreach ($redemption_data as $redemption_value_key_0 => $redemption_value_0) {
-                        $cal_rdm_amt=0;
-                        $cal_rem_amt=0;
-                        $cal_rdm_arr=[];
-                        $cal_flag='Y';
-                        foreach ($ana_purchase_data as $key_0 => $value_0) {
-                            if ($cal_flag=='Y') {
-                                if ($value_0['transaction_type']=='Remaining') {
-                                    $cal_rem_amt=$value_0['tot_amount'];
-                                    $value_0['transaction_type']=isset($ana_purchase_data[($key_0-1)]['transaction_type'])?$ana_purchase_data[($key_0-1)]['transaction_type']:$ana_purchase_data[$key_0]['transaction_type'];
-                                    $value_0['transaction_subtype']=isset($ana_purchase_data[($key_0-1)]['transaction_subtype'])?$ana_purchase_data[($key_0-1)]['transaction_subtype']:$ana_purchase_data[$key_0]['transaction_subtype'];
-                                    $cal_flag='N';
-                                }
-                                $cal_rdm_amt +=$value_0['tot_amount'];
-                            } else if ($cal_flag=='N') {
-                                array_push($cal_rdm_arr,$value_0);
-                            }
-                        }
-                        // return $cal_rem_amt;
-                        $ana_purchase_data=$cal_rdm_arr;
-                        $purchase_amt=number_format((float)($cal_rdm_amt - $cal_rem_amt ), 2, '.', '');
-                        // return $purchase_amt;
-                        $redemption_value_0['purchase_amt']=$purchase_amt;
-                        $redemption_value_0['gain_loss']=number_format((float)($redemption_value_0['tot_amount'] - $purchase_amt), 2, '.', '');
-                        array_push($final_redemption_data,$redemption_value_0);
-                    }
-                    /*********************calaculation redemption gain loss*******************************************/
-                    $final_arr=array_merge($purchase_data,$final_redemption_data);
-                    // $final_arr=array_merge($purchase_data,$redemption_data);
-                    usort($final_arr, function($a, $b) {
-                        return $a['trans_date'] <=> $b['trans_date'];
-                    });
-                }else {
-                    $final_arr=[];
-                    foreach ($purchase_data as $key_0 => $value_0) {
-                        if ($value_0['cumml_units'] > 0) {
-                            array_push($final_arr,$value_0);
-                        }
-                    }
-                }
+
+                $final_arr=array_merge($purchase_data,$redemption_data);
+                usort($final_arr, function($a, $b) {
+                    return $a['trans_date'] <=> $b['trans_date'];
+                });
             }else {
                 $final_arr=[];
                 foreach ($purchase_data as $purchase_key => $purchase_value) {
@@ -898,7 +968,6 @@ class LiveMFPController extends Controller
             $folio_no=$request->folio_no;
             $isin_no=$request->isin_no;
             $product_code=$request->product_code;
-            $valuation_as_on=$request->valuation_as_on;
            
             $rawQuery='';
             $queryString='td_mutual_fund_trans.folio_no';
@@ -919,22 +988,14 @@ class LiveMFPController extends Controller
                 ->leftJoin('md_option','md_option.id','=','md_scheme_isin.option_id')
                 ->leftJoin('md_employee','md_employee.euin_no','=',DB::raw('IF(td_mutual_fund_trans.euin_no!="",td_mutual_fund_trans.euin_no,(select euin_no from td_mutual_fund_trans where folio_no=td_mutual_fund_trans.folio_no and product_code=td_mutual_fund_trans.product_code AND euin_no!="" limit 1))'))
                 ->leftJoin('md_branch','md_branch.id','=','md_employee.branch_id')
-                ->select('td_mutual_fund_trans.rnt_id','td_mutual_fund_trans.trans_no','td_mutual_fund_trans.amount','td_mutual_fund_trans.stamp_duty',
-                'td_mutual_fund_trans.tds','td_mutual_fund_trans.pur_price','td_mutual_fund_trans.bank_name','td_mutual_fund_trans.acc_no',
-                'td_mutual_fund_trans.stt','td_mutual_fund_trans.trans_mode','td_mutual_fund_trans.remarks','td_mutual_fund_trans.trans_date',
-                'td_mutual_fund_trans.folio_no',
-                'md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name',
-                'md_amc.amc_short_name as amc_name','md_plan.plan_name as plan_name','md_option.opt_name as option_name',
+                ->select('td_mutual_fund_trans.*','md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name','md_amc.amc_short_name as amc_name',
+                'md_plan.plan_name as plan_name','md_option.opt_name as option_name',
                 'md_employee.emp_name as rm_name','md_branch.brn_name as branch','md_employee.bu_type_id as bu_type_id','md_employee.branch_id as branch_id','md_employee.euin_no as euin_no')
-                ->selectRaw('IF(td_mutual_fund_trans.rnt_id=1,md_scheme_isin.isin_no,td_mutual_fund_trans.isin_no) as isin_no')
-                ->selectRaw('sum(units) as tot_units')
                 ->selectRaw('sum(amount) as tot_amount')
                 ->selectRaw('sum(stamp_duty) as tot_stamp_duty')
-                ->selectRaw('IF(tds!="",sum(tds),0.00)as tot_tds')
+                ->selectRaw('sum(tds) as tot_tds')
                 ->selectRaw('count(*) as tot_rows')
                 ->selectRaw('(select bu_type from md_business_type where bu_code=md_employee.bu_type_id and branch_id=md_employee.branch_id limit 1) as bu_type')
-                ->selectRaw('(select close from td_benchmark_scheme where benchmark=1 AND DATE(date)=DATE(td_mutual_fund_trans.trans_date)) as nifty50')
-                ->selectRaw('(select close from td_benchmark_scheme where benchmark=70 AND DATE(date)=DATE(td_mutual_fund_trans.trans_date)) as sensex')
                 ->where('td_mutual_fund_trans.delete_flag','N')
                 ->where('td_mutual_fund_trans.amc_flag','N')
                 ->where('td_mutual_fund_trans.scheme_flag','N')
@@ -947,7 +1008,6 @@ class LiveMFPController extends Controller
                 ->groupByRaw('IF(substr(trxn_nature,1,19)="Systematic-Reversed","Systematic-Reversed",trxn_nature)')
                 ->groupBy('td_mutual_fund_trans.trans_desc')
                 ->groupBy('td_mutual_fund_trans.kf_trans_type')
-                ->groupBy('td_mutual_fund_trans.trans_flag')
                 ->orderBy('td_mutual_fund_trans.trans_date','asc')
                 ->get();
             // dd(DB::getQueryLog());
@@ -1020,14 +1080,6 @@ class LiveMFPController extends Controller
                     $value->transaction_type=$transaction_type;
                     $value->transaction_subtype=$transaction_subtype;
 
-                    $value->idcwr=0;
-                    $value->idcw_reinv=0;
-                    $value->idcwp=0;
-                    $now = strtotime($valuation_as_on); // or your date as well
-                    $your_date = strtotime(date('Y-m-d',strtotime($value->trans_date)));
-                    $datediff = $now - $your_date;
-                    $days=round($datediff / (60 * 60 * 24));
-                    $value->days=$days;
                     // if (!empty($trans_type) && in_array($transaction_type ,$trans_type) && !empty($trans_sub_type) && in_array($transaction_subtype ,$trans_sub_type)) {
                     //     array_push($data,$value);
                     // }else if (!empty($trans_type) && in_array($transaction_type ,$trans_type)) {
