@@ -428,7 +428,8 @@ class TransHelper{
                 // array_push($purchase_amt_arr,$value->tot_amount);
                 array_push($all_amt_arr,-$value->tot_amount);
                 array_push($all_date_arr,$value->trans_date);
-            }elseif (strpos($value->transaction_subtype, 'Redemption' )!== false || strpos($value->transaction_subtype, 'Switch Out' )!== false || strpos($value->transaction_subtype, 'Transfer Out')!== false) {
+            }elseif (strpos($value->transaction_subtype, 'Redemption' )!== false || strpos($value->transaction_subtype, 'Switch Out' )!== false 
+                || strpos($value->transaction_subtype, 'Transfer Out')!== false || strpos($value->transaction_subtype, 'SWP')!== false) {
                 $value->cumml_units=0;
                 array_push($redemption_data,$value);
                 // array_push($redemption_amt_arr,$value->tot_amount);

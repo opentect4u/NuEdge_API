@@ -14,5 +14,6 @@ class SystematicTransType extends Model
         'trans_type',
         'trans_sub_type',
         'trans_type_code',
+        'process_type',
     ];
 }

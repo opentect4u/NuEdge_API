@@ -77,6 +77,7 @@ class SystematicTransTypeController extends Controller
                 $c_data->trans_type=$request->trans_type;
                 $c_data->trans_sub_type=$request->trans_sub_type;
                 $c_data->trans_type_code=$request->trans_type_code;
+                $c_data->process_type=$request->process_type;
                 $c_data->rnt_id=$request->rnt_id;
                 // $data->updated_by=Helper::modifyUser($request->user());
                 $c_data->save();
@@ -102,6 +103,7 @@ class SystematicTransTypeController extends Controller
                         'trans_type'=>$request->trans_type,
                         'trans_sub_type'=>$request->trans_sub_type,
                         'trans_type_code'=>$request->trans_type_code,
+                        'process_type'=>$request->process_type,
                         'rnt_id'=>$request->rnt_id,
                         // 'created_by'=>Helper::modifyUser($request->user()),
                     ));
