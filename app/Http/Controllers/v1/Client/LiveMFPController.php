@@ -147,8 +147,11 @@ class LiveMFPController extends Controller
             // return $data;
             $string_version_product_code = implode(',', $all_trans_product);
             // return $string_version_product_code;
-            $res_array =DB::connection('mysql_nav')
+            $res_array=[];
+            if (count($data)>0) {
+                $res_array =DB::connection('mysql_nav')
                 ->select('SELECT product_code,isin_no,DATE_FORMAT(nav_date, "%Y-%m-%d") as nav_date,nav FROM td_nav_details where '.str_replace(",","  OR  ",$string_version_product_code));
+            }
             // return $res_array;
             $filter_data=[];
             foreach ($data as $data_key => $value1) {
