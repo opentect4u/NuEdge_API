@@ -175,8 +175,8 @@ class LiveMFPController extends Controller
                 // $mydata=$this->calculate($value1->foliotrans);
                 $value1->mydata=$mydata;
                 $value1->idcwr=isset($mydata['idcw_r'])? $mydata['idcw_r']:0;
-                $value1->idcw_reinv=isset($mydata['idcw_r'])? $mydata['idcw_r']:0;
-                $value1->inv_since=isset($mydata['inv_since'])? $mydata['inv_since']:$value1->inv_since;
+                $value1->idcw_reinv=isset($mydata['idcw_r'])? number_format((float)$mydata['idcw_r'], 2, '.', ''):0;
+                $value1->inv_since=isset($mydata['inv_since'])? number_format((float)$mydata['inv_since'], 2, '.', ''):$value1->inv_since;
                 $value1->pur_nav=isset($mydata['pur_nav'])?$mydata['pur_nav']:$value1->pur_nav;
                 $value1->transaction_type=isset($mydata['transaction_type'])?$mydata['transaction_type']:$value1->transaction_type;
                 $value1->transaction_subtype=isset($mydata['transaction_subtype'])?$mydata['transaction_subtype']:$value1->transaction_subtype;
