@@ -78,7 +78,7 @@ class LiveMFPController extends Controller
                 ->leftJoin('md_amc','md_amc.amc_code','=','td_mutual_fund_trans.amc_code')
                 ->leftJoin('md_plan','md_plan.id','=','md_scheme_isin.plan_id')
                 ->leftJoin('md_option','md_option.id','=','md_scheme_isin.option_id')
-                ->select('td_mutual_fund_trans.rnt_id','td_mutual_fund_trans.folio_no','td_mutual_fund_trans.product_code','td_mutual_fund_trans.pur_price','td_mutual_fund_trans.trans_date',
+                ->select('td_mutual_fund_trans.rnt_id','td_mutual_fund_trans.folio_no','td_mutual_fund_trans.product_code','td_mutual_fund_trans.pur_price','td_mutual_fund_trans.trans_date','td_mutual_fund_trans.trans_mode',
                 'md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name','md_amc.amc_short_name as amc_name',
                 'md_plan.plan_name as plan_name','md_option.opt_name as option_name')
                 ->selectRaw('IF(td_mutual_fund_trans.rnt_id=1,md_scheme_isin.isin_no,td_mutual_fund_trans.isin_no) as isin_no')
@@ -191,8 +191,6 @@ class LiveMFPController extends Controller
                 }
                 
                 $value1->idcwp=0;
-                $value1->xirr=0;
-                $value1->trans_mode=0;
                 array_push($filter_data,$value1);
             }
             
