@@ -4,7 +4,8 @@ use App\Http\Controllers\Controller;
 use DB;
 use App\Models\{
     BrokerChangeTransReport,
-    Client
+    Client,
+    MutualFundTransaction
 };
 
 class TransHelper{
@@ -383,26 +384,72 @@ class TransHelper{
         $all_date_arr=[];
         $return_data=[];
         /*******************************************Start CAMS Broker Change Data**********************************************************/
-        if ($foliotrans[0]['rnt_id']==1 && $foliotrans[0]['transaction_type']=='Transfer In' && $foliotrans[0]['transaction_subtype']=='Transfer In') {
+        $get_rejection_data=[];
+        // if ($foliotrans[0]['rnt_id']==1 && $foliotrans[0]['transaction_type']=='Transfer In' && $foliotrans[0]['transaction_subtype']=='Transfer In') {
             $final_foliotrans=[];
             foreach ($foliotrans as $key => $foliotrans_value) {
                 if ($foliotrans_value->transaction_type=="Transfer In" && $foliotrans_value->transaction_subtype=="Transfer In") {
                     // return $foliotrans_value;
                     $broker_data=TransHelper::getBrokerData($foliotrans_value);
                     // return $broker_data;
-                    foreach ($broker_data as $key => $broker_data_value) {
-                        array_push($final_foliotrans,$broker_data_value);
+                    if (count($broker_data)> 0) {
+                        foreach ($broker_data as $key => $broker_data_value) {
+                            if ($broker_data_value->amount < 0) {
+                                $broker_data_value->transaction_type=$broker_data_value->transaction_type." Rejection";
+                                $broker_data_value->transaction_subtype=$broker_data_value->transaction_subtype." Rejection";
+                            }
+                            if( strpos($broker_data_value->transaction_subtype, 'Rejection' ) == false) {
+                                array_push($final_foliotrans,$broker_data_value);
+                            }else {
+                                array_push($get_rejection_data,$broker_data_value);
+                            }
+                            // array_push($final_foliotrans,$broker_data_value);
+                        }
+                    }else {
+                        array_push($final_foliotrans,$foliotrans_value);
                     }
                 }else {
-                    array_push($final_foliotrans,$foliotrans_value);
+                    if ($foliotrans_value->rnt_id==1 && $foliotrans_value->amount < 0) {
+                        $foliotrans_value->transaction_type=$foliotrans_value->transaction_type." Rejection";
+                        $foliotrans_value->transaction_subtype=$foliotrans_value->transaction_subtype." Rejection";
+                    }
+                    if( strpos($foliotrans_value->transaction_subtype, 'Rejection' ) == false) {
+                        array_push($final_foliotrans,$foliotrans_value);
+                    }else {
+                        array_push($get_rejection_data,$foliotrans_value);
+                    }
+                    // array_push($final_foliotrans,$foliotrans_value);
                 }
             }
             $foliotrans=$final_foliotrans;
-        }
-        /*******************************************End CAMS Broker Change Data**********************************************************/
+        // }
         // return $foliotrans;
+        // return $get_rejection_data;
+        /*******************************************End CAMS Broker Change Data**********************************************************/
+        // **************************Start Rejection Amount Delete*************************************
+        foreach ($get_rejection_data as $key_0001 => $value_0001) {
+            $amount=str_replace("-","",$value_0001->amount) ;
+            $trans_date=$value_0001->trans_date;
+            $get_final_success_data=[];
+            foreach ($foliotrans as $key_002 => $value_002) {
+                if ($value_002->trans_date==$trans_date && $value_002->amount==$amount) {
+                    $amount=0;
+                }else {
+                    array_push($get_final_success_data,$value_002);
+                }
+            }
+            $foliotrans=$get_final_success_data;
+        }
+        // **************************End Rejection Amount Delete*************************************
+        // return $foliotrans;
+        if (count($foliotrans)==0) {
+            $foliotrans=$get_rejection_data;
+        }
         $return_data['inv_since']=date('Y-m-d',strtotime($foliotrans[0]['trans_date']));
         $return_data['pur_nav']=$foliotrans[0]['pur_price'];
+        $return_data['nifty50']=$foliotrans[0]['nifty50'];
+        $return_data['sensex']=$foliotrans[0]['sensex'];
+        /*************************************start transaction_type_subtype modify**********************************************************/
         if ($foliotrans[0]['transaction_type']=="Purchase" && $foliotrans[0]['transaction_subtype']=="Fresh Purchase") {
             if ((isset($foliotrans[1]['transaction_type']) && $foliotrans[1]['transaction_type']=="SIP Purchase") && (isset($foliotrans[1]['transaction_subtype']) && $foliotrans[1]['transaction_subtype']=="SIP Purchase Installment")) {
                 $return_data['transaction_type']=$foliotrans[1]['transaction_type'];
@@ -415,10 +462,11 @@ class TransHelper{
             $return_data['transaction_type']=$foliotrans[0]['transaction_type'];
             $return_data['transaction_subtype']=$foliotrans[0]['transaction_subtype'];
         }
-        /***********************************************************************************************/
+        /*************************************end transaction_type_subtype modify**********************************************************/
 
         foreach ($foliotrans as $key => $value) {
-            if(strpos($value->transaction_subtype, 'Purchase' )!== false || strpos($value->transaction_subtype, 'Switch In' )!== false || strpos($value->transaction_subtype, 'Dividend Reinvestment')!== false) {
+            if(strpos($value->transaction_subtype, 'Purchase' )!== false || strpos($value->transaction_subtype, 'Switch In' )!== false 
+                || strpos($value->transaction_subtype, 'Dividend Reinvestment')!== false || strpos($value->transaction_subtype, 'STP In')!== false) {
                 if ($key > 0) {
                     $value->cumml_units=number_format((float)($value->tot_units + $foliotrans[($key-1)]->cumml_units) , 4, '.', '') ;
                 }else {
@@ -429,7 +477,8 @@ class TransHelper{
                 array_push($all_amt_arr,-$value->tot_amount);
                 array_push($all_date_arr,$value->trans_date);
             }elseif (strpos($value->transaction_subtype, 'Redemption' )!== false || strpos($value->transaction_subtype, 'Switch Out' )!== false 
-                || strpos($value->transaction_subtype, 'Transfer Out')!== false || strpos($value->transaction_subtype, 'SWP')!== false) {
+                || strpos($value->transaction_subtype, 'Transfer Out')!== false || strpos($value->transaction_subtype, 'SWP')!== false
+                || strpos($value->transaction_subtype, 'STP Out')!== false) {
                 $value->cumml_units=0;
                 array_push($redemption_data,$value);
                 // array_push($redemption_amt_arr,$value->tot_amount);
@@ -437,9 +486,24 @@ class TransHelper{
                 array_push($all_date_arr,$value->trans_date);
             }
         }
-        // return $foliotrans;
+        // return $purchase_data;
 
-        $idcw_r=0;
+        // *********************for pledging condition*****************
+        $purchase_data_recheck=[];
+        foreach ($purchase_data as $key_001 => $value_001) {
+            if ($key_001 > 0) {
+                $value_001->cumml_units=number_format((float)($value_001->tot_units + $purchase_data[($key_001-1)]->cumml_units) , 2, '.', '');
+            }else {
+                $value_001->cumml_units=number_format((float)$value_001->tot_units, 2, '.', '');
+            }
+            array_push($purchase_data_recheck,$value_001);
+        }
+        // return $purchase_data_recheck;
+        $purchase_data=$purchase_data_recheck;
+        // *********************for pledging condition*****************
+
+        $idcw_reinv=0;
+        $idcw_paid=0;
         $inv_cost=0;
         if (count($redemption_data) > 0) {
             /*******************************************start purchase and redemption case******************************************/
@@ -530,7 +594,7 @@ class TransHelper{
             foreach ($purchase_data as $key => $value) {
                 if ($value['cumml_units'] > 0) {
                     if (strpos($value['transaction_subtype'], 'Dividend Reinvestment')!== false) {
-                        $idcw_r +=number_format((float)$value['tot_amount'], 2, '.', '');
+                        $idcw_reinv +=number_format((float)$value['tot_amount'], 2, '.', '');
                     }
                     $inv_cost +=number_format((float)$value['tot_amount'], 2, '.', '');
                 }
@@ -547,7 +611,8 @@ class TransHelper{
         $return_data['tot_units']=(count($purchase_data) > 0)?$purchase_data[(count($purchase_data) - 1)]['cumml_units']:0;
         $return_data['all_amt_arr']=$all_amt_arr;
         $return_data['all_date_arr']=$all_date_arr;
-        $return_data['idcw_r']=$idcw_r;
+        $return_data['idcw_reinv']=$idcw_reinv;
+        $return_data['idcw_paid']=$idcw_paid;
         return $return_data;
     }
 
@@ -575,6 +640,7 @@ class TransHelper{
             ->selectRaw('count(*) as tot_rows')
             ->selectRaw('(SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=tt_broker_change_trans_report.trxn_type_code AND c_k_trans_type=tt_broker_change_trans_report.trxn_type_flag AND c_k_trans_sub_type=tt_broker_change_trans_report.trxn_nature_code limit 1)as transaction_type')
             ->selectRaw('(SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=tt_broker_change_trans_report.trxn_type_code AND c_k_trans_type=tt_broker_change_trans_report.trxn_type_flag AND c_k_trans_sub_type=tt_broker_change_trans_report.trxn_nature_code limit 1)as transaction_subtype')
+            ->selectRaw('(SELECT lmf_pl FROM md_mf_trans_type_subtype WHERE c_trans_type_code=tt_broker_change_trans_report.trxn_type_code AND c_k_trans_type=tt_broker_change_trans_report.trxn_type_flag AND c_k_trans_sub_type=tt_broker_change_trans_report.trxn_nature_code limit 1)as lmf_pl')
             ->where('tt_broker_change_trans_report.delete_flag','N')
             ->where('tt_broker_change_trans_report.amc_flag','N')
             ->where('tt_broker_change_trans_report.scheme_flag','N')
@@ -591,4 +657,64 @@ class TransHelper{
             ->get();
         return $broker_data;
     }
+
+    public static function ConsolidationInQuery($rnt_id,$folio_no,$isin_no,$product_code,$valuation_as_on)
+    {
+        $rawQuery='';
+        $queryString='td_mutual_fund_trans.folio_no';
+        $rawQuery.=Helper::WhereRawQuery($folio_no,$rawQuery,$queryString);
+        $queryString='td_mutual_fund_trans.product_code';
+        $rawQuery.=Helper::WhereRawQuery($product_code,$rawQuery,$queryString);
+        if ($rnt_id==2) {
+            $queryString='td_mutual_fund_trans.isin_no';
+            $rawQuery.=Helper::WhereRawQuery($isin_no,$rawQuery,$queryString);
+        } 
+        $condition=(strlen($rawQuery) > 0)? " AND ":" ";
+        $queryString='td_mutual_fund_trans.trans_date';
+        $rawQuery.=$condition.$queryString." <= '".$valuation_as_on."'";
+        // return $rawQuery;
+        // DB::enableQueryLog();
+        $all_data=MutualFundTransaction::select('rnt_id','folio_no','product_code','isin_no','trans_date','trxn_type','trxn_type_flag','trxn_nature','amount','stamp_duty','tds',
+            'units','pur_price')
+            ->selectRaw('sum(units) as tot_units')
+            ->selectRaw('sum(amount) as tot_amount')
+            ->selectRaw('sum(stamp_duty) as tot_stamp_duty')
+            ->selectRaw('IF(tds!="",sum(tds),0.00)as tot_tds')
+            ->selectRaw('count(*) as tot_rows')
+            ->selectRaw('(select close from td_benchmark_scheme where benchmark=1 AND date=trans_date) as nifty50')
+            ->selectRaw('(select close from td_benchmark_scheme where benchmark=70 AND date=trans_date) as sensex')
+            ->selectRaw('IF(td_mutual_fund_trans.rnt_id=1,
+                (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=td_mutual_fund_trans.trxn_type_code AND c_k_trans_type=td_mutual_fund_trans.trxn_type_flag AND c_k_trans_sub_type=td_mutual_fund_trans.trxn_nature_code limit 1),
+                (CASE 
+                    WHEN td_mutual_fund_trans.trans_flag="DP" || td_mutual_fund_trans.trans_flag="DR" THEN (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=td_mutual_fund_trans.kf_trans_type AND k_divident_flag=td_mutual_fund_trans.trans_flag limit 1)
+                    WHEN td_mutual_fund_trans.trans_flag="TO" THEN "Transfer Out"
+                    ELSE (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=td_mutual_fund_trans.kf_trans_type limit 1)
+                END)
+                )as transaction_type')
+            ->selectRaw('IF(td_mutual_fund_trans.rnt_id=1,
+                (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=td_mutual_fund_trans.trxn_type_code AND c_k_trans_type=td_mutual_fund_trans.trxn_type_flag AND c_k_trans_sub_type=td_mutual_fund_trans.trxn_nature_code limit 1),
+                (CASE 
+                    WHEN td_mutual_fund_trans.trans_flag="DP" || td_mutual_fund_trans.trans_flag="DR" THEN (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=td_mutual_fund_trans.kf_trans_type AND k_divident_flag=td_mutual_fund_trans.trans_flag limit 1)
+                    WHEN td_mutual_fund_trans.trans_flag="TO" THEN "Transfer Out"
+                    ELSE (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=td_mutual_fund_trans.kf_trans_type limit 1)
+                END)
+                )as transaction_subtype')
+            ->where('td_mutual_fund_trans.delete_flag','N')
+            ->where('td_mutual_fund_trans.amc_flag','N')
+            ->where('td_mutual_fund_trans.scheme_flag','N')
+            ->where('td_mutual_fund_trans.plan_option_flag','N')
+            ->where('td_mutual_fund_trans.bu_type_flag','N')
+            ->where('td_mutual_fund_trans.divi_mismatch_flag','N')
+            ->whereRaw($rawQuery)
+            ->groupBy('td_mutual_fund_trans.trans_no')
+            ->groupBy('td_mutual_fund_trans.trxn_type_flag')
+            ->groupBy('td_mutual_fund_trans.trxn_nature_code')
+            ->groupBy('td_mutual_fund_trans.trans_desc')
+            ->groupBy('td_mutual_fund_trans.kf_trans_type')
+            ->groupBy('td_mutual_fund_trans.trans_flag')
+            ->orderBy('td_mutual_fund_trans.trans_date','asc')
+            ->get();
+        return $all_data;
+    }
+
 }

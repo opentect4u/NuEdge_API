@@ -151,12 +151,26 @@ class LiveMFPLController extends Controller
                 $value1->nav_date=isset($new->nav_date)?$new->nav_date:0;
                 //calculation
                 $profitloss=$value1->profitloss;
-                $value1->profitloss=$profitloss;
+                $final_profitloss=[];
+                foreach ($profitloss as $key => $profitloss_value) {
+                    if ($profitloss_value->transaction_type=="Transfer In" && $profitloss_value->transaction_subtype=="Transfer In") {
+                        $broker_data=TransHelper::getBrokerData($profitloss_value);
+                        foreach ($broker_data as $broker_key => $broker_value) {
+                            array_push($final_profitloss,$broker_value);
+                        }
+                    }else {
+                        array_push($final_profitloss,$profitloss_value);
+                    }
+                }
+                $profitloss=$final_profitloss;
+                $value1->final_profitloss=$profitloss;
                 $purchase=0;
                 $switch_in=0;
                 $tot_inflow=0;
                 $redemption=0;
                 $switch_out=0;
+                $idcw_reinv=0;
+                $idcwp=0;
                 $tot_outflow=0;
                 if ($value1->tot_amount > 0) {
                     foreach ($profitloss as $key => $profitloss_value) {
@@ -168,6 +182,10 @@ class LiveMFPLController extends Controller
                             $switch_in +=$profitloss_value->tot_amount;
                         }elseif ($profitloss_value->lmf_pl=='PL_SO') {
                             $switch_out +=$profitloss_value->tot_amount;
+                        }elseif ($profitloss_value->lmf_pl=='PL_IR') {
+                            $idcw_reinv +=$profitloss_value->tot_amount;
+                        }elseif ($profitloss_value->lmf_pl=='PL_IP') {
+                            $idcwp +=$profitloss_value->tot_amount;
                         }
                     }
                 }
@@ -176,8 +194,10 @@ class LiveMFPLController extends Controller
                 $value1->redemption=$redemption;
                 $value1->switch_in=$switch_in;
                 $value1->switch_out=$switch_out;
-                $value1->tot_inflow=($purchase + $switch_in);
-                $value1->tot_outflow=($redemption + $switch_out);
+                $value1->idcw_reinv=$idcw_reinv;
+                $value1->idcwp=$idcwp;
+                $value1->tot_inflow=($purchase + $switch_in + $idcw_reinv);
+                $value1->tot_outflow=($redemption + $switch_out + $idcwp);
 
                 $mydata='';
                 if ($value1->tot_amount > 0) {

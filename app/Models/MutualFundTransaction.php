@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\{MutualFundTransaction};
 use Session;
+use DB;
 
 class MutualFundTransaction extends Model
 {
@@ -114,6 +115,8 @@ class MutualFundTransaction extends Model
             ->selectRaw('sum(stamp_duty) as tot_stamp_duty')
             ->selectRaw('IF(tds!="",sum(tds),0.00)as tot_tds')
             ->selectRaw('count(*) as tot_rows')
+            ->selectRaw('(select close from td_benchmark_scheme where benchmark=1 AND date=trans_date) as nifty50')
+            ->selectRaw('(select close from td_benchmark_scheme where benchmark=70 AND date=trans_date) as sensex')
             ->groupBy('td_mutual_fund_trans.trans_no')
             ->groupBy('td_mutual_fund_trans.trxn_type_flag')
             ->groupBy('td_mutual_fund_trans.trxn_nature_code')
@@ -183,7 +186,6 @@ class MutualFundTransaction extends Model
             (SELECT lmf_pl FROM md_mf_trans_type_subtype WHERE c_trans_type_code=trxn_type_code AND c_k_trans_type=trxn_type_flag AND c_k_trans_sub_type=trxn_nature_code limit 1),
             (CASE 
                 WHEN trans_flag="DP" || trans_flag="DR" THEN (SELECT lmf_pl FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type AND k_divident_flag=trans_flag limit 1)
-                WHEN trans_flag="TI" THEN (SELECT lmf_pl FROM md_mf_trans_type_subtype WHERE trans_type="Transfer In" AND trans_sub_type="Transfer In" AND rnt_id=2 limit 1)
                 WHEN trans_flag="TO" THEN (SELECT lmf_pl FROM md_mf_trans_type_subtype WHERE trans_type="Transfer Out" AND trans_sub_type="Transfer Out" AND rnt_id=2 limit 1)
                 ELSE (SELECT lmf_pl FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type limit 1)
             END)
