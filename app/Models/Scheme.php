@@ -61,7 +61,7 @@ class Scheme extends Model
         'switch_min_amt',
         'switch_mul_amt',
         'exit_load',
-
+        'tax_implication_id',
 
         'delete_flag',
         'deleted_date',

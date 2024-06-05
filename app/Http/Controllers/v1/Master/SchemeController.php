@@ -45,7 +45,8 @@ class SchemeController extends Controller
                         ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
                         ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
                         ->leftJoin('md_benchmark','md_benchmark.id','=','md_scheme.benchmark_id')
-                        ->select('md_scheme.*','md_amc.amc_name as amc_name','md_amc.amc_short_name as amc_short_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name','md_benchmark.benchmark as benchmark')
+                        ->leftJoin('md_tax_implication','md_tax_implication.id','=','md_scheme.tax_implication_id')
+                        ->select('md_scheme.*','md_amc.amc_name as amc_name','md_amc.amc_short_name as amc_short_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name','md_benchmark.benchmark as benchmark','md_tax_implication.tax_type as tax_implication')
                         ->selectRaw('SUBSTRING_INDEX(md_scheme.sip_freq_wise_amt,"\"",16) as sip_amount_filter_1')
                         ->selectRaw('SUBSTRING_INDEX(md_scheme.sip_freq_wise_amt,"\"",20) as sip_amount_filter_2')
                         ->selectRaw('SUBSTRING_INDEX(SUBSTRING_INDEX(md_scheme.sip_freq_wise_amt,"\"",16), "\"", -1) as D_sip_min_F_amount') // D sip min
@@ -89,7 +90,8 @@ class SchemeController extends Controller
                         ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
                         ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
                         ->leftJoin('md_benchmark','md_benchmark.id','=','md_scheme.benchmark_id')
-                        ->select('md_scheme.*','md_amc.amc_name as amc_name','md_amc.amc_short_name as amc_short_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name','md_benchmark.benchmark as benchmark')
+                        ->leftJoin('md_tax_implication','md_tax_implication.id','=','md_scheme.tax_implication_id')
+                        ->select('md_scheme.*','md_amc.amc_name as amc_name','md_amc.amc_short_name as amc_short_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name','md_benchmark.benchmark as benchmark','md_tax_implication.tax_type as tax_implication')
                         ->selectRaw('SUBSTRING_INDEX(md_scheme.sip_freq_wise_amt,"\"",16) as sip_amount_filter_1')
                         ->selectRaw('SUBSTRING_INDEX(md_scheme.sip_freq_wise_amt,"\"",20) as sip_amount_filter_2')
                         ->selectRaw('SUBSTRING_INDEX(SUBSTRING_INDEX(md_scheme.sip_freq_wise_amt,"\"",16), "\"", -1) as D_sip_min_F_amount') // D sip min
@@ -136,7 +138,8 @@ class SchemeController extends Controller
                     ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
                     ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
                     ->leftJoin('md_benchmark','md_benchmark.id','=','md_scheme.benchmark_id')
-                    ->select('md_scheme.*','md_amc.amc_name as amc_name','md_amc.amc_short_name as amc_short_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name','md_benchmark.benchmark as benchmark')
+                    ->leftJoin('md_tax_implication','md_tax_implication.id','=','md_scheme.tax_implication_id')
+                    ->select('md_scheme.*','md_amc.amc_name as amc_name','md_amc.amc_short_name as amc_short_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name','md_benchmark.benchmark as benchmark','md_tax_implication.tax_type as tax_implication')
                     ->selectRaw('SUBSTRING_INDEX(md_scheme.sip_freq_wise_amt,"\"",16) as sip_amount_filter_1')
                     ->selectRaw('SUBSTRING_INDEX(md_scheme.sip_freq_wise_amt,"\"",20) as sip_amount_filter_2')
                     ->selectRaw('SUBSTRING_INDEX(SUBSTRING_INDEX(md_scheme.sip_freq_wise_amt,"\"",16), "\"", -1) as D_sip_min_F_amount') // D sip min
@@ -179,7 +182,8 @@ class SchemeController extends Controller
                     ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
                     ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
                     ->leftJoin('md_benchmark','md_benchmark.id','=','md_scheme.benchmark_id')
-                    ->select('md_scheme.*','md_amc.amc_name as amc_name','md_amc.amc_short_name as amc_short_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name','md_benchmark.benchmark as benchmark')
+                    ->leftJoin('md_tax_implication','md_tax_implication.id','=','md_scheme.tax_implication_id')
+                    ->select('md_scheme.*','md_amc.amc_name as amc_name','md_amc.amc_short_name as amc_short_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name','md_benchmark.benchmark as benchmark','md_tax_implication.tax_type as tax_implication')
                     ->selectRaw('SUBSTRING_INDEX(md_scheme.sip_freq_wise_amt,"\"",16) as sip_amount_filter_1')
                     ->selectRaw('SUBSTRING_INDEX(md_scheme.sip_freq_wise_amt,"\"",20) as sip_amount_filter_2')
                     ->selectRaw('SUBSTRING_INDEX(SUBSTRING_INDEX(md_scheme.sip_freq_wise_amt,"\"",16), "\"", -1) as D_sip_min_F_amount') // D sip min
@@ -268,7 +272,8 @@ class SchemeController extends Controller
                         ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
                         ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
                         ->leftJoin('md_benchmark','md_benchmark.id','=','md_scheme.benchmark_id')
-                        ->select('md_scheme.*','md_amc.amc_name as amc_name','md_amc.amc_short_name as amc_short_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name','md_benchmark.benchmark as benchmark')
+                        ->leftJoin('md_tax_implication','md_tax_implication.id','=','md_scheme.tax_implication_id')
+                        ->select('md_scheme.*','md_amc.amc_name as amc_name','md_amc.amc_short_name as amc_short_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name','md_benchmark.benchmark as benchmark','md_tax_implication.tax_type as tax_implication')
                         ->selectRaw('SUBSTRING_INDEX(md_scheme.sip_freq_wise_amt,"\"",16) as sip_amount_filter_1')
                         ->selectRaw('SUBSTRING_INDEX(md_scheme.sip_freq_wise_amt,"\"",20) as sip_amount_filter_2')
                         ->selectRaw('SUBSTRING_INDEX(SUBSTRING_INDEX(md_scheme.sip_freq_wise_amt,"\"",16), "\"", -1) as D_sip_min_F_amount') // D sip min
@@ -312,7 +317,8 @@ class SchemeController extends Controller
                         ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
                         ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
                         ->leftJoin('md_benchmark','md_benchmark.id','=','md_scheme.benchmark_id')
-                        ->select('md_scheme.*','md_amc.amc_name as amc_name','md_amc.amc_short_name as amc_short_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name','md_benchmark.benchmark as benchmark')
+                        ->leftJoin('md_tax_implication','md_tax_implication.id','=','md_scheme.tax_implication_id')
+                        ->select('md_scheme.*','md_amc.amc_name as amc_name','md_amc.amc_short_name as amc_short_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name','md_benchmark.benchmark as benchmark','md_tax_implication.tax_type as tax_implication')
                         ->selectRaw('SUBSTRING_INDEX(md_scheme.sip_freq_wise_amt,"\"",16) as sip_amount_filter_1')
                         ->selectRaw('SUBSTRING_INDEX(md_scheme.sip_freq_wise_amt,"\"",20) as sip_amount_filter_2')
                         ->selectRaw('SUBSTRING_INDEX(SUBSTRING_INDEX(md_scheme.sip_freq_wise_amt,"\"",16), "\"", -1) as D_sip_min_F_amount') // D sip min
@@ -359,7 +365,8 @@ class SchemeController extends Controller
                     ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
                     ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
                     ->leftJoin('md_benchmark','md_benchmark.id','=','md_scheme.benchmark_id')
-                    ->select('md_scheme.*','md_amc.amc_name as amc_name','md_amc.amc_short_name as amc_short_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name','md_benchmark.benchmark as benchmark')
+                    ->leftJoin('md_tax_implication','md_tax_implication.id','=','md_scheme.tax_implication_id')
+                    ->select('md_scheme.*','md_amc.amc_name as amc_name','md_amc.amc_short_name as amc_short_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name','md_benchmark.benchmark as benchmark','md_tax_implication.tax_type as tax_implication')
                     ->selectRaw('SUBSTRING_INDEX(md_scheme.sip_freq_wise_amt,"\"",16) as sip_amount_filter_1')
                     ->selectRaw('SUBSTRING_INDEX(md_scheme.sip_freq_wise_amt,"\"",20) as sip_amount_filter_2')
                     ->selectRaw('SUBSTRING_INDEX(SUBSTRING_INDEX(md_scheme.sip_freq_wise_amt,"\"",16), "\"", -1) as D_sip_min_F_amount') // D sip min
@@ -402,7 +409,8 @@ class SchemeController extends Controller
                     ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
                     ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
                     ->leftJoin('md_benchmark','md_benchmark.id','=','md_scheme.benchmark_id')
-                    ->select('md_scheme.*','md_amc.amc_name as amc_name','md_amc.amc_short_name as amc_short_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name','md_benchmark.benchmark as benchmark')
+                    ->leftJoin('md_tax_implication','md_tax_implication.id','=','md_scheme.tax_implication_id')
+                    ->select('md_scheme.*','md_amc.amc_name as amc_name','md_amc.amc_short_name as amc_short_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name','md_benchmark.benchmark as benchmark','md_tax_implication.tax_type as tax_implication')
                     ->selectRaw('SUBSTRING_INDEX(md_scheme.sip_freq_wise_amt,"\"",16) as sip_amount_filter_1')
                     ->selectRaw('SUBSTRING_INDEX(md_scheme.sip_freq_wise_amt,"\"",20) as sip_amount_filter_2')
                     ->selectRaw('SUBSTRING_INDEX(SUBSTRING_INDEX(md_scheme.sip_freq_wise_amt,"\"",16), "\"", -1) as D_sip_min_F_amount') // D sip min
@@ -754,7 +762,8 @@ class SchemeController extends Controller
                 $data->switch_min_amt=isset($request->switch_min_amt)?$request->switch_min_amt:NULL;
                 $data->switch_mul_amt=isset($request->switch_mul_amt)?$request->switch_mul_amt:NULL;
                 $data->exit_load=isset($request->exit_load)?$request->exit_load:NULL;
-
+                $data->tax_implication_id=isset($request->tax_implication_id)?$request->tax_implication_id:NULL;
+                
                 $data->updated_by=Helper::modifyUser($request->user());
                 $data->save();
 
@@ -834,7 +843,7 @@ class SchemeController extends Controller
                             'switch_min_amt'=>isset($request->switch_min_amt)?$request->switch_min_amt:NULL,
                             'switch_mul_amt'=>isset($request->switch_mul_amt)?$request->switch_mul_amt:NULL,
                             'exit_load'=>isset($request->exit_load)?$request->exit_load:NULL,
-
+                            'tax_implication_id'=>isset($request->tax_implication_id)?$request->tax_implication_id:NULL,
                             'created_by'=>Helper::modifyUser($request->user()),
                         ));    
                     }elseif ($request->scheme_type=='N') {
@@ -936,6 +945,7 @@ class SchemeController extends Controller
                             'switch_min_amt'=>isset($request->switch_min_amt)?$request->switch_min_amt:NULL,
                             'switch_mul_amt'=>isset($request->switch_mul_amt)?$request->switch_mul_amt:NULL,
                             'exit_load'=>isset($request->exit_load)?$request->exit_load:NULL,
+                            'tax_implication_id'=>isset($request->tax_implication_id)?$request->tax_implication_id:NULL,
 
                             'created_by'=>Helper::modifyUser($request->user()),
                         ));  
@@ -968,7 +978,8 @@ class SchemeController extends Controller
                     ->join('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
                     ->join('md_rnt','md_rnt.id','=','md_amc.rnt_id')
                     ->leftJoin('md_benchmark','md_benchmark.id','=','md_scheme.benchmark_id')
-                    ->select('md_scheme.*','md_amc.amc_name as amc_name','md_amc.amc_short_name as amc_short_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name','md_benchmark.benchmark as benchmark')
+                    ->leftJoin('md_tax_implication','md_tax_implication.id','=','md_scheme.tax_implication_id')
+                    ->select('md_scheme.*','md_amc.amc_name as amc_name','md_amc.amc_short_name as amc_short_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcate_name','md_rnt.rnt_name as rnt_name','md_benchmark.benchmark as benchmark','md_tax_implication.tax_type as tax_implication')
                     ->selectRaw('SUBSTRING_INDEX(md_scheme.sip_freq_wise_amt,"\"",16) as sip_amount_filter_1')
                     ->selectRaw('SUBSTRING_INDEX(md_scheme.sip_freq_wise_amt,"\"",20) as sip_amount_filter_2')
                     ->selectRaw('SUBSTRING_INDEX(SUBSTRING_INDEX(md_scheme.sip_freq_wise_amt,"\"",16), "\"", -1) as D_sip_min_F_amount') // D sip min

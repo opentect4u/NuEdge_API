@@ -15,8 +15,11 @@ Route::prefix('v1')->group(function () {
                 Route::post('liveMFRejectTrans',[App\Http\Controllers\v1\Client\LiveMFPController::class,'rejectTrans']);
                 Route::post('liveMFSTW',[App\Http\Controllers\v1\Client\LiveMFSTWController::class,'search']);  // for STP && SWP && STP
                 Route::post('liveMFUpcoming',[App\Http\Controllers\v1\Client\LiveMFSTWController::class,'upcomingTrans']);  // for STP && SWP && STP
+                
+                
+                Route::post('realisedCapitalGain',[App\Http\Controllers\v1\Client\CapitalGLController::class,'search']);
             });
-            Route::get('liveMFPortfolio1',[App\Http\Controllers\v1\Client\LiveMFPController::class,'search1']);
+            // Route::get('liveMFPortfolio1',[App\Http\Controllers\v1\Client\LiveMFPController::class,'search1']);
 
         });
     // })

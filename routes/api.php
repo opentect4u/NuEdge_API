@@ -259,6 +259,7 @@ Route::prefix('v1')->group(function () {
             Route::post('emailExport',[App\Http\Controllers\v1\Master\EmailController::class,'export']);
             Route::post('emailAddEdit',[App\Http\Controllers\v1\Master\EmailController::class,'createUpdate']);
 
+            Route::get('taxImplication',[App\Http\Controllers\v1\Master\TaxImplicationController::class,'index']);
 
             // dropdown onchange routes start
             Route::get('amcUsingPro',[App\Http\Controllers\v1\Master\CommonController::class,'showAMC']);
