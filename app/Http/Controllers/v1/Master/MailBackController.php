@@ -1720,14 +1720,25 @@ class MailBackController extends Controller
             // return $mismatch_flag;
             $rawQuery='';
             if ($mismatch_flag=='A') {
-                $rawQuery="amc_flag='Y'";
+                $rawQuery="admin_nav.td_nav_details.amc_flag='Y'";
             }elseif ($mismatch_flag=='S') {
-                $rawQuery="scheme_flag='Y'";
+                $rawQuery="admin_nav.td_nav_details.scheme_flag='Y'";
             }
             $data=[];
-            $data=DB::connection('mysql_nav')
-                ->select('SELECT * FROM td_nav_details WHERE '.$rawQuery.' GROUP BY product_code');
+            // $data=DB::connection('mysql_nav')
+            //     ->select('SELECT * FROM td_nav_details WHERE '.$rawQuery.' GROUP BY product_code');
 
+            $data=DB::select("select *,'md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name',
+                'md_subcategory.subcategory_name as subcat_name','md_amc.amc_short_name as amc_name',
+                'md_amc_1.amc_short_name as amc_short_name'
+                from admin_nav.td_nav_details
+                LEFT JOIN nuedge.md_scheme_isin ON admin_nav.td_nav_details.product_code = nuedge.md_scheme_isin.product_code
+                LEFT JOIN nuedge.md_scheme ON nuedge.md_scheme_isin.scheme_id = nuedge.md_scheme.id
+                LEFT JOIN nuedge.md_category ON nuedge.md_scheme.category_id = nuedge.md_category.id
+                LEFT JOIN nuedge.md_subcategory ON nuedge.md_scheme.subcategory_id = nuedge.md_subcategory.id
+                LEFT JOIN nuedge.md_amc ON nuedge.md_scheme.amc_id = nuedge.md_amc.id
+                LEFT JOIN nuedge.md_amc as md_amc_1 ON admin_nav.td_nav_details.amc_code = nuedge.md_amc.amc_code
+                where ".$rawQuery." GROUP BY product_code");
             // $data=NAVDetails::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_nav_details.product_code')
             //     ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
             //     ->leftJoin('md_category','md_category.id','=','md_scheme.category_id')
