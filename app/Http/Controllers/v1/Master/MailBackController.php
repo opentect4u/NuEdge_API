@@ -1725,20 +1725,20 @@ class MailBackController extends Controller
                 $rawQuery="admin_nav.td_nav_details.scheme_flag='Y'";
             }
             $data=[];
-            // $data=DB::connection('mysql_nav')
-            //     ->select('SELECT * FROM td_nav_details WHERE '.$rawQuery.' GROUP BY product_code');
+            $data=DB::connection('mysql_nav')
+                ->select('SELECT * FROM td_nav_details WHERE '.$rawQuery.' GROUP BY product_code');
 
-            $data=DB::select("select *,'md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name',
-                'md_subcategory.subcategory_name as subcat_name','md_amc.amc_short_name as amc_name',
-                'md_amc_1.amc_short_name as amc_short_name'
-                from admin_nav.td_nav_details
-                LEFT JOIN admin_nuedge.md_scheme_isin ON admin_nav.td_nav_details.product_code = admin_nuedge.md_scheme_isin.product_code
-                LEFT JOIN admin_nuedge.md_scheme ON admin_nuedge.md_scheme_isin.scheme_id = admin_nuedge.md_scheme.id
-                LEFT JOIN admin_nuedge.md_category ON admin_nuedge.md_scheme.category_id = admin_nuedge.md_category.id
-                LEFT JOIN admin_nuedge.md_subcategory ON admin_nuedge.md_scheme.subcategory_id = admin_nuedge.md_subcategory.id
-                LEFT JOIN admin_nuedge.md_amc ON admin_nuedge.md_scheme.amc_id = admin_nuedge.md_amc.id
-                LEFT JOIN admin_nuedge.md_amc as md_amc_1 ON admin_nav.td_nav_details.amc_code = admin_nuedge.md_amc.amc_code
-                where ".$rawQuery);
+            // $data=DB::select("select *,'md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name',
+            //     'md_subcategory.subcategory_name as subcat_name','md_amc.amc_short_name as amc_name',
+            //     'md_amc_1.amc_short_name as amc_short_name'
+            //     from admin_nav.td_nav_details
+            //     LEFT JOIN admin_nuedge.md_scheme_isin ON admin_nav.td_nav_details.product_code = admin_nuedge.md_scheme_isin.product_code
+            //     LEFT JOIN admin_nuedge.md_scheme ON admin_nuedge.md_scheme_isin.scheme_id = admin_nuedge.md_scheme.id
+            //     LEFT JOIN admin_nuedge.md_category ON admin_nuedge.md_scheme.category_id = admin_nuedge.md_category.id
+            //     LEFT JOIN admin_nuedge.md_subcategory ON admin_nuedge.md_scheme.subcategory_id = admin_nuedge.md_subcategory.id
+            //     LEFT JOIN admin_nuedge.md_amc ON admin_nuedge.md_scheme.amc_id = admin_nuedge.md_amc.id
+            //     LEFT JOIN admin_nuedge.md_amc as md_amc_1 ON admin_nav.td_nav_details.amc_code = admin_nuedge.md_amc.amc_code
+            //     where ".$rawQuery." GROUP BY admin_nav.td_nav_details.product_code");
 
                 
             // $data=NAVDetails::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_nav_details.product_code')
