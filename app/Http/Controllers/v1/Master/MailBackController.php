@@ -1738,7 +1738,7 @@ class MailBackController extends Controller
                 LEFT JOIN admin_nuedge.md_subcategory ON admin_nuedge.md_scheme.subcategory_id = admin_nuedge.md_subcategory.id
                 LEFT JOIN admin_nuedge.md_amc ON admin_nuedge.md_scheme.amc_id = admin_nuedge.md_amc.id
                 LEFT JOIN admin_nuedge.md_amc as md_amc_1 ON admin_nav.td_nav_details.amc_code = admin_nuedge.md_amc.amc_code
-                where ".$rawQuery." GROUP BY admin_nav.td_nav_details.product_code");
+                where ".$rawQuery);
 
                 
             // $data=NAVDetails::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_nav_details.product_code')
