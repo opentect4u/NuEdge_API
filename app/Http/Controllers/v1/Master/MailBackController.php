@@ -1726,7 +1726,7 @@ class MailBackController extends Controller
             }
             $data=[];
             $data=DB::connection('mysql_nav')
-                ->select('SELECT * FROM td_nav_details1 WHERE '.$rawQuery.' GROUP BY product_code');
+                ->select('SELECT * FROM td_nav_details WHERE '.$rawQuery.' GROUP BY product_code');
 
             // $data=NAVDetails::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_nav_details.product_code')
             //     ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
