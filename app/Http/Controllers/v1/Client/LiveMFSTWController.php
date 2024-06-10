@@ -34,13 +34,14 @@ class LiveMFSTWController extends Controller
             $client_name=$request->client_name;
             $sip_type=$request->sip_type;
             $report_type=$request->report_type;
+            $view_funds_type=$request->view_funds_type;
             
             session()->forget('valuation_as_on');
             session(['valuation_as_on' => $valuation_as_on]);
             // return Session::get('valuation_as_on');
             $client_details='';
             $rawQuery='';
-            if ($view_type || $valuation_as_on || $sip_type) {
+            if ($view_type || $valuation_as_on || $view_funds_type) {
                 // if ($valuation_as_on) {
                 //     $condition_v=(strlen($rawQuery) > 0)? " AND ":" ";
                 //     $queryString='td_mutual_fund_trans.trans_date';
@@ -69,6 +70,41 @@ class LiveMFSTWController extends Controller
                     $condition1=(strlen($rawQuery) > 0)? " OR ":" ";
                     $row_name_string1=  "'" .implode("','", $family_members_name). "'";
                     $rawQuery.=$condition1.$queryString." IN (".$row_name_string1."))";
+                }
+
+                if ($view_funds_type=='S') {
+                    $selected_funds=json_decode($request->selected_funds);
+                    $condition_selected_funds=(strlen($rawQuery) > 0)? " AND ":" ";
+                    foreach ($selected_funds as $single_fund_key => $single_fund) {
+                        // return $single_fund;
+                        if ($single_fund_key==0) {
+                           $rawQuery.=$condition_selected_funds."tt_sip_stp_swp_report.product_code IN (";
+                        } 
+                        $rawQuery.="'".$single_fund->product_code."'";
+                        if ($single_fund_key==(count($selected_funds)-1)) {
+                            $rawQuery.=")";
+                        }else {
+                            $rawQuery.=",";
+                        }
+                        // $condition_selected_funds=(strlen($rawQuery) > 0)? " AND ":" ";
+                        // $rawQuery.=$condition_selected_funds." (td_mutual_fund_trans.folio_no='".$single_fund->folio_no."' AND td_mutual_fund_trans.product_code='".$single_fund->product_code."' AND td_mutual_fund_trans.isin_no='".$single_fund->isin_no."')";
+                        // $rawQuery.=$condition_selected_funds." (td_mutual_fund_trans.folio_no='".$single_fund->folio_no."' AND td_mutual_fund_trans.product_code='".$single_fund->product_code."')";
+                    }
+                }elseif ($view_funds_type=='T') {
+                    $selected_type=json_decode($request->selected_type);
+                    $condition_selected_type=(strlen($rawQuery) > 0)? " AND ":" ";
+                    foreach ($selected_type as $single_fund_key => $single_fund) {
+                        // return $single_fund;
+                        if ($single_fund_key==0) {
+                           $rawQuery.=$condition_selected_type."tt_sip_stp_swp_report.product_code IN (";
+                        } 
+                        $rawQuery.="'".$single_fund->product_code."'";
+                        if ($single_fund_key==(count($selected_type)-1)) {
+                            $rawQuery.=")";
+                        }else {
+                            $rawQuery.=",";
+                        }
+                    }
                 }
             } 
 
@@ -339,6 +375,7 @@ class LiveMFSTWController extends Controller
             $trans_type=json_decode($request->trans_type);
             $trans_sub_type=json_decode($request->trans_sub_type);
             $flow_type=$request->flow_type;
+            $view_funds_type=$request->view_funds_type;
             
             $client_details='';
             $rawQuery='';
@@ -366,6 +403,41 @@ class LiveMFSTWController extends Controller
                     $condition1=(strlen($rawQuery) > 0)? " OR ":" ";
                     $row_name_string1=  "'" .implode("','", $family_members_name). "'";
                     $rawQuery.=$condition1.$queryString." IN (".$row_name_string1."))";
+                }
+
+                if ($view_funds_type=='S') {
+                    $selected_funds=json_decode($request->selected_funds);
+                    $condition_selected_funds=(strlen($rawQuery) > 0)? " AND ":" ";
+                    foreach ($selected_funds as $single_fund_key => $single_fund) {
+                        // return $single_fund;
+                        if ($single_fund_key==0) {
+                           $rawQuery.=$condition_selected_funds."tt_sip_stp_swp_report.product_code IN (";
+                        } 
+                        $rawQuery.="'".$single_fund->product_code."'";
+                        if ($single_fund_key==(count($selected_funds)-1)) {
+                            $rawQuery.=")";
+                        }else {
+                            $rawQuery.=",";
+                        }
+                        // $condition_selected_funds=(strlen($rawQuery) > 0)? " AND ":" ";
+                        // $rawQuery.=$condition_selected_funds." (td_mutual_fund_trans.folio_no='".$single_fund->folio_no."' AND td_mutual_fund_trans.product_code='".$single_fund->product_code."' AND td_mutual_fund_trans.isin_no='".$single_fund->isin_no."')";
+                        // $rawQuery.=$condition_selected_funds." (td_mutual_fund_trans.folio_no='".$single_fund->folio_no."' AND td_mutual_fund_trans.product_code='".$single_fund->product_code."')";
+                    }
+                }elseif ($view_funds_type=='T') {
+                    $selected_type=json_decode($request->selected_type);
+                    $condition_selected_type=(strlen($rawQuery) > 0)? " AND ":" ";
+                    foreach ($selected_type as $single_fund_key => $single_fund) {
+                        // return $single_fund;
+                        if ($single_fund_key==0) {
+                           $rawQuery.=$condition_selected_type."tt_sip_stp_swp_report.product_code IN (";
+                        } 
+                        $rawQuery.="'".$single_fund->product_code."'";
+                        if ($single_fund_key==(count($selected_type)-1)) {
+                            $rawQuery.=")";
+                        }else {
+                            $rawQuery.=",";
+                        }
+                    }
                 }
             } 
 

@@ -31,12 +31,13 @@ class LiveMFPController extends Controller
             $view_type=$request->view_type;
             $pan_no=$request->pan_no;
             $client_name=$request->client_name;
-
+            $view_funds_type=$request->view_funds_type;
+            
             session()->forget('valuation_as_on');
             session(['valuation_as_on' => $valuation_as_on]);
             // return Session::get('valuation_as_on');
             $client_details='';
-            if ($view_type || $valuation_as_on) {
+            if ($view_type || $valuation_as_on || $view_funds_type) {
                 $rawQuery='';
                 if ($valuation_as_on) {
                     $condition_v=(strlen($rawQuery) > 0)? " AND ":" ";
@@ -67,6 +68,40 @@ class LiveMFPController extends Controller
                     $row_name_string1=  "'" .implode("','", $family_members_name). "'";
                     $rawQuery.=$condition1.$queryString." IN (".$row_name_string1."))";
                 }
+                if ($view_funds_type=='S') {
+                    $selected_funds=json_decode($request->selected_funds);
+                    $condition_selected_funds=(strlen($rawQuery) > 0)? " AND ":" ";
+                    foreach ($selected_funds as $single_fund_key => $single_fund) {
+                        // return $single_fund;
+                        if ($single_fund_key==0) {
+                           $rawQuery.=$condition_selected_funds."td_mutual_fund_trans.product_code IN (";
+                        } 
+                        $rawQuery.="'".$single_fund->product_code."'";
+                        if ($single_fund_key==(count($selected_funds)-1)) {
+                            $rawQuery.=")";
+                        }else {
+                            $rawQuery.=",";
+                        }
+                        // $condition_selected_funds=(strlen($rawQuery) > 0)? " AND ":" ";
+                        // $rawQuery.=$condition_selected_funds." (td_mutual_fund_trans.folio_no='".$single_fund->folio_no."' AND td_mutual_fund_trans.product_code='".$single_fund->product_code."' AND td_mutual_fund_trans.isin_no='".$single_fund->isin_no."')";
+                        // $rawQuery.=$condition_selected_funds." (td_mutual_fund_trans.folio_no='".$single_fund->folio_no."' AND td_mutual_fund_trans.product_code='".$single_fund->product_code."')";
+                    }
+                }elseif ($view_funds_type=='T') {
+                    $selected_type=json_decode($request->selected_type);
+                    $condition_selected_type=(strlen($rawQuery) > 0)? " AND ":" ";
+                    foreach ($selected_type as $single_fund_key => $single_fund) {
+                        // return $single_fund;
+                        if ($single_fund_key==0) {
+                           $rawQuery.=$condition_selected_type."td_mutual_fund_trans.product_code IN (";
+                        } 
+                        $rawQuery.="'".$single_fund->product_code."'";
+                        if ($single_fund_key==(count($selected_type)-1)) {
+                            $rawQuery.=")";
+                        }else {
+                            $rawQuery.=",";
+                        }
+                    }
+                }
             } 
             // return $rawQuery;
             // return $client_details;
@@ -79,8 +114,8 @@ class LiveMFPController extends Controller
                 ->leftJoin('md_plan','md_plan.id','=','md_scheme_isin.plan_id')
                 ->leftJoin('md_option','md_option.id','=','md_scheme_isin.option_id')
                 ->select('td_mutual_fund_trans.rnt_id','td_mutual_fund_trans.folio_no','td_mutual_fund_trans.product_code','td_mutual_fund_trans.pur_price','td_mutual_fund_trans.trans_date','td_mutual_fund_trans.trans_mode',
-                'md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name','md_amc.amc_short_name as amc_name',
-                'md_plan.plan_name as plan_name','md_option.opt_name as option_name')
+                'md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name','md_category.id as cat_id','md_subcategory.id as subcat_id',
+                'md_amc.amc_short_name as amc_name','md_plan.plan_name as plan_name','md_option.opt_name as option_name')
                 ->selectRaw('IF(td_mutual_fund_trans.rnt_id=1,md_scheme_isin.isin_no,td_mutual_fund_trans.isin_no) as isin_no')
                 ->selectRaw('sum(td_mutual_fund_trans.units) as tot_units')
                 ->selectRaw('sum(td_mutual_fund_trans.amount) as tot_amount')
@@ -182,8 +217,8 @@ class LiveMFPController extends Controller
                 }
                 // $mydata=$this->calculate($value1->foliotrans);
                 $value1->mydata=$mydata;
-                $value1->nifty50=isset($mydata['nifty50'])?$mydata['nifty50']:$value1->nifty50;
-                $value1->sensex=isset($mydata['sensex'])?$mydata['sensex']:$value1->sensex;
+                $value1->nifty50=isset($mydata['nifty50'])?(int)$mydata['nifty50']:$value1->nifty50;
+                $value1->sensex=isset($mydata['sensex'])?(int)$mydata['sensex']:$value1->sensex;
                 $value1->idcwp=0;
                 $value1->idcw_reinv=isset($mydata['idcw_reinv'])? number_format((float)$mydata['idcw_reinv'], 2, '.', ''):0;
                 $value1->idcwr=number_format((float)($value1->idcwp + $value1->idcw_reinv), 2, '.', '');
@@ -625,8 +660,8 @@ class LiveMFPController extends Controller
                 ->selectRaw('sum(stamp_duty) as tot_stamp_duty')
                 ->selectRaw('IF(td_mutual_fund_trans.tds!="",sum(tds),0.00)as tot_tds')
                 ->selectRaw('count(*) as tot_rows')
-                ->selectRaw('(select close from td_benchmark_scheme where benchmark=1 AND date=td_mutual_fund_trans.trans_date) as nifty50')
-                ->selectRaw('(select close from td_benchmark_scheme where benchmark=70 AND date=td_mutual_fund_trans.trans_date) as sensex')
+                ->selectRaw('(select FLOOR(close) from td_benchmark_scheme where benchmark=1 AND date=td_mutual_fund_trans.trans_date) as nifty50')
+                ->selectRaw('(select FLOOR(close) from td_benchmark_scheme where benchmark=70 AND date=td_mutual_fund_trans.trans_date) as sensex')
                 ->selectRaw('IF(td_mutual_fund_trans.rnt_id=1,
                 (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=td_mutual_fund_trans.trxn_type_code AND c_k_trans_type=td_mutual_fund_trans.trxn_type_flag AND c_k_trans_sub_type=td_mutual_fund_trans.trxn_nature_code limit 1),
                 (CASE 
@@ -664,6 +699,7 @@ class LiveMFPController extends Controller
                 ->groupBy('td_mutual_fund_trans.trans_desc')
                 ->groupBy('td_mutual_fund_trans.kf_trans_type')
                 ->groupBy('td_mutual_fund_trans.trans_flag')
+                ->groupBy('td_mutual_fund_trans.pur_price')
                 ->orderBy('td_mutual_fund_trans.trans_date','asc')
                 ->get();
             // dd(DB::getQueryLog());
@@ -739,9 +775,9 @@ class LiveMFPController extends Controller
                 if(strpos($value->transaction_subtype, 'Purchase')!== false || strpos($value->transaction_subtype, 'Switch In')!== false 
                     || strpos($value->transaction_subtype, 'Dividend Reinvestment')!== false || strpos($value->transaction_subtype, 'STP In')!== false) {
                     if ($key > 0) {
-                        $value->cumml_units=number_format((float)($value->tot_units + $after_get_broker_data[($key-1)]->cumml_units) , 2, '.', '');
+                        $value->cumml_units=number_format((float)($value->tot_units + $after_get_broker_data[($key-1)]->cumml_units) , 4, '.', '');
                     }else {
-                        $value->cumml_units=number_format((float)$value->tot_units, 2, '.', '');
+                        $value->cumml_units=number_format((float)$value->tot_units, 4, '.', '');
                     }
                     array_push($purchase_data,$value);
                 }
@@ -758,9 +794,9 @@ class LiveMFPController extends Controller
             $purchase_data_recheck=[];
             foreach ($purchase_data as $key_001 => $value_001) {
                 if ($key_001 > 0) {
-                    $value_001->cumml_units=number_format((float)($value_001->tot_units + $purchase_data[($key_001-1)]->cumml_units) , 2, '.', '');
+                    $value_001->cumml_units=number_format((float)($value_001->tot_units + $purchase_data[($key_001-1)]->cumml_units) , 4, '.', '');
                 }else {
-                    $value_001->cumml_units=number_format((float)$value_001->tot_units, 2, '.', '');
+                    $value_001->cumml_units=number_format((float)$value_001->tot_units, 4, '.', '');
                 }
                 array_push($purchase_data_recheck,$value_001);
             }
@@ -779,7 +815,7 @@ class LiveMFPController extends Controller
                         if ($purchase_value['cumml_units'] >= 0) {
                             
                             $purchase_cumml_units=number_format((float)$purchase_value['cumml_units'], 4, '.', '');
-                            $purchase_value['cumml_units']=$purchase_cumml_units - $rdm_tot_units;
+                            $purchase_value['cumml_units']=number_format((float)($purchase_cumml_units - $rdm_tot_units), 4, '.', '');
                             
                                 if ($purchase_value['cumml_units'] >= 0 ) {
                                     $calculation_cumml_unit=isset($purchase_data[($purchase_key - 1)]['cumml_units'])?$purchase_data[($purchase_key - 1)]['cumml_units']:0;
@@ -1863,13 +1899,14 @@ class LiveMFPController extends Controller
             $trans_type=json_decode($request->trans_type);
             $trans_sub_type=json_decode($request->trans_sub_type);
             $flow_type=$request->flow_type;
+            $view_funds_type=$request->view_funds_type;
             // return $trans_type;
 
             // session()->forget('valuation_as_on');
             // session(['valuation_as_on' => $valuation_as_on]);
             // return Session::get('valuation_as_on');
             $client_details='';
-            if ($view_type || $valuation_as_on || $date_range) {
+            if ($view_type || $valuation_as_on || $date_range || $view_funds_type) {
                 $rawQuery='';
                 if ($date_range) {
                     $from_date=Carbon::parse(str_replace('/','-',explode("-",$date_range)[0]))->format('Y-m-d') ;
@@ -1908,6 +1945,41 @@ class LiveMFPController extends Controller
                     $row_name_string1=  "'" .implode("','", $family_members_name). "'";
                     $rawQuery.=$condition1.$queryString." IN (".$row_name_string1."))";
                 }
+
+                if ($view_funds_type=='S') {
+                    $selected_funds=json_decode($request->selected_funds);
+                    $condition_selected_funds=(strlen($rawQuery) > 0)? " AND ":" ";
+                    foreach ($selected_funds as $single_fund_key => $single_fund) {
+                        // return $single_fund;
+                        if ($single_fund_key==0) {
+                           $rawQuery.=$condition_selected_funds."td_mutual_fund_trans.product_code IN (";
+                        } 
+                        $rawQuery.="'".$single_fund->product_code."'";
+                        if ($single_fund_key==(count($selected_funds)-1)) {
+                            $rawQuery.=")";
+                        }else {
+                            $rawQuery.=",";
+                        }
+                        // $condition_selected_funds=(strlen($rawQuery) > 0)? " AND ":" ";
+                        // $rawQuery.=$condition_selected_funds." (td_mutual_fund_trans.folio_no='".$single_fund->folio_no."' AND td_mutual_fund_trans.product_code='".$single_fund->product_code."' AND td_mutual_fund_trans.isin_no='".$single_fund->isin_no."')";
+                        // $rawQuery.=$condition_selected_funds." (td_mutual_fund_trans.folio_no='".$single_fund->folio_no."' AND td_mutual_fund_trans.product_code='".$single_fund->product_code."')";
+                    }
+                }elseif ($view_funds_type=='T') {
+                    $selected_type=json_decode($request->selected_type);
+                    $condition_selected_type=(strlen($rawQuery) > 0)? " AND ":" ";
+                    foreach ($selected_type as $single_fund_key => $single_fund) {
+                        // return $single_fund;
+                        if ($single_fund_key==0) {
+                           $rawQuery.=$condition_selected_type."td_mutual_fund_trans.product_code IN (";
+                        } 
+                        $rawQuery.="'".$single_fund->product_code."'";
+                        if ($single_fund_key==(count($selected_type)-1)) {
+                            $rawQuery.=")";
+                        }else {
+                            $rawQuery.=",";
+                        }
+                    }
+                }
             }
 
             $all_datas=MutualFundTransaction::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_mutual_fund_trans.product_code')
@@ -1925,7 +1997,7 @@ class LiveMFPController extends Controller
                 ->selectRaw('sum(td_mutual_fund_trans.units) as tot_units')
                 ->selectRaw('sum(td_mutual_fund_trans.amount) as tot_amount')
                 ->selectRaw('sum(td_mutual_fund_trans.stamp_duty) as tot_stamp_duty')
-                ->selectRaw('sum(td_mutual_fund_trans.tds) as tot_tds')
+                ->selectRaw('IF(tds!="",sum(tds),0.00)as tot_tds')
                 ->selectRaw('count(*) as tot_rows')
                 ->selectRaw('IF(td_mutual_fund_trans.rnt_id=1,
                 (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=td_mutual_fund_trans.trxn_type_code AND c_k_trans_type=td_mutual_fund_trans.trxn_type_flag AND c_k_trans_sub_type=td_mutual_fund_trans.trxn_nature_code limit 1),
@@ -2014,6 +2086,7 @@ class LiveMFPController extends Controller
             $trans_type=json_decode($request->trans_type);
             $trans_sub_type=json_decode($request->trans_sub_type);
             $flow_type=$request->flow_type;
+            $view_funds_type=$request->view_funds_type;
             // return $trans_type;
 
             // session()->forget('valuation_as_on');
@@ -2021,7 +2094,7 @@ class LiveMFPController extends Controller
             // return Session::get('valuation_as_on');
             $client_details='';
             $rawQuery='';
-            if ($view_type || $valuation_as_on || $date_range) {
+            if ($view_type || $valuation_as_on || $date_range || $view_funds_type) {
                 // if ($date_range) {
                 //     $from_date=Carbon::parse(str_replace('/','-',explode("-",$date_range)[0]))->format('Y-m-d') ;
                 //     $to_date=Carbon::parse(str_replace('/','-',explode("-",$date_range)[1]))->format('Y-m-d') ;
@@ -2059,6 +2132,41 @@ class LiveMFPController extends Controller
                     $row_name_string1=  "'" .implode("','", $family_members_name). "'";
                     $rawQuery.=$condition1.$queryString." IN (".$row_name_string1."))";
                 }
+
+                if ($view_funds_type=='S') {
+                    $selected_funds=json_decode($request->selected_funds);
+                    $condition_selected_funds=(strlen($rawQuery) > 0)? " AND ":" ";
+                    foreach ($selected_funds as $single_fund_key => $single_fund) {
+                        // return $single_fund;
+                        if ($single_fund_key==0) {
+                           $rawQuery.=$condition_selected_funds."td_mutual_fund_trans.product_code IN (";
+                        } 
+                        $rawQuery.="'".$single_fund->product_code."'";
+                        if ($single_fund_key==(count($selected_funds)-1)) {
+                            $rawQuery.=")";
+                        }else {
+                            $rawQuery.=",";
+                        }
+                        // $condition_selected_funds=(strlen($rawQuery) > 0)? " AND ":" ";
+                        // $rawQuery.=$condition_selected_funds." (td_mutual_fund_trans.folio_no='".$single_fund->folio_no."' AND td_mutual_fund_trans.product_code='".$single_fund->product_code."' AND td_mutual_fund_trans.isin_no='".$single_fund->isin_no."')";
+                        // $rawQuery.=$condition_selected_funds." (td_mutual_fund_trans.folio_no='".$single_fund->folio_no."' AND td_mutual_fund_trans.product_code='".$single_fund->product_code."')";
+                    }
+                }elseif ($view_funds_type=='T') {
+                    $selected_type=json_decode($request->selected_type);
+                    $condition_selected_type=(strlen($rawQuery) > 0)? " AND ":" ";
+                    foreach ($selected_type as $single_fund_key => $single_fund) {
+                        // return $single_fund;
+                        if ($single_fund_key==0) {
+                           $rawQuery.=$condition_selected_type."td_mutual_fund_trans.product_code IN (";
+                        } 
+                        $rawQuery.="'".$single_fund->product_code."'";
+                        if ($single_fund_key==(count($selected_type)-1)) {
+                            $rawQuery.=")";
+                        }else {
+                            $rawQuery.=",";
+                        }
+                    }
+                }
             }
             // return $rawQuery;
             $all_datas=MutualFundTransaction::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_mutual_fund_trans.product_code')
@@ -2075,7 +2183,7 @@ class LiveMFPController extends Controller
                 'md_employee.emp_name as rm_name','md_branch.brn_name as branch','md_employee.bu_type_id as bu_type_id','md_employee.branch_id as branch_id','md_employee.euin_no as euin_no')
                 ->selectRaw('sum(amount) as tot_amount')
                 ->selectRaw('sum(stamp_duty) as tot_stamp_duty')
-                ->selectRaw('sum(tds) as tot_tds')
+                ->selectRaw('IF(tds!="",sum(tds),0.00)as tot_tds')
                 ->selectRaw('count(*) as tot_rows')
                 ->selectRaw('(select bu_type from md_business_type where bu_code=md_employee.bu_type_id and branch_id=md_employee.branch_id limit 1) as bu_type')
                 ->selectRaw('IF(td_mutual_fund_trans.rnt_id=1,

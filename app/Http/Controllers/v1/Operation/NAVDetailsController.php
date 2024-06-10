@@ -81,21 +81,37 @@ class NAVDetailsController extends Controller
                     // return $rawQuery;
                     $my_data=DB::select('SELECT n.*,s.scheme_name,c.cat_name,sc.subcategory_name as subcat_name,a.amc_short_name as amc_name,a1.amc_short_name as amc_short_name,
                         p.plan_name as plan_name,o.opt_name as option_name
-                        FROM td_nav_details AS n
-                        LEFT JOIN md_scheme_isin AS si ON n.product_code=si.product_code
-                        LEFT JOIN md_plan AS p ON si.plan_id=p.id
-                        LEFT JOIN md_option AS o ON si.option_id=o.id
-                        LEFT JOIN md_scheme AS s ON si.scheme_id=s.id
-                        LEFT JOIN md_amc AS a ON s.amc_id=a.id
-                        LEFT JOIN md_amc AS a1 ON n.amc_code=a1.amc_code
-                        LEFT JOIN md_category AS c ON s.category_id=c.id
-                        LEFT JOIN md_subcategory AS sc ON s.subcategory_id=sc.id
+                        FROM admin_nav.td_nav_details AS n
+                        LEFT JOIN admin_nuedge.md_scheme_isin AS si ON n.product_code=si.product_code
+                        LEFT JOIN admin_nuedge.md_plan AS p ON si.plan_id=p.id
+                        LEFT JOIN admin_nuedge.md_option AS o ON si.option_id=o.id
+                        LEFT JOIN admin_nuedge.md_scheme AS s ON si.scheme_id=s.id
+                        LEFT JOIN admin_nuedge.md_amc AS a ON s.amc_id=a.id
+                        LEFT JOIN admin_nuedge.md_amc AS a1 ON n.amc_code=a1.amc_code
+                        LEFT JOIN admin_nuedge.md_category AS c ON s.category_id=c.id
+                        LEFT JOIN admin_nuedge.md_subcategory AS sc ON s.subcategory_id=sc.id
                         WHERE n.amc_flag="N" 
                         AND n.scheme_flag="N" 
                         AND si.plan_id='.$plan_type.'
                         AND '.$rawQuery.$modify_rawQuery1.'
                         ORDER BY n.product_code,n.nav_date DESC');
                     // return $my_data;
+                    // $my_data=DB::select('SELECT n.*,s.scheme_name,c.cat_name,sc.subcategory_name as subcat_name,a.amc_short_name as amc_name,a1.amc_short_name as amc_short_name,
+                    //     p.plan_name as plan_name,o.opt_name as option_name
+                    //     FROM td_nav_details AS n
+                    //     LEFT JOIN md_scheme_isin AS si ON n.product_code=si.product_code
+                    //     LEFT JOIN md_plan AS p ON si.plan_id=p.id
+                    //     LEFT JOIN md_option AS o ON si.option_id=o.id
+                    //     LEFT JOIN md_scheme AS s ON si.scheme_id=s.id
+                    //     LEFT JOIN md_amc AS a ON s.amc_id=a.id
+                    //     LEFT JOIN md_amc AS a1 ON n.amc_code=a1.amc_code
+                    //     LEFT JOIN md_category AS c ON s.category_id=c.id
+                    //     LEFT JOIN md_subcategory AS sc ON s.subcategory_id=sc.id
+                    //     WHERE n.amc_flag="N" 
+                    //     AND n.scheme_flag="N" 
+                    //     AND si.plan_id='.$plan_type.'
+                    //     AND '.$rawQuery.$modify_rawQuery1.'
+                    //     ORDER BY n.product_code,n.nav_date DESC');
 
                     break;
                 case 'W':
@@ -105,18 +121,18 @@ class NAVDetailsController extends Controller
                     
                     $my_data=DB::select('SELECT n.*,s.scheme_name,c.cat_name,sc.subcategory_name as subcat_name,a.amc_short_name as amc_name,a1.amc_short_name as amc_short_name,
                         p.plan_name as plan_name,o.opt_name as option_name
-                        FROM td_nav_details AS n
-                        LEFT JOIN md_scheme_isin AS si ON n.product_code=si.product_code
-                        LEFT JOIN md_plan AS p ON si.plan_id=p.id
-                        LEFT JOIN md_option AS o ON si.option_id=o.id
-                        LEFT JOIN md_scheme AS s ON si.scheme_id=s.id
-                        LEFT JOIN md_amc AS a ON s.amc_id=a.id
-                        LEFT JOIN md_amc AS a1 ON n.amc_code=a1.amc_code
-                        LEFT JOIN md_category AS c ON s.category_id=c.id
-                        LEFT JOIN md_subcategory AS sc ON s.subcategory_id=sc.id
+                        FROM admin_nav.td_nav_details AS n
+                        LEFT JOIN admin_nuedge.md_scheme_isin AS si ON n.product_code=si.product_code
+                        LEFT JOIN admin_nuedge.md_plan AS p ON si.plan_id=p.id
+                        LEFT JOIN admin_nuedge.md_option AS o ON si.option_id=o.id
+                        LEFT JOIN admin_nuedge.md_scheme AS s ON si.scheme_id=s.id
+                        LEFT JOIN admin_nuedge.md_amc AS a ON s.amc_id=a.id
+                        LEFT JOIN admin_nuedge.md_amc AS a1 ON n.amc_code=a1.amc_code
+                        LEFT JOIN admin_nuedge.md_category AS c ON s.category_id=c.id
+                        LEFT JOIN admin_nuedge.md_subcategory AS sc ON s.subcategory_id=sc.id
                         JOIN (
                                 SELECT MAX(t.nav_date) AS mydate
-                                FROM td_nav_details AS t
+                                FROM admin_nav.td_nav_details AS t
                                 GROUP BY YEAR(t.nav_date), MONTH(t.nav_date), WEEK(t.nav_date)
                             ) AS x ON n.nav_date=x.mydate
                         WHERE n.amc_flag="N" 
@@ -125,7 +141,27 @@ class NAVDetailsController extends Controller
                         AND '.$rawQuery.$modify_rawQuery1.'
                         ORDER BY n.product_code,n.nav_date DESC');
                     // return $my_data;
-
+                    // $my_data=DB::select('SELECT n.*,s.scheme_name,c.cat_name,sc.subcategory_name as subcat_name,a.amc_short_name as amc_name,a1.amc_short_name as amc_short_name,
+                    // p.plan_name as plan_name,o.opt_name as option_name
+                    // FROM td_nav_details AS n
+                    // LEFT JOIN md_scheme_isin AS si ON n.product_code=si.product_code
+                    // LEFT JOIN md_plan AS p ON si.plan_id=p.id
+                    // LEFT JOIN md_option AS o ON si.option_id=o.id
+                    // LEFT JOIN md_scheme AS s ON si.scheme_id=s.id
+                    // LEFT JOIN md_amc AS a ON s.amc_id=a.id
+                    // LEFT JOIN md_amc AS a1 ON n.amc_code=a1.amc_code
+                    // LEFT JOIN md_category AS c ON s.category_id=c.id
+                    // LEFT JOIN md_subcategory AS sc ON s.subcategory_id=sc.id
+                    // JOIN (
+                    //         SELECT MAX(t.nav_date) AS mydate
+                    //         FROM td_nav_details AS t
+                    //         GROUP BY YEAR(t.nav_date), MONTH(t.nav_date), WEEK(t.nav_date)
+                    //     ) AS x ON n.nav_date=x.mydate
+                    // WHERE n.amc_flag="N" 
+                    // AND n.scheme_flag="N" 
+                    // AND si.plan_id='.$plan_type.'
+                    // AND '.$rawQuery.$modify_rawQuery1.'
+                    // ORDER BY n.product_code,n.nav_date DESC');
                     break;
                 case 'F':
                     $from_date=Carbon::parse(str_replace('/','-',explode("-",$date_range)[0]))->format('Y-m-d') ;
@@ -171,18 +207,18 @@ class NAVDetailsController extends Controller
                     $rawQuery.=Helper::FrmToDateRawQuery($from_date,$to_date,$rawQuery,$queryString);
                     $my_data=DB::select('SELECT n.*,s.scheme_name,c.cat_name,sc.subcategory_name as subcat_name,a.amc_short_name as amc_name,a1.amc_short_name as amc_short_name,
                         p.plan_name as plan_name,o.opt_name as option_name
-                        FROM td_nav_details AS n
-                        LEFT JOIN md_scheme_isin AS si ON n.product_code=si.product_code
-                        LEFT JOIN md_plan AS p ON si.plan_id=p.id
-                        LEFT JOIN md_option AS o ON si.option_id=o.id
-                        LEFT JOIN md_scheme AS s ON si.scheme_id=s.id
-                        LEFT JOIN md_amc AS a ON s.amc_id=a.id
-                        LEFT JOIN md_amc AS a1 ON n.amc_code=a1.amc_code
-                        LEFT JOIN md_category AS c ON s.category_id=c.id
-                        LEFT JOIN md_subcategory AS sc ON s.subcategory_id=sc.id
+                        FROM admin_nav.td_nav_details AS n
+                        LEFT JOIN admin_nuedge.md_scheme_isin AS si ON n.product_code=si.product_code
+                        LEFT JOIN admin_nuedge.md_plan AS p ON si.plan_id=p.id
+                        LEFT JOIN admin_nuedge.md_option AS o ON si.option_id=o.id
+                        LEFT JOIN admin_nuedge.md_scheme AS s ON si.scheme_id=s.id
+                        LEFT JOIN admin_nuedge.md_amc AS a ON s.amc_id=a.id
+                        LEFT JOIN admin_nuedge.md_amc AS a1 ON n.amc_code=a1.amc_code
+                        LEFT JOIN admin_nuedge.md_category AS c ON s.category_id=c.id
+                        LEFT JOIN admin_nuedge.md_subcategory AS sc ON s.subcategory_id=sc.id
                         JOIN (
                                 SELECT MAX(t.nav_date) AS mydate
-                                FROM td_nav_details AS t
+                                FROM admin_nav.td_nav_details AS t
                                 GROUP BY YEAR(t.nav_date), MONTH(t.nav_date)
                             ) AS x ON n.nav_date=x.mydate
                         WHERE n.amc_flag="N" 
@@ -191,6 +227,27 @@ class NAVDetailsController extends Controller
                         AND '.$rawQuery.$modify_rawQuery1.'
                         ORDER BY n.product_code,n.nav_date DESC');
                     // return $my_data;
+                    // $my_data=DB::select('SELECT n.*,s.scheme_name,c.cat_name,sc.subcategory_name as subcat_name,a.amc_short_name as amc_name,a1.amc_short_name as amc_short_name,
+                    //     p.plan_name as plan_name,o.opt_name as option_name
+                    //     FROM td_nav_details AS n
+                    //     LEFT JOIN md_scheme_isin AS si ON n.product_code=si.product_code
+                    //     LEFT JOIN md_plan AS p ON si.plan_id=p.id
+                    //     LEFT JOIN md_option AS o ON si.option_id=o.id
+                    //     LEFT JOIN md_scheme AS s ON si.scheme_id=s.id
+                    //     LEFT JOIN md_amc AS a ON s.amc_id=a.id
+                    //     LEFT JOIN md_amc AS a1 ON n.amc_code=a1.amc_code
+                    //     LEFT JOIN md_category AS c ON s.category_id=c.id
+                    //     LEFT JOIN md_subcategory AS sc ON s.subcategory_id=sc.id
+                    //     JOIN (
+                    //             SELECT MAX(t.nav_date) AS mydate
+                    //             FROM td_nav_details AS t
+                    //             GROUP BY YEAR(t.nav_date), MONTH(t.nav_date)
+                    //         ) AS x ON n.nav_date=x.mydate
+                    //     WHERE n.amc_flag="N" 
+                    //     AND n.scheme_flag="N" 
+                    //     AND si.plan_id='.$plan_type.'
+                    //     AND '.$rawQuery.$modify_rawQuery1.'
+                    //     ORDER BY n.product_code,n.nav_date DESC');
                     break;
                 case 'H':
                     $f_date="01-01-".str_replace('/','-',explode("-",$date_range)[0]);
@@ -198,21 +255,21 @@ class NAVDetailsController extends Controller
                     $from_date=Carbon::parse(str_replace(' ','',$f_date))->format('Y-m-d');
                     $to_date=Carbon::parse(str_replace(' ','',$t_date))->format('Y-m-d');
                     $rawQuery.=Helper::FrmToDateRawQuery($from_date,$to_date,$rawQuery,$queryString);
-                    $row_name_string=  "'" .implode("','", $benchmark). "'";
+                    // $row_name_string=  "'" .implode("','", $benchmark). "'";
                     $my_data=DB::select('SELECT n.*,s.scheme_name,c.cat_name,sc.subcategory_name as subcat_name,a.amc_short_name as amc_name,a1.amc_short_name as amc_short_name,
                         p.plan_name as plan_name,o.opt_name as option_name
-                        FROM td_nav_details AS n
-                        LEFT JOIN md_scheme_isin AS si ON n.product_code=si.product_code
-                        LEFT JOIN md_plan AS p ON si.plan_id=p.id
-                        LEFT JOIN md_option AS o ON si.option_id=o.id
-                        LEFT JOIN md_scheme AS s ON si.scheme_id=s.id
-                        LEFT JOIN md_amc AS a ON s.amc_id=a.id
-                        LEFT JOIN md_amc AS a1 ON n.amc_code=a1.amc_code
-                        LEFT JOIN md_category AS c ON s.category_id=c.id
-                        LEFT JOIN md_subcategory AS sc ON s.subcategory_id=sc.id
+                        FROM admin_nav.td_nav_details AS n
+                        LEFT JOIN admin_nuedge.md_scheme_isin AS si ON n.product_code=si.product_code
+                        LEFT JOIN admin_nuedge.md_plan AS p ON si.plan_id=p.id
+                        LEFT JOIN admin_nuedge.md_option AS o ON si.option_id=o.id
+                        LEFT JOIN admin_nuedge.md_scheme AS s ON si.scheme_id=s.id
+                        LEFT JOIN admin_nuedge.md_amc AS a ON s.amc_id=a.id
+                        LEFT JOIN admin_nuedge.md_amc AS a1 ON n.amc_code=a1.amc_code
+                        LEFT JOIN admin_nuedge.md_category AS c ON s.category_id=c.id
+                        LEFT JOIN admin_nuedge.md_subcategory AS sc ON s.subcategory_id=sc.id
                         JOIN (
                                 SELECT MAX(t.nav_date) AS mydate
-                                FROM td_nav_details AS t
+                                FROM admin_nav.td_nav_details AS t
                                 GROUP BY YEAR(t.nav_date), CEIL(MONTH(t.nav_date) / 6)
                             ) AS x ON n.nav_date=x.mydate
                         WHERE n.amc_flag="N" 
@@ -221,6 +278,27 @@ class NAVDetailsController extends Controller
                         AND '.$rawQuery.$modify_rawQuery1.'
                         ORDER BY n.product_code,n.nav_date DESC');
                     // return $my_data;
+                    // $my_data=DB::select('SELECT n.*,s.scheme_name,c.cat_name,sc.subcategory_name as subcat_name,a.amc_short_name as amc_name,a1.amc_short_name as amc_short_name,
+                    //     p.plan_name as plan_name,o.opt_name as option_name
+                    //     FROM td_nav_details AS n
+                    //     LEFT JOIN md_scheme_isin AS si ON n.product_code=si.product_code
+                    //     LEFT JOIN md_plan AS p ON si.plan_id=p.id
+                    //     LEFT JOIN md_option AS o ON si.option_id=o.id
+                    //     LEFT JOIN md_scheme AS s ON si.scheme_id=s.id
+                    //     LEFT JOIN md_amc AS a ON s.amc_id=a.id
+                    //     LEFT JOIN md_amc AS a1 ON n.amc_code=a1.amc_code
+                    //     LEFT JOIN md_category AS c ON s.category_id=c.id
+                    //     LEFT JOIN md_subcategory AS sc ON s.subcategory_id=sc.id
+                    //     JOIN (
+                    //             SELECT MAX(t.nav_date) AS mydate
+                    //             FROM td_nav_details AS t
+                    //             GROUP BY YEAR(t.nav_date), CEIL(MONTH(t.nav_date) / 6)
+                    //         ) AS x ON n.nav_date=x.mydate
+                    //     WHERE n.amc_flag="N" 
+                    //     AND n.scheme_flag="N" 
+                    //     AND si.plan_id='.$plan_type.'
+                    //     AND '.$rawQuery.$modify_rawQuery1.'
+                    //     ORDER BY n.product_code,n.nav_date DESC');
                     break;
                 case 'Y':
                     $f_date="01-01-".str_replace('/','-',explode("-",$date_range)[0]);
@@ -230,18 +308,18 @@ class NAVDetailsController extends Controller
                     $rawQuery.=Helper::FrmToDateRawQuery($from_date,$to_date,$rawQuery,$queryString);
                     $my_data=DB::select('SELECT n.*,s.scheme_name,c.cat_name,sc.subcategory_name as subcat_name,a.amc_short_name as amc_name,a1.amc_short_name as amc_short_name,
                         p.plan_name as plan_name,o.opt_name as option_name
-                        FROM td_nav_details AS n
-                        LEFT JOIN md_scheme_isin AS si ON n.product_code=si.product_code
-                        LEFT JOIN md_plan AS p ON si.plan_id=p.id
-                        LEFT JOIN md_option AS o ON si.option_id=o.id
-                        LEFT JOIN md_scheme AS s ON si.scheme_id=s.id
-                        LEFT JOIN md_amc AS a ON s.amc_id=a.id
-                        LEFT JOIN md_amc AS a1 ON n.amc_code=a1.amc_code
-                        LEFT JOIN md_category AS c ON s.category_id=c.id
-                        LEFT JOIN md_subcategory AS sc ON s.subcategory_id=sc.id
+                        FROM admin_nav.td_nav_details AS n
+                        LEFT JOIN admin_nuedge.md_scheme_isin AS si ON n.product_code=si.product_code
+                        LEFT JOIN admin_nuedge.md_plan AS p ON si.plan_id=p.id
+                        LEFT JOIN admin_nuedge.md_option AS o ON si.option_id=o.id
+                        LEFT JOIN admin_nuedge.md_scheme AS s ON si.scheme_id=s.id
+                        LEFT JOIN admin_nuedge.md_amc AS a ON s.amc_id=a.id
+                        LEFT JOIN admin_nuedge.md_amc AS a1 ON n.amc_code=a1.amc_code
+                        LEFT JOIN admin_nuedge.md_category AS c ON s.category_id=c.id
+                        LEFT JOIN admin_nuedge.md_subcategory AS sc ON s.subcategory_id=sc.id
                         JOIN (
                                 SELECT MAX(t.nav_date) AS mydate
-                                FROM td_nav_details AS t
+                                FROM admin_nav.td_nav_details AS t
                                 GROUP BY YEAR(t.nav_date)
                             ) AS x ON n.nav_date=x.mydate
                         WHERE n.amc_flag="N" 
@@ -250,6 +328,27 @@ class NAVDetailsController extends Controller
                         AND '.$rawQuery.$modify_rawQuery1.'
                         ORDER BY n.product_code,n.nav_date DESC');
                     // return $my_data;
+                    // $my_data=DB::select('SELECT n.*,s.scheme_name,c.cat_name,sc.subcategory_name as subcat_name,a.amc_short_name as amc_name,a1.amc_short_name as amc_short_name,
+                    //     p.plan_name as plan_name,o.opt_name as option_name
+                    //     FROM td_nav_details AS n
+                    //     LEFT JOIN md_scheme_isin AS si ON n.product_code=si.product_code
+                    //     LEFT JOIN md_plan AS p ON si.plan_id=p.id
+                    //     LEFT JOIN md_option AS o ON si.option_id=o.id
+                    //     LEFT JOIN md_scheme AS s ON si.scheme_id=s.id
+                    //     LEFT JOIN md_amc AS a ON s.amc_id=a.id
+                    //     LEFT JOIN md_amc AS a1 ON n.amc_code=a1.amc_code
+                    //     LEFT JOIN md_category AS c ON s.category_id=c.id
+                    //     LEFT JOIN md_subcategory AS sc ON s.subcategory_id=sc.id
+                    //     JOIN (
+                    //             SELECT MAX(t.nav_date) AS mydate
+                    //             FROM td_nav_details AS t
+                    //             GROUP BY YEAR(t.nav_date)
+                    //         ) AS x ON n.nav_date=x.mydate
+                    //     WHERE n.amc_flag="N" 
+                    //     AND n.scheme_flag="N" 
+                    //     AND si.plan_id='.$plan_type.'
+                    //     AND '.$rawQuery.$modify_rawQuery1.'
+                    //     ORDER BY n.product_code,n.nav_date DESC');
                     break;
                 default:
                     break;
@@ -266,7 +365,10 @@ class NAVDetailsController extends Controller
                 if (isset($my_data[$key+1]->nav) && $my_data[$key+1]->nav && isset($my_data[$key+1]->product_code) &&  $my_data[$key+1]->product_code==$value->product_code) {
                     $old_nav_price=$my_data[$key+1]->nav;
                     $change_nav=$nav_price-$old_nav_price;
-                    $change_percentage=(($change_nav/$old_nav_price)*100);
+                    $change_percentage=0;
+                    if ($old_nav_price > 0) {
+                        $change_percentage=(($change_nav/$old_nav_price)*100);
+                    }
                     $change_percentage_format=number_format((float)$change_percentage, 2, '.', '');
                     // $change_percentage_format=number_format((float)round($change_percentage, 0, PHP_ROUND_HALF_UP), 2, '.', '');
                 }

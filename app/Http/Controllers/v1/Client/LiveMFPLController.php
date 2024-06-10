@@ -32,12 +32,13 @@ class LiveMFPLController extends Controller
             $view_type=$request->view_type;
             $pan_no=$request->pan_no;
             $client_name=$request->client_name;
+            $view_funds_type=$request->view_funds_type;
 
             session()->forget('valuation_as_on');
             session(['valuation_as_on' => $valuation_as_on]);
             // return Session::get('valuation_as_on');
             $client_details='';
-            if ($view_type || $valuation_as_on) {
+            if ($view_type || $valuation_as_on || $view_funds_type) {
                 $rawQuery='';
                 if ($valuation_as_on) {
                     $condition_v=(strlen($rawQuery) > 0)? " AND ":" ";
@@ -67,6 +68,40 @@ class LiveMFPLController extends Controller
                     $condition1=(strlen($rawQuery) > 0)? " OR ":" ";
                     $row_name_string1=  "'" .implode("','", $family_members_name). "'";
                     $rawQuery.=$condition1.$queryString." IN (".$row_name_string1."))";
+                }
+                if ($view_funds_type=='S') {
+                    $selected_funds=json_decode($request->selected_funds);
+                    $condition_selected_funds=(strlen($rawQuery) > 0)? " AND ":" ";
+                    foreach ($selected_funds as $single_fund_key => $single_fund) {
+                        // return $single_fund;
+                        if ($single_fund_key==0) {
+                           $rawQuery.=$condition_selected_funds."td_mutual_fund_trans.product_code IN (";
+                        } 
+                        $rawQuery.="'".$single_fund->product_code."'";
+                        if ($single_fund_key==(count($selected_funds)-1)) {
+                            $rawQuery.=")";
+                        }else {
+                            $rawQuery.=",";
+                        }
+                        // $condition_selected_funds=(strlen($rawQuery) > 0)? " AND ":" ";
+                        // $rawQuery.=$condition_selected_funds." (td_mutual_fund_trans.folio_no='".$single_fund->folio_no."' AND td_mutual_fund_trans.product_code='".$single_fund->product_code."' AND td_mutual_fund_trans.isin_no='".$single_fund->isin_no."')";
+                        // $rawQuery.=$condition_selected_funds." (td_mutual_fund_trans.folio_no='".$single_fund->folio_no."' AND td_mutual_fund_trans.product_code='".$single_fund->product_code."')";
+                    }
+                }elseif ($view_funds_type=='T') {
+                    $selected_type=json_decode($request->selected_type);
+                    $condition_selected_type=(strlen($rawQuery) > 0)? " AND ":" ";
+                    foreach ($selected_type as $single_fund_key => $single_fund) {
+                        // return $single_fund;
+                        if ($single_fund_key==0) {
+                           $rawQuery.=$condition_selected_type."td_mutual_fund_trans.product_code IN (";
+                        } 
+                        $rawQuery.="'".$single_fund->product_code."'";
+                        if ($single_fund_key==(count($selected_type)-1)) {
+                            $rawQuery.=")";
+                        }else {
+                            $rawQuery.=",";
+                        }
+                    }
                 }
             } 
             // return $rawQuery;
@@ -207,8 +242,21 @@ class LiveMFPLController extends Controller
                     // return $mydata;
                 }
                 $value1->mydata=$mydata;
-                $value1->tot_units=isset($mydata['tot_units'])?number_format((float)$mydata['tot_units'], 4, '.', ''):0;
-                $value1->curr_val=$value1->curr_nav * $value1->tot_units;
+                $value1->idcw_reinv=isset($mydata['idcw_reinv'])? number_format((float)$mydata['idcw_reinv'], 2, '.', ''):0;
+                $value1->idcwr=number_format((float)($value1->idcwp + $value1->idcw_reinv), 2, '.', '');
+                $value1->inv_since=isset($mydata['inv_since'])? $mydata['inv_since']:$value1->inv_since;
+                $value1->pur_nav=isset($mydata['pur_nav'])?$mydata['pur_nav']:$value1->pur_nav;
+                $value1->transaction_type=isset($mydata['transaction_type'])?$mydata['transaction_type']:$value1->transaction_type;
+                $value1->transaction_subtype=isset($mydata['transaction_subtype'])?$mydata['transaction_subtype']:$value1->transaction_subtype;
+                $value1->inv_cost=isset($mydata['inv_cost'])?number_format((float)$mydata['inv_cost'], 2, '.', ''):0;
+                $value1->tot_units=isset($mydata['tot_units'])?number_format((float)$mydata['tot_units'], 2, '.', ''):0;
+                $value1->curr_val= number_format((float)($value1->curr_nav * $value1->tot_units), 2, '.', '');
+                $value1->gain_loss=number_format((float)(($value1->curr_val - $value1->inv_cost) + $value1->idcwr), 2, '.', '');
+                if ($value1->gain_loss==0 || $value1->inv_cost==0) {
+                    $value1->ret_abs=0;
+                }else {
+                    $value1->ret_abs=number_format((float)(($value1->gain_loss / $value1->inv_cost) * 100), 2, '.', '');
+                }
                 array_push($filter_data,$value1);
             }
             

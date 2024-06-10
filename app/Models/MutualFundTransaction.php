@@ -124,6 +124,7 @@ class MutualFundTransaction extends Model
             ->groupBy('td_mutual_fund_trans.trans_desc')
             ->groupBy('td_mutual_fund_trans.kf_trans_type')
             ->groupBy('td_mutual_fund_trans.trans_flag')
+            ->groupBy('td_mutual_fund_trans.pur_price')
             ->orderBy('td_mutual_fund_trans.trans_date','ASC');
 
         // $value->total_rows=DB::select('SELECT * FROM td_mutual_fund_trans WHERE folio_no="'.$value->folio_no.'" AND product_code="'.$value->product_code.'" AND isin_no="'.$value->isin_no.'" AND trans_date<="'.$valuation_as_on.'"');
@@ -202,6 +203,7 @@ class MutualFundTransaction extends Model
             ->groupBy('td_mutual_fund_trans.trans_desc')
             ->groupBy('td_mutual_fund_trans.kf_trans_type')
             ->groupBy('td_mutual_fund_trans.trans_flag')
+            ->groupBy('td_mutual_fund_trans.pur_price')
             ->orderBy('td_mutual_fund_trans.trans_date','ASC');
     }
 
@@ -215,9 +217,7 @@ class MutualFundTransaction extends Model
                 ['scheme_flag','=',$all_flag],
                 ['plan_option_flag','=',$all_flag],
                 ['bu_type_flag','=',$all_flag],
-                ['divi_mismatch_flag','=',$all_flag],
-                ['trans_date','>=',Session::get('start_date')],
-                ['trans_date','<=',Session::get('end_date')]
+                ['divi_mismatch_flag','=',$all_flag]
             ])
             ->select('rnt_id','folio_no','product_code','isin_no','trans_date','trxn_type','trxn_type_flag','trxn_nature','amount','stamp_duty','tds',
             'units','pur_price')
@@ -251,6 +251,7 @@ class MutualFundTransaction extends Model
             ->groupBy('td_mutual_fund_trans.trans_desc')
             ->groupBy('td_mutual_fund_trans.kf_trans_type')
             ->groupBy('td_mutual_fund_trans.trans_flag')
+            ->groupBy('td_mutual_fund_trans.pur_price')
             ->orderBy('td_mutual_fund_trans.trans_date','ASC');
 
     }

@@ -492,9 +492,9 @@ class TransHelper{
         $purchase_data_recheck=[];
         foreach ($purchase_data as $key_001 => $value_001) {
             if ($key_001 > 0) {
-                $value_001->cumml_units=number_format((float)($value_001->tot_units + $purchase_data[($key_001-1)]->cumml_units) , 2, '.', '');
+                $value_001->cumml_units=number_format((float)($value_001->tot_units + $purchase_data[($key_001-1)]->cumml_units) , 4, '.', '');
             }else {
-                $value_001->cumml_units=number_format((float)$value_001->tot_units, 2, '.', '');
+                $value_001->cumml_units=number_format((float)$value_001->tot_units, 4, '.', '');
             }
             array_push($purchase_data_recheck,$value_001);
         }
@@ -514,7 +514,7 @@ class TransHelper{
                 foreach ($purchase_data as $purchase_key => $purchase_value) {
                     if ($purchase_value['cumml_units'] >= 0) {
                         $purchase_cumml_units=number_format((float)$purchase_value['cumml_units'], 4, '.', '');
-                        $purchase_value['cumml_units']=$purchase_cumml_units - $rdm_tot_units;
+                        $purchase_value['cumml_units']=number_format((float)($purchase_cumml_units - $rdm_tot_units), 4, '.', '');
                         if ($purchase_value['cumml_units'] >= 0 ) {
                             $calculation_cumml_unit=isset($purchase_data[($purchase_key - 1)]['cumml_units'])?$purchase_data[($purchase_key - 1)]['cumml_units']:0;
                             if ($calculation_cumml_unit < 0) {
