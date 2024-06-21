@@ -232,6 +232,10 @@ Route::prefix('v1')->group(function () {
             Route::any('geographyDetailSearch',[App\Http\Controllers\v1\Master\PincodeController::class,'searchDetails']);
             Route::post('geographyExport',[App\Http\Controllers\v1\Master\PincodeController::class,'geographyExport']);
 
+            Route::get('disclaimer',[App\Http\Controllers\v1\Master\DisclaimerController::class,'index']);
+            Route::post('disclaimerAddEdit',[App\Http\Controllers\v1\Master\DisclaimerController::class,'createUpdate']);
+
+
             // =============================geography masters end=================================
 
             Route::get('swpType',[App\Http\Controllers\v1\Master\SWPTypeController::class,'index']);

@@ -44,35 +44,80 @@ class MailBackController extends Controller
             if ($paginate=='A') {
                 $paginate=999999999;
             }
-            if ($order && $field) {
-                $rawOrderBy='';
-                if ($order > 0) {
-                    $rawOrderBy=$field.' ASC';
-                } else {
-                    $rawOrderBy=$field.' DESC';
+            $flag=$request->flag;            
+            $date_reange=$request->date_reange;
+            if ($flag=="M") {
+                if ($date_reange) {
+                    $start_date=Carbon::parse(str_replace('/','-',explode("-",$date_range)[0]))->format('Y-m-d') ;
+                    $end_date=Carbon::parse(str_replace('/','-',explode("-",$date_range)[1]))->format('Y-m-d') ;
+                    $rawQuery='';
+                    $queryString='md_mailback_process.process_date';
+                    $rawQuery.=Helper::FrmToDateRawQuery($start_date,$end_date,$rawQuery,$queryString);
+                    $data=MailbackProcess::leftJoin('md_rnt','md_rnt.id','=','md_mailback_process.rnt_id')
+                        ->leftJoin('md_mailback_filetype','md_mailback_filetype.id','=','md_mailback_process.file_type_id')
+                        ->leftJoin('md_mailback_filename','md_mailback_filename.id','=','md_mailback_process.file_id')
+                        ->select('md_mailback_process.*','md_rnt.rnt_name','md_mailback_filetype.name as file_type_name','md_mailback_filename.name as file_name')
+                        ->where('md_mailback_process.process_type','A')                        
+                        ->where('md_mailback_process.file_process_type','C')
+                        ->whereRaw($rawQuery)
+                        ->orderBy('process_date','DESC')
+                        ->get();
+                }else {
+                    $data=MailbackProcess::leftJoin('md_rnt','md_rnt.id','=','md_mailback_process.rnt_id')
+                        ->leftJoin('md_mailback_filetype','md_mailback_filetype.id','=','md_mailback_process.file_type_id')
+                        ->leftJoin('md_mailback_filename','md_mailback_filename.id','=','md_mailback_process.file_id')
+                        ->select('md_mailback_process.*','md_rnt.rnt_name','md_mailback_filetype.name as file_type_name','md_mailback_filename.name as file_name')
+                        ->where('md_mailback_process.process_type','A')                        
+                        ->where('md_mailback_process.file_process_type','C')
+                        ->orderBy('process_date','DESC')
+                        ->get();
                 }
+            } else if ($flag=="F") {
+                $start_date=date('Y-m-d');
+                $end_date=date('Y-m-d', strtotime("-7 day", strtotime($start_date)));
+                $rawQuery='';
+                $queryString='md_mailback_process.process_date';
+                $rawQuery.=Helper::FrmToDateRawQuery($start_date,$end_date,$rawQuery,$queryString);
                 $data=MailbackProcess::leftJoin('md_rnt','md_rnt.id','=','md_mailback_process.rnt_id')
-                    ->select('md_mailback_process.*','md_rnt.rnt_name')
-                    ->orderByRaw($rawOrderBy)
-                    ->paginate($paginate);
-            }elseif ($rnt_id) {
-                $data=MailbackProcess::leftJoin('md_rnt','md_rnt.id','=','md_mailback_process.rnt_id')
-                    ->leftJoin('md_mailback_filetype','md_mailback_filetype.id','=','md_mailback_process.file_type_id')
-                    ->leftJoin('md_mailback_filename','md_mailback_filename.id','=','md_mailback_process.file_id')
-                    ->select('md_mailback_process.*','md_rnt.rnt_name','md_mailback_filetype.name as file_type_name','md_mailback_filename.name as file_name')
-                    ->where('md_mailback_process.rnt_id',$rnt_id)
-                    ->where('md_mailback_process.process_type','M')
-                    ->orderBy('process_date','DESC')
-                    ->paginate($paginate);
+                        ->leftJoin('md_mailback_filetype','md_mailback_filetype.id','=','md_mailback_process.file_type_id')
+                        ->leftJoin('md_mailback_filename','md_mailback_filename.id','=','md_mailback_process.file_id')
+                        ->select('md_mailback_process.*','md_rnt.rnt_name','md_mailback_filetype.name as file_type_name','md_mailback_filename.name as file_name')
+                        ->where('md_mailback_process.process_type','A')                        
+                        ->where('md_mailback_process.file_process_type','N')
+                        // ->whereRaw($rawQuery)
+                        ->orderBy('process_date','DESC')
+                        ->get();
             } else {
-                $data=MailbackProcess::leftJoin('md_rnt','md_rnt.id','=','md_mailback_process.rnt_id')
-                    ->select('md_mailback_process.*','md_rnt.rnt_name')
-                    ->where('md_mailback_process.process_type','M')
-                    ->orderBy('process_date','DESC')
-                    ->paginate($paginate);
+                if ($order && $field) {
+                    $rawOrderBy='';
+                    if ($order > 0) {
+                        $rawOrderBy=$field.' ASC';
+                    } else {
+                        $rawOrderBy=$field.' DESC';
+                    }
+                    $data=MailbackProcess::leftJoin('md_rnt','md_rnt.id','=','md_mailback_process.rnt_id')
+                        ->select('md_mailback_process.*','md_rnt.rnt_name')
+                        ->orderByRaw($rawOrderBy)
+                        ->paginate($paginate);
+                }elseif ($rnt_id) {
+                    $data=MailbackProcess::leftJoin('md_rnt','md_rnt.id','=','md_mailback_process.rnt_id')
+                        ->leftJoin('md_mailback_filetype','md_mailback_filetype.id','=','md_mailback_process.file_type_id')
+                        ->leftJoin('md_mailback_filename','md_mailback_filename.id','=','md_mailback_process.file_id')
+                        ->select('md_mailback_process.*','md_rnt.rnt_name','md_mailback_filetype.name as file_type_name','md_mailback_filename.name as file_name')
+                        ->where('md_mailback_process.rnt_id',$rnt_id)
+                        ->where('md_mailback_process.process_type','M')
+                        ->orderBy('process_date','DESC')
+                        ->paginate($paginate);
+                } else {
+                    $data=MailbackProcess::leftJoin('md_rnt','md_rnt.id','=','md_mailback_process.rnt_id')
+                        ->select('md_mailback_process.*','md_rnt.rnt_name')
+                        ->where('md_mailback_process.process_type','M')
+                        ->orderBy('process_date','DESC')
+                        ->paginate($paginate);
+                }
             }
         } catch (\Throwable $th) {
-            //throw $th;
+            throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
         return Helper::SuccessResponse($data);
@@ -98,7 +143,8 @@ class MailBackController extends Controller
                     'original_file_name'=>$original_file_name,
                     'upload_file'=>$upload_file_name,
                     'process_date'=>date('Y-m-d H:i:s'),
-                    'process_type'=>'M',
+                    'process_type'=>'M',                    
+                    'file_process_type'=>'C',
                     'created_by'=>Helper::modifyUser($request->user()),
                 ));
                 $id=$create_dt->id;
@@ -1393,6 +1439,7 @@ class MailBackController extends Controller
                 'upload_file'=>$upload_file_name,
                 'process_date'=>date('Y-m-d H:i:s'),
                 'process_type'=>'M',
+                'file_process_type'=>'C',
                 'created_by'=>Helper::modifyUser($request->user()),
             ));
         } catch (\Throwable $th) {

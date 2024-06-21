@@ -261,6 +261,7 @@ class LiveMFSTWController extends Controller
                 }
 
                 $my_data->reg_no =$my_data->auto_trans_no;
+                $today=date('d');
                 if ($my_data->rnt_id==2) {
                     if(($my_data->frequency=="Daily") || ($my_data->frequency=="WEEKLY") || ($my_data->frequency=="Fortnightly")){
                         $my_data->sip_date=$my_data->frequency;
@@ -273,6 +274,13 @@ class LiveMFSTWController extends Controller
                     }
                     $my_data->freq=$my_data->frequency;
                     $my_data->duration =$my_data->no_of_installment;
+                    $installment_day=date('d',strtotime($my_data->from_date));
+                    if ($installment_day > $today) {
+                        $create_date=date('Y-m')."-".$installment_day;
+                    }else {
+                        $create_date=date("Y-m-d", strtotime("+1 month", strtotime(date('Y-m')."-".$installment_day)));
+                    }
+                    $my_data->rem_inst =(int)abs((strtotime($create_date) - strtotime($my_data->to_date))/(60*60*24*30));
                 }elseif ($my_data->rnt_id==1) {
                     // return $my_data;
                     if(($my_data->freq=="Daily") || ($my_data->freq=="Weekly") || ($my_data->freq=="Fortnightly")){
@@ -291,16 +299,44 @@ class LiveMFSTWController extends Controller
                         $my_data->calculation_day =$calculation_day;
                         if ($calculation_day <= 30) {
                             $my_data->duration =(int)abs((strtotime($my_data->from_date) - strtotime($my_data->to_date))/(60*60*24*30));
+                            $installment_day=date('d',strtotime($my_data->from_date));
+                            if ($installment_day > $today) {
+                                $create_date=date('Y-m')."-".$installment_day;
+                            }else {
+                                $create_date=date("Y-m-d", strtotime("+1 month", strtotime(date('Y-m')."-".$installment_day)));
+                            }
+                            $my_data->rem_inst =(int)abs((strtotime($create_date) - strtotime($my_data->to_date))/(60*60*24*30));
                         }else {
                             $my_data->duration =(int)abs((strtotime($my_data->reg_date) - strtotime($my_data->to_date))/(60*60*24*30));
+                            $installment_day=date('d',strtotime($my_data->reg_date));
+                            if ($installment_day > $today) {
+                                $create_date=date('Y-m')."-".$installment_day;
+                            }else {
+                                $create_date=date("Y-m-d", strtotime("+1 month", strtotime(date('Y-m')."-".$installment_day)));
+                            }
+                            $my_data->rem_inst =(int)abs((strtotime($create_date) - strtotime($my_data->to_date))/(60*60*24*30));
                         }
                     }else {  // swp & stp
                         $calculation_day =(int)abs((strtotime($my_data->reg_date) - strtotime($my_data->from_date))/(60*60*24));
                         $my_data->calculation_day =$calculation_day;
                         if ($calculation_day <= 15) {
                             $my_data->duration =(int)abs((strtotime($my_data->from_date) - strtotime($my_data->to_date))/(60*60*24*30));
+                            $installment_day=date('d',strtotime($my_data->from_date));
+                            if ($installment_day > $today) {
+                                $create_date=date('Y-m')."-".$installment_day;
+                            }else {
+                                $create_date=date("Y-m-d", strtotime("+1 month", strtotime(date('Y-m')."-".$installment_day)));
+                            }
+                            $my_data->rem_inst =(int)abs((strtotime($create_date) - strtotime($my_data->to_date))/(60*60*24*30));
                         }else {
                             $my_data->duration =(int)abs((strtotime($my_data->reg_date) - strtotime($my_data->to_date))/(60*60*24*30));
+                            $installment_day=date('d',strtotime($my_data->reg_date));
+                            if ($installment_day > $today) {
+                                $create_date=date('Y-m')."-".$installment_day;
+                            }else {
+                                $create_date=date("Y-m-d", strtotime("+1 month", strtotime(date('Y-m')."-".$installment_day)));
+                            }
+                            $my_data->rem_inst =(int)abs((strtotime($create_date) - strtotime($my_data->to_date))/(60*60*24*30));
                         }
                     }
                 }
