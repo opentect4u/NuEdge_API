@@ -33,8 +33,6 @@ class LiveMFPController extends Controller
             $pan_no=$request->pan_no;
             $client_name=$request->client_name;
             $view_funds_type=$request->view_funds_type;
-            $family_members_pan=json_decode($request->family_members_pan);
-            $family_members_name=json_decode($request->family_members_name);
             
             session()->forget('valuation_as_on');
             session(['valuation_as_on' => $valuation_as_on]);
@@ -70,19 +68,6 @@ class LiveMFPController extends Controller
                     $condition1=(strlen($rawQuery) > 0)? " OR ":" ";
                     $row_name_string1=  "'" .implode("','", $family_members_name). "'";
                     $rawQuery.=$condition1.$queryString." IN (".$row_name_string1."))";
-
-                    /***********************Client************************ */
-                    $client_rawQuery='';
-                    $client_queryString='md_client.pan';
-                    $client_condition=(strlen($client_rawQuery) > 0)? " AND (":" (";
-                    $client_row_name_string="'" .implode("','", $family_members_pan)."'";
-                    $client_rawQuery.=$client_condition.$client_queryString." IN (".$client_row_name_string.")";
-                    $client_queryString='md_client.client_name';
-                    $client_condition1=(strlen($client_rawQuery) > 0)? " OR ":" ";
-                    $client_row_name_string1="'" .implode("','", $family_members_name)."'";
-                    $client_rawQuery.=$client_condition1.$client_queryString." IN (".$client_row_name_string1."))";
-
-                    $client_details=TransHelper::getClientDetails($client_rawQuery,$view_type);
                 }
                 if ($view_funds_type=='S') {
                     $selected_funds=json_decode($request->selected_funds);
@@ -132,7 +117,6 @@ class LiveMFPController extends Controller
                 ->select('td_mutual_fund_trans.rnt_id','td_mutual_fund_trans.folio_no','td_mutual_fund_trans.product_code','td_mutual_fund_trans.pur_price','td_mutual_fund_trans.trans_date','td_mutual_fund_trans.trans_mode',
                 'md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name','md_category.id as cat_id','md_subcategory.id as subcat_id',
                 'md_amc.amc_short_name as amc_name','md_plan.plan_name as plan_name','md_option.opt_name as option_name')
-                ->selectRaw('UCASE(td_mutual_fund_trans.first_client_name) as first_client_name,td_mutual_fund_trans.first_client_pan')
                 ->selectRaw('IF(td_mutual_fund_trans.rnt_id=1,md_scheme_isin.isin_no,td_mutual_fund_trans.isin_no) as isin_no')
                 ->selectRaw('sum(td_mutual_fund_trans.units) as tot_units')
                 ->selectRaw('sum(td_mutual_fund_trans.amount) as tot_amount')
@@ -257,14 +241,6 @@ class LiveMFPController extends Controller
             }
             
             $disclaimer=Disclaimer::select('dis_des')->find(1);
-            if ($view_type=='F') {
-                $grouped_types=[];
-                foreach($filter_data as $type){
-                    $grouped_types[$type['first_client_name']][] = $type;
-                }
-                // return $grouped_types;
-                $filter_data=$grouped_types;
-            }
             $mydata=[];
             $mydata['client_details']=$client_details;
             $mydata['data']=$filter_data;
@@ -1961,7 +1937,7 @@ class LiveMFPController extends Controller
                         $client_queryString='md_client.pan';
                         $client_rawQuery.=Helper::WhereRawQuery($pan_no,$client_rawQuery,$client_queryString);
                     }
-                    $client_details=TransHelper::getClientDetails($client_rawQuery,$view_type);
+                    $client_details=TransHelper::getClientDetails($client_rawQuery);
                 }else {
                     $queryString='td_mutual_fund_trans.first_client_pan';
                     $condition=(strlen($rawQuery) > 0)? " AND (":" (";
@@ -2148,7 +2124,7 @@ class LiveMFPController extends Controller
                         $client_queryString='md_client.pan';
                         $client_rawQuery.=Helper::WhereRawQuery($pan_no,$client_rawQuery,$client_queryString);
                     }
-                    $client_details=TransHelper::getClientDetails($client_rawQuery,$view_type);
+                    $client_details=TransHelper::getClientDetails($client_rawQuery);
                 }else {
                     $queryString='td_mutual_fund_trans.first_client_pan';
                     $condition=(strlen($rawQuery) > 0)? " AND (":" (";

@@ -60,7 +60,7 @@ class LiveMFSTWController extends Controller
                         $client_queryString='md_client.pan';
                         $client_rawQuery.=Helper::WhereRawQuery($pan_no,$client_rawQuery,$client_queryString);
                     }
-                    $client_details=TransHelper::getClientDetails($client_rawQuery);
+                    $client_details=TransHelper::getClientDetails($client_rawQuery,$view_type);
                 }else {
                     $queryString='tt_sip_stp_swp_report.first_client_pan';
                     $condition=(strlen($rawQuery) > 0)? " AND (":" (";
@@ -429,7 +429,7 @@ class LiveMFSTWController extends Controller
                         $client_queryString='md_client.pan';
                         $client_rawQuery.=Helper::WhereRawQuery($pan_no,$client_rawQuery,$client_queryString);
                     }
-                    $client_details=TransHelper::getClientDetails($client_rawQuery);
+                    $client_details=TransHelper::getClientDetails($client_rawQuery,$view_type);
                 }else {
                     $queryString='tt_sip_stp_swp_report.first_client_pan';
                     $condition=(strlen($rawQuery) > 0)? " AND (":" (";

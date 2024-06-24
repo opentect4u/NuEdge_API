@@ -364,14 +364,23 @@ class TransHelper{
       /* CAGR calculation $nper=271/365;
                 $cagr = pow((6193.43/4561),(1/$nper)) - 1; */
     
-    public static function getClientDetails($client_rawQuery)
+    public static function getClientDetails($client_rawQuery,$view_type)
     {
-        $client_details=Client::leftJoin('md_pincode','md_pincode.id','=','md_client.pincode')
-            ->leftJoin('md_city','md_city.id','=','md_client.city')
-            ->leftJoin('md_states','md_states.id','=','md_client.state')
-            ->leftJoin('md_district','md_district.id','=','md_client.dist')
-            ->select('md_client.*','md_pincode.pincode as pincode','md_city.name as city_name','md_states.name as state_name','md_district.name as dist_name')
-            ->whereRaw($client_rawQuery)->first();
+        if ($view_type=='C') {
+            $client_details=Client::leftJoin('md_pincode','md_pincode.id','=','md_client.pincode')
+                ->leftJoin('md_city','md_city.id','=','md_client.city')
+                ->leftJoin('md_states','md_states.id','=','md_client.state')
+                ->leftJoin('md_district','md_district.id','=','md_client.dist')
+                ->select('md_client.*','md_pincode.pincode as pincode','md_city.name as city_name','md_states.name as state_name','md_district.name as dist_name')
+                ->whereRaw($client_rawQuery)->first();
+        }else {
+            $client_details=Client::leftJoin('md_pincode','md_pincode.id','=','md_client.pincode')
+                ->leftJoin('md_city','md_city.id','=','md_client.city')
+                ->leftJoin('md_states','md_states.id','=','md_client.state')
+                ->leftJoin('md_district','md_district.id','=','md_client.dist')
+                ->select('md_client.*','md_pincode.pincode as pincode','md_city.name as city_name','md_states.name as state_name','md_district.name as dist_name')
+                ->whereRaw($client_rawQuery)->get();
+        }
         return $client_details;
     }
 

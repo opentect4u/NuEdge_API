@@ -58,7 +58,7 @@ class LiveMFPLController extends Controller
                         $client_queryString='md_client.pan';
                         $client_rawQuery.=Helper::WhereRawQuery($pan_no,$client_rawQuery,$client_queryString);
                     }
-                    $client_details=TransHelper::getClientDetails($client_rawQuery);
+                    $client_details=TransHelper::getClientDetails($client_rawQuery,$view_type);
                 }else {
                     $queryString='td_mutual_fund_trans.first_client_pan';
                     $condition=(strlen($rawQuery) > 0)? " AND (":" (";

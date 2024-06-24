@@ -26,7 +26,7 @@ class DisclaimerController extends Controller
     public function createUpdate(Request $request)
     {
         $validator = Validator::make(request()->all(),[
-            'dis_for' =>'required',
+            // 'dis_for' =>'required',
             'dis_des' =>'required',
         ]);
         if($validator->fails()) {
@@ -37,7 +37,7 @@ class DisclaimerController extends Controller
             // return $request;
             if ($request->id > 0) {
                 $data=Disclaimer::find($request->id);
-                $data->dis_for=$request->dis_for;
+                // $data->dis_for=$request->dis_for;
                 $data->dis_des=$request->dis_des;
                 $data->updated_by=Helper::modifyUser($request->user());
                 $data->save();
