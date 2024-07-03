@@ -1448,15 +1448,17 @@ class LiveMFPController extends Controller
                             $get_type_subtype=MFTransTypeSubType::where('c_k_trans_sub_type',$kf_trans_type)
                                 ->where('k_divident_flag',$trans_flag)
                                 ->first();
-                        }elseif ($trans_flag=='TI') {
-                            $get_type_subtype='';
-                            $transaction_type='Transfer In';
-                            $transaction_subtype='Transfer In';
-                        }elseif ($trans_flag=='TO') {
-                            $get_type_subtype='';
-                            $transaction_type='Transfer Out';
-                            $transaction_subtype='Transfer Out';
-                        } else {
+                        }
+                        // elseif ($trans_flag=='TI') {
+                        //     $get_type_subtype='';
+                        //     $transaction_type='Transfer In';
+                        //     $transaction_subtype='Transfer In';
+                        // }elseif ($trans_flag=='TO') {
+                        //     $get_type_subtype='';
+                        //     $transaction_type='Transfer Out';
+                        //     $transaction_subtype='Transfer Out';
+                        // }
+                         else {
                             $get_type_subtype=MFTransTypeSubType::where('c_k_trans_sub_type',$kf_trans_type)
                                 ->first();
                         }
