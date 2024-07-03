@@ -61,7 +61,7 @@ class CapitalGLController extends Controller
                         $client_queryString='md_client.pan';
                         $client_rawQuery.=Helper::WhereRawQuery($pan_no,$client_rawQuery,$client_queryString);
                     }
-                    $client_details=TransHelper::getClientDetails($client_rawQuery);
+                    $client_details=TransHelper::getClientDetails($client_rawQuery,$view_type);
                 } else {
                     $queryString='td_mutual_fund_trans.first_client_pan';
                     $condition=(strlen($rawQuery) > 0)? " AND (":" (";
@@ -494,6 +494,7 @@ class CapitalGLController extends Controller
                 }
                 // return $new;
                 $value_0010->new=$new;
+                // return $new;
                 $calculation_arr=$value_0010->calculation_arr;
                 $calculation_arr_1=[];
                 if ($value_0010->tax_type=='Equity Fund') {
@@ -502,7 +503,7 @@ class CapitalGLController extends Controller
                         $equity_pur_before_31_01_2018=($value_calculation_arr['trans_date'] < '2018-01-31' )?'Yes':'No';
                         $value_calculation_arr['pur_before']=$equity_pur_before_31_01_2018;
                         
-                        $value_calculation_arr['nav_as_on_31_01_2018']=$new->nav;
+                        $value_calculation_arr['nav_as_on_31_01_2018']=isset($new->nav)?$new->nav:0;
                         if ($equity_pur_before_31_01_2018=="Yes") {
                             $value_calculation_arr['amount_as_on_31_01_2018']=number_format((float)($value_calculation_arr['nav_as_on_31_01_2018'] * $value_calculation_arr['tot_units']), 2, '.', '');
                             $value_calculation_arr['debt_31_03_2023']="";
@@ -527,19 +528,21 @@ class CapitalGLController extends Controller
                         $value_calculation_arr['days']=$days;
                         $value_calculation_arr['ltcg']="";
                         $value_calculation_arr['stcg']="";
+                        $value_calculation_arr['index_ltcg']="";
                         if ($days > (365 -1)) {
                             $value_calculation_arr['ltcg']=number_format((float)(($value_calculation_arr['sell_nav'] - $value_calculation_arr['pur_price']) * $value_calculation_arr['tot_units']), 2, '.', '');
+                            if ($value_calculation_arr['pur_price'] > $value_calculation_arr['nav_as_on_31_01_2018']) {
+                                $value_calculation_arr['index_ltcg']=number_format((float)(($value_calculation_arr['sell_nav'] -$value_calculation_arr['pur_price']) * $value_calculation_arr['tot_units']), 2, '.', '');
+                            }else {
+                                $value_calculation_arr['index_ltcg']=number_format((float)(($value_calculation_arr['sell_nav'] -$value_calculation_arr['nav_as_on_31_01_2018']) * $value_calculation_arr['tot_units']), 2, '.', '');
+                            }
                         }else {
                             $value_calculation_arr['stcg']=number_format((float)(($value_calculation_arr['sell_nav'] - $value_calculation_arr['pur_price']) * $value_calculation_arr['tot_units']), 2, '.', '');
                         }
-                        if ($value_calculation_arr['pur_price'] > $value_calculation_arr['nav_as_on_31_01_2018']) {
-                            $value_calculation_arr['index_ltcg']=number_format((float)(($value_calculation_arr['sell_nav'] -$value_calculation_arr['pur_price']) * $value_calculation_arr['tot_units']), 2, '.', '');
-                        }else {
-                            $value_calculation_arr['index_ltcg']=number_format((float)(($value_calculation_arr['sell_nav'] -$value_calculation_arr['nav_as_on_31_01_2018']) * $value_calculation_arr['tot_units']), 2, '.', '');
-                        }
+                        
                         array_push($calculation_arr_1,$value_calculation_arr);
                     }
-                }else if ($value_0010->tax_type=="Debt Fund") {
+                }else if ($value_0010->tax_type=="Debt Fund" || $value_0010->tax_type=="Debt Oriented Hybrid Fund") {
                     foreach ($calculation_arr as $key_calculation_arr => $value_calculation_arr) {
                         // return $value_calculation_arr;
                         $debt_31_03_2023=($value_calculation_arr['trans_date'] < '2023-03-31' )?'Yes':'No';
@@ -565,7 +568,7 @@ class CapitalGLController extends Controller
                         $days=round($datediff / (60 * 60 * 24));
                         $value_calculation_arr['days']=$days;
                         
-                        if ($days > ((365 *3) -1)) {
+                        if ($days > ((365 * 3) -1)) {
                             $value_calculation_arr['ltcg']=number_format((float)(($value_calculation_arr['sell_nav'] - $value_calculation_arr['pur_price']) * $value_calculation_arr['tot_units']), 2, '.', '');
                             $value_calculation_arr['stcg']="";
                             if ($value_calculation_arr['pur_price'] > $value_calculation_arr['nav_as_on_31_01_2018']) {
@@ -576,7 +579,7 @@ class CapitalGLController extends Controller
                         }else {
                             $value_calculation_arr['ltcg']="";
                             $value_calculation_arr['stcg']=number_format((float)(($value_calculation_arr['sell_nav'] - $value_calculation_arr['pur_price']) * $value_calculation_arr['tot_units']), 2, '.', '');
-                            $value_calculation_arr['index_ltcg']=0;
+                            $value_calculation_arr['index_ltcg']="";
                         }
                         array_push($calculation_arr_1,$value_calculation_arr);
                     }

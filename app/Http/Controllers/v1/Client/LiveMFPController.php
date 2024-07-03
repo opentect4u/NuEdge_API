@@ -35,6 +35,7 @@ class LiveMFPController extends Controller
             $view_funds_type=$request->view_funds_type;
             $family_members_pan=json_decode($request->family_members_pan);
             $family_members_name=json_decode($request->family_members_name);
+            $trans_type=$request->trans_type;
             
             session()->forget('valuation_as_on');
             session(['valuation_as_on' => $valuation_as_on]);
@@ -224,14 +225,14 @@ class LiveMFPController extends Controller
                 //calculation
                 $mydata='';
                 $foliotrans=$value1->foliotrans;
-                if ($value1->tot_amount > 0) {
+                // if ($value1->tot_amount > 0) {
                     $json  = json_encode($foliotrans);
                     $array = json_decode($json, true);
                     if (array_search('Consolidation In',array_column($array,'transaction_subtype'))) {
                         $foliotrans=TransHelper::ConsolidationInQuery($value1->rnt_id,$value1->folio_no,$value1->isin_no,$value1->product_code,$valuation_as_on);
                     }
                     $mydata=TransHelper::calculate($foliotrans);
-                }
+                // }
                 // $mydata=$this->calculate($value1->foliotrans);
                 $value1->mydata=$mydata;
                 $value1->nifty50=isset($mydata['nifty50'])?(int)$mydata['nifty50']:$value1->nifty50;

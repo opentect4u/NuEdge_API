@@ -255,4 +255,48 @@ class MutualFundTransaction extends Model
             ->orderBy('td_mutual_fund_trans.trans_date','ASC');
 
     }
+
+    public function schemes()
+    {
+        $all_flag='N';
+        return $this->hasMany(MutualFundTransaction::class, 'amc_code', 'amc_code')
+            ->where('delete_flag',$all_flag)
+            ->where('amc_flag',$all_flag)
+            ->where('scheme_flag',$all_flag)
+            ->where('plan_option_flag',$all_flag)
+            ->where('bu_type_flag',$all_flag)
+            ->where('divi_mismatch_flag',$all_flag)
+            ->where('trans_date','<=',Session::get('date'))
+            ->groupBy('product_code')
+            ->groupBy('isin_no')
+            // ->groupBy('trans_no')
+            // ->groupBy('trxn_type_flag')
+            // ->groupBy('trxn_nature_code')
+            // ->groupBy('trans_desc')
+            // ->groupBy('kf_trans_type')
+            // ->groupBy('trans_flag')
+            // ->groupBy('pur_price')
+            ->orderBy('trans_date','ASC');
+    }
+    public function transdetails()
+    {
+        $all_flag='N';
+        return $this->hasMany(MutualFundTransaction::class, 'product_code', 'product_code')
+            ->where('delete_flag',$all_flag)
+            ->where('amc_flag',$all_flag)
+            ->where('scheme_flag',$all_flag)
+            ->where('plan_option_flag',$all_flag)
+            ->where('bu_type_flag',$all_flag)
+            ->where('divi_mismatch_flag',$all_flag)
+            ->where('trans_date','<=',Session::get('date'))
+            ->groupBy('trans_no')
+            ->groupBy('trxn_type_flag')
+            ->groupBy('trxn_nature_code')
+            ->groupBy('trans_desc')
+            ->groupBy('kf_trans_type')
+            ->groupBy('trans_flag')
+            ->groupBy('pur_price')
+            ->orderBy('trans_date','ASC');
+    }
+    
 }

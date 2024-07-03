@@ -235,12 +235,12 @@ class LiveMFPLController extends Controller
                 $value1->tot_outflow=($redemption + $switch_out + $idcwp);
 
                 $mydata='';
-                if ($value1->tot_amount > 0) {
+                // if ($value1->tot_amount > 0) {
                     // return $profitloss;
                     // $mydata=$this->calculate($profitloss);
                     $mydata=TransHelper::calculate($profitloss);
                     // return $mydata;
-                }
+                // }
                 $value1->mydata=$mydata;
                 $value1->idcw_reinv=isset($mydata['idcw_reinv'])? number_format((float)$mydata['idcw_reinv'], 2, '.', ''):0;
                 $value1->idcwr=number_format((float)($value1->idcwp + $value1->idcw_reinv), 2, '.', '');
