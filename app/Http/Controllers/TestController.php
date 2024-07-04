@@ -579,4 +579,31 @@ class TestController extends Controller
         
         
     }
+
+
+
+    public function mail()
+    {
+        // return 'hii';
+        $from="service@nuedgecorporate.co.in";
+        $to="cmaity905@gmail.com";
+        $name="Chitta";
+        $payer_email = "cmaity905@gmail.com";
+        $subject = "Your Subject";
+        $message = 'Dear '.$name.',
+                    Thank you for your purchase from test.com. The details of your purchase are below.
+                    Transaction ID: TXN1000
+                    Item Name: 100
+                    Payment Amount: 100
+                    Payment Amount: 100
+                    Paid to: test@gmail.conm
+                    Thanks and Enjoy!';
+
+        $headers = 'From: ' .$from. "\r\n" .'Reply-To: ' .$to . "\r\n";
+        $headers  .= 'MIME-Version: 1.0' . "\r\n";
+        $headers  .= "Content-Type: text/html; charset=iso-8859-1 ";
+
+        //mail to buyer
+        mail( $payer_email , $subject, $message, $headers );
+    }
 }

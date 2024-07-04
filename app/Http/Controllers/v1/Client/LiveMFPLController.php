@@ -208,19 +208,19 @@ class LiveMFPLController extends Controller
                 $idcwp=0;
                 $tot_outflow=0;
                 if ($value1->tot_amount > 0) {
-                    foreach ($profitloss as $key => $profitloss_value) {
-                        if ($profitloss_value->lmf_pl=='PL_P') {
-                            $purchase +=$profitloss_value->tot_amount;
-                        }elseif ($profitloss_value->lmf_pl=='PL_R') {
-                            $redemption +=$profitloss_value->tot_amount;
-                        }elseif ($profitloss_value->lmf_pl=='PL_SI') {
-                            $switch_in +=$profitloss_value->tot_amount;
-                        }elseif ($profitloss_value->lmf_pl=='PL_SO') {
-                            $switch_out +=$profitloss_value->tot_amount;
-                        }elseif ($profitloss_value->lmf_pl=='PL_IR') {
-                            $idcw_reinv +=$profitloss_value->tot_amount;
-                        }elseif ($profitloss_value->lmf_pl=='PL_IP') {
-                            $idcwp +=$profitloss_value->tot_amount;
+                    foreach ($profitloss as $key_1 => $profitloss_value_1) {
+                        if ($profitloss_value_1->lmf_pl=='PL_P') {
+                            $purchase +=$profitloss_value_1->tot_amount;
+                        }elseif ($profitloss_value_1->lmf_pl=='PL_R') {
+                            $redemption +=$profitloss_value_1->tot_amount;
+                        }elseif ($profitloss_value_1->lmf_pl=='PL_SI') {
+                            $switch_in +=$profitloss_value_1->tot_amount;
+                        }elseif ($profitloss_value_1->lmf_pl=='PL_SO') {
+                            $switch_out +=$profitloss_value_1->tot_amount;
+                        }elseif ($profitloss_value_1->lmf_pl=='PL_IR') {
+                            $idcw_reinv +=$profitloss_value_1->tot_amount;
+                        }elseif ($profitloss_value_1->lmf_pl=='PL_IP') {
+                            $idcwp +=$profitloss_value_1->tot_amount;
                         }
                     }
                 }
@@ -234,13 +234,16 @@ class LiveMFPLController extends Controller
                 $value1->tot_inflow=($purchase + $switch_in + $idcw_reinv);
                 $value1->tot_outflow=($redemption + $switch_out + $idcwp);
 
+                $my_profitloss=$value1->profitloss;
                 $mydata='';
-                // if ($value1->tot_amount > 0) {
-                    // return $profitloss;
-                    // $mydata=$this->calculate($profitloss);
-                    $mydata=TransHelper::calculate($profitloss);
-                    // return $mydata;
-                // }
+                $json  = json_encode($my_profitloss);
+                $array = json_decode($json, true);
+                if (array_search('Consolidation In',array_column($array,'transaction_subtype'))) {
+                    $my_profitloss=TransHelper::ConsolidationInQuery($value1->rnt_id,$value1->folio_no,$value1->isin_no,$value1->product_code,$valuation_as_on);
+                }
+                
+                $mydata=TransHelper::calculate($my_profitloss);
+                
                 $value1->mydata=$mydata;
                 $value1->idcw_reinv=isset($mydata['idcw_reinv'])? number_format((float)$mydata['idcw_reinv'], 2, '.', ''):0;
                 $value1->idcwr=number_format((float)($value1->idcwp + $value1->idcw_reinv), 2, '.', '');

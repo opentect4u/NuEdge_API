@@ -1385,8 +1385,26 @@ class LiveMFPController extends Controller
                 ->selectRaw('IF(tds!="",sum(tds),0.00)as tot_tds')
                 ->selectRaw('count(*) as tot_rows')
                 ->selectRaw('(select bu_type from md_business_type where bu_code=md_employee.bu_type_id and branch_id=md_employee.branch_id limit 1) as bu_type')
-                ->selectRaw('(select close from td_benchmark_scheme where benchmark=1 AND DATE(date)=DATE(td_mutual_fund_trans.trans_date)) as nifty50')
-                ->selectRaw('(select close from td_benchmark_scheme where benchmark=70 AND DATE(date)=DATE(td_mutual_fund_trans.trans_date)) as sensex')
+                ->selectRaw('IF(td_mutual_fund_trans.rnt_id=1,
+                (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=td_mutual_fund_trans.trxn_type_code AND c_k_trans_type=td_mutual_fund_trans.trxn_type_flag AND c_k_trans_sub_type=td_mutual_fund_trans.trxn_nature_code limit 1),
+                (CASE 
+                    WHEN td_mutual_fund_trans.trans_flag="DP" || td_mutual_fund_trans.trans_flag="DR" THEN (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=td_mutual_fund_trans.kf_trans_type AND k_divident_flag=td_mutual_fund_trans.trans_flag limit 1)
+                    WHEN td_mutual_fund_trans.trans_flag="TI" THEN "Transfer In"
+                    WHEN td_mutual_fund_trans.trans_flag="TO" THEN "Transfer Out"
+                    ELSE (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=td_mutual_fund_trans.kf_trans_type limit 1)
+                END)
+                )as transaction_type')
+                ->selectRaw('IF(td_mutual_fund_trans.rnt_id=1,
+                (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=td_mutual_fund_trans.trxn_type_code AND c_k_trans_type=td_mutual_fund_trans.trxn_type_flag AND c_k_trans_sub_type=td_mutual_fund_trans.trxn_nature_code limit 1),
+                (CASE 
+                    WHEN td_mutual_fund_trans.trans_flag="DP" || td_mutual_fund_trans.trans_flag="DR" THEN (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=td_mutual_fund_trans.kf_trans_type AND k_divident_flag=td_mutual_fund_trans.trans_flag limit 1)
+                    WHEN td_mutual_fund_trans.trans_flag="TI" THEN "Transfer In"
+                    WHEN td_mutual_fund_trans.trans_flag="TO" THEN "Transfer Out"
+                    ELSE (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=td_mutual_fund_trans.kf_trans_type limit 1)
+                END)
+                )as transaction_subtype')
+                ->selectRaw('(select close from td_benchmark_scheme where benchmark=1 AND date=trans_date) as nifty50')
+                ->selectRaw('(select close from td_benchmark_scheme where benchmark=70 AND date=trans_date) as sensex')
                 ->where('td_mutual_fund_trans.delete_flag','N')
                 ->where('td_mutual_fund_trans.amc_flag','N')
                 ->where('td_mutual_fund_trans.scheme_flag','N')
@@ -1396,104 +1414,45 @@ class LiveMFPController extends Controller
                 ->whereRaw($rawQuery)
                 ->groupBy('td_mutual_fund_trans.trans_no')
                 ->groupBy('td_mutual_fund_trans.trxn_type_flag')
-                ->groupByRaw('IF(substr(trxn_nature,1,19)="Systematic-Reversed","Systematic-Reversed",trxn_nature)')
+                ->groupBy('td_mutual_fund_trans.trxn_nature_code')
                 ->groupBy('td_mutual_fund_trans.trans_desc')
                 ->groupBy('td_mutual_fund_trans.kf_trans_type')
                 ->groupBy('td_mutual_fund_trans.trans_flag')
-                ->orderBy('td_mutual_fund_trans.trans_date','asc')
+                ->groupBy('td_mutual_fund_trans.pur_price')
+                ->orderBy('td_mutual_fund_trans.trans_date','ASC')
                 ->get();
             // dd(DB::getQueryLog());
             // return $all_data;
-                $data=[];
-                foreach ($all_data as $key => $value) {
-                    $euin=$value->euin_no;
-                    $trans_no=$value->trans_no;
-                    $trans_date=$value->trans_date;
-                    // ====================start trans type & sub type=========================
-                    $trxn_type=$value->trxn_type;
-                    $trxn_type_flag=$value->trxn_type_flag;
-                    $trxn_nature=$value->trxn_nature;
-                    $amount=$value->amount;
-                    $transaction_type='';
-                    $transaction_subtype='';
-
-                    if ($trxn_type && $trxn_type_flag && $trxn_nature) {  //for cams
-                        $trxn_code=TransHelper::transTypeToCodeCAMS($trxn_type);
-                        $trxn_nature_code=TransHelper::trxnNatureCodeCAMS($trxn_nature);
-
-                        $value->trxn_code=$trxn_code;
-                        $value->trxn_type_flag_code=$trxn_type_flag;
-                        $value->trxn_nature_code=$trxn_nature_code;
-                        
-                        $get_type_subtype=MFTransTypeSubType::where('c_trans_type_code',$trxn_code)
-                            ->where('c_k_trans_type',$trxn_type_flag)
-                            ->where('c_k_trans_sub_type',$trxn_nature_code)
-                            ->first();
-                        
-                        if ($amount > 0) {
-                            if ($get_type_subtype) {
-                                $transaction_type=$get_type_subtype->trans_type;
-                                $transaction_subtype=$get_type_subtype->trans_sub_type;
-                            }
-                        }else{
-                            if ($get_type_subtype) {
-                                $transaction_type=$get_type_subtype->trans_type." Rejection";
-                                $transaction_subtype=$get_type_subtype->trans_sub_type." Rejection";
-                            }
-                        }
-                    }else {
-                        $kf_trans_type=$value->kf_trans_type;
-                        $trans_flag=$value->trans_flag;
-                        if ($trans_flag=='DP' || $trans_flag=='DR') {
-                            $get_type_subtype=MFTransTypeSubType::where('c_k_trans_sub_type',$kf_trans_type)
-                                ->where('k_divident_flag',$trans_flag)
-                                ->first();
-                        }
-                        // elseif ($trans_flag=='TI') {
-                        //     $get_type_subtype='';
-                        //     $transaction_type='Transfer In';
-                        //     $transaction_subtype='Transfer In';
-                        // }elseif ($trans_flag=='TO') {
-                        //     $get_type_subtype='';
-                        //     $transaction_type='Transfer Out';
-                        //     $transaction_subtype='Transfer Out';
-                        // }
-                         else {
-                            $get_type_subtype=MFTransTypeSubType::where('c_k_trans_sub_type',$kf_trans_type)
-                                ->first();
-                        }
-                        
-                        if ($get_type_subtype) {
-                            $transaction_type=$get_type_subtype->trans_type;
-                            $transaction_subtype=$get_type_subtype->trans_sub_type;
-                        }
-                    }
-                    $value->gross_amount= number_format((float)((float)$amount + (float)$value->stamp_duty + (float)$value->tds), 2, '.', '');
-                    // number_format((float)$foo, 2, '.', '')
-                    $value->tot_gross_amount= number_format((float)((float)$value->tot_amount + (float)$value->tot_stamp_duty + (float)$value->tot_tds), 2, '.', '');
-                    $value->transaction_type=$transaction_type;
-                    $value->transaction_subtype=$transaction_subtype;
-
-                    $value->idcwr=0;
-                    $value->idcw_reinv=0;
-                    $value->idcwp=0;
-                    $now = strtotime($valuation_as_on); // or your date as well
-                    $your_date = strtotime(date('Y-m-d',strtotime($value->trans_date)));
-                    $datediff = $now - $your_date;
-                    $days=round($datediff / (60 * 60 * 24));
-                    $value->days=$days;
-                    // if (!empty($trans_type) && in_array($transaction_type ,$trans_type) && !empty($trans_sub_type) && in_array($transaction_subtype ,$trans_sub_type)) {
-                    //     array_push($data,$value);
-                    // }else if (!empty($trans_type) && in_array($transaction_type ,$trans_type)) {
-                    //     array_push($data,$value);
-                    // }else if (!empty($transaction_subtype) && in_array($transaction_subtype ,$trans_sub_type)) {
-                    //     array_push($data,$value);
-                    // }else{
-                        array_push($data,$value);
-                    // }
+            $data=[];
+            foreach ($all_data as $key => $value) {
+                $euin=$value->euin_no;
+                $trans_no=$value->trans_no;
+                $trans_date=$value->trans_date;
+                $amount=$value->amount;
+                if ($amount > 0) {
+                    $transaction_type=$value->transaction_type;
+                    $transaction_subtype=$value->transaction_subtype;
+                }else{
+                    $transaction_type=$value->transaction_type." Rejection";
+                    $transaction_subtype=$value->transaction_subtype." Rejection";
                 }
+                $value->gross_amount= number_format((float)((float)$amount + (float)$value->stamp_duty + (float)$value->tds), 2, '.', '');
+                // number_format((float)$foo, 2, '.', '')
+                $value->tot_gross_amount= number_format((float)((float)$value->tot_amount + (float)$value->tot_stamp_duty + (float)$value->tot_tds), 2, '.', '');
+                $value->transaction_type=$transaction_type;
+                $value->transaction_subtype=$transaction_subtype;
+                $value->idcwr=0;
+                $value->idcw_reinv=0;
+                $value->idcwp=0;
+                $now = strtotime($valuation_as_on); // or your date as well
+                $your_date = strtotime(date('Y-m-d',strtotime($value->trans_date)));
+                $datediff = $now - $your_date;
+                $days=round($datediff / (60 * 60 * 24));
+                $value->days=$days;
+                array_push($data,$value);
+            }
         } catch (\Throwable $th) {
-            throw $th;
+            // throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
         return Helper::SuccessResponse($data);

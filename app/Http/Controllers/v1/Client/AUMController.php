@@ -43,7 +43,47 @@ class AUMController extends Controller
             session(['date' => $date]);
             // return $rawQuery;
             // DB::enableQueryLog();
-            $md_mf_trans_type_subtype=MFTransTypeSubType::get()->toArray();
+            // $md_mf_trans_type_subtype=MFTransTypeSubType::get()->toArray();
+            $all_data=MutualFundTransaction::
+                with(['transdetails'=>function ($query) {
+                    // $query->select('rnt_id','amc_code','folio_no','product_code','isin_no','trans_date','trxn_type_code','trxn_type_flag','trxn_nature_code','kf_trans_type','trans_flag','amount','stamp_duty','tds','units','pur_price')
+                    $query->select('rnt_id','amc_code','folio_no','product_code','isin_no','trans_date','amount','stamp_duty','tds','units','pur_price')
+                    ->selectRaw('IF(rnt_id=1,
+                    (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=trxn_type_code AND c_k_trans_type=trxn_type_flag AND c_k_trans_sub_type=trxn_nature_code limit 1),
+                    (CASE 
+                        WHEN trans_flag="DP" || trans_flag="DR" THEN (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type AND k_divident_flag=trans_flag limit 1)
+                        WHEN trans_flag="TO" THEN "Transfer Out"
+                        ELSE (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type limit 1)
+                    END)
+                    )as transaction_type')
+                    ->selectRaw('IF(rnt_id=1,
+                    (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=trxn_type_code AND c_k_trans_type=trxn_type_flag AND c_k_trans_sub_type=trxn_nature_code limit 1),
+                    (CASE 
+                        WHEN trans_flag="DP" || trans_flag="DR" THEN (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type AND k_divident_flag=trans_flag limit 1)
+                        WHEN trans_flag="TO" THEN "Transfer Out"
+                        ELSE (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type limit 1)
+                    END)
+                    )as transaction_subtype')
+                    ->selectRaw('sum(units) as tot_units')
+                    ->selectRaw('sum(amount) as tot_amount')
+                    ->selectRaw('sum(stamp_duty) as tot_stamp_duty')
+                    ->selectRaw('IF(tds!="",sum(tds),0.00)as tot_tds');
+                }])
+                ->leftJoin('md_amc','md_amc.amc_code','=','td_mutual_fund_trans.amc_code')
+                ->select('td_mutual_fund_trans.rnt_id','td_mutual_fund_trans.amc_code','md_amc.amc_short_name as amc_name',
+                'td_mutual_fund_trans.product_code','td_mutual_fund_trans.isin_no')
+                ->where('td_mutual_fund_trans.delete_flag','N')
+                ->where('td_mutual_fund_trans.amc_flag','N')
+                ->where('td_mutual_fund_trans.scheme_flag','N')
+                ->where('td_mutual_fund_trans.plan_option_flag','N')
+                ->where('td_mutual_fund_trans.bu_type_flag','N')
+                ->where('td_mutual_fund_trans.divi_mismatch_flag','N')
+                ->whereRaw($rawQuery)
+                ->groupBy('td_mutual_fund_trans.product_code')
+                ->groupBy('td_mutual_fund_trans.isin_no')
+                ->orderBy('td_mutual_fund_trans.trans_date','ASC')
+                ->get();
+            return $all_data;
 
             $all_data=MutualFundTransaction::
                 with(['schemes' =>  function ($query) {
@@ -583,7 +623,7 @@ class AUMController extends Controller
                     $single_scheme1->curr_nav=isset($new->nav)?$new->nav:0;
                     $single_scheme1->nav_date=isset($new->nav_date)?$new->nav_date:0;
                     $transdetails=$single_scheme1->transdetails;
-                    // $mydata=TransHelper::calculate($transdetails);
+                    // $mydata=TransHelper::aum_calculate($transdetails);
                     // $single_scheme1->mydata=$mydata;
                     // return $single_scheme1;
                     // $all_transdetails_arr=[];

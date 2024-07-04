@@ -29,3 +29,5 @@ Route::get('testing',[App\Http\Controllers\TestController::class,'testing']);
 
 
 Route::get('transFileUpload',[App\Http\Controllers\v1\Cron\TransFileUploadController::class,'upload']);
+
+Route::get('mail',[App\Http\Controllers\TestController::class,'mail']);
