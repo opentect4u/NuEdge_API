@@ -1006,4 +1006,46 @@ class TransHelper{
             ->get();
         return $broker_data;
     }
+
+    public static function getBrokerData_div($foliotrans_value)
+    {
+        $rawInnerQuery='';
+        $queryString='tt_broker_change_trans_report.folio_no';
+        $rawInnerQuery.=Helper::WhereRawQuery($foliotrans_value->folio_no,$rawInnerQuery,$queryString);
+        $queryString='tt_broker_change_trans_report.product_code';
+        $rawInnerQuery.=Helper::WhereRawQuery($foliotrans_value->product_code,$rawInnerQuery,$queryString);
+        // return $rawInnerQuery;
+
+        $broker_data=BrokerChangeTransReport::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','tt_broker_change_trans_report.product_code')
+            ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
+            ->leftJoin('md_plan','md_plan.id','=','md_scheme_isin.plan_id')
+            ->leftJoin('md_option','md_option.id','=','md_scheme_isin.option_id')
+            ->select('tt_broker_change_trans_report.rnt_id','tt_broker_change_trans_report.folio_no','tt_broker_change_trans_report.product_code',
+            'tt_broker_change_trans_report.isin_no','tt_broker_change_trans_report.trans_date','tt_broker_change_trans_report.amount',
+            'tt_broker_change_trans_report.stamp_duty','tt_broker_change_trans_report.tds','tt_broker_change_trans_report.units','tt_broker_change_trans_report.pur_price',
+            'tt_broker_change_trans_report.trans_no',
+            'md_scheme.scheme_name as scheme_name','md_plan.plan_name as plan_name','md_option.opt_name as option_name')
+            ->selectRaw('sum(units) as tot_units')
+            ->selectRaw('sum(amount) as tot_amount')
+            ->selectRaw('sum(stamp_duty) as tot_stamp_duty')
+            ->selectRaw('IF(tt_broker_change_trans_report.tds!="",sum(tds),0.00)as tot_tds')
+            ->selectRaw('(SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=tt_broker_change_trans_report.trxn_type_code AND c_k_trans_type=tt_broker_change_trans_report.trxn_type_flag AND c_k_trans_sub_type=tt_broker_change_trans_report.trxn_nature_code limit 1)as transaction_type')
+            ->selectRaw('(SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=tt_broker_change_trans_report.trxn_type_code AND c_k_trans_type=tt_broker_change_trans_report.trxn_type_flag AND c_k_trans_sub_type=tt_broker_change_trans_report.trxn_nature_code limit 1)as transaction_subtype')
+            ->selectRaw('(SELECT lmf_pl FROM md_mf_trans_type_subtype WHERE c_trans_type_code=tt_broker_change_trans_report.trxn_type_code AND c_k_trans_type=tt_broker_change_trans_report.trxn_type_flag AND c_k_trans_sub_type=tt_broker_change_trans_report.trxn_nature_code limit 1) as lmf_pl')
+            ->where('tt_broker_change_trans_report.delete_flag','N')
+            ->where('tt_broker_change_trans_report.amc_flag','N')
+            ->where('tt_broker_change_trans_report.scheme_flag','N')
+            ->where('tt_broker_change_trans_report.plan_option_flag','N')
+            ->where('tt_broker_change_trans_report.bu_type_flag','N')
+            ->where('tt_broker_change_trans_report.divi_mismatch_flag','N')
+            ->whereRaw($rawInnerQuery)
+            ->groupBy('tt_broker_change_trans_report.trans_no')
+            ->groupBy('tt_broker_change_trans_report.trxn_type_flag')
+            ->groupBy('tt_broker_change_trans_report.trxn_nature_code')
+            ->groupBy('tt_broker_change_trans_report.trans_desc')
+            ->groupBy('tt_broker_change_trans_report.kf_trans_type')
+            ->orderBy('tt_broker_change_trans_report.trans_date','ASC')
+            ->get();
+        return $broker_data;
+    }
 }

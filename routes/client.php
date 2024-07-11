@@ -15,13 +15,17 @@ Route::prefix('v1')->group(function () {
                 Route::post('liveMFRejectTrans',[App\Http\Controllers\v1\Client\LiveMFPController::class,'rejectTrans']);
                 Route::post('liveMFSTW',[App\Http\Controllers\v1\Client\LiveMFSTWController::class,'search']);  // for STP && SWP && STP
                 Route::post('liveMFUpcoming',[App\Http\Controllers\v1\Client\LiveMFSTWController::class,'upcomingTrans']);  // for STP && SWP && STP upcoming transaction
+                Route::post('divHistory',[App\Http\Controllers\v1\Client\LiveMFPController::class,'divHistory']);  // for div History transaction
                 
                 
                 Route::post('realisedCapitalGain',[App\Http\Controllers\v1\Client\CapitalGLController::class,'search']);
+                Route::post('finYearWiseTrans',[App\Http\Controllers\v1\Client\CapitalGLController::class,'finWiseTrans']);
+                Route::post('realisedDivHistory',[App\Http\Controllers\v1\Client\CapitalGLController::class,'divHistory']);
                 Route::post('aum',[App\Http\Controllers\v1\Client\AUMController::class,'search']);  // 
             });
             // Route::get('liveMFPortfolio1',[App\Http\Controllers\v1\Client\LiveMFPController::class,'search1']);
             // Route::any('aum1',[App\Http\Controllers\v1\Client\AUMController::class,'search1']);  // 
+            Route::any('genpdf',[App\Http\Controllers\v1\Client\PDFController::class,'generatePDF']);  // 
 
         });
     // })
