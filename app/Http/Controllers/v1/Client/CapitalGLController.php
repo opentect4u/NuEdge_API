@@ -908,7 +908,7 @@ class CapitalGLController extends Controller
                 'td_mutual_fund_trans.trans_date','td_mutual_fund_trans.amount','td_mutual_fund_trans.stamp_duty','td_mutual_fund_trans.tds','td_mutual_fund_trans.units','td_mutual_fund_trans.pur_price',
                 'md_scheme.scheme_name as scheme_name','md_plan.plan_name as plan_name','md_option.opt_name as option_name')
                 ->selectRaw('IF(td_mutual_fund_trans.rnt_id=1,
-                (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=td_mutual_fund_trans.td_mutual_fund_trans. AND c_k_trans_type=td_mutual_fund_trans.trxn_type_flag AND c_k_trans_sub_type=td_mutual_fund_trans.trxn_nature_code limit 1),
+                (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=td_mutual_fund_trans.trxn_type_code AND c_k_trans_type=td_mutual_fund_trans.trxn_type_flag AND c_k_trans_sub_type=td_mutual_fund_trans.trxn_nature_code limit 1),
                 (CASE 
                     WHEN td_mutual_fund_trans.trans_flag="DP" || td_mutual_fund_trans.trans_flag="DR" THEN (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=td_mutual_fund_trans.kf_trans_type AND k_divident_flag=td_mutual_fund_trans.trans_flag limit 1)
                     WHEN td_mutual_fund_trans.trans_flag="TO" THEN "Transfer Out"
