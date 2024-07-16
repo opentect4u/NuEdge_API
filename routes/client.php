@@ -26,6 +26,7 @@ Route::prefix('v1')->group(function () {
             // Route::get('liveMFPortfolio1',[App\Http\Controllers\v1\Client\LiveMFPController::class,'search1']);
             // Route::any('aum1',[App\Http\Controllers\v1\Client\AUMController::class,'search1']);  // 
             Route::any('genpdf',[App\Http\Controllers\v1\Client\PDFController::class,'generatePDF']);  // 
+            Route::any('testgenpdf',[App\Http\Controllers\v1\Client\PDFController::class,'generatePDFTest']);  // 
 
         });
     // })
