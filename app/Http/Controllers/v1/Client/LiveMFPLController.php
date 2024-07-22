@@ -242,7 +242,7 @@ class LiveMFPLController extends Controller
                     $my_profitloss=TransHelper::ConsolidationInQuery($value1->rnt_id,$value1->folio_no,$value1->isin_no,$value1->product_code,$valuation_as_on);
                 }
                 
-                $mydata=TransHelper::calculate($my_profitloss);
+                $mydata=TransHelper::calculate($my_profitloss,$value1->curr_nav,$valuation_as_on);
                 
                 $value1->mydata=$mydata;
                 $value1->idcw_reinv=isset($mydata['idcw_reinv'])? number_format((float)$mydata['idcw_reinv'], 2, '.', ''):0;
