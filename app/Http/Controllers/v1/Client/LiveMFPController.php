@@ -36,18 +36,70 @@ class LiveMFPController extends Controller
             $family_members_pan=json_decode($request->family_members_pan);
             $family_members_name=json_decode($request->family_members_name);
             $trans_type=$request->trans_type;
-            
+            $trans_duration=$request->trans_duration;
+            // return $trans_duration;
             session()->forget('valuation_as_on');
             session(['valuation_as_on' => $valuation_as_on]);
             // return Session::get('valuation_as_on');
             $client_details='';
-            if ($view_type || $valuation_as_on || $view_funds_type) {
+            if ($view_type || $valuation_as_on || $view_funds_type || $trans_duration) {
                 $rawQuery='';
-                if ($valuation_as_on) {
-                    $condition_v=(strlen($rawQuery) > 0)? " AND ":" ";
-                    $queryString='td_mutual_fund_trans.trans_date';
-                    $rawQuery.=$condition_v.$queryString."<= '".$valuation_as_on."'";
+                if ($trans_duration) {
+                    switch ($trans_duration) {
+                        case '< 1':
+                            $from_date = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -1 year"));
+                            $to_date =$valuation_as_on;
+                            break;
+                        case '> 1':
+                            $previousDate = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -1 year"));
+                            break;
+                        case '> 2':
+                            $previousDate = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -2 year"));
+                            return $previousDate;
+                            break;
+                        case '> 3':
+                            $previousDate = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -3 year"));
+                            break;
+                        case '> 4':
+                            $previousDate = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -4 year"));
+                            break;
+                        case '> 5':
+                            $previousDate = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -5 year"));
+                            break;
+                        case '> 7':
+                            $previousDate = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -7 year"));
+                            break;
+                        case '> 10':
+                            $previousDate = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -10 year"));
+                            break;
+                        case 'D':
+                            $trans_date_range=$request->trans_date_range;
+                            $from_date=Carbon::parse(str_replace('/','-',explode("-",$trans_date_range)[0]))->format('Y-m-d') ;
+                            $to_date=Carbon::parse(str_replace('/','-',explode("-",$trans_date_range)[1]))->format('Y-m-d') ;
+                            // return $to_date;
+                            break;
+                        default:
+                            break;
+                    }
+                    if ($trans_duration=="< 1" || $trans_duration=="D") {
+                        return $from_date." - ".$to_date;
+                        $queryString='td_mutual_fund_trans.trans_date';
+                        $rawQuery.=Helper::FrmToDateRawQuery($from_date,$to_date,$rawQuery,$queryString);
+                    }else {
+                        return $previousDate;
+                        $condition_v=(strlen($rawQuery) > 0)? " AND ":" ";
+                        $queryString='td_mutual_fund_trans.trans_date';
+                        $rawQuery.=$condition_v.$queryString."<= '".$valuation_as_on."'";
+                    }
+                    
+                }else {
+                    if ($valuation_as_on) {
+                        $condition_v=(strlen($rawQuery) > 0)? " AND ":" ";
+                        $queryString='td_mutual_fund_trans.trans_date';
+                        $rawQuery.=$condition_v.$queryString."<= '".$valuation_as_on."'";
+                    }
                 }
+                
                 if ($view_type=='C') {
                     $client_rawQuery='';
                     if (!$pan_no) {
@@ -119,6 +171,8 @@ class LiveMFPController extends Controller
                         }
                     }
                 }
+
+
             } 
             // return $rawQuery;
             // return $client_details;
@@ -231,7 +285,7 @@ class LiveMFPController extends Controller
                     if (array_search('Consolidation In',array_column($array,'transaction_subtype'))) {
                         $foliotrans=TransHelper::ConsolidationInQuery($value1->rnt_id,$value1->folio_no,$value1->isin_no,$value1->product_code,$valuation_as_on);
                     }
-                    $mydata=TransHelper::calculate($foliotrans);
+                    $mydata=TransHelper::calculate($foliotrans,$value1->curr_nav,$valuation_as_on);
                 // }
                 // $mydata=$this->calculate($value1->foliotrans);
                 $value1->mydata=$mydata;

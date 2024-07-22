@@ -93,7 +93,7 @@ class MutualFundTransaction extends Model
                 ['trans_date','<=',Session::get('valuation_as_on')]
             ])
             ->select('rnt_id','folio_no','product_code','isin_no','trans_date','trxn_type','trxn_type_flag','trxn_nature','amount','stamp_duty','tds',
-            'units','pur_price')
+            'units','pur_price','trans_mode')
             ->selectRaw('IF(rnt_id=1,
             (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=trxn_type_code AND c_k_trans_type=trxn_type_flag AND c_k_trans_sub_type=trxn_nature_code limit 1),
             (CASE 

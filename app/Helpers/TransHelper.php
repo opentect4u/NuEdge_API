@@ -384,7 +384,7 @@ class TransHelper{
         return $client_details;
     }
 
-    public static function calculate($foliotrans){
+    public static function calculate($foliotrans,$curr_nav,$valuation_as_on){
         $purchase_data=[];
         $redemption_data=[];
         $purchase_amt_arr=[];
@@ -542,6 +542,9 @@ class TransHelper{
                                 $newarr['trans_mode']=$purchase_value['trans_mode'];
                                 $newarr['transaction_type']="Remaining";
                                 $newarr['transaction_subtype']="Remaining";
+                                $newarr['stamp_duty']=$purchase_value['stamp_duty'];
+                                $newarr['prev_transaction_type']=$purchase_value['transaction_type'];
+                                $newarr['prev_transaction_subtype']=$purchase_value['transaction_type'];
                                 $newarr['tot_units']=$set_units;
                                 $newarr['cumml_units']=$set_units;
                                 $newarr['tot_amount']= number_format((float)($set_units * $purchase_value['pur_price']), 2, '.', '');
@@ -567,6 +570,9 @@ class TransHelper{
                                     $newarr['trans_mode']=$purchase_value['trans_mode'];
                                     $newarr['transaction_type']="Remaining";
                                     $newarr['transaction_subtype']="Remaining";
+                                    $newarr['stamp_duty']=$purchase_value['stamp_duty'];
+                                    $newarr['prev_transaction_type']=$purchase_value['transaction_type'];
+                                    $newarr['prev_transaction_subtype']=$purchase_value['transaction_type'];
                                     $newarr['tot_units']=$set_units;
                                     $newarr['cumml_units']=$set_units;
                                     $newarr['tot_amount']= number_format((float)($set_units * $purchase_value['pur_price']), 2, '.', '');
@@ -608,10 +614,61 @@ class TransHelper{
                     $inv_cost +=number_format((float)$value['tot_amount'], 2, '.', '');
                 }
             }
+
+            $cal_purchase_data=[];
+            foreach ($purchase_data as $key => $value) {
+                if ($value['cumml_units'] > 0) {
+                    $value['transaction_type']=isset($value["prev_transaction_type"])?$value["prev_transaction_type"]:$value["transaction_type"];
+                    $value['transaction_subtype']=isset($value["prev_transaction_subtype"])?$value["prev_transaction_subtype"]:$value["transaction_subtype"];
+                    $value['curr_nav']=$curr_nav;
+                    
+                    $value['tot_amount']= number_format((float)($value['tot_units'] * $value['pur_price']), 2, '.', '');
+                    if (isset($value["prev_transaction_type"])) {
+                        $value['gross_amount']=number_format((float)($value['tot_amount']), 2, '.', '');
+                    }else {
+                        $value['gross_amount']=number_format((float)($value['tot_amount'] + $value['stamp_duty']), 2, '.', '');
+                    }
+                    $value['tot_gross_amount']=number_format((float)($value['tot_units'] * $value['pur_price']), 2, '.', '');
+                    $value['curr_val']=number_format((float)($value['tot_units'] * $value['curr_nav']), 2, '.', '');
+                    $value['gain_loss']=number_format((float)($value['curr_val'] - $value['tot_amount']), 2, '.', '');
+                    if ($value['gain_loss']==0 || $value['tot_amount']==0) {
+                        $value['ret_abs']=0;
+                    }else {
+                        $value['ret_abs']=number_format((float)(($value['gain_loss'] / $value['tot_amount']) * 100), 2, '.', '');
+                    }
+                    $now = strtotime($valuation_as_on); // or your date as well
+                    $your_date = strtotime(date('Y-m-d',strtotime($value['trans_date'])));
+                    $datediff = $now - $your_date;
+                    $days=round($datediff / (60 * 60 * 24));
+                    $value['days']=$days;
+                    array_push($cal_purchase_data,$value);
+                }
+            }
         }else {
             // $inv_cost=0;
             foreach ($purchase_data as $key => $value) {
                 $inv_cost +=number_format((float)$value['tot_amount'], 2, '.', '');
+            }
+
+            $cal_purchase_data=[];
+            foreach ($purchase_data as $key => $value) {
+                $value['curr_nav']=$curr_nav;
+                // $value['tot_amount']= number_format((float)($value['tot_units'] * $value['pur_price']), 2, '.', '');
+                $value['tot_gross_amount']=number_format((float)($value['tot_units'] * $value['pur_price']), 2, '.', '');
+                $value['gross_amount']=number_format((float)($value['tot_amount'] + $value['stamp_duty']), 2, '.', '');
+                $value['curr_val']=number_format((float)($value['tot_units'] * $value['curr_nav']), 2, '.', '');
+                $value['gain_loss']=number_format((float)($value['curr_val'] - $value['tot_amount']), 2, '.', '');
+                if ($value['gain_loss']==0 || $value['tot_amount']==0) {
+                    $value['ret_abs']=0;
+                }else {
+                    $value['ret_abs']=number_format((float)(($value['gain_loss'] / $value['tot_amount']) * 100), 2, '.', '');
+                }
+                $now = strtotime($valuation_as_on); // or your date as well
+                $your_date = strtotime(date('Y-m-d',strtotime($value['trans_date'])));
+                $datediff = $now - $your_date;
+                $days=round($datediff / (60 * 60 * 24));
+                $value['days']=$days;
+                array_push($cal_purchase_data,$value);
             }
         }
         // return $all_amt_arr;
@@ -622,6 +679,7 @@ class TransHelper{
         $return_data['all_date_arr']=$all_date_arr;
         $return_data['idcw_reinv']=$idcw_reinv;
         $return_data['idcw_paid']=$idcw_paid;
+        $return_data['cal_purchase_data']=$cal_purchase_data;
         return $return_data;
     }
 
