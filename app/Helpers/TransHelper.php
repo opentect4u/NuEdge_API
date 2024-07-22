@@ -479,7 +479,7 @@ class TransHelper{
                 if ($key > 0) {
                     $value->cumml_units=number_format((float)($value->tot_units + $foliotrans[($key-1)]->cumml_units) , 4, '.', '') ;
                 }else {
-                    $value->cumml_units=$value->tot_units;
+                    $value->cumml_units=number_format((float)$value->tot_units, 4, '.', '');
                 }
                 array_push($purchase_data,$value);
                 // array_push($purchase_amt_arr,$value->tot_amount);
@@ -543,10 +543,12 @@ class TransHelper{
                                 $newarr['transaction_type']="Remaining";
                                 $newarr['transaction_subtype']="Remaining";
                                 $newarr['stamp_duty']=$purchase_value['stamp_duty'];
+                                $newarr['tot_stamp_duty']=$purchase_value['tot_stamp_duty'];
+                                $newarr['tot_tds']=$purchase_value['tot_tds'];
                                 $newarr['prev_transaction_type']=$purchase_value['transaction_type'];
                                 $newarr['prev_transaction_subtype']=$purchase_value['transaction_type'];
-                                $newarr['tot_units']=$set_units;
-                                $newarr['cumml_units']=$set_units;
+                                $newarr['tot_units']=number_format((float)$set_units, 4, '.', '');
+                                $newarr['cumml_units']=number_format((float)$set_units, 4, '.', '');
                                 $newarr['tot_amount']= number_format((float)($set_units * $purchase_value['pur_price']), 2, '.', '');
                                 $newarr['tot_gross_amount']=number_format((float)($set_units * $purchase_value['pur_price']), 2, '.', '');
                                 $newarr['gross_amount']=number_format((float)($set_units * $purchase_value['pur_price']), 2, '.', '');
@@ -571,10 +573,12 @@ class TransHelper{
                                     $newarr['transaction_type']="Remaining";
                                     $newarr['transaction_subtype']="Remaining";
                                     $newarr['stamp_duty']=$purchase_value['stamp_duty'];
+                                    $newarr['tot_stamp_duty']=$purchase_value['tot_stamp_duty'];
+                                    $newarr['tot_tds']=$purchase_value['tot_tds'];
                                     $newarr['prev_transaction_type']=$purchase_value['transaction_type'];
                                     $newarr['prev_transaction_subtype']=$purchase_value['transaction_type'];
-                                    $newarr['tot_units']=$set_units;
-                                    $newarr['cumml_units']=$set_units;
+                                    $newarr['tot_units']=number_format((float)$set_units, 4, '.', '');
+                                    $newarr['cumml_units']=number_format((float)$set_units, 4, '.', '');
                                     $newarr['tot_amount']= number_format((float)($set_units * $purchase_value['pur_price']), 2, '.', '');
                                     $newarr['tot_gross_amount']=number_format((float)($set_units * $purchase_value['pur_price']), 2, '.', '');
                                     $newarr['gross_amount']=number_format((float)($set_units * $purchase_value['pur_price']), 2, '.', '');
@@ -582,7 +586,7 @@ class TransHelper{
                                     array_push($deduct_unit_array,$newarr);
                                     $flag='N';
                                 }else{
-                                    $purchase_value['cumml_units']=number_format((float)$purchase_value['tot_units'], 4, '.', '') + number_format((float)$deduct_unit_array[(count($deduct_unit_array)-1)]['cumml_units'], 4, '.', '') ;
+                                    $purchase_value['cumml_units']=number_format((float)($purchase_value['tot_units'] + $deduct_unit_array[(count($deduct_unit_array)-1)]['cumml_units'] ), 4, '.', '');
                                     $purchase_value['curr_val']=number_format((float)($purchase_value['tot_units'] * $purchase_value['curr_nav']), 2, '.', '');
                                     array_push($deduct_unit_array,$purchase_value);
                                 }

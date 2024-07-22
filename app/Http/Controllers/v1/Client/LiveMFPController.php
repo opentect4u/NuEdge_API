@@ -38,6 +38,8 @@ class LiveMFPController extends Controller
             $trans_type=$request->trans_type;
             $trans_duration=$request->trans_duration;
             // return $trans_duration;
+            session()->forget('valuation_as_on');
+            session()->forget('from_date');
             
             // return Session::get('valuation_as_on');
             $client_details='';
@@ -81,8 +83,10 @@ class LiveMFPController extends Controller
                     }
                     if ($trans_duration=="< 1" || $trans_duration=="D") {
                         // return $from_date." - ".$to_date;
+                        session(['from_date' => $from_date]);
+                        $valuation_as_on=$to_date;
                         $queryString='td_mutual_fund_trans.trans_date';
-                        $rawQuery.=Helper::FrmToDateRawQuery($from_date,$to_date,$rawQuery,$queryString);
+                        $rawQuery.=Helper::FrmToDateRawQuery($from_date,$valuation_as_on,$rawQuery,$queryString);
                     }else {
                         // return $previousDate;
                         $condition_v=(strlen($rawQuery) > 0)? " AND ":" ";
@@ -173,7 +177,6 @@ class LiveMFPController extends Controller
 
             } 
 
-            session()->forget('valuation_as_on');
             session(['valuation_as_on' => $valuation_as_on]);
             // return $rawQuery;
             // return $client_details;

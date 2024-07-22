@@ -24,6 +24,10 @@ use Session;
 use Illuminate\Support\Facades\Crypt;
 // use PDF;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Str;
+use Mail; 
+use App\Mail\Portfolio\ValuationLinkEmail;
+use Illuminate\Support\Facades\Storage;
 
 class PDFController extends Controller
 {
@@ -68,13 +72,58 @@ class PDFController extends Controller
         try {
             // return $request;
             $file=$request->file;
+            $pan_no=$request->pan_no;
+            $dob=$request->dob;
+            $email=$request->email;
+            $phone=$request->phone;
+            $flag=$request->flag;
+            // $pan_no='BPPPS4831C';
+            $folio_file_name='';
             if ($file) {
                 $portfolio=$file->getClientOriginalExtension();
-                $folio_file_name=(microtime(true)*10000).".".$portfolio;
+                $folio_file_name=uniqid().".".$portfolio;
                 $file->move(public_path('portfolio/'),$folio_file_name);
             }
             
+            $filePath=public_path('portfolio/'.$folio_file_name);
+            $outputPath=public_path('portfolio/'.$folio_file_name);
+            $password=$pan_no;
+            Helper::encrypt($filePath, $outputPath, $password);
+
+            $path = 'portfolio-valuation/'. $folio_file_name;
+            Storage::disk('s3')->put($path, file_get_contents($filePath));
+            unlink($filePath);
+            $fileUrl = Storage::disk('s3')->url($path);
+            // return $fileUrl;
+            $token = Str::random(64);
+            DB::table('td_portfolio_valuation_details')->insert([
+              'url' => $fileUrl, 
+              'token' => $token, 
+              'created_at' => Carbon::now(),
+              'updated_at' => Carbon::now()
+            ]);
+
+            if ($flag=='S') {
+
+            } else if($flag=='E') {  // for email send
+                // Mail::to($request->email)->send(new SendAckEmail($client_name,$email->subject,$email->body));
+                
+            }
             $final_arr=[];
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($final_arr);
+    }
+
+    public function downloadValuation(Request $request){
+        try {
+            $token=$request->token;
+            $is_has=DB::table('td_portfolio_valuation_details')->where('token',$token)->get();
+            $final_arr=[];
+            $final_arr['count']=count($is_has);
+            $final_arr['details']=$is_has;
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
