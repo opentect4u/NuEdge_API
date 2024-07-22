@@ -38,8 +38,7 @@ class LiveMFPController extends Controller
             $trans_type=$request->trans_type;
             $trans_duration=$request->trans_duration;
             // return $trans_duration;
-            session()->forget('valuation_as_on');
-            session(['valuation_as_on' => $valuation_as_on]);
+            
             // return Session::get('valuation_as_on');
             $client_details='';
             if ($view_type || $valuation_as_on || $view_funds_type || $trans_duration) {
@@ -51,26 +50,25 @@ class LiveMFPController extends Controller
                             $to_date =$valuation_as_on;
                             break;
                         case '> 1':
-                            $previousDate = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -1 year"));
+                            $valuation_as_on = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -1 year"));
                             break;
                         case '> 2':
-                            $previousDate = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -2 year"));
-                            return $previousDate;
+                            $valuation_as_on = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -2 year"));
                             break;
                         case '> 3':
-                            $previousDate = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -3 year"));
+                            $valuation_as_on = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -3 year"));
                             break;
                         case '> 4':
-                            $previousDate = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -4 year"));
+                            $valuation_as_on = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -4 year"));
                             break;
                         case '> 5':
-                            $previousDate = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -5 year"));
+                            $valuation_as_on = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -5 year"));
                             break;
                         case '> 7':
-                            $previousDate = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -7 year"));
+                            $valuation_as_on = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -7 year"));
                             break;
                         case '> 10':
-                            $previousDate = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -10 year"));
+                            $valuation_as_on = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -10 year"));
                             break;
                         case 'D':
                             $trans_date_range=$request->trans_date_range;
@@ -82,11 +80,11 @@ class LiveMFPController extends Controller
                             break;
                     }
                     if ($trans_duration=="< 1" || $trans_duration=="D") {
-                        return $from_date." - ".$to_date;
+                        // return $from_date." - ".$to_date;
                         $queryString='td_mutual_fund_trans.trans_date';
                         $rawQuery.=Helper::FrmToDateRawQuery($from_date,$to_date,$rawQuery,$queryString);
                     }else {
-                        return $previousDate;
+                        // return $previousDate;
                         $condition_v=(strlen($rawQuery) > 0)? " AND ":" ";
                         $queryString='td_mutual_fund_trans.trans_date';
                         $rawQuery.=$condition_v.$queryString."<= '".$valuation_as_on."'";
@@ -174,6 +172,9 @@ class LiveMFPController extends Controller
 
 
             } 
+
+            session()->forget('valuation_as_on');
+            session(['valuation_as_on' => $valuation_as_on]);
             // return $rawQuery;
             // return $client_details;
             // DB::enableQueryLog();
