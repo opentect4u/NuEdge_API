@@ -19,8 +19,13 @@ class DepositBankController extends Controller
             $ifs_code=$request->ifs_code;
             $sort_by=$request->sort_by;
             $column_name=$request->column_name;
+            if ($paginate=='A') {
+                $paginate=999999999;
+            }
             $data=DepositBank::where('ifs_code','like', '%' . $ifs_code . '%')
-                ->orderBy('updated_at','DESC')->paginate($paginate);      
+                ->where('deleted_flag','N')
+                ->orderBy('updated_at','DESC')
+                ->paginate($paginate);      
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);

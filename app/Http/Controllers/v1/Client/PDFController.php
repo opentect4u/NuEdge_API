@@ -72,7 +72,10 @@ class PDFController extends Controller
         try {
             // return $request;
             $file=$request->file;
+            $client_name=$request->client_name;
             $pan_no=$request->pan_no;
+            $pan_no=$request->pan_no;
+            $guardians_pan=$request->guardians_pan;
             $dob=$request->dob;
             $email=$request->email;
             $phone=$request->phone;
@@ -87,7 +90,8 @@ class PDFController extends Controller
             
             $filePath=public_path('portfolio/'.$folio_file_name);
             $outputPath=public_path('portfolio/'.$folio_file_name);
-            $password=$pan_no;
+
+            $password=($pan_no)?$pan_no:$guardians_pan;
             Helper::encrypt($filePath, $outputPath, $password);
 
             $path = 'portfolio-valuation/'. $folio_file_name;
@@ -105,11 +109,15 @@ class PDFController extends Controller
 
             if ($flag=='S') {
 
-            } else if($flag=='E') {  // for email send
-                // Mail::to($request->email)->send(new SendAckEmail($client_name,$email->subject,$email->body));
-                
+            } else if($flag=='E' || $flag=='We') {  // for email send
+                $valuation_link=env('VALUATION_LINK').$token;
+                $email='chittaranjan@synergicsoftek.com';
+                $client_name='Chittaranjan Maity';
+                // Mail::to($email)->send(new ValuationLinkEmail($client_name,$valuation_link));
             }
             $final_arr=[];
+            $final_arr['valuation_link']=$valuation_link;
+            $final_arr['outputPath']=$outputPath;
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
