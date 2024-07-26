@@ -18,7 +18,6 @@ Route::prefix('v1')->group(function () {
                 Route::post('divHistory',[App\Http\Controllers\v1\Client\LiveMFPController::class,'divHistory']);  // for div History transaction
                 
                 Route::post('sendEmailWithLink',[App\Http\Controllers\v1\Client\PDFController::class,'sendEmailWithLink']);  // 
-                Route::post('downloadValuation',[App\Http\Controllers\v1\Client\PDFController::class,'downloadValuation']);  // 
 
                 
                 Route::post('realisedCapitalGain',[App\Http\Controllers\v1\Client\CapitalGLController::class,'search']);
@@ -26,6 +25,8 @@ Route::prefix('v1')->group(function () {
                 Route::post('realisedDivHistory',[App\Http\Controllers\v1\Client\CapitalGLController::class,'divHistory']);
                 Route::post('aum',[App\Http\Controllers\v1\Client\AUMController::class,'search']);  // 
             });
+            Route::post('downloadValuation',[App\Http\Controllers\v1\Client\PDFController::class,'downloadValuation']);  // 
+                
             // Route::get('liveMFPortfolio1',[App\Http\Controllers\v1\Client\LiveMFPController::class,'search1']);
             // Route::any('aum1',[App\Http\Controllers\v1\Client\AUMController::class,'search1']);  // 
             Route::any('genpdf',[App\Http\Controllers\v1\Client\PDFController::class,'generatePDF']);  // 
