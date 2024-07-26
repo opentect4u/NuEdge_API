@@ -117,7 +117,7 @@ class PDFController extends Controller
             }
             $final_arr=[];
             $final_arr['valuation_link']=$valuation_link;
-            $final_arr['outputPath']=$outputPath;
+            $final_arr['outputPath']=$fileUrl;
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
