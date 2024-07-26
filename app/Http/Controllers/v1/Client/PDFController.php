@@ -113,7 +113,7 @@ class PDFController extends Controller
                 $valuation_link=env('VALUATION_LINK').$token;
                 $email='chittaranjan@synergicsoftek.com';
                 $client_name='Chittaranjan Maity';
-                Mail::to($email)->send(new ValuationLinkEmail($client_name,$valuation_link));
+                // Mail::to($email)->send(new ValuationLinkEmail($client_name,$valuation_link));
             }
             $final_arr=[];
             $final_arr['valuation_link']=$valuation_link;
