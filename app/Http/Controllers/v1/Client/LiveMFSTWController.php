@@ -374,7 +374,7 @@ class LiveMFSTWController extends Controller
                 $folio_data='';
                 $foliotrans=$value1->foliotrans;
                 if ($value1->activate_status=="Active") {
-                    $folio_data=TransHelper::calculate($foliotrans);
+                    $folio_data=TransHelper::calculate($foliotrans,$value1->curr_nav,$valuation_as_on);
                 }
                 $value1->folio_data=$folio_data;
                 $value1->inv_since=isset($folio_data['inv_since'])? $folio_data['inv_since']:$value1->inv_since;

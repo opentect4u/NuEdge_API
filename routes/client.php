@@ -26,6 +26,7 @@ Route::prefix('v1')->group(function () {
                 Route::post('aum',[App\Http\Controllers\v1\Client\AUMController::class,'search']);  // 
             });
             Route::post('downloadValuation',[App\Http\Controllers\v1\Client\PDFController::class,'downloadValuation']);  // 
+            Route::get('downloadValuation',[App\Http\Controllers\v1\Client\PDFController::class,'__downloadValuation']);  // 
                 
             // Route::get('liveMFPortfolio1',[App\Http\Controllers\v1\Client\LiveMFPController::class,'search1']);
             // Route::any('aum1',[App\Http\Controllers\v1\Client\AUMController::class,'search1']);  // 

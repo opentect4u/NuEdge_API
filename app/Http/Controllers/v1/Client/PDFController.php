@@ -138,4 +138,34 @@ class PDFController extends Controller
         }
         return Helper::SuccessResponse($final_arr);
     }
+
+    public function __downloadValuation(Request $request){
+        // try {
+            // return $request;
+            $token=$request->token;
+            $is_has=DB::table('td_portfolio_valuation_details')->where('token',$token)->get();
+            $final_arr=[];
+            $final_arr['count']=count($is_has);
+            $final_arr['details']=$is_has;
+            // Response::download($is_has[0]->url);
+            // return $is_has;
+            // $url="https://nuedge-bucket-upload.s3.ap-south-1.amazonaws.com/portfolio-valuation/66a32f5c76d5b.pdf";
+
+            $filename="66a32f5c76d5b.pdf";
+            $headers = array(
+                'Content-Type: application/pdf',
+            );
+
+            $url = Storage::disk('s3')->url('portfolio-valuation/' . $filename);
+
+            // return redirect()->away($url);
+            return Response::download($url, 'filename.pdf', $headers);
+  
+            // return Response::download($url, 'filename.pdf', $headers);
+        // } catch (\Throwable $th) {
+        //     //throw $th;
+        //     return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        // }
+        // return Helper::SuccessResponse($final_arr);
+    }
 }
