@@ -10,7 +10,8 @@ use App\Models\{
     Client,
     FormReceived,
     MutualFundTransaction,
-    MFTransTypeSubType
+    MFTransTypeSubType,
+    Disclaimer
 };
 use Validator;
 use Illuminate\Support\Carbon;
@@ -32,6 +33,12 @@ class MonthlyMisController extends Controller
             $scheme_id=json_decode($request->scheme_id);
             $trans_type=json_decode($request->trans_type);
             $trans_sub_type=json_decode($request->trans_sub_type);
+
+            $brn_cd=json_decode($request->brn_cd);
+            $bu_type=json_decode($request->bu_type);
+            $rm_id=json_decode($request->rm_id);
+            $euin_no=json_decode($request->euin_no);
+            $sub_brk_cd=json_decode($request->sub_brk_cd);
 
             if ($mis_month || !empty($amc_id) || !empty($cat_id) || !empty($sub_cat_id) || !empty($scheme_id)) {
                 $rawQuery='';
@@ -60,7 +67,48 @@ class MonthlyMisController extends Controller
                 $rawQuery.=Helper::WhereRawQuery($scheme_id,$rawQuery,$queryString);
                 // return $rawQuery;
                 // DB::enableQueryLog();
-                $all_data=MutualFundTransaction::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_mutual_fund_trans.product_code')
+
+                if (!empty($brn_cd)) {
+                    $row_name_string=  "'" .implode("','", $brn_cd). "'";
+                    $queryString='md_employee.branch_id';
+                    $condition=(strlen($rawQuery) > 0)? " AND ":" ";
+                    $rawQuery.=$condition.$queryString." IN (".$row_name_string.")";
+                }
+
+                if (!empty($bu_type)) {
+                    $row_name_string=  "'" .implode("','", $bu_type). "'";
+                    $queryString='(select bu_code from md_business_type where bu_code=md_employee.bu_type_id and branch_id=md_employee.branch_id limit 1)';
+                    $condition=(strlen($rawQuery) > 0)? " AND ":" ";
+                    $rawQuery.=$condition.$queryString." IN (".$row_name_string.")";
+                }
+                if (!empty($rm_id)) {
+                    $row_name_string=  "'" .implode("','", $rm_id). "'";
+                    $queryString="md_employee.euin_no";
+                    $condition=(strlen($rawQuery) > 0)? " AND ":" ";
+                    $rawQuery.=$condition.$queryString." IN (".$row_name_string.")";
+                }
+
+                if (!empty($sub_brk_cd)) {
+                    // some logicadd for sub broker checking 
+                    
+                    if (!empty($euin_no)) {
+                        $row_name_string=  "'" .implode("','", $euin_no). "'";
+                        $queryString="md_employee.euin_no";
+                        $condition=(strlen($rawQuery) > 0)? " AND ":" ";
+                        $rawQuery.=$condition.$queryString." IN (".$row_name_string.")";
+                    }
+                }
+                if (!empty($euin_no)) {
+                    $row_name_string=  "'" .implode("','", $euin_no). "'";
+                    $queryString="md_employee.euin_no";
+                    $condition=(strlen($rawQuery) > 0)? " AND ":" ";
+                    $rawQuery.=$condition.$queryString." IN (".$row_name_string.")";
+                }
+                
+                // dd(DB::getQueryLog());
+            } 
+
+            $all_data=MutualFundTransaction::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_mutual_fund_trans.product_code')
                     ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
                     ->leftJoin('md_category','md_category.id','=','md_scheme.category_id')
                     ->leftJoin('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
@@ -91,8 +139,6 @@ class MonthlyMisController extends Controller
                     ->groupBy('td_mutual_fund_trans.trans_desc')
                     ->groupBy('td_mutual_fund_trans.kf_trans_type')
                     ->get();
-                // dd(DB::getQueryLog());
-            } 
             // return $all_data;
                 $data=[];
                 foreach ($all_data as $key => $value) {
@@ -183,11 +229,16 @@ class MonthlyMisController extends Controller
                         array_push($data,$value);
                     }
                 }
+
+            $disclaimer=Disclaimer::select('dis_des')->find(3);
+            $mydata=[];
+            $mydata['data']=$data;
+            $mydata['disclaimer']=$disclaimer->dis_des;
         } catch (\Throwable $th) {
             throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
-        return Helper::SuccessResponse($data);
+        return Helper::SuccessResponse($mydata);
     }
 
 
@@ -2560,10 +2611,12 @@ class MonthlyMisController extends Controller
                 ['name'=>'Net Inflow','data'=>$monthly_net_inflow_amount_set]
             ];
           
+            $disclaimer=Disclaimer::select('dis_des')->find(3);
             $final_data=[];
             $final_data['categories']=$categories;
             $final_data['chart_data']=$chart_data;
             $final_data['table_data']=$table_data;
+            $final_data['disclaimer']=$disclaimer->dis_des;
         } catch (\Throwable $th) {
             throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);

@@ -12,7 +12,8 @@ use App\Models\{
     MutualFundTransaction,
     MFTransTypeSubType,
     BrokerChangeTransReport,
-    BrokerChangeTrans
+    BrokerChangeTrans,
+    Disclaimer
 };
 use Validator;
 use Illuminate\Support\Carbon;
@@ -44,6 +45,12 @@ class BrokerChangeTransController extends Controller
             $trans_sub_type=json_decode($request->trans_sub_type);
             $family_members_pan=json_decode($request->family_members_pan);
             $family_members_name=json_decode($request->family_members_name);
+
+            $brn_cd=json_decode($request->brn_cd);
+            $bu_type=json_decode($request->bu_type);
+            $rm_id=json_decode($request->rm_id);
+            $euin_no=json_decode($request->euin_no);
+            $sub_brk_cd=json_decode($request->sub_brk_cd);
 
             $rawQuery='';
             if ($folio_no || $view_type || !empty($amc_id) || !empty($cat_id) || !empty($sub_cat_id) || !empty($scheme_id)) {
@@ -84,6 +91,43 @@ class BrokerChangeTransController extends Controller
                             $rawQuery.=Helper::WhereRawQuery($client_name,$rawQuery,$queryString);
                         }
                     }
+                }
+
+                if (!empty($brn_cd)) {
+                    $row_name_string=  "'" .implode("','", $brn_cd). "'";
+                    $queryString='md_employee.branch_id';
+                    $condition=(strlen($rawQuery) > 0)? " AND ":" ";
+                    $rawQuery.=$condition.$queryString." IN (".$row_name_string.")";
+                }
+
+                if (!empty($bu_type)) {
+                    $row_name_string=  "'" .implode("','", $bu_type). "'";
+                    $queryString='(select bu_code from md_business_type where bu_code=md_employee.bu_type_id and branch_id=md_employee.branch_id limit 1)';
+                    $condition=(strlen($rawQuery) > 0)? " AND ":" ";
+                    $rawQuery.=$condition.$queryString." IN (".$row_name_string.")";
+                }
+                if (!empty($rm_id)) {
+                    $row_name_string=  "'" .implode("','", $rm_id). "'";
+                    $queryString="md_employee.euin_no";
+                    $condition=(strlen($rawQuery) > 0)? " AND ":" ";
+                    $rawQuery.=$condition.$queryString." IN (".$row_name_string.")";
+                }
+
+                if (!empty($sub_brk_cd)) {
+                    // some logicadd for sub broker checking 
+                    
+                    if (!empty($euin_no)) {
+                        $row_name_string=  "'" .implode("','", $euin_no). "'";
+                        $queryString="md_employee.euin_no";
+                        $condition=(strlen($rawQuery) > 0)? " AND ":" ";
+                        $rawQuery.=$condition.$queryString." IN (".$row_name_string.")";
+                    }
+                }
+                if (!empty($euin_no)) {
+                    $row_name_string=  "'" .implode("','", $euin_no). "'";
+                    $queryString="md_employee.euin_no";
+                    $condition=(strlen($rawQuery) > 0)? " AND ":" ";
+                    $rawQuery.=$condition.$queryString." IN (".$row_name_string.")";
                 }
                 // return $rawQuery;
                 // return $request;
@@ -283,10 +327,15 @@ class BrokerChangeTransController extends Controller
                         array_push($data,$value);
                     }
                 }
+
+            $disclaimer=Disclaimer::select('dis_des')->find(2);
+            $mydata=[];
+            $mydata['data']=$data;
+            $mydata['disclaimer']=$disclaimer->dis_des;
         } catch (\Throwable $th) {
             throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
-        return Helper::SuccessResponse($data);
+        return Helper::SuccessResponse($mydata);
     }
 }

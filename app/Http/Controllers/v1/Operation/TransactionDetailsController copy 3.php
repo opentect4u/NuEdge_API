@@ -11,8 +11,7 @@ use App\Models\{
     FormReceived,
     MutualFundTransaction,
     MFTransTypeSubType,
-    MutualFundTransactionReport,
-    Disclaimer
+    MutualFundTransactionReport
 };
 use Validator;
 use Illuminate\Support\Carbon;
@@ -133,15 +132,8 @@ class TransactionDetailsController extends Controller
             $trans_sub_type=json_decode($request->trans_sub_type);
             $family_members_pan=json_decode($request->family_members_pan);
             $family_members_name=json_decode($request->family_members_name);
-
-            $brn_cd=json_decode($request->brn_cd);
-            $bu_type=json_decode($request->bu_type);
-            $rm_id=json_decode($request->rm_id);
-            $euin_no=json_decode($request->euin_no);
-            $sub_brk_cd=json_decode($request->sub_brk_cd);
             
-            if ($date_range || $folio_no || $view_type || !empty($amc_id) || !empty($cat_id) || !empty($sub_cat_id) || !empty($scheme_id)
-                || !empty($brn_cd) || !empty($bu_type)) {
+            if ($date_range || $folio_no || $view_type || !empty($amc_id) || !empty($cat_id) || !empty($sub_cat_id) || !empty($scheme_id)) {
                 $rawQuery='';
                 if ($date_range) {
                     $from_date=Carbon::parse(str_replace('/','-',explode("-",$date_range)[0]))->format('Y-m-d') ;
@@ -180,51 +172,7 @@ class TransactionDetailsController extends Controller
                         $rawQuery.=Helper::WhereRawQuery($client_name,$rawQuery,$queryString);
                     }
                 }
-
-                if (!empty($brn_cd)) {
-                    $row_name_string=  "'" .implode("','", $brn_cd). "'";
-                    $queryString='md_employee.branch_id';
-                    $condition=(strlen($rawQuery) > 0)? " AND ":" ";
-                    $rawQuery.=$condition.$queryString." IN (".$row_name_string.")";
-                }
-
-                if (!empty($bu_type)) {
-                    $row_name_string=  "'" .implode("','", $bu_type). "'";
-                    $queryString='(select bu_code from md_business_type where bu_code=md_employee.bu_type_id and branch_id=md_employee.branch_id limit 1)';
-                    $condition=(strlen($rawQuery) > 0)? " AND ":" ";
-                    $rawQuery.=$condition.$queryString." IN (".$row_name_string.")";
-                }
-                if (!empty($rm_id)) {
-                    $row_name_string=  "'" .implode("','", $rm_id). "'";
-                    $queryString="md_employee.euin_no";
-                    $condition=(strlen($rawQuery) > 0)? " AND ":" ";
-                    $rawQuery.=$condition.$queryString." IN (".$row_name_string.")";
-                }
-
-                if (!empty($sub_brk_cd)) {
-                    // some logicadd for sub broker checking 
-                    // $row_name_string=  "'" .implode("','", $euin_no). "'";
-                    // $queryString="(select bu_code from md_sub_broker where bu_code=md_employee.bu_type_id and branch_id=md_employee.branch_id limit 1)";
-                    // $condition=(strlen($rawQuery) > 0)? " AND ":" ";
-                    // $rawQuery.=$condition.$queryString." IN (".$row_name_string.")";
-
-                    if (!empty($euin_no)) {
-                        $row_name_string=  "'" .implode("','", $euin_no). "'";
-                        $queryString="md_employee.euin_no";
-                        $condition=(strlen($rawQuery) > 0)? " AND ":" ";
-                        $rawQuery.=$condition.$queryString." IN (".$row_name_string.")";
-                    }
-                }
-                if (!empty($euin_no)) {
-                    $row_name_string=  "'" .implode("','", $euin_no). "'";
-                    $queryString="md_employee.euin_no";
-                    $condition=(strlen($rawQuery) > 0)? " AND ":" ";
-                    $rawQuery.=$condition.$queryString." IN (".$row_name_string.")";
-                }
-                
-
-                // return $request;
-                // return $rawQuery;
+                return $rawQuery;
                 // $rawQuery=$this->filterCriteria($rawQuery,$from_date,$to_date,$tin_no,$proposer_name,$ins_type_id,$company_id,$product_type_id,$product_id,$insured_bu_type,$ack_status);
                 // return $request;
                 // DB::enableQueryLog();
@@ -246,24 +194,6 @@ class TransactionDetailsController extends Controller
                     ->selectRaw('sum(tds) as tot_tds')
                     ->selectRaw('count(*) as tot_rows')
                     ->selectRaw('(select bu_type from md_business_type where bu_code=md_employee.bu_type_id and branch_id=md_employee.branch_id limit 1) as bu_type')
-                    ->selectRaw('IF(td_mutual_fund_trans.rnt_id=1,
-                    (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=td_mutual_fund_trans.trxn_type_code AND c_k_trans_type=td_mutual_fund_trans.trxn_type_flag AND c_k_trans_sub_type=td_mutual_fund_trans.trxn_nature_code limit 1),
-                    (CASE 
-                        WHEN td_mutual_fund_trans.trans_flag="DP" || td_mutual_fund_trans.trans_flag="DR" THEN (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=td_mutual_fund_trans.kf_trans_type AND k_divident_flag=td_mutual_fund_trans.trans_flag limit 1)
-                        WHEN td_mutual_fund_trans.trans_flag="TI" THEN "Transfer In"
-                        WHEN td_mutual_fund_trans.trans_flag="TO" THEN "Transfer Out"
-                        ELSE (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=td_mutual_fund_trans.kf_trans_type limit 1)
-                    END)
-                    )as transaction_type')
-                    ->selectRaw('IF(td_mutual_fund_trans.rnt_id=1,
-                    (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=td_mutual_fund_trans.trxn_type_code AND c_k_trans_type=td_mutual_fund_trans.trxn_type_flag AND c_k_trans_sub_type=td_mutual_fund_trans.trxn_nature_code limit 1),
-                    (CASE 
-                        WHEN td_mutual_fund_trans.trans_flag="DP" || td_mutual_fund_trans.trans_flag="DR" THEN (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=td_mutual_fund_trans.kf_trans_type AND k_divident_flag=td_mutual_fund_trans.trans_flag limit 1)
-                        WHEN td_mutual_fund_trans.trans_flag="TI" THEN "Transfer In"
-                        WHEN td_mutual_fund_trans.trans_flag="TO" THEN "Transfer Out"
-                        ELSE (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=td_mutual_fund_trans.kf_trans_type limit 1)
-                    END)
-                    )as transaction_subtype')
                     ->where('td_mutual_fund_trans.delete_flag','N')
                     ->where('td_mutual_fund_trans.amc_flag','N')
                     ->where('td_mutual_fund_trans.scheme_flag','N')
@@ -278,7 +208,49 @@ class TransactionDetailsController extends Controller
                     ->groupBy('td_mutual_fund_trans.kf_trans_type')
                     ->groupBy('td_mutual_fund_trans.trans_flag')
                     ->get();
+
+
+                // $all_data=MutualFundTransactionReport::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','tt_mutual_fund_trans_report.product_code')
+                //     ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
+                //     ->leftJoin('md_category','md_category.id','=','md_scheme.category_id')
+                //     ->leftJoin('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
+                //     ->leftJoin('md_amc','md_amc.amc_code','=','tt_mutual_fund_trans_report.amc_code')
+                //     ->leftJoin('md_plan','md_plan.id','=','md_scheme_isin.plan_id')
+                //     ->leftJoin('md_option','md_option.id','=','md_scheme_isin.option_id')
+                //     ->leftJoin('md_employee','md_employee.euin_no','=','tt_mutual_fund_trans_report.euin_no')
+                //     ->leftJoin('md_branch','md_branch.id','=','md_employee.branch_id')
+                //     ->select('tt_mutual_fund_trans_report.*','md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name','md_amc.amc_short_name as amc_name',
+                //     'md_plan.plan_name as plan_name','md_option.opt_name as option_name',
+                //     'md_employee.emp_name as rm_name','md_branch.brn_name as branch','md_employee.bu_type_id as bu_type_id','md_employee.branch_id as branch_id','md_employee.euin_no as euin_no')
+                //     ->selectRaw('sum(amount) as tot_amount')
+                //     ->selectRaw('sum(stamp_duty) as tot_stamp_duty')
+                //     ->selectRaw('sum(tds) as tot_tds')
+                //     ->selectRaw('count(*) as tot_rows')
+                //     ->selectRaw('(select bu_type from md_business_type where bu_code=md_employee.bu_type_id and branch_id=md_employee.branch_id limit 1) as bu_type')
+                //     ->where('tt_mutual_fund_trans_report.delete_flag','N')
+                //     ->where('tt_mutual_fund_trans_report.amc_flag','N')
+                //     ->where('tt_mutual_fund_trans_report.scheme_flag','N')
+                //     ->where('tt_mutual_fund_trans_report.plan_option_flag','N')
+                //     ->where('tt_mutual_fund_trans_report.bu_type_flag','N')
+                //     ->where('tt_mutual_fund_trans_report.divi_mismatch_flag','N')
+                //     ->whereRaw($rawQuery)
+                //     ->groupBy('tt_mutual_fund_trans_report.trans_no')
+                //     ->groupBy('tt_mutual_fund_trans_report.trxn_type_flag')
+                //     ->groupBy('tt_mutual_fund_trans_report.trxn_nature_code')
+                //     ->groupBy('tt_mutual_fund_trans_report.trans_desc')
+                //     ->groupBy('tt_mutual_fund_trans_report.kf_trans_type')
+                //     ->get();
                 // dd(DB::getQueryLog());
+
+
+
+                // $all_data=DB::select('SELECT rnt_id,sub_brk_cd,first_client_name,first_client_pan,trans_date,folio_no,trans_no,units,pur_price,
+                // bank_name,acc_no,stt,trans_mode,remarks,divi_lock_flag,scheme_name,cat_name,subcat_name,amc_name,plan_name,option_name,rm_name,
+                // branch,euin_no,bu_type,transaction_type,transaction_subtype,amount,stamp_duty,tds,sum(amount) as tot_amount,
+                // sum(stamp_duty) as tot_stamp_duty,sum(tds) as tot_tds 
+                // FROM transaction_report
+                // WHERE date(trans_date) >= "2023-10-01" AND date(trans_date) <= "2024-03-13"
+                // GROUP BY trans_no,trxn_type_flag,trxn_nature_code,trans_desc,kf_trans_type');
             } 
             // else {
             //     $all_data=MutualFundTransaction::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_mutual_fund_trans.product_code')
@@ -316,6 +288,32 @@ class TransactionDetailsController extends Controller
                     $euin=$value->euin_no;
                     $trans_no=$value->trans_no;
                     $trans_date=$value->trans_date;
+                    // MutualFundTransaction::
+                    // if($euin == ''){
+                    //     $euin_no=MutualFundTransaction::where('folio_no',$value->folio_no)
+                    //     ->where('euin_no','!=','')->first();
+                    //     // return $euin_no;
+                    //     if ($euin_no) {
+                    //         $rm_data=DB::table('md_employee')
+                    //             ->leftJoin('md_branch','md_branch.id','=','md_employee.branch_id')
+                    //             ->leftJoin('md_business_type','md_business_type.bu_code','=','md_employee.bu_type_id')
+                    //             ->select('md_employee.*','md_branch.brn_name as branch_name','md_business_type.bu_type as bu_type')
+                    //             ->where('md_employee.euin_no',$euin_no->euin_no)
+                    //             ->first();
+                    //         // return $rm_data;
+                    //         if ($rm_data) {
+                    //             $value->bu_type=$rm_data->bu_type;
+                    //             $value->branch=$rm_data->branch_name;
+                    //             $value->rm_name=$rm_data->emp_name;
+                    //             $value->euin_no=$rm_data->euin_no;
+                    //         }
+                    //     }
+                    // }else{
+                    //     $value->bu_type=DB::table('md_business_type')
+                    //         ->where('bu_code',$value->bu_type_id)
+                    //         ->where('branch_id',$value->branch_id)
+                    //         ->value('bu_type');
+                    // }
                     
                     // ====================start trans type & sub type=========================
                     $trxn_type=$value->trxn_type;
@@ -324,60 +322,62 @@ class TransactionDetailsController extends Controller
                     $amount=$value->amount;
                     $transaction_type='';
                     $transaction_subtype='';
-                    if ($value->rnt_id=1 && $amount < 0) {
-                        $transaction_type=$value->transaction_type." Rejection";
-                        $transaction_subtype=$value->transaction_subtype." Rejection";
-                    }
-
-                    // if ($trxn_type && $trxn_type_flag && $trxn_nature) {  //for cams
-                    //     $trxn_code=TransHelper::transTypeToCodeCAMS($trxn_type);
-                    //     $trxn_nature_code=TransHelper::trxnNatureCodeCAMS($trxn_nature);
-
-                    //     $value->trxn_code=$trxn_code;
-                    //     $value->trxn_type_flag_code=$trxn_type_flag;
-                    //     $value->trxn_nature_code=$trxn_nature_code;
-                        
-                    //     $get_type_subtype=MFTransTypeSubType::where('c_trans_type_code',$trxn_code)
-                    //         ->where('c_k_trans_type',$trxn_type_flag)
-                    //         ->where('c_k_trans_sub_type',$trxn_nature_code)
-                    //         ->first();
-                        
-                    //     if ($amount > 0) {
-                    //         if ($get_type_subtype) {
-                    //             $transaction_type=$get_type_subtype->trans_type;
-                    //             $transaction_subtype=$get_type_subtype->trans_sub_type;
-                    //         }
-                    //     }else{
-                    //         if ($get_type_subtype) {
-                    //             $transaction_type=$get_type_subtype->trans_type." Rejection";
-                    //             $transaction_subtype=$get_type_subtype->trans_sub_type." Rejection";
-                    //         }
-                    //     }
-                    // }else {
-                    //     $kf_trans_type=$value->kf_trans_type;
-                    //     $trans_flag=$value->trans_flag;
-                    //     if ($trans_flag=='DP' || $trans_flag=='DR') {
-                    //         $get_type_subtype=MFTransTypeSubType::where('c_k_trans_sub_type',$kf_trans_type)
-                    //             ->where('k_divident_flag',$trans_flag)
-                    //             ->first();
-                    //     }elseif ($trans_flag=='TI') {
-                    //         $get_type_subtype='';
-                    //         $transaction_type='Transfer In';
-                    //         $transaction_subtype='Transfer In';
-                    //     }elseif ($trans_flag=='TO') {
-                    //         $get_type_subtype='';
-                    //         $transaction_type='Transfer Out';
-                    //         $transaction_subtype='Transfer Out';
-                    //     } else {
-                    //         $get_type_subtype=MFTransTypeSubType::where('c_k_trans_sub_type',$kf_trans_type)
-                    //             ->first();
-                    //     }
-                        
-                    //     if ($get_type_subtype) {
-                    //         $transaction_type=$get_type_subtype->trans_type;
-                    //         $transaction_subtype=$get_type_subtype->trans_sub_type;
+                    // if ($value->rnt_id=1) {
+                    //     if ($amount < 0) {
+                    //         $transaction_type=$value->transaction_type." Rejection";
+                    //         $transaction_subtype=$value->transaction_subtype." Rejection";
                     //     }
                     // }
+
+                    if ($trxn_type && $trxn_type_flag && $trxn_nature) {  //for cams
+                        $trxn_code=TransHelper::transTypeToCodeCAMS($trxn_type);
+                        $trxn_nature_code=TransHelper::trxnNatureCodeCAMS($trxn_nature);
+
+                        $value->trxn_code=$trxn_code;
+                        $value->trxn_type_flag_code=$trxn_type_flag;
+                        $value->trxn_nature_code=$trxn_nature_code;
+                        
+                        $get_type_subtype=MFTransTypeSubType::where('c_trans_type_code',$trxn_code)
+                            ->where('c_k_trans_type',$trxn_type_flag)
+                            ->where('c_k_trans_sub_type',$trxn_nature_code)
+                            ->first();
+                        
+                        if ($amount > 0) {
+                            if ($get_type_subtype) {
+                                $transaction_type=$get_type_subtype->trans_type;
+                                $transaction_subtype=$get_type_subtype->trans_sub_type;
+                            }
+                        }else{
+                            if ($get_type_subtype) {
+                                $transaction_type=$get_type_subtype->trans_type." Rejection";
+                                $transaction_subtype=$get_type_subtype->trans_sub_type." Rejection";
+                            }
+                        }
+                    }else {
+                        $kf_trans_type=$value->kf_trans_type;
+                        $trans_flag=$value->trans_flag;
+                        if ($trans_flag=='DP' || $trans_flag=='DR') {
+                            $get_type_subtype=MFTransTypeSubType::where('c_k_trans_sub_type',$kf_trans_type)
+                                ->where('k_divident_flag',$trans_flag)
+                                ->first();
+                        }elseif ($trans_flag=='TI') {
+                            $get_type_subtype='';
+                            $transaction_type='Transfer In';
+                            $transaction_subtype='Transfer In';
+                        }elseif ($trans_flag=='TO') {
+                            $get_type_subtype='';
+                            $transaction_type='Transfer Out';
+                            $transaction_subtype='Transfer Out';
+                        } else {
+                            $get_type_subtype=MFTransTypeSubType::where('c_k_trans_sub_type',$kf_trans_type)
+                                ->first();
+                        }
+                        
+                        if ($get_type_subtype) {
+                            $transaction_type=$get_type_subtype->trans_type;
+                            $transaction_subtype=$get_type_subtype->trans_sub_type;
+                        }
+                    }
                     $value->gross_amount= number_format((float)((float)$amount + (float)$value->stamp_duty + (float)$value->tds), 2, '.', '');
                     // number_format((float)$foo, 2, '.', '')
                     $value->tot_gross_amount= number_format((float)((float)$value->tot_amount + (float)$value->tot_stamp_duty + (float)$value->tot_tds), 2, '.', '');
@@ -394,16 +394,11 @@ class TransactionDetailsController extends Controller
                         array_push($data,$value);
                     }
                 }
-            
-            $disclaimer=Disclaimer::select('dis_des')->find(5);
-            $mydata=[];
-            $mydata['data']=$data;
-            $mydata['disclaimer']=$disclaimer->dis_des;
         } catch (\Throwable $th) {
             throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
-        return Helper::SuccessResponse($mydata);
+        return Helper::SuccessResponse($data);
     }
 
     public function search_old(Request $request)

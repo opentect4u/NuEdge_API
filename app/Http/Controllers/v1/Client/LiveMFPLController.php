@@ -254,11 +254,18 @@ class LiveMFPLController extends Controller
                 $value1->inv_cost=isset($mydata['inv_cost'])?number_format((float)$mydata['inv_cost'], 2, '.', ''):0;
                 $value1->tot_units=isset($mydata['tot_units'])?number_format((float)$mydata['tot_units'], 2, '.', ''):0;
                 $value1->curr_val= number_format((float)($value1->curr_nav * $value1->tot_units), 2, '.', '');
-                $value1->gain_loss=number_format((float)(($value1->curr_val - $value1->inv_cost) + $value1->idcwr), 2, '.', '');
-                if ($value1->gain_loss==0 || $value1->inv_cost==0) {
+                // $value1->gain_loss=number_format((float)(($value1->curr_val - $value1->inv_cost) + $value1->idcwr), 2, '.', '');
+                // if ($value1->gain_loss==0 || $value1->inv_cost==0) {
+                //     $value1->ret_abs=0;
+                // }else {
+                //     $value1->ret_abs=number_format((float)(($value1->gain_loss / $value1->inv_cost) * 100), 2, '.', '');
+                // }
+
+                $value1->gain_loss=number_format((float)(($value1->tot_outflow + $value1->curr_val) - $value1->tot_inflow), 2, '.', '');
+                if ($value1->gain_loss==0 || $value1->tot_inflow==0) {
                     $value1->ret_abs=0;
                 }else {
-                    $value1->ret_abs=number_format((float)(($value1->gain_loss / $value1->inv_cost) * 100), 2, '.', '');
+                    $value1->ret_abs=number_format((float)(($value1->gain_loss / $value1->tot_inflow) * 100), 2, '.', '');
                 }
                 array_push($filter_data,$value1);
             }

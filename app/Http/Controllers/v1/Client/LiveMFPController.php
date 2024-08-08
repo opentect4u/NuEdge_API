@@ -45,61 +45,59 @@ class LiveMFPController extends Controller
             $client_details='';
             if ($view_type || $valuation_as_on || $view_funds_type || $trans_duration) {
                 $rawQuery='';
-                if ($trans_duration) {
-                    switch ($trans_duration) {
-                        case '< 1':
-                            $from_date = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -1 year"));
-                            $to_date =$valuation_as_on;
-                            break;
-                        case '> 1':
-                            $valuation_as_on = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -1 year"));
-                            break;
-                        case '> 2':
-                            $valuation_as_on = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -2 year"));
-                            break;
-                        case '> 3':
-                            $valuation_as_on = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -3 year"));
-                            break;
-                        case '> 4':
-                            $valuation_as_on = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -4 year"));
-                            break;
-                        case '> 5':
-                            $valuation_as_on = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -5 year"));
-                            break;
-                        case '> 7':
-                            $valuation_as_on = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -7 year"));
-                            break;
-                        case '> 10':
-                            $valuation_as_on = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -10 year"));
-                            break;
-                        case 'D':
-                            $trans_date_range=$request->trans_date_range;
-                            $from_date=Carbon::parse(str_replace('/','-',explode("-",$trans_date_range)[0]))->format('Y-m-d') ;
-                            $to_date=Carbon::parse(str_replace('/','-',explode("-",$trans_date_range)[1]))->format('Y-m-d') ;
-                            // return $to_date;
-                            break;
-                        default:
-                            break;
-                    }
-                    if ($trans_duration=="< 1" || $trans_duration=="D") {
-                        // return $from_date." - ".$to_date;
-                        session(['from_date' => $from_date]);
-                        $valuation_as_on=$to_date;
-                        $queryString='td_mutual_fund_trans.trans_date';
-                        $rawQuery.=Helper::FrmToDateRawQuery($from_date,$valuation_as_on,$rawQuery,$queryString);
-                    }else {
-                        // return $previousDate;
-                        $condition_v=(strlen($rawQuery) > 0)? " AND ":" ";
-                        $queryString='td_mutual_fund_trans.trans_date';
-                        $rawQuery.=$condition_v.$queryString."<= '".$valuation_as_on."'";
-                    }
+                    // switch ($trans_duration) {
+                    //     case '< 1':
+                    //         $from_date = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -1 year"));
+                    //         $to_date =$valuation_as_on;
+                    //         break;
+                    //     case '> 1':
+                    //         $valuation_as_on = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -1 year"));
+                    //         break;
+                    //     case '> 2':
+                    //         $valuation_as_on = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -2 year"));
+                    //         break;
+                    //     case '> 3':
+                    //         $valuation_as_on = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -3 year"));
+                    //         break;
+                    //     case '> 4':
+                    //         $valuation_as_on = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -4 year"));
+                    //         break;
+                    //     case '> 5':
+                    //         $valuation_as_on = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -5 year"));
+                    //         break;
+                    //     case '> 7':
+                    //         $valuation_as_on = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -7 year"));
+                    //         break;
+                    //     case '> 10':
+                    //         $valuation_as_on = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -10 year"));
+                    //         break;
+                    //     case 'D':
+                    //         $trans_date_range=$request->trans_date_range;
+                    //         $from_date=Carbon::parse(str_replace('/','-',explode("-",$trans_date_range)[0]))->format('Y-m-d') ;
+                    //         $to_date=Carbon::parse(str_replace('/','-',explode("-",$trans_date_range)[1]))->format('Y-m-d') ;
+                    //         // return $to_date;
+                    //         break;
+                    //     default:
+                    //         break;
+                    // }
+                    // if ($trans_duration=="< 1" || $trans_duration=="D") {
+                    //     // return $from_date." - ".$to_date;
+                    //     session(['from_date' => $from_date]);
+                    //     $valuation_as_on=$to_date;
+                    //     $queryString='td_mutual_fund_trans.trans_date';
+                    //     $rawQuery.=Helper::FrmToDateRawQuery($from_date,$valuation_as_on,$rawQuery,$queryString);
+                    // }else {
+                    //     // return $previousDate;
+                    //     $condition_v=(strlen($rawQuery) > 0)? " AND ":" ";
+                    //     $queryString='td_mutual_fund_trans.trans_date';
+                    //     $rawQuery.=$condition_v.$queryString."<= '".$valuation_as_on."'";
+                    // }
                     
-                }else {
-                    if ($valuation_as_on) {
-                        $condition_v=(strlen($rawQuery) > 0)? " AND ":" ";
-                        $queryString='td_mutual_fund_trans.trans_date';
-                        $rawQuery.=$condition_v.$queryString."<= '".$valuation_as_on."'";
-                    }
+                
+                if ($valuation_as_on) {
+                    $condition_v=(strlen($rawQuery) > 0)? " AND ":" ";
+                    $queryString='td_mutual_fund_trans.trans_date';
+                    $rawQuery.=$condition_v.$queryString."<= '".$valuation_as_on."'";
                 }
                 
                 if ($view_type=='C') {
@@ -314,7 +312,142 @@ class LiveMFPController extends Controller
                 
                 array_push($filter_data,$value1);
             }
-            
+
+            // return $filter_data;
+            // for Trans. Duration filter purpose
+            if ($trans_duration) {
+                $filter_data1=[];
+                foreach ($filter_data as $filter_data_key => $filter_data_value) {
+                    // return $filter_data_value;
+                    if ($filter_data_value->curr_val > 0) {
+                        $cal_purchase_data=$filter_data_value['mydata']['cal_purchase_data'];
+                        // return $cal_purchase_data;
+                        $re_cal_purchase_data=[];
+                        switch ($trans_duration) {
+                            case '< 1':
+                                $from_date = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -1 year"));
+                                $to_date =$valuation_as_on;
+                                foreach ($cal_purchase_data as $key => $cal_purchase_data_value) {
+                                    if (strtotime($cal_purchase_data_value['trans_date']) >= strtotime($from_date) && strtotime($cal_purchase_data_value['trans_date']) <= strtotime($to_date)) {
+                                        array_push($re_cal_purchase_data,$cal_purchase_data_value);
+                                    }
+                                }
+                                break;
+                            case '> 1':
+                                $trans_duration_cal_date = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -1 year"));
+                                foreach ($cal_purchase_data as $key => $cal_purchase_data_value) {
+                                    if (strtotime($cal_purchase_data_value['trans_date']) <= strtotime($trans_duration_cal_date)) {
+                                        array_push($re_cal_purchase_data,$cal_purchase_data_value);
+                                    }
+                                }
+                                break;
+                            case '> 2':
+                                $trans_duration_cal_date = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -2 year"));
+                                foreach ($cal_purchase_data as $key => $cal_purchase_data_value) {
+                                    if (strtotime($cal_purchase_data_value['trans_date']) <= strtotime($trans_duration_cal_date)) {
+                                        array_push($re_cal_purchase_data,$cal_purchase_data_value);
+                                    }
+                                }
+                                break;
+                            case '> 3':
+                                $trans_duration_cal_date = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -3 year"));
+                                foreach ($cal_purchase_data as $key => $cal_purchase_data_value) {
+                                    if (strtotime($cal_purchase_data_value['trans_date']) <= strtotime($trans_duration_cal_date)) {
+                                        array_push($re_cal_purchase_data,$cal_purchase_data_value);
+                                    }
+                                }
+                                break;
+                            case '> 4':
+                                $trans_duration_cal_date = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -4 year"));
+                                foreach ($cal_purchase_data as $key => $cal_purchase_data_value) {
+                                    if (strtotime($cal_purchase_data_value['trans_date']) <= strtotime($trans_duration_cal_date)) {
+                                        array_push($re_cal_purchase_data,$cal_purchase_data_value);
+                                    }
+                                }
+                                break;
+                            case '> 5':
+                                $trans_duration_cal_date = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -5 year"));
+                                foreach ($cal_purchase_data as $key => $cal_purchase_data_value) {
+                                    if (strtotime($cal_purchase_data_value['trans_date']) <= strtotime($trans_duration_cal_date)) {
+                                        array_push($re_cal_purchase_data,$cal_purchase_data_value);
+                                    }
+                                }
+                                break;
+                            case '> 7':
+                                $trans_duration_cal_date = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -7 year"));
+                                foreach ($cal_purchase_data as $key => $cal_purchase_data_value) {
+                                    if (strtotime($cal_purchase_data_value['trans_date']) <= strtotime($trans_duration_cal_date)) {
+                                        array_push($re_cal_purchase_data,$cal_purchase_data_value);
+                                    }
+                                }
+                                break;
+                            case '> 10':
+                                $trans_duration_cal_date = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -10 year"));
+                                foreach ($cal_purchase_data as $key => $cal_purchase_data_value) {
+                                    if (strtotime($cal_purchase_data_value['trans_date']) <= strtotime($trans_duration_cal_date)) {
+                                        array_push($re_cal_purchase_data,$cal_purchase_data_value);
+                                    }
+                                }
+                                break;
+                            case 'D':
+                                $trans_date_range=$request->trans_date_range;
+                                $from_date=Carbon::parse(str_replace('/','-',explode("-",$trans_date_range)[0]))->format('Y-m-d') ;
+                                $to_date=Carbon::parse(str_replace('/','-',explode("-",$trans_date_range)[1]))->format('Y-m-d') ;
+                                // return $to_date;
+                                foreach ($cal_purchase_data as $key => $cal_purchase_data_value) {
+                                    if (strtotime($cal_purchase_data_value['trans_date']) >= strtotime($from_date) && strtotime($cal_purchase_data_value['trans_date']) <= strtotime($to_date)) {
+                                        array_push($re_cal_purchase_data,$cal_purchase_data_value);
+                                    }
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                        // return $re_cal_purchase_data;
+                        // $filter_data_value['mydata']=['cal_purchase_data' => $re_cal_purchase_data];
+                        $re_cal_purchase_datas=[];
+                        $re_cal_purchase_datas['re_cal_purchase_data']=$re_cal_purchase_data;
+                        $inv_cost=0;                    
+                        $idcwp=0;
+                        $idcw_reinv=0;
+                        $tot_units=0;
+                        foreach ($re_cal_purchase_data as $key => $re_cal_purchase_data_value) {
+                            if ($re_cal_purchase_data_value['cumml_units'] > 0) {
+                                if (strpos($re_cal_purchase_data_value['transaction_subtype'], 'Dividend Reinvestment')!== false) {
+                                    $idcw_reinv +=number_format((float)$re_cal_purchase_data_value['tot_amount'], 2, '.', '');
+                                }
+                                if (strpos($re_cal_purchase_data_value['transaction_subtype'], 'Dividend Payout')!== false) {
+                                    $idcwp +=number_format((float)$re_cal_purchase_data_value['tot_amount'], 2, '.', '');
+                                }
+                                $inv_cost +=number_format((float)$re_cal_purchase_data_value['tot_amount'], 2, '.', '');
+                            }
+                            $tot_units +=number_format((float)$re_cal_purchase_data_value['tot_units'], 4, '.', '');
+                        }
+                        $re_cal_purchase_datas['idcwp']=$idcwp;
+                        $re_cal_purchase_datas['idcw_reinv']=$idcw_reinv;
+                        $re_cal_purchase_datas['idcwr']=number_format((float)($re_cal_purchase_datas['idcwp'] + $re_cal_purchase_datas['idcw_reinv']), 2, '.', '');
+                        $re_cal_purchase_datas['inv_cost']=number_format((float)$inv_cost, 2, '.', '');
+                        $re_cal_purchase_datas['tot_units']=number_format((float)$tot_units, 4, '.', '');
+                        $re_cal_purchase_datas['curr_val']= number_format((float)($filter_data_value['curr_nav'] * $re_cal_purchase_datas['tot_units']), 2, '.', '');
+                        $re_cal_purchase_datas['gain_loss']=number_format((float)(($re_cal_purchase_datas['curr_val'] - $re_cal_purchase_datas['inv_cost']) + $re_cal_purchase_datas['idcwr']), 2, '.', '');
+                        if ($re_cal_purchase_datas['gain_loss']==0 || $re_cal_purchase_datas['inv_cost']==0) {
+                            $re_cal_purchase_datas['ret_abs']=0;
+                        }else {
+                            $re_cal_purchase_datas['ret_abs']=number_format((float)(($re_cal_purchase_datas['gain_loss'] / $re_cal_purchase_datas['inv_cost']) * 100), 2, '.', '');
+                        }
+
+                        // return $re_cal_purchase_datas;
+                        $filter_data_value['re_cal_purchase_datas']=$re_cal_purchase_datas;
+                        array_push($filter_data1,$filter_data_value);
+                    }else {
+                        array_push($filter_data1,$filter_data_value);
+                    }
+                }
+                // return $filter_data1;
+                $filter_data=$filter_data1;
+            }
+            // for Trans. Duration filter purpose
+
             $disclaimer=Disclaimer::select('dis_des')->find(1);
             if ($view_type=='F') {
                 $grouped_types=[];

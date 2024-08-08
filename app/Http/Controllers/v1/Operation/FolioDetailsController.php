@@ -13,7 +13,8 @@ use App\Models\{
     MFTransTypeSubType,
     FolioDetails,
     TempFolioDetails,
-    FolioDetailsReport
+    FolioDetailsReport,
+    Disclaimer
 };
 use Validator;
 use Illuminate\Support\Carbon;
@@ -42,6 +43,12 @@ class FolioDetailsController extends Controller
             $view_type=$request->view_type;
             $family_members_pan=json_decode($request->family_members_pan);
             $family_members_name=json_decode($request->family_members_name);
+
+            $brn_cd=json_decode($request->brn_cd);
+            $bu_type=json_decode($request->bu_type);
+            $rm_id=json_decode($request->rm_id);
+            $euin_no=json_decode($request->euin_no);
+            $sub_brk_cd=json_decode($request->sub_brk_cd);
 
             $rawQuery='';
             if ($folio_status || $client_name || $view_type || $folio_no || $kyc_status || $nominee_status || $adhaar_pan_link_status) {
@@ -164,12 +171,47 @@ class FolioDetailsController extends Controller
                             break;
                     }
                 }
+
+                if (!empty($brn_cd)) {
+                    $row_name_string=  "'" .implode("','", $brn_cd). "'";
+                    $queryString='md_employee.branch_id';
+                    $condition=(strlen($rawQuery) > 0)? " AND ":" ";
+                    $rawQuery.=$condition.$queryString." IN (".$row_name_string.")";
+                }
+                if (!empty($bu_type)) {
+                    $row_name_string=  "'" .implode("','", $bu_type). "'";
+                    $queryString='(select bu_code from md_business_type where bu_code=md_employee.bu_type_id and branch_id=md_employee.branch_id limit 1)';
+                    $condition=(strlen($rawQuery) > 0)? " AND ":" ";
+                    $rawQuery.=$condition.$queryString." IN (".$row_name_string.")";
+                }
+                if (!empty($rm_id)) {
+                    $row_name_string=  "'" .implode("','", $rm_id). "'";
+                    $queryString="md_employee.euin_no";
+                    $condition=(strlen($rawQuery) > 0)? " AND ":" ";
+                    $rawQuery.=$condition.$queryString." IN (".$row_name_string.")";
+                }
+                if (!empty($sub_brk_cd)) {
+                    // some logicadd for sub broker checking 
+                    if (!empty($euin_no)) {
+                        $row_name_string=  "'" .implode("','", $euin_no). "'";
+                        $queryString="md_employee.euin_no";
+                        $condition=(strlen($rawQuery) > 0)? " AND ":" ";
+                        $rawQuery.=$condition.$queryString." IN (".$row_name_string.")";
+                    }
+                }
+                if (!empty($euin_no)) {
+                    $row_name_string=  "'" .implode("','", $euin_no). "'";
+                    $queryString="md_employee.euin_no";
+                    $condition=(strlen($rawQuery) > 0)? " AND ":" ";
+                    $rawQuery.=$condition.$queryString." IN (".$row_name_string.")";
+                }
+
             }
             // return $rawQuery;
             $data=[];
             // DB::enableQueryLog();
             // FolioDetailsReport
-            $my_data=FolioDetailsReport::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','tt_folio_details_reports.product_code')
+            $my_data=FolioDetailsReport::with('foliotrans')->leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','tt_folio_details_reports.product_code')
                 ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
                 ->leftJoin('md_plan','md_plan.id','=','md_scheme_isin.plan_id')
                 ->leftJoin('md_option','md_option.id','=','md_scheme_isin.option_id')
@@ -382,6 +424,22 @@ class FolioDetailsController extends Controller
                 ->get();
             // dd(DB::getQueryLog());
             // return $data;
+
+            $valuation_as_on=date('Y-m-d');
+            $all_trans_product=[];
+            foreach ($my_data as $key => $value) {
+                $f_trans_product="(nav_date=(SELECT MAX(nav_date) FROM td_nav_details WHERE product_code='".$value->product_code."' AND nav_date <='".$valuation_as_on."') AND product_code='".$value->product_code."')";
+                array_push($all_trans_product,$f_trans_product);
+            }
+            // return $data;
+            $string_version_product_code = implode(',', $all_trans_product);
+            // return $string_version_product_code;
+            $res_array=[];
+            if (count($all_trans_product)>0) {
+                $res_array =DB::connection('mysql_nav')
+                ->select('SELECT product_code,isin_no,DATE_FORMAT(nav_date, "%Y-%m-%d") as nav_date,nav FROM td_nav_details where '.str_replace(",","  OR  ",$string_version_product_code));
+            }
+
             foreach ($my_data as $key => $value) {
                 if ($value->rnt_id==2) {
                     // pa_link_ststus_1st
@@ -485,12 +543,43 @@ class FolioDetailsController extends Controller
                 if($value->guardian_name==""){
                     $value->guardian_dob=NULL;
                 }
+
+                $new='';
+                if (count($res_array) > 0) {
+                    foreach($res_array as $val_nav){
+                        if($val_nav->product_code==$value->product_code){
+                            $new=$val_nav;
+                        }
+                    }
+                }
+                // return $new;
+                $value->new=$new;
+                $value->curr_nav=isset($new->nav)?$new->nav:0;
+                $value->nav_date=isset($new->nav_date)?$new->nav_date:0;
+                $mydata='';
+                $foliotrans=$value->foliotrans;
+                $json  = json_encode($foliotrans);
+                $array = json_decode($json, true);
+                if (array_search('Consolidation In',array_column($array,'transaction_subtype'))) {
+                    $foliotrans=TransHelper::ConsolidationInQuery($value->rnt_id,$value->folio_no,$value->isin_no,$value->product_code,$valuation_as_on);
+                }
+                $mydata=TransHelper::calculate($foliotrans,$value->curr_nav,$valuation_as_on);
+                $value->mydata=$mydata;
+                $value->tot_units=isset($mydata['tot_units'])?number_format((float)$mydata['tot_units'], 2, '.', ''):0;
+                $value->folio_balance=number_format((float)($value->curr_nav * $value->tot_units), 2, '.', '');
+                $value->folio_status=($value->folio_balance==0)?'Inactive':'Active';
+                   
                 array_push($data,$value);
             }
+
+            $disclaimer=Disclaimer::select('dis_des')->find(4);
+            $mydata=[];
+            $mydata['data']=$data;
+            $mydata['disclaimer']=$disclaimer->dis_des;
         } catch (\Throwable $th) {
             throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
-        return Helper::SuccessResponse($data);
+        return Helper::SuccessResponse($mydata);
     }
 }
