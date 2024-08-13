@@ -145,6 +145,9 @@ class CapitalGLController extends Controller
             // return $all_data;
             $data=[];
             foreach ($all_data as $key_datas => $datas) {
+                // if ($datas->tot_units > 0) {
+                //     return $datas;
+                // }
                 // return $datas;
                 $capitalgainloss=$datas->capitalgainloss;
                 // return $capitalgainloss;
@@ -228,6 +231,11 @@ class CapitalGLController extends Controller
                 }
                 $purchase_data=$purchase_data_recheck;
                 /*********************for pledging condition*****************************************/
+                // if ($datas->tot_units > 0) {
+                //     return $redemption_data;
+                // }
+                // return $purchase_data;
+                // return $redemption_data;
                 /***************************************Search period calculation****************************************************/
                 $search_period=[];
                 $after_search_period=[];
@@ -244,8 +252,13 @@ class CapitalGLController extends Controller
                 /***************************************Search period calculation****************************************************/
                 // return $search_period;
                 if (count($search_period) > 0) {
+                    // return $purchase_data;
+                    // return $after_search_period;
                     // return $search_period;
-                    /********************************************************************** */
+                    // if ($datas->folio_no=="901125987412" && $datas->product_code=="128EHGP") {
+                    //     return $search_period;
+                    // }
+                    /********************start search period before any redemption calculation************************************************** */
                     if (count($after_search_period) > 0) {
                         foreach ($after_search_period as $redemption_key => $redemption_value) {
                             $rdm_tot_units=number_format((float)$redemption_value->tot_units, 4, '.', '');
@@ -334,6 +347,7 @@ class CapitalGLController extends Controller
                         }
                         $purchase_data=$final_arr;
                     }
+                    /********************end search period before any redemption calculation************************************************** */
                     /********************************************************************** */
                     // return $purchase_data;
                     /********************************************************************** */
@@ -458,11 +472,15 @@ class CapitalGLController extends Controller
                     /********************************************************************** */
                     // return $calculation_arr;
                     $datas->calculation_arr=$calculation_arr;
+                    // if ($datas->folio_no=="901125987412" && $datas->product_code=="128EHGP") {
+                    //     return $datas;
+                    // }
                     array_push($data,$datas);
                 }
                 // $datas->for_checking="test_data";
                 // array_push($data,$datas);
             }
+            // return $data;
             usort($data, function($a, $b) {
                 return $a['scheme_name'] <=> $b['scheme_name'];
             });

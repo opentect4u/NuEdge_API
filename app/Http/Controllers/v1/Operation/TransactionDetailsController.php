@@ -313,71 +313,14 @@ class TransactionDetailsController extends Controller
             // return $all_data;
                 $data=[];
                 foreach ($all_data as $key => $value) {
-                    $euin=$value->euin_no;
-                    $trans_no=$value->trans_no;
-                    $trans_date=$value->trans_date;
-                    
-                    // ====================start trans type & sub type=========================
-                    $trxn_type=$value->trxn_type;
-                    $trxn_type_flag=$value->trxn_type_flag;
-                    $trxn_nature=$value->trxn_nature;
                     $amount=$value->amount;
-                    $transaction_type='';
-                    $transaction_subtype='';
-                    if ($value->rnt_id=1 && $amount < 0) {
+                    if ($amount <= 0) {
                         $transaction_type=$value->transaction_type." Rejection";
                         $transaction_subtype=$value->transaction_subtype." Rejection";
+                    }else {
+                        $transaction_type=$value->transaction_type;
+                        $transaction_subtype=$value->transaction_subtype;
                     }
-
-                    // if ($trxn_type && $trxn_type_flag && $trxn_nature) {  //for cams
-                    //     $trxn_code=TransHelper::transTypeToCodeCAMS($trxn_type);
-                    //     $trxn_nature_code=TransHelper::trxnNatureCodeCAMS($trxn_nature);
-
-                    //     $value->trxn_code=$trxn_code;
-                    //     $value->trxn_type_flag_code=$trxn_type_flag;
-                    //     $value->trxn_nature_code=$trxn_nature_code;
-                        
-                    //     $get_type_subtype=MFTransTypeSubType::where('c_trans_type_code',$trxn_code)
-                    //         ->where('c_k_trans_type',$trxn_type_flag)
-                    //         ->where('c_k_trans_sub_type',$trxn_nature_code)
-                    //         ->first();
-                        
-                    //     if ($amount > 0) {
-                    //         if ($get_type_subtype) {
-                    //             $transaction_type=$get_type_subtype->trans_type;
-                    //             $transaction_subtype=$get_type_subtype->trans_sub_type;
-                    //         }
-                    //     }else{
-                    //         if ($get_type_subtype) {
-                    //             $transaction_type=$get_type_subtype->trans_type." Rejection";
-                    //             $transaction_subtype=$get_type_subtype->trans_sub_type." Rejection";
-                    //         }
-                    //     }
-                    // }else {
-                    //     $kf_trans_type=$value->kf_trans_type;
-                    //     $trans_flag=$value->trans_flag;
-                    //     if ($trans_flag=='DP' || $trans_flag=='DR') {
-                    //         $get_type_subtype=MFTransTypeSubType::where('c_k_trans_sub_type',$kf_trans_type)
-                    //             ->where('k_divident_flag',$trans_flag)
-                    //             ->first();
-                    //     }elseif ($trans_flag=='TI') {
-                    //         $get_type_subtype='';
-                    //         $transaction_type='Transfer In';
-                    //         $transaction_subtype='Transfer In';
-                    //     }elseif ($trans_flag=='TO') {
-                    //         $get_type_subtype='';
-                    //         $transaction_type='Transfer Out';
-                    //         $transaction_subtype='Transfer Out';
-                    //     } else {
-                    //         $get_type_subtype=MFTransTypeSubType::where('c_k_trans_sub_type',$kf_trans_type)
-                    //             ->first();
-                    //     }
-                        
-                    //     if ($get_type_subtype) {
-                    //         $transaction_type=$get_type_subtype->trans_type;
-                    //         $transaction_subtype=$get_type_subtype->trans_sub_type;
-                    //     }
-                    // }
                     $value->gross_amount= number_format((float)((float)$amount + (float)$value->stamp_duty + (float)$value->tds), 2, '.', '');
                     // number_format((float)$foo, 2, '.', '')
                     $value->tot_gross_amount= number_format((float)((float)$value->tot_amount + (float)$value->tot_stamp_duty + (float)$value->tot_tds), 2, '.', '');
