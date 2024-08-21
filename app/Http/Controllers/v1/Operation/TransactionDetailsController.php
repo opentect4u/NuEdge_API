@@ -338,10 +338,10 @@ class TransactionDetailsController extends Controller
                     }
                 }
             
-            $disclaimer=Disclaimer::select('dis_des')->find(5);
+            $disclaimer=Disclaimer::select('dis_des','font_size','color_code')->find(5);
             $mydata=[];
             $mydata['data']=$data;
-            $mydata['disclaimer']=$disclaimer->dis_des;
+            $mydata['disclaimer']=$disclaimer;
         } catch (\Throwable $th) {
             throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);

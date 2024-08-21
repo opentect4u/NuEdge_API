@@ -230,10 +230,10 @@ class MonthlyMisController extends Controller
                     }
                 }
 
-            $disclaimer=Disclaimer::select('dis_des')->find(3);
+            $disclaimer=Disclaimer::select('dis_des','font_size','color_code')->find(3);
             $mydata=[];
             $mydata['data']=$data;
-            $mydata['disclaimer']=$disclaimer->dis_des;
+            $mydata['disclaimer']=$disclaimer;
         } catch (\Throwable $th) {
             throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);

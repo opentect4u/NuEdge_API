@@ -8,6 +8,8 @@ Route::prefix('v1')->group(function () {
         Route::prefix('clients')->group(function () {
             Route::middleware(['auth:api'])->group(function () {
                 Route::post('liveMFPortfolio',[App\Http\Controllers\v1\Client\LiveMFPController::class,'search']);
+                Route::post('doNotShowFolio',[App\Http\Controllers\v1\Client\LiveMFPController::class,'doNotShowFolio']);
+                Route::post('doNotShowFolioLock',[App\Http\Controllers\v1\Client\LiveMFPController::class,'doNotShowFolioLock']);
                 Route::get('liveMFShowDetails',[App\Http\Controllers\v1\Client\LiveMFPController::class,'showDetails']);
                 Route::get('liveMFPortfolioDetails',[App\Http\Controllers\v1\Client\LiveMFPController::class,'searchDetails']);
                 Route::post('liveMFPL',[App\Http\Controllers\v1\Client\LiveMFPLController::class,'search']);

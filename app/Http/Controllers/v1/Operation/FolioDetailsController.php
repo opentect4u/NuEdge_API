@@ -572,10 +572,10 @@ class FolioDetailsController extends Controller
                 array_push($data,$value);
             }
 
-            $disclaimer=Disclaimer::select('dis_des')->find(4);
+            $disclaimer=Disclaimer::select('dis_des','font_size','color_code')->find(4);
             $mydata=[];
             $mydata['data']=$data;
-            $mydata['disclaimer']=$disclaimer->dis_des;
+            $mydata['disclaimer']=$disclaimer;
         } catch (\Throwable $th) {
             throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);

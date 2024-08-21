@@ -12,6 +12,8 @@ class Disclaimer extends Model
     protected $fillable = [
         'dis_for',
         'dis_des',
+        'font_size',
+        'color_code',
         'created_by',
         'updated_by',
     ];

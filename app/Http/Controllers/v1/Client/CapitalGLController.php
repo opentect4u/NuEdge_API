@@ -12,7 +12,8 @@ use App\Models\{
     MutualFundTransaction,
     MFTransTypeSubType,
     NAVDetailsSec,
-    BrokerChangeTransReport
+    BrokerChangeTransReport,
+    Disclaimer
 };
 use Validator;
 use Illuminate\Support\Carbon;
@@ -648,9 +649,11 @@ class CapitalGLController extends Controller
                 array_push($data_001,$value_0010);
             }
             // return 
+            $disclaimer=Disclaimer::select('dis_des','font_size','color_code')->find(7);
             $mydata=[];
             $mydata['client_details']=$client_details;
             $mydata['data']=$data_001;
+            $mydata['disclaimer']=$disclaimer;
         } catch (\Throwable $th) {
             throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
@@ -832,9 +835,11 @@ class CapitalGLController extends Controller
                 if ($value->rnt_id==1 && $value->transaction_type=="Transfer In" && $value->transaction_subtype=="Transfer In") {
                     $getBrokerData=TransHelper::getBrokerData_div($value);
                     foreach ($getBrokerData as $broker_key => $broker_value) {
+                        $broker_value->gross_amount= number_format((float)((float)$broker_value->tot_amount + (float)$broker_value->tot_stamp_duty + (float)$broker_value->tot_tds), 2, '.', '');
                         array_push($data,$broker_value);
                     }
                 }else {
+                    $value->gross_amount= number_format((float)((float)$value->tot_amount + (float)$value->tot_stamp_duty + (float)$value->tot_tds), 2, '.', '');
                     array_push($data,$value);
                 }
             }
@@ -844,11 +849,22 @@ class CapitalGLController extends Controller
                     array_push($data_1,$value_1);
                 }
             }
+
+
+            // foreach ($data as $key_1 => $value_1) {
+            //     if ($value_1->trans_date >= $start_date && $value_1->trans_date <= $end_date) {
+            //         array_push($data_1,$value_1);
+            //     }
+            // }
+            $disclaimer=Disclaimer::select('dis_des','font_size','color_code')->find(7);
+            $final_dataset=[];
+            $final_dataset['data']=$data_1;
+            $final_dataset['disclaimer']=$disclaimer;
         } catch (\Throwable $th) {
             //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
-        return Helper::SuccessResponse($data_1);
+        return Helper::SuccessResponse($final_dataset);
     }
 
     public function divHistory(Request $request)
@@ -984,14 +1000,15 @@ class CapitalGLController extends Controller
                     // array_push($data_1,$value_1);
                 }
             }
-            $mydata=[];
-            $mydata['client_details']='';
-            $mydata['data']=$data_1;
+            $disclaimer=Disclaimer::select('dis_des','font_size','color_code')->find(7);
+            $final_dataset=[];
+            $final_dataset['data']=$data_1;
+            $final_dataset['disclaimer']=$disclaimer;
         } catch (\Throwable $th) {
             throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
-        return Helper::SuccessResponse($mydata);
+        return Helper::SuccessResponse($final_dataset);
     }
 
 }

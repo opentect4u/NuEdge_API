@@ -39,12 +39,16 @@ class DisclaimerController extends Controller
                 $data=Disclaimer::find($request->id);
                 // $data->dis_for=$request->dis_for;
                 $data->dis_des=$request->dis_des;
+                $data->font_size=$request->font_size;
+                $data->color_code=$request->color_code;
                 $data->updated_by=Helper::modifyUser($request->user());
                 $data->save();
             }else{
                 $data=Disclaimer::create(array(
                     'dis_for'=>$request->dis_for,
                     'dis_des'=>$request->dis_des,
+                    'font_size'=>$request->font_size,
+                    'color_code'=>$request->color_code,
                     'created_by'=>Helper::modifyUser($request->user()),
                 ));  
             }    
