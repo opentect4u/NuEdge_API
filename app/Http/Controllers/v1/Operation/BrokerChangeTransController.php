@@ -327,6 +327,22 @@ class BrokerChangeTransController extends Controller
                         array_push($data,$value);
                     }
                 }
+                // return $data;
+                if (!empty($trans_type) || !empty($trans_sub_type)) {
+                    $data1=[];
+                    foreach ($data as $key1 => $value1) {
+                        $transaction_type=$value1['transaction_type'];
+                        $transaction_subtype=$value1['transaction_subtype'];
+                        if (in_array($transaction_type ,$trans_type) && in_array($transaction_subtype ,$trans_sub_type)) {
+                            array_push($data1,$value);
+                        }else if (in_array($transaction_type ,$trans_type)) {
+                            array_push($data1,$value);
+                        }else if (in_array($transaction_subtype ,$trans_sub_type)) {
+                            array_push($data1,$value);
+                        }
+                    }
+                    $data=$data1;
+                }
 
             $disclaimer=Disclaimer::select('dis_des','font_size','color_code')->find(2);
             $mydata=[];

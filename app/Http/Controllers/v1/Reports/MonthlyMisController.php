@@ -219,13 +219,15 @@ class MonthlyMisController extends Controller
                     $value->transaction_subtype=$transaction_subtype;
                     $value->process_type=$process_type;
 
-                    if (!empty($trans_type) && in_array($transaction_type ,$trans_type) && !empty($trans_sub_type) && in_array($transaction_subtype ,$trans_sub_type)) {
-                        array_push($data,$value);
-                    }else if (!empty($trans_type) && in_array($transaction_type ,$trans_type)) {
-                        array_push($data,$value);
-                    }else if (!empty($transaction_subtype) && in_array($transaction_subtype ,$trans_sub_type)) {
-                        array_push($data,$value);
-                    }else{
+                    if (!empty($trans_type) || !empty($trans_sub_type)) {
+                        if (in_array($transaction_type ,$trans_type) && in_array($transaction_subtype ,$trans_sub_type)) {
+                            array_push($data,$value);
+                        }else if (in_array($transaction_type ,$trans_type)) {
+                            array_push($data,$value);
+                        }else if (in_array($transaction_subtype ,$trans_sub_type)) {
+                            array_push($data,$value);
+                        }
+                    } else {
                         array_push($data,$value);
                     }
                 }
