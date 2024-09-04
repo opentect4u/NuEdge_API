@@ -177,7 +177,7 @@ return [
         Maatwebsite\Excel\ExcelServiceProvider::class,
         niklasravnsborg\LaravelPdf\PdfServiceProvider::class,
         \Barryvdh\DomPDF\ServiceProvider::class,
-
+        Maatwebsite\Excel\ExcelServiceProvider::class,
     ],
 
     /*
@@ -234,7 +234,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
         'PDF' => niklasravnsborg\LaravelPdf\Facades\Pdf::class,
-        
+        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
     ],
     // 'debug_blacklist'=>[
     //     '_COOKIE'=>array_keys($_COOKIE),

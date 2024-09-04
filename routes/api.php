@@ -62,8 +62,8 @@ Route::prefix('v1')->group(function () {
             Route::post('rntimport', [App\Http\Controllers\v1\Master\RNTController::class,'import']);
             Route::post('rntDelete', [App\Http\Controllers\v1\Master\RNTController::class,'delete']);
 
-            // Route::get('product',[App\Http\Controllers\v1\Master\ProductController::class,'index']);
-            // Route::post('productAddEdit',[App\Http\Controllers\v1\Master\ProductController::class,'createUpdate']);
+            Route::get('product',[App\Http\Controllers\v1\Master\ProductController::class,'index']);
+            Route::post('productAddEdit',[App\Http\Controllers\v1\Master\ProductController::class,'createUpdate']);
 
             Route::get('amc',[App\Http\Controllers\v1\Master\AMCController::class,'index']);
             Route::get('amcDetailSearch',[App\Http\Controllers\v1\Master\AMCController::class,'searchDetails']);

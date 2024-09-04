@@ -268,9 +268,12 @@ class SipStpTransController extends Controller
                     ->leftJoin('md_amc as md_amc_1','md_amc_1.amc_code','=','tt_sip_stp_swp_report.amc_code')
                     ->leftJoin('md_scheme_isin as to_isin','to_isin.product_code','=','tt_sip_stp_swp_report.to_product_code')
                     ->leftJoin('md_scheme as to_scheme','to_scheme.id','=','to_isin.scheme_id')
+                    ->leftJoin('md_plan as to_plan','to_plan.id','=','to_isin.plan_id')
+                    ->leftJoin('md_option as to_option','to_option.id','=','to_isin.option_id')
                     ->leftJoin('md_category as to_category','to_category.id','=','to_scheme.category_id')
                     ->leftJoin('md_subcategory as to_subcategory','to_subcategory.id','=','to_scheme.subcategory_id')
-                    ->leftJoin('md_employee','md_employee.euin_no','=','tt_sip_stp_swp_report.euin_no')
+                    ->leftJoin('md_employee','md_employee.euin_no','=',DB::raw('IF(tt_sip_stp_swp_report.euin_no!="",tt_sip_stp_swp_report.euin_no,(select euin_no from td_mutual_fund_trans where folio_no=tt_sip_stp_swp_report.folio_no and product_code=tt_sip_stp_swp_report.product_code AND euin_no!="" limit 1))'))
+                    // ->leftJoin('md_employee','md_employee.euin_no','=','tt_sip_stp_swp_report.euin_no')
                     ->leftJoin('md_branch','md_branch.id','=','md_employee.branch_id')
                     ->leftJoin('md_systematic_trans_type','md_systematic_trans_type.trans_type_code','=','tt_sip_stp_swp_report.auto_trans_type')
                     ->select('tt_sip_stp_swp_report.*','tt_sip_stp_swp_report.period_day as sip_date','tt_sip_stp_swp_report.auto_amount as amount','tt_sip_stp_swp_report.cease_terminate_date as terminated_date',
@@ -279,9 +282,11 @@ class SipStpTransController extends Controller
                     'md_amc.amc_short_name as amc_name','md_amc_1.amc_short_name as amc_short_name','md_plan.plan_name','md_option.opt_name as option_name',
                     'md_employee.emp_name as rm_name','md_branch.brn_name as branch_name','md_employee.bu_type_id as bu_type_id','md_employee.branch_id as branch_id',
                     'md_systematic_trans_type.trans_type','md_systematic_trans_type.trans_sub_type',
-                    'to_scheme.scheme_name as to_scheme_name','to_category.cat_name as to_cat_name','to_subcategory.subcategory_name as to_subcat_name')
+                    'to_scheme.scheme_name as to_scheme_name','to_category.cat_name as to_cat_name','to_subcategory.subcategory_name as to_subcat_name',
+                    'to_plan.plan_name as to_plan_name','to_option.opt_name as to_option_name')
                     ->selectRaw('(select `bu_type` from `md_business_type` where `bu_code`=md_employee.bu_type_id and `branch_id`=md_employee.branch_id limit 1) as bu_type')
                     ->selectRaw('(select `freq_name` from `md_systematic_frequency` where `rnt_id`=tt_sip_stp_swp_report.rnt_id and `freq_code`=tt_sip_stp_swp_report.periodicity limit 1) as freq')
+                    ->selectRaw('IF(tt_sip_stp_swp_report.euin_no!="",tt_sip_stp_swp_report.euin_no,(select euin_no from td_mutual_fund_trans where folio_no=tt_sip_stp_swp_report.folio_no and product_code=tt_sip_stp_swp_report.product_code AND euin_no!="" limit 1))as euin_no')
                     ->where('tt_sip_stp_swp_report.amc_flag','N')
                     ->where('tt_sip_stp_swp_report.scheme_flag','N')
                     ->where('tt_sip_stp_swp_report.bu_type_flag','N')

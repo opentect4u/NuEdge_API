@@ -13,6 +13,9 @@ use App\Models\{
 use App\Helpers\TransHelper;
 use App\Helpers\Helper;
 use Hash;
+use App\Exports\TestExport;
+use Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class TestController extends Controller
 {
@@ -605,5 +608,17 @@ class TestController extends Controller
 
         //mail to buyer
         mail( $payer_email , $subject, $message, $headers );
+    }
+
+
+    public function test110(Request $request)
+    {
+        // return $request;
+        $data=[];
+        $pdf = Pdf::loadView('exports.test', $data);
+        return $pdf->download('invoice.pdf');
+
+        return view('exports.test');
+        return Excel::download(new TestExport, 'invoices.xlsx');
     }
 }
