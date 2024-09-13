@@ -21,6 +21,12 @@ Route::prefix('v1')->group(function () {
 
                 Route::get('queryGivenThrough',[App\Http\Controllers\v1\CusService\QueryNatureController::class,'indexGivenThrough']);
                 Route::post('queryGivenThroughAddEdit',[App\Http\Controllers\v1\CusService\QueryNatureController::class,'createUpdateGivenThrough']);
+                
+                Route::get('getFolio',[App\Http\Controllers\v1\CusService\QueryController::class,'getFolio']);
+                Route::get('getFoliowiseProduct',[App\Http\Controllers\v1\CusService\QueryController::class,'getFoliowiseProduct']);
+                Route::post('queryAdd',[App\Http\Controllers\v1\CusService\QueryController::class,'createUpdate']);
+                Route::post('queryShow',[App\Http\Controllers\v1\CusService\QueryController::class,'index']);
+
             });
         });
     // });

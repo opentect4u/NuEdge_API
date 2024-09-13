@@ -28,9 +28,15 @@ class QueryTypeSubtypeController extends Controller
             $search=$request->search;
             $sort_by=$request->sort_by;
             $column_name=$request->column_name;
+            $flag=$request->flag;
+            $query_type=$request->query_type;
             if ($search!='') {
                 $data=QueryTypeSubtype::where('product_name','like', '%' . $search . '%')->get();      
-            }else {
+            }elseif ($flag=='E') {
+                $data=QueryTypeSubtype::groupBy('query_type')->get();      
+            }elseif ($query_type) {
+                $data=QueryTypeSubtype::where('query_type',$query_type)->get();      
+            } else {
                 $data=QueryTypeSubtype::get();      
             }
         } catch (\Throwable $th) {

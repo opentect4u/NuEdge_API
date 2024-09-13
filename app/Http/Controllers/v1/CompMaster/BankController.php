@@ -60,7 +60,7 @@ class BankController extends Controller
 
                     if ($file) {
                         $cv_path_extension=$file->getClientOriginalExtension();
-                        $upload_chq_name=(microtime(true) *10000).".".$cv_path_extension;
+                        $upload_chq_name=((true) *10000).".".$cv_path_extension;
                         $file->move(public_path('company/bank-chq/'),$upload_chq_name);
 
                         if($dt->upload_chq!=null){

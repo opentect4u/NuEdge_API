@@ -373,7 +373,7 @@ Route::prefix('v1')->group(function () {
 
 
             // ==========================================Cron routes===========================================
-            Route::get('nfoTOongoing',[App\Http\Controllers\v1\Cron\SchemeController::class,'nfoTOongoing']);
+            Route::get('nfoToOngoing',[App\Http\Controllers\v1\Cron\SchemeController::class,'nfoTOongoing']);
 
             
             /*********************************** start Mail Back Process ************************ */
