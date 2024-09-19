@@ -25,7 +25,7 @@ class SchemeController extends Controller
                     // return $data->nfo_reopen_dt;
                     $ud=Scheme::find($id);
                     $ud->scheme_type='O';
-                    // $ud->save();
+                    $ud->save();
                 }
             }
             // return "Success";
