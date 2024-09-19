@@ -36,6 +36,12 @@ class Query extends Model
         'remarks',
         'query_feedback',
         'overall_feedback',
+        'query_mode_id',
+        'policy_no',
+        'ins_product_id',
+        'fd_no',
+        'fd_scheme_id',
+        
         'created_by',
         'updated_by',
     ];

@@ -39,20 +39,64 @@ class QueryController extends Controller
                     'md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.id as investor_id','md_client.email as investor_email','md_client.mobile as investor_mobile')
                     ->where('td_query.id',$id)
                     ->first();
-            }elseif ($query_status_id || $query_mode_id) {
-                $data=Query::leftJoin('md_query_status','md_query_status.id','=','td_query.query_status_id')
-                    ->leftJoin('md_client','md_client.id','=','td_query.invester_id')
-                    ->select('td_query.*','md_query_status.status_name','md_query_status.color_code',
-                    'md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.id as investor_id','md_client.email as investor_email','md_client.mobile as investor_mobile')
-                    ->where('td_query.product_id',$product_id)
-                    ->get();
             } else {
-                $data=Query::leftJoin('md_query_status','md_query_status.id','=','td_query.query_status_id')
-                    ->leftJoin('md_client','md_client.id','=','td_query.invester_id')
-                    ->select('td_query.*','md_query_status.status_name','md_query_status.color_code',
-                    'md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.id as investor_id','md_client.email as investor_email','md_client.mobile as investor_mobile')
-                    ->where('td_query.product_id',$product_id)
-                    ->get();
+                $rawQuery='';
+                if ($query_status_id || $query_mode_id) {
+                    $queryString='td_query.query_status_id';
+                    $rawQuery.=Helper::WhereRawQuery($query_status_id,$rawQuery,$queryString);
+                    $queryString1='td_query.product_id';
+                    $rawQuery.=Helper::WhereRawQuery($product_id,$rawQuery,$queryString1);
+                    $queryString2='td_query.query_mode_id';
+                    $rawQuery.=Helper::WhereRawQuery($query_mode_id,$rawQuery,$queryString2);
+                }else {
+                    $queryString='td_query.product_id';
+                    $rawQuery.=Helper::WhereRawQuery($product_id,$rawQuery,$queryString);
+                }
+                if ($product_id==1) {
+                    $data=Query::leftJoin('md_query_status','md_query_status.id','=','td_query.query_status_id')
+                        ->leftJoin('md_client','md_client.id','=','td_query.invester_id')
+                        ->leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_query.product_code')
+                        ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
+                        ->leftJoin('md_plan','md_plan.id','=','md_scheme_isin.plan_id')
+                        ->leftJoin('md_option','md_option.id','=','md_scheme_isin.option_id')
+                        ->select('td_query.*','md_query_status.status_name','md_query_status.color_code',
+                        'md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.id as investor_id','md_client.email as investor_email','md_client.mobile as investor_mobile',
+                        'md_scheme.scheme_name as scheme_name','md_plan.plan_name as plan_name','md_option.opt_name as option_name')
+                        ->whereRaw($rawQuery)
+                        ->get();
+                } else if ($product_id==2) {
+                    $data=Query::leftJoin('md_query_status','md_query_status.id','=','td_query.query_status_id')
+                        ->leftJoin('md_client','md_client.id','=','td_query.invester_id')
+                        ->select('td_query.*','md_query_status.status_name','md_query_status.color_code',
+                        'md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.id as investor_id','md_client.email as investor_email','md_client.mobile as investor_mobile')
+                        ->whereRaw($rawQuery)
+                        ->get();
+                } else if ($product_id==3) {
+                    $data=Query::leftJoin('md_query_status','md_query_status.id','=','td_query.query_status_id')
+                        ->leftJoin('md_client','md_client.id','=','td_query.invester_id')
+                        ->leftJoin('md_ins_products','md_ins_products.id','=','td_query.ins_product_id')
+                        ->select('td_query.*','md_query_status.status_name','md_query_status.color_code',
+                        'md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.id as investor_id','md_client.email as investor_email','md_client.mobile as investor_mobile',
+                        'md_ins_products.product_name')
+                        ->whereRaw($rawQuery)
+                        ->get();
+                } else if ($product_id==4) {
+                    $data=Query::leftJoin('md_query_status','md_query_status.id','=','td_query.query_status_id')
+                        ->leftJoin('md_client','md_client.id','=','td_query.invester_id')
+                        ->leftJoin('md_fd_scheme','md_fd_scheme.id','=','td_query.fd_scheme_id')
+                        ->select('td_query.*','md_query_status.status_name','md_query_status.color_code',
+                        'md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.id as investor_id','md_client.email as investor_email','md_client.mobile as investor_mobile',
+                        'md_fd_scheme.scheme_name')
+                        ->whereRaw($rawQuery)
+                        ->get();
+                }else {
+                    $data=Query::leftJoin('md_query_status','md_query_status.id','=','td_query.query_status_id')
+                        ->leftJoin('md_client','md_client.id','=','td_query.invester_id')
+                        ->select('td_query.*','md_query_status.status_name','md_query_status.color_code',
+                        'md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.id as investor_id','md_client.email as investor_email','md_client.mobile as investor_mobile')
+                        ->whereRaw($rawQuery)
+                        ->get();
+                }
             }
         } catch (\Throwable $th) {
             throw $th;
@@ -95,13 +139,17 @@ class QueryController extends Controller
                 }else {
                     $invester_id=DB::table('md_client')->where('client_name',$investor_name)->value('id');
                 }
-                $data=Query::create(array(
+                $data_arr=[
                     'product_id'=>$request->product_id,
                     'emp_name'=>"",
                     'query_id'=>"QRY_".(microtime(true)*10000),
                     'date_time'=>date('Y-m-d H:i:s'),
                     'invester_id'=>$invester_id,
-                    'folio_no'=>$request->folio_no,
+                    'folio_no'=>isset($request->folio_no)?$request->folio_no:NULL,
+                    'policy_no'=>isset($request->policy_no)?$request->policy_no:NULL,
+                    'ins_product_id'=>isset($request->ins_product_id)?$request->ins_product_id:NULL,
+                    'fd_no'=>isset($request->fd_no)?$request->fd_no:NULL,
+                    'fd_scheme_id'=>isset($request->fd_scheme_id)?$request->fd_scheme_id:NULL,
                     'application_no'=>$request->application_no,
                     'query_given_by_id'=>$request->query_given_by_id,
                     'entry_name'=>$request->entry_name,
@@ -120,11 +168,13 @@ class QueryController extends Controller
                     // 'actual_close_date'=>$request->actual_close_date,
                     'query_status_id'=>2, //Registered
                     'remarks'=>$request->remarks,
+                    'query_mode_id'=>$request->query_mode_id,
                     // 'query_feedback',
                     // 'overall_feedback',
                     'created_by'=>Helper::modifyUser($request->user()),
                     'updated_by'=>Helper::modifyUser($request->user()),
-                ));      
+                ];
+                $data=Query::create($data_arr);      
             }    
         } catch (\Throwable $th) {
             throw $th;
