@@ -974,10 +974,12 @@ class FinancialController extends Controller
                         ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_mutual_fund.chq_bank')
                     ->select('td_mutual_fund.*','md_trans.trans_type_id as trans_type_id')
                     ->where('md_trans.trans_type_id',$trans_type_id)
+                    ->orderBy('td_mutual_fund.created_at','desc')
                     ->get();
                 // return $is_has;
                 if (count($is_has)>0) {
-                    $tin_no=Helper::GenTIN($product_id,$trans_type_id,(count($is_has)+1));
+                    $tin_last_no=str_split($is_has[0]['tin_no'],3)[1];
+                    $tin_no=Helper::GenTIN($product_id,$trans_type_id,($tin_last_no + 1));
                 } else {
                     $tin_no=Helper::GenTIN($product_id,$trans_type_id,1);
                 }
@@ -986,10 +988,12 @@ class FinancialController extends Controller
                         ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_mutual_fund.chq_bank')
                     ->select('td_mutual_fund.*','md_trans.trans_type_id as trans_type_id')
                     ->where('md_trans.trans_type_id',$trans_type_id)
+                    ->orderBy('td_mutual_fund.created_at','desc')
                     ->get();
                 // return $is_has;
                 if (count($is_has)>0) {
-                    $tin_no=Helper::GenTIN($product_id,$trans_type_id,(count($is_has)+1));
+                    $tin_last_no=str_split($is_has[0]['tin_no'],4)[1];
+                    $tin_no=Helper::GenTIN($product_id,$trans_type_id,($tin_last_no + 1));
                 } else {
                     $tin_no=Helper::GenTIN($product_id,$trans_type_id,1);
                 }
@@ -998,10 +1002,12 @@ class FinancialController extends Controller
                         ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_mutual_fund.chq_bank')
                     ->select('td_mutual_fund.*','md_trans.trans_type_id as trans_type_id')
                     ->where('md_trans.trans_type_id',$trans_type_id)
+                    ->orderBy('td_mutual_fund.created_at','desc')
                     ->get();
                 // return $is_has;
                 if (count($is_has)>0) {
-                    $tin_no=Helper::GenTIN($product_id,$trans_type_id,(count($is_has)+1));
+                    $tin_last_no=str_split($is_has[0]['tin_no'],5)[1];
+                    $tin_no=Helper::GenTIN($product_id,$trans_type_id,($tin_last_no + 1));
                 } else {
                     $tin_no=Helper::GenTIN($product_id,$trans_type_id,1);
                 }
@@ -1259,7 +1265,8 @@ class FinancialController extends Controller
                 // craete TTIN no
                 $is_has=FormReceived::orderBy('created_at','desc')->get();
                 if (count($is_has)>0) {
-                    $temp_tin_no=Helper::TempTINGen((count($is_has)+1),1); // generate temp tin no
+                    $last_no=str_split($is_has[0]['temp_tin_no'],5)[1];
+                    $temp_tin_no=Helper::TempTINGen(($last_no + 1),1); // generate temp tin no
                 }else{
                     $temp_tin_no=Helper::TempTINGen(1,1); // generate temp tin no
                 }
