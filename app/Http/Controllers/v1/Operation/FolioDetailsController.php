@@ -560,13 +560,17 @@ class FolioDetailsController extends Controller
                 $foliotrans=$value->foliotrans;
                 $json  = json_encode($foliotrans);
                 $array = json_decode($json, true);
-                if (array_search('Consolidation In',array_column($array,'transaction_subtype'))) {
-                    $foliotrans=TransHelper::ConsolidationInQuery($value->rnt_id,$value->folio_no,$value->isin_no,$value->product_code,$valuation_as_on);
+                $mydata='';
+                if (count($array) > 0) {
+                    if (array_search('Consolidation In',array_column($array,'transaction_subtype'))) {
+                        $foliotrans=TransHelper::ConsolidationInQuery($value->rnt_id,$value->folio_no,$value->isin_no,$value->product_code,$valuation_as_on);
+                    }
+                    $mydata=TransHelper::calculate($foliotrans,$value->curr_nav,$valuation_as_on); 
                 }
-                $mydata=TransHelper::calculate($foliotrans,$value->curr_nav,$valuation_as_on);
                 $value->mydata=$mydata;
                 $value->tot_units=isset($mydata['tot_units'])?number_format((float)$mydata['tot_units'], 2, '.', ''):0;
-                $value->folio_balance=number_format((float)($value->curr_nav * $value->tot_units), 2, '.', '');
+                $curr_val=number_format((float)($value->curr_nav * $value->tot_units), 2, '.', '');
+                $value->folio_balance=($curr_val <= 0)?0:$curr_val;
                 $value->folio_status=($value->folio_balance==0)?'Inactive':'Active';
                    
                 array_push($data,$value);

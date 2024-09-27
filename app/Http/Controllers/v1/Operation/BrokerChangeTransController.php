@@ -163,6 +163,7 @@ class BrokerChangeTransController extends Controller
                         ->groupByRaw('IF(substr(trxn_nature,1,19)="Systematic-Reversed","Systematic-Reversed",trxn_nature)')
                         ->groupBy('tt_broker_change_trans_report.trans_desc')
                         ->groupBy('tt_broker_change_trans_report.kf_trans_type')
+                        ->groupBy('tt_broker_change_trans_report.trans_flag')
                         ->get();
                 }else {
                     $all_data=BrokerChangeTransReport::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','tt_broker_change_trans_report.product_code')
@@ -194,6 +195,7 @@ class BrokerChangeTransController extends Controller
                         ->groupByRaw('IF(substr(trxn_nature,1,19)="Systematic-Reversed","Systematic-Reversed",trxn_nature)')
                         ->groupBy('tt_broker_change_trans_report.trans_desc')
                         ->groupBy('tt_broker_change_trans_report.kf_trans_type')
+                        ->groupBy('tt_broker_change_trans_report.trans_flag')
                         ->get();
                 }
                 // dd(DB::getQueryLog());
@@ -229,6 +231,7 @@ class BrokerChangeTransController extends Controller
                     ->groupByRaw('IF(substr(trxn_nature,1,19)="Systematic-Reversed","Systematic-Reversed",trxn_nature)')
                     ->groupBy('tt_broker_change_trans_report.trans_desc')
                     ->groupBy('tt_broker_change_trans_report.kf_trans_type')
+                    ->groupBy('tt_broker_change_trans_report.trans_flag')
                     ->get();
                 // dd(DB::getQueryLog());
             } 
