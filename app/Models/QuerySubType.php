@@ -5,13 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class QueryTypeSubtype extends Model
+class QuerySubType extends Model
 {
     use HasFactory;
-    protected $table="md_query_type_subtype";
+    protected $table="md_query_sub_type";
     protected $fillable = [
-        'product_id',
-        'query_type',
+        'query_type_id',
         'query_subtype',
         'query_tat',
         'created_by',

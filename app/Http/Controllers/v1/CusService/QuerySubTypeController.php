@@ -12,7 +12,7 @@ use App\Models\{
     MutualFundTransaction,
     MFTransTypeSubType,
     Disclaimer,
-    QueryTypeSubtype
+    QuerySubType
 };
 use Validator;
 use Illuminate\Support\Carbon;
@@ -20,7 +20,7 @@ use Excel;
 use App\Helpers\TransHelper;
 use DB;
 
-class QueryTypeSubtypeController extends Controller
+class QuerySubTypeController extends Controller
 {
     public function index(Request $request)
     {
@@ -31,16 +31,18 @@ class QueryTypeSubtypeController extends Controller
             $flag=$request->flag;
             $query_type=$request->query_type;
             if ($search!='') {
-                $data=QueryTypeSubtype::where('product_name','like', '%' . $search . '%')->get();      
+                $data=QuerySubType::where('product_name','like', '%' . $search . '%')->get();      
             }elseif ($flag=='E') {
-                $data=QueryTypeSubtype::groupBy('query_type')->get();      
+                $data=QuerySubType::groupBy('query_type')->get();      
             }elseif ($query_type) {
-                $data=QueryTypeSubtype::where('query_type',$query_type)->get();      
+                $data=QuerySubType::where('query_type',$query_type)->get();      
             } else {
-                $data=QueryTypeSubtype::get();      
+                $data=QuerySubType::leftJoin('md_query_type','md_query_type.id','=','md_query_sub_type.query_type_id')
+                    ->select('md_query_sub_type.*','md_query_type.query_type','md_query_type.product_id')
+                    ->get();      
             }
         } catch (\Throwable $th) {
-            //throw $th;
+            throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
         return Helper::SuccessResponse($data);
@@ -50,7 +52,7 @@ class QueryTypeSubtypeController extends Controller
     {
         $validator = Validator::make(request()->all(),[
             'product_id' =>'required',
-            'query_type' =>'required',
+            'query_type_id' =>'required',
             'query_subtype' =>'required',
             'query_tat' =>'required',
         ]);
@@ -62,25 +64,27 @@ class QueryTypeSubtypeController extends Controller
         try {
             // return $request;
             if ((int)$request->id > 0) {
-                $data=QueryTypeSubtype::find($request->id);
-                $data->product_id=$request->product_id;
-                $data->query_type=$request->query_type;
-                $data->query_subtype=$request->query_subtype;
-                $data->query_tat=$request->query_tat;
-                $data->updated_by=Helper::modifyUser($request->user());
-                $data->save();
+                $up_data=QuerySubType::find($request->id);
+                $up_data->query_type_id=$request->query_type_id;
+                $up_data->query_subtype=$request->query_subtype;
+                $up_data->query_tat=$request->query_tat;
+                $up_data->updated_by=Helper::modifyUser($request->user());
+                $up_data->save();
+
+                $data=QuerySubType::leftJoin('md_query_type','md_query_type.id','=','md_query_sub_type.query_type_id')
+                    ->select('md_query_sub_type.*','md_query_type.query_type','md_query_type.product_id')
+                    ->where('md_query_sub_type.id',$up_data->id)
+                    ->first();
             }else{
                 // return $request;
-                $is_has=QueryTypeSubtype::where('product_id',$request->product_id)
-                    ->where('query_type',$request->query_type)
+                $is_has=QuerySubType::where('query_type_id',$request->query_type_id)
                     ->where('query_subtype',$request->query_subtype)
                     ->get();
                 if (count($is_has) > 0) {
                     return Helper::WarningResponse(parent::ALREADY_EXIST);
                 }else {
-                    $data=QueryTypeSubtype::create(array(
-                        'product_id'=>$request->product_id,
-                        'query_type'=>$request->query_type,
+                    $data=QuerySubType::create(array(
+                        'query_type_id'=>$request->query_type_id,
                         'query_subtype'=>$request->query_subtype,
                         'query_tat'=>$request->query_tat,
                         'created_by'=>Helper::modifyUser($request->user()),
