@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\{QuerySolveAttach,QueryEntryAttach};
 
 class Query extends Model
 {
@@ -21,13 +22,14 @@ class Query extends Model
         'entry_name',
         'product_code',
         'isin_no',
-        'query_type_subtype_id',
+        'query_type_id',
+        'query_subtype_id',
         'query_details',
         'query_nature_id',
         'query_given_to_id',
         'query_rec_through_id',
         'query_given_through_id',
-        'concern_per_name',
+        'concern_person_name',
         'contact_no',
         'email_id',
         'expected_close_date',
@@ -35,14 +37,33 @@ class Query extends Model
         'query_status_id',
         'remarks',
         'query_feedback',
-        'overall_feedback',
+        'suggestion',
         'query_mode_id',
         'policy_no',
         'ins_product_id',
         'fd_no',
         'fd_scheme_id',
+
+        'call_flag',
+        'whats_app_flag',
+        'email_flag',
+        'sms_flag',
+        'call_date',
+        'whats_app_date',
+        'email_date',
+        'sms_date',
         
         'created_by',
         'updated_by',
     ];
+
+    public function entryattach()
+    {
+        return $this->hasMany(QueryEntryAttach::class,'query_id','id');
+    }
+    
+    public function solveattach()
+    {
+        return $this->hasMany(QuerySolveAttach::class,'query_id','id');
+    }
 }

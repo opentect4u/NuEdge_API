@@ -30,7 +30,13 @@ Route::prefix('v1')->group(function () {
                 Route::post('queryAdd',[App\Http\Controllers\v1\CusService\QueryController::class,'createUpdate']);
                 Route::post('queryShow',[App\Http\Controllers\v1\CusService\QueryController::class,'index']);
 
+                Route::post('queryInform',[App\Http\Controllers\v1\CusService\QueryController::class,'queryInform']);
+                
+
             });
+
+            Route::get('sendsms',[App\Http\Controllers\v1\CusService\QueryController::class,'sendSMS']);
+
         });
     // });
 });
