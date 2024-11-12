@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
     // Route::middleware(['ipcheck'])->group(function () {
-        Route::prefix('cusService')->group(function () {
+        Route::prefix('cus_service')->group(function () {
             Route::middleware(['auth:api'])->group(function () {
                 Route::get('queryType',[App\Http\Controllers\v1\CusService\QueryTypeController::class,'index']);
                 Route::post('queryTypeAddEdit',[App\Http\Controllers\v1\CusService\QueryTypeController::class,'createUpdate']);
@@ -29,13 +29,23 @@ Route::prefix('v1')->group(function () {
                 Route::get('getFoliowiseProduct',[App\Http\Controllers\v1\CusService\QueryController::class,'getFoliowiseProduct']);
                 Route::post('queryAdd',[App\Http\Controllers\v1\CusService\QueryController::class,'createUpdate']);
                 Route::post('queryShow',[App\Http\Controllers\v1\CusService\QueryController::class,'index']);
+                Route::get('searchQueryId',[App\Http\Controllers\v1\CusService\QueryController::class,'search']);
 
                 Route::post('queryInform',[App\Http\Controllers\v1\CusService\QueryController::class,'queryInform']);
                 
+                Route::get('users',[App\Http\Controllers\v1\CusService\UserController::class,'index']);
+                Route::get('searchClient',[App\Http\Controllers\v1\CusService\QueryController::class,'searchClient']);
+
+
+                Route::get('index',[App\Http\Controllers\v1\CusService\IndexController::class,'index']);
 
             });
+            Route::post('queryShowDetails',[App\Http\Controllers\v1\CusService\QueryController::class,'showDetails']);
+            Route::post('queryFeedback',[App\Http\Controllers\v1\CusService\QueryController::class,'feedback']);
 
-            Route::get('sendsms',[App\Http\Controllers\v1\CusService\QueryController::class,'sendSMS']);
+
+            // Route::get('sendsms',[App\Http\Controllers\v1\CusService\QueryController::class,'sendSMS']);
+            // Route::get('index1',[App\Http\Controllers\v1\CusService\IndexController::class,'index']);
 
         });
     // });

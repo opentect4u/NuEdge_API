@@ -12,10 +12,11 @@ use App\Models\{
 };
 use App\Helpers\TransHelper;
 use App\Helpers\Helper;
-use Hash;
 use App\Exports\TestExport;
 use Excel;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Crypt;
 
 class TestController extends Controller
 {
@@ -620,5 +621,12 @@ class TestController extends Controller
 
         return view('exports.test');
         return Excel::download(new TestExport, 'invoices.xlsx');
+    }
+
+    public function hash()
+    {
+        return Crypt::encrypt('123456');
+        return Hash::make('@N#admin');
+        return 'hash';    
     }
 }

@@ -19,9 +19,9 @@ class Query extends Model
         'folio_no',
         'application_no',
         'query_given_by_id',
-        'entry_name',
-        'product_code',
-        'isin_no',
+        'query_rec_by_id',
+        // 'product_code',
+        // 'isin_no',
         'query_type_id',
         'query_subtype_id',
         'query_details',
@@ -36,6 +36,7 @@ class Query extends Model
         'actual_close_date',
         'query_status_id',
         'remarks',
+        'rating',
         'query_feedback',
         'suggestion',
         'query_mode_id',
@@ -52,10 +53,18 @@ class Query extends Model
         'whats_app_date',
         'email_date',
         'sms_date',
+        'query_tat',
+        'short_url',
+        'feedback_url',
         
         'created_by',
         'updated_by',
     ];
+
+    public function allscheme()
+    {
+        return $this->hasMany(QueryScheme::class,'query_id','id');
+    }
 
     public function entryattach()
     {
@@ -66,4 +75,6 @@ class Query extends Model
     {
         return $this->hasMany(QuerySolveAttach::class,'query_id','id');
     }
+
+
 }

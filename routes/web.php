@@ -31,3 +31,10 @@ Route::get('testing',[App\Http\Controllers\TestController::class,'test110']);
 Route::get('transFileUpload',[App\Http\Controllers\v1\Cron\TransFileUploadController::class,'upload']);
 
 Route::get('mail',[App\Http\Controllers\TestController::class,'mail']);
+
+
+Route::get('hash',[App\Http\Controllers\TestController::class,'hash']);
+
+Route::get('/mail_index', function () {
+    return view('emails.customer_service.query_desk_sample');
+});

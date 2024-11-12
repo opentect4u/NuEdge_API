@@ -19,6 +19,7 @@ class SchemeController extends Controller
             $scheme_type='N';
             $datas=Scheme::where('scheme_type',$scheme_type)->get();   
             // return $datas;
+            $ud='';
             foreach ($datas as $key => $data) {
                 $id=$data->id;
                 if ($data->nfo_reopen_dt < date('Y-m-d')) {
