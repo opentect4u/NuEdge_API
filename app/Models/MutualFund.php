@@ -97,7 +97,7 @@ class MutualFund extends Model
         'contact_per_email',
         'reject_memo',
         'pending_reason',
-
+        'ack_status',
         'form_status',
         'delete_flag',
         'deleted_date',

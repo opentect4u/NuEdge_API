@@ -42,7 +42,7 @@ class SMSHelper {
         return $response;
     }
 
-    public function registerReOpen($mobile_no,$short_url,$query_status,$investor_name,$query_id)
+    public static function registerReOpen($mobile_no,$short_url,$query_status,$investor_name,$query_id)
     {
         $message='Dear '.$investor_name.',
 
@@ -68,7 +68,7 @@ Mutual Fund investments are subject to market risks, read all scheme related doc
         return $data;
     }
 
-    public function inReinProcess($mobile_no,$short_url,$query_status,$investor_name,$query_id,$expected_close_date)
+    public static function inReinProcess($mobile_no,$short_url,$query_status,$investor_name,$query_id,$expected_close_date)
     {
         $message='Dear '.$investor_name.',
 
@@ -96,7 +96,7 @@ Mutual Fund investments are subject to market risks, read all scheme related doc
         return $data;
     }
 
-    public function completedReCompleted($mobile_no,$short_url,$query_status,$investor_name,$query_id,$close_date,$feedback_url)
+    public static function completedReCompleted($mobile_no,$short_url,$query_status,$investor_name,$query_id,$close_date,$feedback_url)
     {
         $message='Dear '.$investor_name.',
 
