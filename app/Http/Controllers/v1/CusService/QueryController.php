@@ -803,7 +803,7 @@ Mutual Fund investments are subject to market risks, read all scheme related doc
         
         // 'Dear chitta,\r\n\r\nGreetings from NuEdge Corporate Private Limited\r\n\r\nYour below query is dgdg.\r\n\r\nQuery Id- d444.\r\n\r\nQuery Details- dgdfhtdh.\r\n\r\n\r\nNow you can post your Query directly to NuEdge Customer Care. Call or Whatsapp- 9830939393. Timing Monday to Friday from 10 A.M to 6 P.M.\r\n\r\n\r\nRegards,\r\nNuEdge Corporate Private Limited.\r\nAMFI- Registered Mutual Fund Distributor\r\n\r\nMutual Fund investments are subject to market risks, read all scheme related documents carefully.';
         
-        return $message1;
+        // return $message1;
         // return nl2br($message1);
         
         $apiKey = urlencode(env('SMS_API_KEY'));
