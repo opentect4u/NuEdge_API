@@ -210,7 +210,7 @@
                                     </td>
                                     <td
                                        style="width:34%;color:#000;font-size:14px;text-align:left;font-family:'calibri','Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif;padding:6px 0 6px 10px;border-right:1px solid #ddd;border-bottom:1px solid #ddd">
-                                       {{isset($data->expected_close_date)?date('d-m-Y',strtotime($data->date_time)):"N/A"}}
+                                       {{isset($data->expected_close_date)?date('d-m-Y',strtotime($data->expected_close_date)):"N/A"}}
                                     </td>
                                     <td
                                        style="width:14%;font-weight:600;color:#000;font-size:14px;text-align:left;font-family:'calibri','Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif;padding:6px 0 6px 10px;border-right:1px solid #ddd;border-bottom:1px solid #ddd">
