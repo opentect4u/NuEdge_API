@@ -810,7 +810,7 @@ Mutual Fund investments are subject to market risks, read all scheme related doc
 	
         // Message details
         // $numbers = array(11111111, 918987654321);
-        $numbers = array();
+        $numbers = array(env('SMS_MOBILE_NO'));
         $sender = urlencode(env('SMS_SENDER_NAME'));
         // $message = rawurlencode(nl2br($message1));
         $message = rawurlencode($message1);
