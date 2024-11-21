@@ -333,9 +333,9 @@ class QueryController extends Controller
                     $short_url_json=SMSHelper::createShortUrl($url);
                     // return $short_url_json;
                     $feedback_url="";
-                    if ($short_url_json->status=='success') {
-                        $feedback_url=$short_url_json->shorturl;
-                    }
+                    // if ($short_url_json->status=='success') {
+                    //     $feedback_url=$short_url_json->shorturl;
+                    // }
                     // return $short_url;
                     $update=Query::find($update_data->id);
                     $update->feedback_url=$feedback_url;
@@ -361,9 +361,9 @@ class QueryController extends Controller
                     ->first();
                 // return $data;
                 // email and sms 
-                $query_status_id=$update_data->query_status_id;
-                $expected_close_date=date('d-m-Y',strtotime($update_data->expected_close_date));
-                $close_date=date('d-m-Y',strtotime($update_data->actual_close_date));
+                $query_status_id=$data->query_status_id;
+                $expected_close_date=date('d-m-Y',strtotime($data->expected_close_date));
+                $close_date=date('d-m-Y',strtotime($data->actual_close_date));
                 $investor_name=$data->investor_name;
                 $investor_email=$data->investor_email;
                 $mobile_no=$data->investor_mobile;
