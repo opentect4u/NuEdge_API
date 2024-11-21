@@ -466,9 +466,9 @@ class QueryController extends Controller
                 $short_url_json=SMSHelper::createShortUrl($url);
                 // return $short_url_json;
                 $short_url="";
-                if ($short_url_json->status=='success') {
-                    $short_url=$short_url_json->shorturl;
-                }
+                // if ($short_url_json->status=='success') {
+                //     $short_url=$short_url_json->shorturl;
+                // }
                 // return $short_url;
                 $update=Query::find($data->id);
                 $update->short_url=$short_url;
