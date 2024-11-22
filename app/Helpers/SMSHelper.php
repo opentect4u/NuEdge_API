@@ -1,18 +1,22 @@
 <?php
 namespace App\Helpers;
 use App\Helpers\Helper;
+use Illuminate\Support\Facades\Http;
 
 class SMSHelper {
     public static function createShortUrl($url)
     {
-        $apiKey = urlencode(env('SMS_API_KEY'));
-        $data = array('apikey' => $apiKey, 'url' => $url);
-        $ch = curl_init(env('SMS_CREATE_SHORT_URL'));
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $response = curl_exec($ch);
-        curl_close($ch);
+        // $apiKey = urlencode(env('SMS_API_KEY'));
+        // $data = array('apikey' => $apiKey, 'url' => $url);
+        // $ch = curl_init(env('SMS_CREATE_SHORT_URL'));
+        // curl_setopt($ch, CURLOPT_POST, true);
+        // curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        // $response = curl_exec($ch);
+        // curl_close($ch);
+        // $response=json_decode($response);
+        // return $response;
+        $response = Http::get(env('SMS_SHORT_URL')."?url=".$url);
         $response=json_decode($response);
         return $response;
     }
@@ -63,9 +67,10 @@ NuEdge Corporate Private Limited.
 AMFI- Registered Mutual Fund Distributor
 
 Mutual Fund investments are subject to market risks, read all scheme related documents carefully.';
-        $data=SMSHelper::send($mobile_no,$message);
-            //throw $th;
-        return $data;
+        // $data=SMSHelper::send($mobile_no,$message);
+        $response = Http::get(env('SMS_SEND_SEND_URL')."?mobile_no=".$mobile_no."&message=".$message);
+        $response=json_decode($response);
+        return $response;
     }
 
     public static function inReinProcess($mobile_no,$short_url,$query_status,$investor_name,$query_id,$expected_close_date)
@@ -92,8 +97,10 @@ NuEdge Corporate Private Limited.
 AMFI- Registered Mutual Fund Distributor
 
 Mutual Fund investments are subject to market risks, read all scheme related documents carefully.';
-        $data=SMSHelper::send($mobile_no,$message);
-        return $data;
+        // $data=SMSHelper::send($mobile_no,$message);
+        $response = Http::get(env('SMS_SEND_SEND_URL')."?mobile_no=".$mobile_no."&message=".$message);
+        $response=json_decode($response);
+        return $response;
     }
 
     public static function completedReCompleted($mobile_no,$short_url,$query_status,$investor_name,$query_id,$close_date,$feedback_url)
@@ -120,7 +127,9 @@ NuEdge Corporate Private Limited.
 AMFI- Registered Mutual Fund Distributor
 
 Mutual Fund investments are subject to market risks, read all scheme related documents carefully.';
-        $data=SMSHelper::send($mobile_no,$message);
-        return $data;
+        // $data=SMSHelper::send($mobile_no,$message);
+        $response = Http::get(env('SMS_SEND_SEND_URL')."?mobile_no=".$mobile_no."&message=".$message);
+        $response=json_decode($response);
+        return $response;
     }
 }

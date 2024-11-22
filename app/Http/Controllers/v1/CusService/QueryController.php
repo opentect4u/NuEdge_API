@@ -118,7 +118,7 @@ class QueryController extends Controller
                 ->where('td_query.query_id',$query_id)
                 ->first();
         } catch (\Throwable $th) {
-            //throw $th;
+            throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
         return Helper::SuccessResponse($data);
@@ -331,11 +331,12 @@ class QueryController extends Controller
                 if ($update_data->query_status_id==5 || $update_data->query_status_id==7) {  // Completed and Re-Completed
                     $url=env('QUERY_FEEDBACK').Crypt::encrypt($query_id);
                     $short_url_json=SMSHelper::createShortUrl($url);
+                    $short_url_json=json_decode($short_url_json);
                     // return $short_url_json;
                     $feedback_url="";
-                    // if ($short_url_json->status=='success') {
-                    //     $feedback_url=$short_url_json->shorturl;
-                    // }
+                    if ($short_url_json->status=='success') {
+                        $feedback_url=$short_url_json->shorturl;
+                    }
                     // return $short_url;
                     $update=Query::find($update_data->id);
                     $update->feedback_url=$feedback_url;
@@ -463,12 +464,14 @@ class QueryController extends Controller
                 }
 
                 $url=env('QUERY_DETAILS').Crypt::encrypt($query_id);
+                // return $url;
                 $short_url_json=SMSHelper::createShortUrl($url);
+                $short_url_json=json_decode($short_url_json);
                 // return $short_url_json;
                 $short_url="";
-                // if ($short_url_json->status=='success') {
-                //     $short_url=$short_url_json->shorturl;
-                // }
+                if ($short_url_json->status=='success') {
+                    $short_url=$short_url_json->shorturl;
+                }
                 // return $short_url;
                 $update=Query::find($data->id);
                 $update->short_url=$short_url;
@@ -503,6 +506,7 @@ class QueryController extends Controller
                 // $query_status=DB::table('md_query_status')->where('id',2)->value('status_name');
                 $subject="Query status changed to ".$query_status."- QueryId : ".$query_id;
                 $res=SMSHelper::registerReOpen($mobile_no,$short_url,$query_status,$investor_name,$query_id);
+                // return $res;
                 Mail::to($investor_email)->send(new QueryStatusEmail($subject,$investor_name,$query_status,$query_status_id,$data));
                 // $this->sendSMS();
             }    
