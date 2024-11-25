@@ -439,22 +439,22 @@ class AcknowledgementController extends Controller
                     $rnt_login_cutt_off->format("Y-m-d");
                 }
                 // return $rnt_login_cutt_off;
-                // MutualFund::where('tin_no',$request->tin_no)->update(array(
-                //     'rnt_login_dt'=>Carbon::parse($request->rnt_login_date)->format('Y-m-d').' '.Carbon::parse($request->rnt_login_time)->format('H:i:s'),
-                //     'rnt_login_cutt_off'=>Carbon::parse($rnt_login_cutt_off)->format('Y-m-d'),
-                //     'ack_copy_scan'=>$ack_copy_scan_name,
-                //     'ack_remarks'=>$request->ack_remarks,
-                //     'ack_status'=>$request->ack_status,
-                //     'form_status'=>'A',
-                //     'updated_by'=>Helper::modifyUser($request->user()),
-                // ));
+                MutualFund::where('tin_no',$request->tin_no)->update(array(
+                    'rnt_login_dt'=>Carbon::parse($request->rnt_login_date)->format('Y-m-d').' '.Carbon::parse($request->rnt_login_time)->format('H:i:s'),
+                    'rnt_login_cutt_off'=>Carbon::parse($rnt_login_cutt_off)->format('Y-m-d'),
+                    'ack_copy_scan'=>$ack_copy_scan_name,
+                    'ack_remarks'=>$request->ack_remarks,
+                    'ack_status'=>$request->ack_status,
+                    'form_status'=>'A',
+                    'updated_by'=>Helper::modifyUser($request->user()),
+                ));
             }else {
-                // MutualFund::where('tin_no',$request->tin_no)->update(array(
-                //     'ack_remarks'=>$request->ack_remarks,
-                //     'ack_status'=>$request->ack_status,
-                //     'form_status'=>'P',
-                //     'updated_by'=>Helper::modifyUser($request->user()),
-                // ));
+                MutualFund::where('tin_no',$request->tin_no)->update(array(
+                    'ack_remarks'=>$request->ack_remarks,
+                    'ack_status'=>$request->ack_status,
+                    'form_status'=>'P',
+                    'updated_by'=>Helper::modifyUser($request->user()),
+                ));
             }
             $data=MutualFund::where('tin_no',$request->tin_no)->first();
             // return $data;
