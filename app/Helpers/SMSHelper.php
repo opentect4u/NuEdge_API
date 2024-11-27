@@ -6,17 +6,18 @@ use Illuminate\Support\Facades\Http;
 class SMSHelper {
     public static function createShortUrl($url)
     {
-        // $apiKey = urlencode(env('SMS_API_KEY'));
-        // $data = array('apikey' => $apiKey, 'url' => $url);
-        // $ch = curl_init(env('SMS_CREATE_SHORT_URL'));
-        // curl_setopt($ch, CURLOPT_POST, true);
-        // curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        // $response = curl_exec($ch);
-        // curl_close($ch);
-        // $response=json_decode($response);
-        // return $response;
-        $response = Http::get(env('SMS_SHORT_URL')."?url=".$url);
+        $apiKey = urlencode(env('SMS_API_KEY'));
+        $data = array('apikey' => $apiKey, 'url' => $url);
+        $ch = curl_init(env('SMS_CREATE_SHORT_URL'));
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json',
+            'Connection: Keep-Alive'
+            ));
+        $response = curl_exec($ch);
+        curl_close($ch);
         $response=json_decode($response);
         return $response;
     }
@@ -40,6 +41,10 @@ class SMSHelper {
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json',
+            'Connection: Keep-Alive'
+            ));
         $response = curl_exec($ch);
         curl_close($ch);
         // echo $response;
@@ -67,8 +72,7 @@ NuEdge Corporate Private Limited.
 AMFI- Registered Mutual Fund Distributor
 
 Mutual Fund investments are subject to market risks, read all scheme related documents carefully.';
-        // $data=SMSHelper::send($mobile_no,$message);
-        $response = Http::get(env('SMS_SEND_SEND_URL')."?mobile_no=".$mobile_no."&message=".$message);
+        $response=SMSHelper::send($mobile_no,$message);
         $response=json_decode($response);
         return $response;
     }
@@ -97,8 +101,7 @@ NuEdge Corporate Private Limited.
 AMFI- Registered Mutual Fund Distributor
 
 Mutual Fund investments are subject to market risks, read all scheme related documents carefully.';
-        // $data=SMSHelper::send($mobile_no,$message);
-        $response = Http::get(env('SMS_SEND_SEND_URL')."?mobile_no=".$mobile_no."&message=".$message);
+        $response=SMSHelper::send($mobile_no,$message);
         $response=json_decode($response);
         return $response;
     }
@@ -127,8 +130,7 @@ NuEdge Corporate Private Limited.
 AMFI- Registered Mutual Fund Distributor
 
 Mutual Fund investments are subject to market risks, read all scheme related documents carefully.';
-        // $data=SMSHelper::send($mobile_no,$message);
-        $response = Http::get(env('SMS_SEND_SEND_URL')."?mobile_no=".$mobile_no."&message=".$message);
+        $response=SMSHelper::send($mobile_no,$message);
         $response=json_decode($response);
         return $response;
     }

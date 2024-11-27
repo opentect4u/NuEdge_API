@@ -53,7 +53,7 @@ class QueryController extends Controller
                     ->where('td_mutual_fund_trans.first_client_pan','like','%' . $search . '%')
                     ->orWhere('td_mutual_fund_trans.first_client_name','like', '%' . $search . '%')
                     ->orWhere('td_mutual_fund_trans.folio_no','like', '%' . $search . '%')
-                    ->groupBy('td_mutual_fund_trans.folio_no')
+                    ->groupBy('td_mutual_fund_trans.first_client_pan')
                     ->get();
             // $data=Client::leftJoin('td_mutual_fund_trans','td_mutual_fund_trans.first_client_pan',)
             //         ->select('md_client.*')
@@ -118,7 +118,7 @@ class QueryController extends Controller
                 ->where('td_query.query_id',$query_id)
                 ->first();
         } catch (\Throwable $th) {
-            throw $th;
+            //throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
         return Helper::SuccessResponse($data);
@@ -292,6 +292,9 @@ class QueryController extends Controller
                 if ($request->query_status_id==5 || $request->query_status_id==7) {
                     $update_data->actual_close_date=date('Y-m-d H:i:s');
                 }
+                if ($request->query_status_id==6) { //reopen
+                    $update_data->actual_close_date=NULL;
+                }
 
                 $update_data->whats_app_flag='Y';
                 $update_data->whats_app_date=date('Y-m-d H:i:s');
@@ -367,6 +370,7 @@ class QueryController extends Controller
                 $close_date=date('d-m-Y',strtotime($data->actual_close_date));
                 $investor_name=$data->investor_name;
                 $investor_email=$data->investor_email;
+                $investor_email="suman@synergicsoftek.in";
                 $mobile_no=$data->investor_mobile;
                 $query_status=$data->status_name;
                 $subject="Query status changed to ".$query_status."- QueryId : ".$query_id;
@@ -427,6 +431,7 @@ class QueryController extends Controller
                     'query_type_id'=>$request->query_type_id,
                     'query_subtype_id'=>$request->query_subtype_id,
                     'query_details'=>$request->query_details,
+                    'query_rec_through_id'=>$request->query_rec_through_id,
                     'query_status_id'=>$query_status_id, //Registered
                     'created_by'=>Helper::modifyUser($request->user()),
                     'updated_by'=>Helper::modifyUser($request->user()),
@@ -466,7 +471,7 @@ class QueryController extends Controller
                 $url=env('QUERY_DETAILS').Crypt::encrypt($query_id);
                 // return $url;
                 $short_url_json=SMSHelper::createShortUrl($url);
-                $short_url_json=json_decode($short_url_json);
+                // $short_url_json=json_decode($short_url_json);
                 // return $short_url_json;
                 $short_url="";
                 if ($short_url_json->status=='success') {
@@ -503,6 +508,7 @@ class QueryController extends Controller
                 $investor_email=$data->investor_email;
                 $mobile_no=$data->investor_mobile;
                 $query_status=$data->status_name;
+                $investor_email="suman@synergicsoftek.in";
                 // $query_status=DB::table('md_query_status')->where('id',2)->value('status_name');
                 $subject="Query status changed to ".$query_status."- QueryId : ".$query_id;
                 $res=SMSHelper::registerReOpen($mobile_no,$short_url,$query_status,$investor_name,$query_id);
@@ -775,6 +781,7 @@ class QueryController extends Controller
 
     public function sendSMS()
     {
+        // display_errors = On display_startup_errors = On
         // return 'hii';
         // $url="https://nuedgecorporate.co.in/main/home";
         // // return $url;
@@ -859,5 +866,52 @@ Mutual Fund investments are subject to market risks, read all scheme related doc
 // curl_close($curl);
 // echo $response;
 
+    }
+
+    public function whatsapp(Request $request)
+    {
+        // return $request;
+        $messages = array(
+            // Put parameters here such as force or test
+            'send_channel' => 'whatsapp',
+            'messages' => array(
+                array(
+                    'number' => '',
+                    'template' => array(
+                        'id' => '',
+                        'merge_fields' => array(
+                            'Name' => ' ',
+                            'Status' => ' ',
+                            'Number' => ' ',
+                            'Details' => ' ',
+                            'Date' => ' ',
+                            'Link' => ' ',
+                        )
+                    )
+                )
+            )
+        );
+         
+        // Prepare data for POST request
+        $data = array(
+            'apikey' => env('SMS_API_KEY'),
+            'data' => json_encode($messages),
+            'test'=>true
+        );
+         
+        // Send the POST request with cURL
+        $ch = curl_init('https://api.textlocal.in/bulk_json/');
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json',
+            'Connection: Keep-Alive'
+            ));
+        $response = curl_exec($ch);
+        curl_close($ch);
+         
+        echo $response;
+        
     }
 }
