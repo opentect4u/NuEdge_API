@@ -769,6 +769,10 @@ class QueryController extends Controller
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json',
+            'Connection: Keep-Alive'
+            ));
         $response = curl_exec($ch);
         curl_close($ch);
         
