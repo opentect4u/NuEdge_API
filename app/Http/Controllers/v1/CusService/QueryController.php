@@ -370,7 +370,6 @@ class QueryController extends Controller
                 $close_date=date('d-m-Y',strtotime($data->actual_close_date));
                 $investor_name=$data->investor_name;
                 $investor_email=$data->investor_email;
-                $investor_email="suman@synergicsoftek.in";
                 $mobile_no=$data->investor_mobile;
                 $query_status=$data->status_name;
                 $subject="Query status changed to ".$query_status."- QueryId : ".$query_id;
@@ -508,7 +507,6 @@ class QueryController extends Controller
                 $investor_email=$data->investor_email;
                 $mobile_no=$data->investor_mobile;
                 $query_status=$data->status_name;
-                $investor_email="suman@synergicsoftek.in";
                 // $query_status=DB::table('md_query_status')->where('id',2)->value('status_name');
                 $subject="Query status changed to ".$query_status."- QueryId : ".$query_id;
                 $res=SMSHelper::registerReOpen($mobile_no,$short_url,$query_status,$investor_name,$query_id);
