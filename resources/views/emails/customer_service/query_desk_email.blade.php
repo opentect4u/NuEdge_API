@@ -33,7 +33,7 @@
                               <tbody>
                                  <tr>
                                     <td align="left" height="80">
-                                       <img src="https://www.nuedgecorporate.com/images/logo.png" height="80"
+                                       <img src="{{ asset('public/site-logo/logo.png') }}" height="80"
                                           alt="NuedgeLogo" class="CToWUd" data-bit="iit">
                                     </td>
                                  </tr>

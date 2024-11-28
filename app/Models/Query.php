@@ -56,7 +56,7 @@ class Query extends Model
         'query_tat',
         'short_url',
         'feedback_url',
-        
+        'tat_remarks',
         'created_by',
         'updated_by',
     ];

@@ -32,6 +32,7 @@ Route::prefix('v1')->group(function () {
                 Route::get('searchQueryId',[App\Http\Controllers\v1\CusService\QueryController::class,'search']);
 
                 Route::post('queryInform',[App\Http\Controllers\v1\CusService\QueryController::class,'queryInform']);
+                Route::post('addTatRemarks',[App\Http\Controllers\v1\CusService\QueryController::class,'addTATRemarks']);
                 
                 Route::get('users',[App\Http\Controllers\v1\CusService\UserController::class,'index']);
                 Route::get('searchClient',[App\Http\Controllers\v1\CusService\QueryController::class,'searchClient']);
