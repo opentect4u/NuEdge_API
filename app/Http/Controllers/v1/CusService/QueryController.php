@@ -382,7 +382,18 @@ class QueryController extends Controller
                 } else if ($update_data->query_status_id==5 || $update_data->query_status_id==7) {  // Completed and Re-Completed
                     $res=SMSHelper::completedReCompleted($mobile_no,$short_url,$query_status,$investor_name,$query_id,$close_date,$feedback_url);
                 }
-                Mail::to($investor_email)->send(new QueryStatusEmail($subject,$investor_name,$query_status,$query_status_id,$data));
+                // Mail::to($investor_email)->send(new QueryStatusEmail($subject,$investor_name,$query_status,$query_status_id,$data));
+                $allAtched=QuerySolveAttach::where('query_id',$data->id)->get();
+                $files=[];
+                if (count($allAtched)>0) {
+                    foreach ($allAtched as $key => $value1) {
+                        $filePath=public_path('query-solve/'.$value1->name);
+                        array_push($files,$filePath);
+                    }
+                    Mail::to($investor_email)->send(new QueryStatusEmail($subject,$investor_name,$query_status,$query_status_id,$data,$files));
+                }else {
+                    Mail::to($investor_email)->send(new QueryStatusEmail($subject,$investor_name,$query_status,$query_status_id,$data,$files));
+                }
                 /**********************end sending email and sms and whatsapp******************************/
             }else{
                 // return $request;
@@ -511,31 +522,19 @@ class QueryController extends Controller
                 $subject="Query status changed to ".$query_status."- QueryId : ".$query_id;
                 $res=SMSHelper::registerReOpen($mobile_no,$short_url,$query_status,$investor_name,$query_id);
                 // return $res;
-                Mail::to($investor_email)->send(new QueryStatusEmail($subject,$investor_name,$query_status,$query_status_id,$data));
+                // Mail::to($investor_email)->send(new QueryStatusEmail($subject,$investor_name,$query_status,$query_status_id,$data));
 
-                // $allAtched=QueryEntryAttach::where('query_id',$data->id)->get();
-                // if (count($allAtched)>0) {
-                //     $files = [];
-                //     foreach ($allAtched as $key => $value1) {
-                //         $filePath=public_path('query-entry/'.$value1->name);
-                //         array_push($files,$filePath);
-                //     }
-                //     $investor_email="suman@synergicsoftek.in";
-                //     Mail::send('emails.customer_service.query_desk_email', $data, function($message)use($data, $files) {
-                //         $from_email=env('MAIL_FROM_ADDRESS');
-                //         $message->from($from_email)->to($investor_email)->subject($subject);
-                //         foreach ($files as $file){
-                //             // $message->attach($file);
-                //             $message->attach($file->getRealPath(), array(
-                //                 'as' => $file->getClientOriginalName(), // If you want you can chnage original name to custom name      
-                //                 'mime' => $file->getMimeType())
-                //             );
-                //         }
-                //     });
-                // }else {
-                //     Mail::to($investor_email)->send(new QueryStatusEmail($subject,$investor_name,$query_status,$query_status_id,$data));
-                // }
-                
+                $allAtched=QueryEntryAttach::where('query_id',$data->id)->get();
+                $files=[];
+                if (count($allAtched)>0) {
+                    foreach ($allAtched as $key => $value1) {
+                        $filePath=public_path('query-entry/'.$value1->name);
+                        array_push($files,$filePath);
+                    }
+                    Mail::to($investor_email)->send(new QueryStatusEmail($subject,$investor_name,$query_status,$query_status_id,$data,$files));
+                }else {
+                    Mail::to($investor_email)->send(new QueryStatusEmail($subject,$investor_name,$query_status,$query_status_id,$data,$files));
+                }
             }    
         } catch (\Throwable $th) {
             throw $th;
