@@ -56,7 +56,7 @@
                                  </tr>
                                  <tr>
                                     <td height="22"
-                                       style="width:100%;text-align:left;color:#666666;vertical-align:top;font-weight:700;font-family:'calibri','Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px">
+                                       style="width:100%;text-align:left;color:#4169E1;vertical-align:top;font-weight:700;font-family:'calibri','Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px">
                                        Dear {{$investor_name}},</td>
                                  </tr>
                                  <tr>
@@ -68,11 +68,11 @@
                                     <td height="22"
                                        style="width:100%;text-align:left;color:#666666;vertical-align:top;font-weight:400;font-size:14px;font-family:'calibri','Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif">
                                        This is an auto-response email to tag your request with status
-                                       <b>{{$query_status}}</b> Please do not reply to this
+                                       <b style="color:#4169E1;">{{$query_status}}</b> Please do not reply to this
                                        email<br><br>Request you to
                                        kindly check reply description in below Status. If you find the
                                        reply irrelevant
-                                       to you, you can reopen this query OR email us at<a
+                                       to you, you can <a href="#" target="_blank">reopen</a> this query OR email us at<a
                                           href="mailto:service@nuedgecorporate.co.in" target="_blank">
                                           service@nuedgecorporate.co.in.</a>
                                     </td>
@@ -112,7 +112,7 @@
                                  <tr>
                                     <td
                                        style="width:20%;font-weight:600;color:#000;font-size:14px;font-family:'calibri','Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif;padding:6px 0 6px 10px;border-right:1px solid #ddd;border-bottom:1px solid #ddd;border-left:1px solid #ddd">
-                                       Query type
+                                       Query Type
                                     </td>
                                     <td
                                        style="width:34%;color:#000;font-size:14px;text-align:left;font-family:'calibri','Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif;padding:6px 0 6px 10px;border-right:1px solid #ddd;border-bottom:1px solid #ddd">
@@ -134,7 +134,7 @@
                                        Main Branch</td>
                                     <td
                                        style="width:20%;font-weight:600;color:#000;font-size:14px;text-align:left;font-family:'calibri','Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif;padding:6px 0 6px 10px;border-right:1px solid #ddd;border-bottom:1px solid #ddd">
-                                       Query Received through </td>
+                                       Query Received Through </td>
                                     <td
                                        style="width:30%;color:#000;font-size:14px;text-align:left;font-family:'calibri','Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif;padding:6px 0 6px 10px;border-bottom:1px solid #ddd;border-right:1px solid #ddd">
                                        {{($data->query_receive_through)?$data->query_receive_through:"N/A"}}
@@ -158,7 +158,7 @@
                                  <tr style="background:#f6f6f6">
                                     <td
                                        style="width:20%;font-weight:600;color:#000;font-size:14px;font-family:'calibri','Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif;padding:6px 0 6px 10px;border-right:1px solid #ddd;border-bottom:1px solid #ddd;border-left:1px solid #ddd">
-                                       Business type
+                                       Business Type
                                     </td>
                                     <td
                                        style="width:34%;color:#000;font-size:14px;text-align:left;font-family:'calibri','Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif;padding:6px 0 6px 10px;border-right:1px solid #ddd;border-bottom:1px solid #ddd">
@@ -597,9 +597,10 @@
                               Thank you,
                            </p>
                            <span
-                              style="line-height:15pt;display:inline-block;font-family:'calibri','Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif">
-                              <b>NuEdge Corporate Private Limited</b><br>
-                              "1A, Dr Sarat Banerjee Road, <br>
+                              style="color:#030d2e; line-height:15pt;display:inline-block;font-family:'calibri','Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif">
+                              <b>NuEdge Corporate Private Limited <sup>R</sup></b><br>                             
+                              <b>AMFI Registered Mutual Fund Distributor</b><br>
+                              1A, Dr Sarat Banerjee Road, <br>
                               Opp-CESE Supply Office<br>
                               Kolkata -700029. <br>
                               E-mail: <a href="mailto:service@nuedgecorporate.co.in" style="text-decoration:none"
