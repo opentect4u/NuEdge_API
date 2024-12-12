@@ -37,7 +37,9 @@ class IndexController extends Controller
             $data=Query::leftjoin('md_products','md_products.id','=','td_query.product_id')
                 ->leftJoin('md_query_status','md_query_status.id','=','td_query.query_status_id')
                 ->leftJoin('md_query_sub_type','md_query_sub_type.id','=','td_query.query_subtype_id')
-                ->select('td_query.*','md_products.product_name as product_name','md_query_status.status_name','md_query_status.status_name')
+                ->leftJoin('md_query_type','md_query_type.id','=','td_query.query_type_id')
+                ->select('td_query.*','md_products.product_name as product_name','md_query_status.status_name','md_query_status.status_name',
+                'md_query_sub_type.query_subtype','md_query_type.query_type')
                 ->selectRaw('IF(td_query.query_tat IS NULL || td_query.query_tat="",md_query_sub_type.query_tat,td_query.query_tat)as query_tat')
                 ->get();
             $group_product = array();
