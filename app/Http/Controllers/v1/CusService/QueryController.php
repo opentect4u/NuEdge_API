@@ -53,6 +53,10 @@ class QueryController extends Controller
                     ->where('td_mutual_fund_trans.first_client_pan','like','%' . $search . '%')
                     ->orWhere('td_mutual_fund_trans.first_client_name','like', '%' . $search . '%')
                     ->orWhere('td_mutual_fund_trans.folio_no','like', '%' . $search . '%')
+                    ->whereRaw('IF(td_mutual_fund_trans.first_client_pan!="",
+                    (select mobile from md_client where pan=td_mutual_fund_trans.first_client_pan limit 1),
+                    (select mobile from md_client where client_name=td_mutual_fund_trans.first_client_name limit 1)
+                    )as mobile like %' . $search . '%')
                     ->groupBy('td_mutual_fund_trans.first_client_pan')
                     ->get();
             // $data=Client::leftJoin('td_mutual_fund_trans','td_mutual_fund_trans.first_client_pan',)
