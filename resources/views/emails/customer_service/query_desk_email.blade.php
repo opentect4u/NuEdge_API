@@ -597,9 +597,9 @@
                               Thank you,
                            </p>
                            <span
-                              style="color:#030d2e; line-height:15pt;display:inline-block;font-family:'calibri','Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif">
-                              <b style="color:#030d2e;">NuEdge Corporate Private Limited <sup style="color:#030d2e;font-size:16px;">®</sup></b><br>                             
-                              <b style="color:#030d2e;">AMFI Registered Mutual Fund Distributor</b><br>
+                              style="color:#042db4; line-height:15pt;display:inline-block;font-family:'calibri','Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif">
+                              <b style="color:#042db4;">NuEdge Corporate Private Limited <sup style="color:#042db4;font-size:16px;">®</sup></b><br>                             
+                              <b style="color:#042db4;">AMFI Registered Mutual Fund Distributor</b><br>
                               1A, Dr Sarat Banerjee Road, <br>
                               Opp-CESE Supply Office<br>
                               Kolkata -700029. <br>
