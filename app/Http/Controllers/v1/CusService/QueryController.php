@@ -897,7 +897,7 @@ class QueryController extends Controller
         try {
             $query_id=Crypt::decrypt($request->query_id);
             // return $query_id;
-            $allAtched=QueryEntryAttach::where('query_id',$query_id)->where('query_status_id',2)->get();
+            $allAtched=QueryAttachment::where('query_id',$query_id)->where('query_status_id',2)->get();
             // return $allAtched;
             if (count($allAtched)>0) {
                 if (count($allAtched)==1) {
