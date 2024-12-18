@@ -291,7 +291,8 @@
                                        style="width:34%;color:#000;font-size:14px;text-align:left;font-family:'calibri','Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif;padding:6px 0 6px 10px;border-bottom:1px solid #ddd;border-right:1px solid #ddd">
                                        @if(count($data->entry_attachment)>0)
                                        @foreach($data->entry_attachment as $key => $attachment)
-                                       <a href="{{env('QUERY_DOWNLOAD_LINK').Crypt::encrypt($attachment->id)}}">Click Here to download attachment {{($key+1)}}</a>
+                                       {{-- <a href="{{env('QUERY_DOWNLOAD_LINK').Crypt::encrypt($attachment->id)}}">Click Here to download attachment {{($key+1)}}</a> --}}
+                                       <a href="{{asset('public/query-attachment/'.$attachment->name)}}" download="{{$attachment->name}}">Click Here to download attachment {{($key+1)}}</a>
                                        </br>
                                        @endforeach
                                        @else 
