@@ -409,7 +409,7 @@ class QueryController extends Controller
                 $entry_attachment=[];
                 foreach ($data->allattach as $key => $value) {
                     if ($value->query_status_id==2) {
-                        array_push($entry_attachment,$value->name);
+                        array_push($entry_attachment,$value);
                     }
                 }
                 $data->entry_attachment=$entry_attachment;
