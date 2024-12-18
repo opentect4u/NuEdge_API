@@ -16,12 +16,13 @@ class QueryStatusEmail extends Mailable
     public $query_status_id;
     public $data;
     public $files;
+    public $total_client_count;
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($subject,$investor_name,$query_status,$query_status_id,$data,$files)
+    public function __construct($subject,$investor_name,$query_status,$query_status_id,$data,$files,$total_client_count)
     {
         $this->subject=$subject;
         $this->investor_name=$investor_name;
@@ -29,6 +30,7 @@ class QueryStatusEmail extends Mailable
         $this->query_status_id=$query_status_id;
         $this->data=$data;
         $this->files=$files;
+        $this->total_client_count=$total_client_count;
     }
 
     /**

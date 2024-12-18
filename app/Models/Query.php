@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\{QuerySolveAttach,QueryEntryAttach};
+use App\Models\{QuerySolveAttach,QueryEntryAttach,QueryAttachment};
 
 class Query extends Model
 {
@@ -64,6 +64,13 @@ class Query extends Model
     public function allscheme()
     {
         return $this->hasMany(QueryScheme::class,'query_id','id');
+    }
+
+    public function allattach()
+    {
+        return $this->hasMany(QueryAttachment::class,'query_id','id')
+            ->select('td_query_attchment.*')
+            ->selectRaw('(select status_name from md_query_status where id=td_query_attchment.query_status_id limit 1) as query_status_name');
     }
 
     public function entryattach()

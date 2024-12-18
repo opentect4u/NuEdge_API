@@ -18,7 +18,8 @@ use App\Models\{
     Query,
     QueryScheme,
     QueryEntryAttach,
-    QuerySolveAttach
+    QuerySolveAttach,
+    QueryAttachment,
 };
 use Validator;
 use Illuminate\Support\Carbon;
@@ -30,6 +31,7 @@ use App\Http\Controllers\V1\Client\LiveMFPLController;
 use Mail;
 use App\Mail\CusService\QueryStatusEmail;
 use Illuminate\Support\Facades\Crypt;
+use File;
 
 class QueryController extends Controller
 {
@@ -37,39 +39,44 @@ class QueryController extends Controller
     {
         try {
             $search=$request->search;
-            $data=MutualFundTransaction::select('td_mutual_fund_trans.*','td_mutual_fund_trans.first_client_name as client_name','td_mutual_fund_trans.first_client_pan as pan')
-                    ->selectRaw('IF(td_mutual_fund_trans.first_client_pan!="",
-                    (select client_code from md_client where pan=td_mutual_fund_trans.first_client_pan limit 1),
-                    (select client_code from md_client where client_name=td_mutual_fund_trans.first_client_name limit 1)
-                    )as client_code')
-                    ->selectRaw('IF(td_mutual_fund_trans.first_client_pan!="",
-                    (select email from md_client where pan=td_mutual_fund_trans.first_client_pan limit 1),
-                    (select email from md_client where client_name=td_mutual_fund_trans.first_client_name limit 1)
-                    )as email')
-                    ->selectRaw('IF(td_mutual_fund_trans.first_client_pan!="",
-                    (select mobile from md_client where pan=td_mutual_fund_trans.first_client_pan limit 1),
-                    (select mobile from md_client where client_name=td_mutual_fund_trans.first_client_name limit 1)
-                    )as mobile')
-                    ->where('td_mutual_fund_trans.first_client_pan','like','%' . $search . '%')
-                    ->orWhere('td_mutual_fund_trans.first_client_name','like', '%' . $search . '%')
-                    ->orWhere('td_mutual_fund_trans.folio_no','like', '%' . $search . '%')
-                    // ->whereRaw('IF(td_mutual_fund_trans.first_client_pan!="",
-                    // (select mobile from md_client where pan=td_mutual_fund_trans.first_client_pan limit 1),
-                    // (select mobile from md_client where client_name=td_mutual_fund_trans.first_client_name limit 1)
-                    // )as mobile like %' . $search . '%')
-                    ->groupBy('td_mutual_fund_trans.first_client_pan')
-                    ->get();
-            // $data=Client::leftJoin('td_mutual_fund_trans','td_mutual_fund_trans.first_client_pan',)
-            //         ->select('md_client.*')
-            //         // ->where('client_type','!=','E')
-            //         ->orWhere('md_client.client_name','like', '%' . $search . '%')
-            //         ->orWhere('md_client.client_code','like', '%' . $search . '%')
-            //         ->orWhere('md_client.pan','like', '%' . $search . '%')
-            //         ->orWhere('md_client.mobile','like', '%' . $search . '%')
-            //         ->orWhere('md_client.email','like', '%' . $search . '%')
+            // DB::enableQueryLog();
+            // $data=MutualFundTransaction::select('td_mutual_fund_trans.*','td_mutual_fund_trans.first_client_name as client_name','td_mutual_fund_trans.first_client_pan as pan')
+            //         ->selectRaw('IF(td_mutual_fund_trans.first_client_pan!="",
+            //         (select client_code from md_client where pan=td_mutual_fund_trans.first_client_pan limit 1),
+            //         (select client_code from md_client where client_name=td_mutual_fund_trans.first_client_name limit 1)
+            //         )as client_code')
+            //         ->selectRaw('IF(td_mutual_fund_trans.first_client_pan!="",
+            //         (select email from md_client where pan=td_mutual_fund_trans.first_client_pan limit 1),
+            //         (select email from md_client where client_name=td_mutual_fund_trans.first_client_name limit 1)
+            //         )as email')
+            //         ->selectRaw('IF(td_mutual_fund_trans.first_client_pan!="",
+            //         (select mobile from md_client where pan=td_mutual_fund_trans.first_client_pan limit 1),
+            //         (select mobile from md_client where client_name=td_mutual_fund_trans.first_client_name limit 1)
+            //         )as mobile')
+            //         ->where('td_mutual_fund_trans.first_client_pan','like','%' . $search . '%')
+            //         ->orWhere('td_mutual_fund_trans.first_client_name','like', '%' . $search . '%')
+            //         ->orWhere('td_mutual_fund_trans.folio_no','like', '%' . $search . '%')
+            //         // ->orWhereRaw('(IF(td_mutual_fund_trans.first_client_pan!="",
+            //         // (select mobile from md_client where pan=td_mutual_fund_trans.first_client_pan limit 1),
+            //         // (select mobile from md_client where client_name=td_mutual_fund_trans.first_client_name limit 1)
+            //         // ) LIKE "%' . $search . '%")')
+            //         ->groupBy('td_mutual_fund_trans.first_client_pan')
             //         ->get();
+            
+            $data=Client::leftJoin('td_mutual_fund_trans','td_mutual_fund_trans.first_client_name','=','md_client.client_name')
+                    ->select('md_client.*','td_mutual_fund_trans.folio_no','td_mutual_fund_trans.first_client_name')
+                    // ->where('client_type','!=','E')
+                    ->where('md_client.client_name','like', '%' . $search . '%')
+                    ->orWhere('md_client.client_code','like', '%' . $search . '%')
+                    ->orWhere('md_client.pan','like', '%' . $search . '%')
+                    ->orWhere('md_client.mobile','like', '%' . $search . '%')
+                    ->orWhere('md_client.email','like', '%' . $search . '%')
+                    ->orWhere('td_mutual_fund_trans.folio_no','like', '%' . $search . '%')
+                    ->groupBy('td_mutual_fund_trans.first_client_name')
+                    ->get();
+            // dd(DB::getQueryLog());
         } catch (\Throwable $th) {
-            throw $th;
+            // throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
         return Helper::SuccessResponse($data);
@@ -104,6 +111,7 @@ class QueryController extends Controller
             $query_id=Crypt::decrypt($request->query_id);
             $data=Query::with('allscheme','allscheme.schemename')
                 // ->with('entryattach')->with('solveattach')
+                ->with('allattach')
                 ->leftJoin('md_query_status','md_query_status.id','=','td_query.query_status_id')
                 ->leftJoin('md_query_type','md_query_type.id','=','td_query.query_type_id')
                 ->leftJoin('md_query_sub_type','md_query_sub_type.id','=','td_query.query_subtype_id')
@@ -145,7 +153,9 @@ class QueryController extends Controller
             $query_given_through_id=$request->query_given_thrugh_id;
             
             if ($id) {
-                $data=Query::with('allscheme')->with('entryattach')->with('solveattach')
+                $data=Query::with('allscheme')
+                    // ->with('entryattach')->with('solveattach')
+                    ->with('allattach')
                     ->leftJoin('md_query_status','md_query_status.id','=','td_query.query_status_id')
                     ->leftJoin('md_client','md_client.id','=','td_query.invester_id')
                     ->leftJoin('md_query_sub_type','md_query_sub_type.id','=','td_query.query_subtype_id')
@@ -194,7 +204,9 @@ class QueryController extends Controller
                 }
                 // return $rawQuery;
                 if ($product_id==1) {
-                    $data=Query::with('allscheme','allscheme.schemename')->with('entryattach')->with('solveattach')
+                    $data=Query::with('allscheme','allscheme.schemename')
+                        // ->with('entryattach')->with('solveattach')
+                        ->with('allattach')
                         ->leftJoin('md_query_status','md_query_status.id','=','td_query.query_status_id')
                         ->leftJoin('md_query_type','md_query_type.id','=','td_query.query_type_id')
                         ->leftJoin('md_query_sub_type','md_query_sub_type.id','=','td_query.query_subtype_id')
@@ -218,6 +230,7 @@ class QueryController extends Controller
                         'users.name as entry_name'
                         )
                         ->whereRaw($rawQuery)
+                        ->orderBy('td_query.date_time','desc')
                         ->get();
                 } else if ($product_id==2) {
                     $data=Query::with('entryattach')->with('solveattach')
@@ -276,6 +289,7 @@ class QueryController extends Controller
         //     return Helper::ErrorResponse(parent::VALIDATION_ERROR);
         // }
         try {
+            $total_client_count=Client::whereIn('id',['M','N','P'])->count();
             if ($request->id > 0) {
                 // return $request;
                 $update_data=Query::find($request->id);
@@ -321,11 +335,12 @@ class QueryController extends Controller
                         // return $file;
                         if ($file) {
                             $doc_path_extension=$file->getClientOriginalExtension();
-                            $doc_name=(microtime(true)*1000).".".$doc_path_extension;
-                            $file->move(public_path('query-solve/'),$doc_name);
+                            $doc_name=(microtime(true)*10000).".".$doc_path_extension;
+                            $file->move(public_path('query-attachment/'),$doc_name);
                         }
-                        QuerySolveAttach::create([
+                        QueryAttachment::create([
                             'query_id'=>$update_data->id,
+                            'query_status_id'=>$update_data->query_status_id,
                             'name'=>$doc_name,
                             'created_by',
                             'updated_by',
@@ -352,6 +367,7 @@ class QueryController extends Controller
                 /*********************end update feedback url****************************/
                 $data=Query::with('allscheme','allscheme.schemename')
                     // ->with('entryattach')->with('solveattach')
+                    ->with('allattach')
                     ->leftJoin('md_query_status','md_query_status.id','=','td_query.query_status_id')
                     ->leftJoin('md_query_type','md_query_type.id','=','td_query.query_type_id')
                     ->leftJoin('md_query_sub_type','md_query_sub_type.id','=','td_query.query_subtype_id')
@@ -387,17 +403,76 @@ class QueryController extends Controller
                     $res=SMSHelper::completedReCompleted($mobile_no,$short_url,$query_status,$investor_name,$query_id,$close_date,$feedback_url);
                 }
                 // Mail::to($investor_email)->send(new QueryStatusEmail($subject,$investor_name,$query_status,$query_status_id,$data));
-                $allAtched=QuerySolveAttach::where('query_id',$data->id)->get();
+                // $allAtched=QuerySolveAttach::where('query_id',$data->id)->get();
                 $files=[];
-                if (count($allAtched)>0) {
-                    foreach ($allAtched as $key => $value1) {
-                        $filePath=public_path('query-solve/'.$value1->name);
-                        array_push($files,$filePath);
+                // return $data;
+                $entry_attachment=[];
+                foreach ($data->allattach as $key => $value) {
+                    if ($value->query_status_id==2) {
+                        array_push($entry_attachment,$value->name);
                     }
-                    Mail::to($investor_email)->send(new QueryStatusEmail($subject,$investor_name,$query_status,$query_status_id,$data,$files));
-                }else {
-                    Mail::to($investor_email)->send(new QueryStatusEmail($subject,$investor_name,$query_status,$query_status_id,$data,$files));
                 }
+                $data->entry_attachment=$entry_attachment;
+                $status_change_attachment=[];
+                foreach ($data->allattach as $key => $value) {
+                    if ($value->query_status_id==$data->query_status_id) {
+                        array_push($status_change_attachment,$value);
+                    }
+                }
+                $data->status_change_attachment=$status_change_attachment;
+                // return $data->status_change_attachment;
+                $files=[];
+                if (count($data->status_change_attachment) > 0) {
+                    if (count($data->status_change_attachment)==1) {
+                        $final_file_name=public_path('query-attachment/'.$allAtched[0]->name);
+                        array_push($files,$final_file_name);
+                    }else {
+                        $all_files=[];
+                        foreach ($data->status_change_attachment as $key => $value1) {
+                            // $filePath=public_path('query-entry/'.$value1->name);
+                            $filePath=$value1->name;
+                            array_push($all_files,$filePath);
+                        }
+                        // return $all_files;
+                        $zip = new \ZipArchive();
+                        // $fileName = 'query-attachment-zip/zipFile_'. (string)$data->id.'.zip';
+                        $fileName = 'query-attachment-zip/zipFile_'. (string)$data->id.'.zip';
+                        if (file_exists(public_path($fileName))) {
+                            unlink(public_path($fileName));
+                        }
+                        if ($zip->open(public_path($fileName), \ZipArchive::CREATE)== TRUE)
+                        {
+                            // return public_path($fileName);
+                            $query_attachment_files = File::files(public_path('query-attachment'));
+                            // return $query_attachment_files;
+                            foreach ($query_attachment_files as $key => $file){
+                                // return $file->getFilename();
+                                $relativeName = basename($file);
+                                if (in_array($relativeName, $all_files)) {
+                                    $zip->addFile($file, $relativeName);
+                                }
+                            }
+                            $zip->close();
+                        }
+                        $final_file_name=public_path($fileName);
+                        // return $final_file_name;
+                        array_push($files,$final_file_name);
+                    }
+                }
+
+                // return $files;
+                // if (count($data->entry_attachment)>0) {
+                //     // foreach ($data->solveattach as $key => $value1) {
+                //     //     $filePath=public_path('query-solve/'.$value1->name);
+                //     //     array_push($files,$filePath);
+                //     // }
+
+                //     Mail::to($investor_email)->send(new QueryStatusEmail($subject,$investor_name,$query_status,$query_status_id,$data,$files,$total_client_count));
+                // }else {
+                //     Mail::to($investor_email)->send(new QueryStatusEmail($subject,$investor_name,$query_status,$query_status_id,$data,$files,$total_client_count));
+                // }
+                Mail::to($investor_email)->send(new QueryStatusEmail($subject,$investor_name,$query_status,$query_status_id,$data,$files,$total_client_count));
+
                 /**********************end sending email and sms and whatsapp******************************/
             }else{
                 // return $request;
@@ -470,11 +545,12 @@ class QueryController extends Controller
                     foreach ($entry_attachment as $key => $file) {
                         if ($file) {
                             $doc_path_extension=$file->getClientOriginalExtension();
-                            $doc_name=(microtime(true)*1000).".".$doc_path_extension;
-                            $file->move(public_path('query-entry/'),$doc_name);
+                            $doc_name=(microtime(true)*10000).".".$doc_path_extension;
+                            $file->move(public_path('query-attachment/'),$doc_name);
                         }
-                        QueryEntryAttach::create([
+                        QueryAttachment::create([
                             'query_id'=>$data->id,
+                            'query_status_id'=>$data->query_status_id,
                             'name'=>$doc_name,
                             'created_by',
                             'updated_by',
@@ -497,6 +573,7 @@ class QueryController extends Controller
                 $update->save();
                 /**********************************************************/
                 $data=Query::with('allscheme','allscheme.schemename')
+                    ->with('allattach')
                     // ->with('entryattach')->with('solveattach')
                     ->leftJoin('md_query_status','md_query_status.id','=','td_query.query_status_id')
                     ->leftJoin('md_query_type','md_query_type.id','=','td_query.query_type_id')
@@ -527,17 +604,23 @@ class QueryController extends Controller
                 $res=SMSHelper::registerReOpen($mobile_no,$short_url,$query_status,$investor_name,$query_id);
                 // return $res;
                 // Mail::to($investor_email)->send(new QueryStatusEmail($subject,$investor_name,$query_status,$query_status_id,$data));
-
-                $allAtched=QueryEntryAttach::where('query_id',$data->id)->get();
                 $files=[];
-                if (count($allAtched)>0) {
-                    foreach ($allAtched as $key => $value1) {
-                        $filePath=public_path('query-entry/'.$value1->name);
-                        array_push($files,$filePath);
+                // return $data->allattach;
+                $entry_attachment=[];
+                foreach ($data->allattach as $key => $value) {
+                    if ($value->query_status_id==2) {
+                        array_push($entry_attachment,$value->name);
                     }
-                    Mail::to($investor_email)->send(new QueryStatusEmail($subject,$investor_name,$query_status,$query_status_id,$data,$files));
+                }
+                $data->entry_attachment=$entry_attachment;
+                if (count($data->entry_attachment)>0) {
+                    // foreach ($allAtched as $key => $value1) {
+                    //     $filePath=public_path('query-entry/'.$value1->name);
+                    //     array_push($files,$filePath);
+                    // }
+                    Mail::to($investor_email)->send(new QueryStatusEmail($subject,$investor_name,$query_status,$query_status_id,$data,$files,$total_client_count));
                 }else {
-                    Mail::to($investor_email)->send(new QueryStatusEmail($subject,$investor_name,$query_status,$query_status_id,$data,$files));
+                    Mail::to($investor_email)->send(new QueryStatusEmail($subject,$investor_name,$query_status,$query_status_id,$data,$files,$total_client_count));
                 }
             }    
         } catch (\Throwable $th) {
@@ -808,6 +891,58 @@ class QueryController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
+
+    public function downloadFile(Request $request)
+    {
+        try {
+            $query_id=Crypt::decrypt($request->query_id);
+            // return $query_id;
+            $allAtched=QueryEntryAttach::where('query_id',$query_id)->where('query_status_id',2)->get();
+            // return $allAtched;
+            if (count($allAtched)>0) {
+                if (count($allAtched)==1) {
+                    // $fileName=public_path('query-entry/'.$allAtched[0]->name);
+                    $fileName=$allAtched[0]->name;
+                    // return $fileName;
+                    $final_file_name=env('APP_URL_IP')."/public/query-attachment/".$fileName;
+                }else {
+                    $all_files=[];
+                    foreach ($allAtched as $key => $value1) {
+                        // $filePath=public_path('query-entry/'.$value1->name);
+                        $filePath=$value1->name;
+                        array_push($all_files,$filePath);
+                    }
+                    // return $files;
+                    $zip = new \ZipArchive();
+                    $fileName = 'query-attachment-zip/zipFile_'. (string)$query_id.'.zip';
+                    if (file_exists(public_path($fileName))) {
+                        public_path(public_path($fileName));
+                    }
+                    if ($zip->open(public_path($fileName), \ZipArchive::CREATE)== TRUE)
+                    {
+                        $files = File::files(public_path('query-attachment'));
+                        // return $files;
+                        foreach ($files as $key => $file){
+                            // return $file->getFilename();
+                            $relativeName = basename($file);
+                            if (in_array($relativeName, $all_files)) {
+                                $zip->addFile($file, $relativeName);
+                            }
+                        }
+                        $zip->close();
+                    }
+                    $final_file_name=env('APP_URL_IP')."/public/".$fileName;
+                }
+            }
+            // return $final_file_name;
+            // return response()->download(public_path($fileName));
+        } catch (\Throwable $th) {
+            throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($final_file_name);
+    }
+    
 
 
     public function sendSMS111()

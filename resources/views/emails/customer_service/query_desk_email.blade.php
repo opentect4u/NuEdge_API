@@ -8,12 +8,17 @@
    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
       integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
    <style>
-      .lawra {
-         display: flex;
-         align-items: center;
-         justify-content: center;
-         flex-direction: column;
+
+
+      .animateFeedback{
+         animation: blinker 1s step-end infinite!important;
       }
+      @keyframes blinker {
+         50% {
+            opacity: 0;
+         }
+      }
+
    </style>
 </head>
 
@@ -231,6 +236,29 @@
                                        Query TAT Expired</td>
                                     <td
                                        style="width:30%;color:#000;font-size:14px;text-align:left;font-family:'calibri','Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif;padding:6px 0 6px 10px;border-bottom:1px solid #ddd;border-right:1px solid #ddd">
+
+                                       @php
+                                          // $isExpired='';
+                                          if ($data->actual_close_date) {
+                                             $actual_close_date = \Carbon\Carbon::create($data->actual_close_date);
+                                             $expected_close_date = \Carbon\Carbon::create($data->expected_close_date);
+                                             $isAfter = $actual_close_date->diffInDays($expected_close_date);
+                                             $isExpired = ($isAfter <= 0) ?'Yes':'No';;
+                                          }else{
+                                             if($data->expected_close_date){
+                                                $expected_close_date = \Carbon\Carbon::create($data->expected_close_date);
+                                                $to_day =  \Carbon\Carbon::create(date('Y-m-d'));
+                                                $isAfter = $to_day->diffInDays($expected_close_date);
+                                                $isExpired = ($isAfter <= 0) ?'Yes':'No';
+                                             } else{
+                                                   $cal_date=date('Y-m-d', strtotime($data->date_time. ' + '.$data->query_tat.' day'));
+                                                   $new_date = \Carbon\Carbon::create($cal_date);
+                                                   $isAfter = \Carbon\Carbon::create(date('Y-m-d'))->diffInDays($new_date);
+                                                   $isExpired = ($isAfter <= 0) ?'Yes':'No';
+                                             }
+                                          }
+                                          echo $isExpired;
+                                       @endphp
                                     </td>
                                  </tr>
                                  <tr>
@@ -249,6 +277,20 @@
                                     <td
                                        style="width:34%;color:#000;font-size:14px;text-align:left;font-family:'calibri','Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif;padding:6px 0 6px 10px;border-bottom:1px solid #ddd;border-right:1px solid #ddd">
                                        {{$data->allscheme[0]->schemename->scheme_name}}</td>
+                                 </tr>
+                                 <tr style="background:#f6f6f6">
+                                    <td valign="top"
+                                       style="width:20%;font-weight:600;color:#000;font-size:14px;font-family:'calibri','Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif;padding:6px 0 6px 10px;border-right:1px solid #ddd;border-bottom:1px solid #ddd;border-left:1px solid #ddd">
+                                       Query Attachments
+                                    </td>
+                                    <td colspan="3"
+                                       style="width:34%;color:#000;font-size:14px;text-align:left;font-family:'calibri','Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif;padding:6px 0 6px 10px;border-bottom:1px solid #ddd;border-right:1px solid #ddd">
+                                       @if(count($data->entry_attachment)>0)
+                                       <a href="{{env('QUERY_DOWNLOAD_LINK').Crypt::encrypt($data->id)}}">Click Here</a>
+                                       @else 
+                                       {{'N/A'}}
+                                       @endif
+                                    </td>
                                  </tr>
                                  <tr style="background:#f6f6f6">
                                     <td valign="top"
@@ -295,7 +337,8 @@
                                 font-family:'calibri','Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif;
                                 padding:3px;
                                 border-right:1px solid #ddd;border-bottom:1px solid #ddd;border-left:1px solid #ddd;border-top:1px solid #ddd">
-                                       Feedback
+                                       {{-- <h3 style="color: red;" class="animateFeedback">Feedback</h3> --}}
+                                       <img src="{{asset('public/feedback.gif')}}" alt="" srcset="" width="100px" height="70px"> 
                                     </td>
                                  </tr>
                                  <tr>
@@ -366,7 +409,7 @@
                                 font-family:'calibri','Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif;
                                 padding:3px">
                                        <h5 style="margin:0px;font-size:14px;">
-                                          2000
+                                          {{$total_client_count}}
                                        </h5>
                                        <h5 style="margin:0px;font-size:14px;">
                                           Happy Clients
@@ -383,7 +426,7 @@
                                           Asset Under Management
                                        </h5>
                                        <h5 style="margin:0px;font-size:8px;">
-                                          *As on 25.10.2024
+                                          *As on {{date('d-m-Y')}}
                                        </h5>
                                     </td>
                               </tbody>

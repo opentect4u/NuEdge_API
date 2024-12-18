@@ -41,6 +41,7 @@ Route::prefix('v1')->group(function () {
                 Route::get('index',[App\Http\Controllers\v1\CusService\IndexController::class,'index']);
 
             });
+            Route::post('downloadFile',[App\Http\Controllers\v1\CusService\QueryController::class,'downloadFile']);
             Route::post('queryShowDetails',[App\Http\Controllers\v1\CusService\QueryController::class,'showDetails']);
             Route::post('queryFeedback',[App\Http\Controllers\v1\CusService\QueryController::class,'feedback']);
 
