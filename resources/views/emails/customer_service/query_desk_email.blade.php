@@ -246,7 +246,7 @@
                                                 $actual_close_date = \Carbon\Carbon::create($data->actual_close_date);
                                                 $expected_close_date = \Carbon\Carbon::create($data->expected_close_date);
                                                 $isAfter = $actual_close_date->diffInDays($expected_close_date);
-                                                $isExpired = ($isAfter <= 0) ?'Yes':'No';
+                                                $isExpired = ($isAfter <= 0) ?'No':'Yes';
                                              }else{
                                                 if($data->expected_close_date){
                                                    $expected_close_date = \Carbon\Carbon::create($data->expected_close_date);
