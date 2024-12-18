@@ -218,8 +218,8 @@
                                        Query Solved Date</td>
                                     <td
                                        style="width:30%;color:#000;font-size:14px;text-align:left;font-family:'calibri','Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif;padding:6px 0 6px 10px;border-bottom:1px solid #ddd;border-right:1px solid #ddd">
-                                       {{isset($data->actual_close_date)?date('d-m-Y',strtotime($data->date_time)):date('Y-m-d',
-                                       strtotime($data->date_time. ' + '.$data->query_tat.' day'))}}
+                                       {{isset($data->actual_close_date)?date('d-m-Y',strtotime($data->date_time)):date('d-m-Y',strtotime(date('Y-m-d',
+                                       strtotime($data->date_time. ' + '.$data->query_tat.' day'))))}}
                                     </td>
                                  </tr>
                                  <tr style="background:#f6f6f6">
