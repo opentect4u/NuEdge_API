@@ -462,7 +462,7 @@ class QueryController extends Controller
 
                 foreach ($data->allattach as $key => $value) {
                     if ($value->query_status_id==$data->query_status_id) {
-                        $filePath=public_path('query-attachment/'.$value1->name);
+                        $filePath=public_path('query-attachment/'.$value->name);
                         array_push($files,$filePath);
                     }
                 }
@@ -616,7 +616,7 @@ class QueryController extends Controller
                 // $entry_attachment=[];
                 foreach ($data->allattach as $key => $value) {
                     if ($value->query_status_id==2) {
-                        $filePath=public_path('query-attachment/'.$value1->name);
+                        $filePath=public_path('query-attachment/'.$value->name);
                         array_push($files,$filePath);
                     }
                 }
