@@ -599,7 +599,7 @@
                                                    </a>
                                                 </td>
                                                 <td width="8%">
-                                                   <a href="https://in.linkedin.com/company/nuedge" target="_blank">
+                                                   <a href="https://www.linkedin.com/company/nuedge-corporate-private-limited" target="_blank">
                                                       <img alt=" " height="30" width="30"
                                                          src="https://ci3.googleusercontent.com/meips/ADKq_NYvrafooCLsu-DOm35B5qXQmCnUQSd_jetGnuzqNgOeeqts6AQjlH5NhMES97wE5uIYKQ_xdOs5yb66rF4kkJARILvwbKxF8ILHxZixnPlubTMk3HoPYfvIUmTd3eqvD6vSmgWLPRU=s0-d-e1-ft#https://www.prudentcorporate.com/upload/ExpToPdf/PartnerMailImg/linkedin13616.png"
                                                          class="CToWUd" data-bit="iit">
