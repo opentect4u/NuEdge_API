@@ -289,7 +289,7 @@ class QueryController extends Controller
         //     return Helper::ErrorResponse(parent::VALIDATION_ERROR);
         // }
         try {
-            $total_client_count=Client::whereIn('id',['M','N','P'])->count();
+            $total_client_count=Client::whereIn('client_type',['M','N','P'])->count();
             if ($request->id > 0) {
                 // return $request;
                 $update_data=Query::find($request->id);
