@@ -423,41 +423,46 @@ class QueryController extends Controller
                 // return $data->status_change_attachment;
                 $files=[];
                 if (count($data->status_change_attachment) > 0) {
-                    if (count($data->status_change_attachment)==1) {
-                        $final_file_name=public_path('query-attachment/'.$allAtched[0]->name);
-                        array_push($files,$final_file_name);
-                    }else {
-                        $all_files=[];
-                        foreach ($data->status_change_attachment as $key => $value1) {
-                            // $filePath=public_path('query-entry/'.$value1->name);
-                            $filePath=$value1->name;
-                            array_push($all_files,$filePath);
-                        }
-                        // return $all_files;
-                        $zip = new \ZipArchive();
-                        // $fileName = 'query-attachment-zip/zipFile_'. (string)$data->id.'.zip';
-                        $fileName = 'query-attachment-zip/zipFile_'. (string)$data->id.'.zip';
-                        if (file_exists(public_path($fileName))) {
-                            unlink(public_path($fileName));
-                        }
-                        if ($zip->open(public_path($fileName), \ZipArchive::CREATE)== TRUE)
-                        {
-                            // return public_path($fileName);
-                            $query_attachment_files = File::files(public_path('query-attachment'));
-                            // return $query_attachment_files;
-                            foreach ($query_attachment_files as $key => $file){
-                                // return $file->getFilename();
-                                $relativeName = basename($file);
-                                if (in_array($relativeName, $all_files)) {
-                                    $zip->addFile($file, $relativeName);
-                                }
-                            }
-                            $zip->close();
-                        }
-                        $final_file_name=public_path($fileName);
-                        // return $final_file_name;
+                    foreach ($data->status_change_attachment as $key => $value1) {
+                        // $filePath=public_path('query-entry/'.$value1->name);
+                        $final_file_name=public_path('query-attachment/'.$value1->name);
                         array_push($files,$final_file_name);
                     }
+                    // if (count($data->status_change_attachment)==1) {
+                    //     $final_file_name=public_path('query-attachment/'.$allAtched[0]->name);
+                    //     array_push($files,$final_file_name);
+                    // }else {
+                    //     $all_files=[];
+                    //     foreach ($data->status_change_attachment as $key => $value1) {
+                    //         // $filePath=public_path('query-entry/'.$value1->name);
+                    //         $filePath=$value1->name;
+                    //         array_push($all_files,$filePath);
+                    //     }
+                    //     // return $all_files;
+                    //     $zip = new \ZipArchive();
+                    //     // $fileName = 'query-attachment-zip/zipFile_'. (string)$data->id.'.zip';
+                    //     $fileName = 'query-attachment-zip/zipFile_'. (string)$data->id.'.zip';
+                    //     if (file_exists(public_path($fileName))) {
+                    //         unlink(public_path($fileName));
+                    //     }
+                    //     if ($zip->open(public_path($fileName), \ZipArchive::CREATE)== TRUE)
+                    //     {
+                    //         // return public_path($fileName);
+                    //         $query_attachment_files = File::files(public_path('query-attachment'));
+                    //         // return $query_attachment_files;
+                    //         foreach ($query_attachment_files as $key => $file){
+                    //             // return $file->getFilename();
+                    //             $relativeName = basename($file);
+                    //             if (in_array($relativeName, $all_files)) {
+                    //                 $zip->addFile($file, $relativeName);
+                    //             }
+                    //         }
+                    //         $zip->close();
+                    //     }
+                    //     $final_file_name=public_path($fileName);
+                    //     // return $final_file_name;
+                    //     array_push($files,$final_file_name);
+                    // }
                 }
 
                 // return $files;
