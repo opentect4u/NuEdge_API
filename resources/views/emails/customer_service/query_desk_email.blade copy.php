@@ -285,6 +285,20 @@
                                  <tr style="background:#f6f6f6">
                                     <td valign="top"
                                        style="width:20%;font-weight:600;color:#000;font-size:14px;font-family:'calibri','Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif;padding:6px 0 6px 10px;border-right:1px solid #ddd;border-bottom:1px solid #ddd;border-left:1px solid #ddd">
+                                       Query Attachments
+                                    </td>
+                                    <td colspan="3"
+                                       style="width:34%;color:#000;font-size:14px;text-align:left;font-family:'calibri','Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif;padding:6px 0 6px 10px;border-bottom:1px solid #ddd;border-right:1px solid #ddd">
+                                       @if(count($data->entry_attachment)>0)
+                                       <a href="{{env('QUERY_DOWNLOAD_LINK').Crypt::encrypt($data->id)}}">Click Here</a>
+                                       @else 
+                                       {{'N/A'}}
+                                       @endif
+                                    </td>
+                                 </tr>
+                                 <tr style="background:#f6f6f6">
+                                    <td valign="top"
+                                       style="width:20%;font-weight:600;color:#000;font-size:14px;font-family:'calibri','Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif;padding:6px 0 6px 10px;border-right:1px solid #ddd;border-bottom:1px solid #ddd;border-left:1px solid #ddd">
                                        Query Details
                                     </td>
                                     <td colspan="3"

@@ -406,57 +406,64 @@ class QueryController extends Controller
                 // $allAtched=QuerySolveAttach::where('query_id',$data->id)->get();
                 $files=[];
                 // return $data;
-                $entry_attachment=[];
-                foreach ($data->allattach as $key => $value) {
-                    if ($value->query_status_id==2) {
-                        array_push($entry_attachment,$value->name);
-                    }
-                }
-                $data->entry_attachment=$entry_attachment;
-                $status_change_attachment=[];
+                // $entry_attachment=[];
+                // foreach ($data->allattach as $key => $value) {
+                //     if ($value->query_status_id==2) {
+                //         array_push($entry_attachment,$value->name);
+                //     }
+                // }
+                // $data->entry_attachment=$entry_attachment;
+                // $status_change_attachment=[];
+                // foreach ($data->allattach as $key => $value) {
+                //     if ($value->query_status_id==$data->query_status_id) {
+                //         array_push($status_change_attachment,$value);
+                //     }
+                // }
+                // $data->status_change_attachment=$status_change_attachment;
+                // // return $data->status_change_attachment;
+                // $files=[];
+                // if (count($data->status_change_attachment) > 0) {
+                //     if (count($data->status_change_attachment)==1) {
+                //         $final_file_name=public_path('query-attachment/'.$allAtched[0]->name);
+                //         array_push($files,$final_file_name);
+                //     }else {
+                //         $all_files=[];
+                //         foreach ($data->status_change_attachment as $key => $value1) {
+                //             // $filePath=public_path('query-entry/'.$value1->name);
+                //             $filePath=$value1->name;
+                //             array_push($all_files,$filePath);
+                //         }
+                //         // return $all_files;
+                //         $zip = new \ZipArchive();
+                //         // $fileName = 'query-attachment-zip/zipFile_'. (string)$data->id.'.zip';
+                //         $fileName = 'query-attachment-zip/zipFile_'. (string)$data->id.'.zip';
+                //         if (file_exists(public_path($fileName))) {
+                //             unlink(public_path($fileName));
+                //         }
+                //         if ($zip->open(public_path($fileName), \ZipArchive::CREATE)== TRUE)
+                //         {
+                //             // return public_path($fileName);
+                //             $query_attachment_files = File::files(public_path('query-attachment'));
+                //             // return $query_attachment_files;
+                //             foreach ($query_attachment_files as $key => $file){
+                //                 // return $file->getFilename();
+                //                 $relativeName = basename($file);
+                //                 if (in_array($relativeName, $all_files)) {
+                //                     $zip->addFile($file, $relativeName);
+                //                 }
+                //             }
+                //             $zip->close();
+                //         }
+                //         $final_file_name=public_path($fileName);
+                //         // return $final_file_name;
+                //         array_push($files,$final_file_name);
+                //     }
+                // }
+
                 foreach ($data->allattach as $key => $value) {
                     if ($value->query_status_id==$data->query_status_id) {
-                        array_push($status_change_attachment,$value);
-                    }
-                }
-                $data->status_change_attachment=$status_change_attachment;
-                // return $data->status_change_attachment;
-                $files=[];
-                if (count($data->status_change_attachment) > 0) {
-                    if (count($data->status_change_attachment)==1) {
-                        $final_file_name=public_path('query-attachment/'.$allAtched[0]->name);
-                        array_push($files,$final_file_name);
-                    }else {
-                        $all_files=[];
-                        foreach ($data->status_change_attachment as $key => $value1) {
-                            // $filePath=public_path('query-entry/'.$value1->name);
-                            $filePath=$value1->name;
-                            array_push($all_files,$filePath);
-                        }
-                        // return $all_files;
-                        $zip = new \ZipArchive();
-                        // $fileName = 'query-attachment-zip/zipFile_'. (string)$data->id.'.zip';
-                        $fileName = 'query-attachment-zip/zipFile_'. (string)$data->id.'.zip';
-                        if (file_exists(public_path($fileName))) {
-                            unlink(public_path($fileName));
-                        }
-                        if ($zip->open(public_path($fileName), \ZipArchive::CREATE)== TRUE)
-                        {
-                            // return public_path($fileName);
-                            $query_attachment_files = File::files(public_path('query-attachment'));
-                            // return $query_attachment_files;
-                            foreach ($query_attachment_files as $key => $file){
-                                // return $file->getFilename();
-                                $relativeName = basename($file);
-                                if (in_array($relativeName, $all_files)) {
-                                    $zip->addFile($file, $relativeName);
-                                }
-                            }
-                            $zip->close();
-                        }
-                        $final_file_name=public_path($fileName);
-                        // return $final_file_name;
-                        array_push($files,$final_file_name);
+                        $filePath=public_path('query-attachment/'.$value1->name);
+                        array_push($files,$filePath);
                     }
                 }
 
@@ -606,22 +613,25 @@ class QueryController extends Controller
                 // Mail::to($investor_email)->send(new QueryStatusEmail($subject,$investor_name,$query_status,$query_status_id,$data));
                 $files=[];
                 // return $data->allattach;
-                $entry_attachment=[];
+                // $entry_attachment=[];
                 foreach ($data->allattach as $key => $value) {
                     if ($value->query_status_id==2) {
-                        array_push($entry_attachment,$value->name);
+                        $filePath=public_path('query-attachment/'.$value1->name);
+                        array_push($files,$filePath);
                     }
                 }
-                $data->entry_attachment=$entry_attachment;
-                if (count($data->entry_attachment)>0) {
-                    // foreach ($allAtched as $key => $value1) {
-                    //     $filePath=public_path('query-entry/'.$value1->name);
-                    //     array_push($files,$filePath);
-                    // }
-                    Mail::to($investor_email)->send(new QueryStatusEmail($subject,$investor_name,$query_status,$query_status_id,$data,$files,$total_client_count));
-                }else {
-                    Mail::to($investor_email)->send(new QueryStatusEmail($subject,$investor_name,$query_status,$query_status_id,$data,$files,$total_client_count));
-                }
+                // $data->entry_attachment=$files;
+                // if (count($data->entry_attachment)>0) {
+                //     // foreach ($allAtched as $key => $value1) {
+                //     //     $filePath=public_path('query-entry/'.$value1->name);
+                //     //     array_push($files,$filePath);
+                //     // }
+                //     Mail::to($investor_email)->send(new QueryStatusEmail($subject,$investor_name,$query_status,$query_status_id,$data,$files,$total_client_count));
+                // }else {
+                //     Mail::to($investor_email)->send(new QueryStatusEmail($subject,$investor_name,$query_status,$query_status_id,$data,$files,$total_client_count));
+                // }
+                Mail::to($investor_email)->send(new QueryStatusEmail($subject,$investor_name,$query_status,$query_status_id,$data,$files,$total_client_count));
+
             }    
         } catch (\Throwable $th) {
             throw $th;
