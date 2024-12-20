@@ -384,6 +384,36 @@ class QueryController extends Controller
                     ->where('td_query.id',$update_data->id)
                     ->first();
                 // return $data;
+                /***************************TAT EXPIRE LOGIC******************************* */
+                if ($data->actual_close_date) {
+                    return 'actual_close_date';
+                    $actual_close_date = \Carbon\Carbon::create($data->actual_close_date);
+                    $expected_close_date = \Carbon\Carbon::create($data->expected_close_date);
+                    $isAfter = $actual_close_date->diffInDays($expected_close_date);
+                    $isExpired = ($isAfter <= 0) ?'No':'Yes';
+                }else{
+                    if($data->expected_close_date){
+                        // return 'expected_close_date';
+                        // $data->expected_close_date='2024-12-18';
+                        return strtotime($data->expected_close_date);
+                        $today=strtotime(date('Y-m-d'));
+                        
+                        $expected_close_date = \Carbon\Carbon::create($data->expected_close_date);
+                       $to_day =  \Carbon\Carbon::create(date('Y-m-d'));
+                       $isAfter = $to_day->diffInDays($expected_close_date);
+                       $isExpired = ($isAfter <= 0) ?'Yes':'No';
+                       return $isAfter;
+                    } else{
+                        // return 'no_else';
+                        $cal_date=date('Y-m-d', strtotime($data->date_time. ' + '.$data->query_tat.' day'));
+                        $new_date = \Carbon\Carbon::create($cal_date);
+                        $isAfter = \Carbon\Carbon::create(date('Y-m-d'))->diffInDays($new_date);
+                        $isExpired = ($isAfter <= 0) ?'Yes':'No';
+                        // return $isAfter;
+                    }
+                }
+                return $isExpired;
+                /***************************TAT EXPIRE LOGIC******************************* */ 
                 // email and sms 
                 $query_status_id=$data->query_status_id;
                 $expected_close_date=date('d-m-Y',strtotime($data->expected_close_date));
@@ -599,6 +629,7 @@ class QueryController extends Controller
                     ->where('td_query.id',$data->id)
                     ->first();
                 // email and sms 
+                
                 // $invester_email=DB::table('md_client')->where('id',$invester_id)->first();
                 $investor_name=$data->investor_name;
                 $investor_email=$data->investor_email;
@@ -914,34 +945,35 @@ class QueryController extends Controller
                     $fileName=$allAtched[0]->name;
                     // return $fileName;
                     $final_file_name=env('APP_URL_IP')."/public/query-attachment/".$fileName;
-                }else {
-                    $all_files=[];
-                    foreach ($allAtched as $key => $value1) {
-                        // $filePath=public_path('query-entry/'.$value1->name);
-                        $filePath=$value1->name;
-                        array_push($all_files,$filePath);
-                    }
-                    // return $files;
-                    $zip = new \ZipArchive();
-                    $fileName = 'query-attachment-zip/zipFile_'. (string)$query_id.'.zip';
-                    if (file_exists(public_path($fileName))) {
-                        public_path(public_path($fileName));
-                    }
-                    if ($zip->open(public_path($fileName), \ZipArchive::CREATE)== TRUE)
-                    {
-                        $files = File::files(public_path('query-attachment'));
-                        // return $files;
-                        foreach ($files as $key => $file){
-                            // return $file->getFilename();
-                            $relativeName = basename($file);
-                            if (in_array($relativeName, $all_files)) {
-                                $zip->addFile($file, $relativeName);
-                            }
-                        }
-                        $zip->close();
-                    }
-                    $final_file_name=env('APP_URL_IP')."/public/".$fileName;
                 }
+                // else {
+                //     $all_files=[];
+                //     foreach ($allAtched as $key => $value1) {
+                //         // $filePath=public_path('query-entry/'.$value1->name);
+                //         $filePath=$value1->name;
+                //         array_push($all_files,$filePath);
+                //     }
+                //     // return $files;
+                //     $zip = new \ZipArchive();
+                //     $fileName = 'query-attachment-zip/zipFile_'. (string)$query_id.'.zip';
+                //     if (file_exists(public_path($fileName))) {
+                //         public_path(public_path($fileName));
+                //     }
+                //     if ($zip->open(public_path($fileName), \ZipArchive::CREATE)== TRUE)
+                //     {
+                //         $files = File::files(public_path('query-attachment'));
+                //         // return $files;
+                //         foreach ($files as $key => $file){
+                //             // return $file->getFilename();
+                //             $relativeName = basename($file);
+                //             if (in_array($relativeName, $all_files)) {
+                //                 $zip->addFile($file, $relativeName);
+                //             }
+                //         }
+                //         $zip->close();
+                //     }
+                //     $final_file_name=env('APP_URL_IP')."/public/".$fileName;
+                // }
             }
             // return $final_file_name;
             // return response()->download(public_path($fileName));
