@@ -243,16 +243,15 @@
                                              echo 'N/A';
                                           }else{
                                              if ($data->actual_close_date) {
-                                                $actual_close_date = \Carbon\Carbon::create($data->actual_close_date);
-                                                $expected_close_date = \Carbon\Carbon::create($data->expected_close_date);
-                                                $isAfter = $actual_close_date->diffInDays($expected_close_date);
-                                                $isExpired = ($isAfter <= 0) ?'No':'Yes';
+                                                $actual_close_date = strtotime(date('y-m-d',strtotime($data->actual_close_date)));
+                                                $expected_close_date = strtotime($data->expected_close_date);
+                                                $isExpired =($expected_close_date < $actual_close_date)?'Yes':'No';
+                                                // return $isExpired;
                                              }else{
                                                 if($data->expected_close_date){
-                                                   $expected_close_date = \Carbon\Carbon::create($data->expected_close_date);
-                                                   $to_day =  \Carbon\Carbon::create(date('Y-m-d'));
-                                                   $isAfter = $to_day->diffInDays($expected_close_date);
-                                                   $isExpired = ($isAfter <= 0) ?'Yes':'No';
+                                                      $expected_close_date = strtotime($data->expected_close_date);
+                                                      $today=strtotime(date('Y-m-d'));
+                                                      $isExpired =($expected_close_date < $today)?'Yes':'No';
                                                 } else{
                                                       $cal_date=date('Y-m-d', strtotime($data->date_time. ' + '.$data->query_tat.' day'));
                                                       $new_date = \Carbon\Carbon::create($cal_date);

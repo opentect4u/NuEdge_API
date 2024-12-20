@@ -385,34 +385,23 @@ class QueryController extends Controller
                     ->first();
                 // return $data;
                 /***************************TAT EXPIRE LOGIC******************************* */
-                if ($data->actual_close_date) {
-                    return 'actual_close_date';
-                    $actual_close_date = \Carbon\Carbon::create($data->actual_close_date);
-                    $expected_close_date = \Carbon\Carbon::create($data->expected_close_date);
-                    $isAfter = $actual_close_date->diffInDays($expected_close_date);
-                    $isExpired = ($isAfter <= 0) ?'No':'Yes';
-                }else{
-                    if($data->expected_close_date){
-                        // return 'expected_close_date';
-                        // $data->expected_close_date='2024-12-18';
-                        return strtotime($data->expected_close_date);
-                        $today=strtotime(date('Y-m-d'));
-                        
-                        $expected_close_date = \Carbon\Carbon::create($data->expected_close_date);
-                       $to_day =  \Carbon\Carbon::create(date('Y-m-d'));
-                       $isAfter = $to_day->diffInDays($expected_close_date);
-                       $isExpired = ($isAfter <= 0) ?'Yes':'No';
-                       return $isAfter;
-                    } else{
-                        // return 'no_else';
-                        $cal_date=date('Y-m-d', strtotime($data->date_time. ' + '.$data->query_tat.' day'));
-                        $new_date = \Carbon\Carbon::create($cal_date);
-                        $isAfter = \Carbon\Carbon::create(date('Y-m-d'))->diffInDays($new_date);
-                        $isExpired = ($isAfter <= 0) ?'Yes':'No';
-                        // return $isAfter;
-                    }
-                }
-                return $isExpired;
+                // if ($data->actual_close_date) {
+                //     $actual_close_date = strtotime(date('y-m-d',strtotime($data->actual_close_date)));
+                //     $expected_close_date = strtotime($data->expected_close_date);
+                //     $isExpired =($expected_close_date < $actual_close_date)?'Yes':'No';
+                //     // return $isExpired;
+                //  }else{
+                //     if($data->expected_close_date){
+                //           $expected_close_date = strtotime($data->expected_close_date);
+                //           $today=strtotime(date('Y-m-d'));
+                //           $isExpired =($expected_close_date < $today)?'Yes':'No';
+                //     } else{
+                //           $cal_date=date('Y-m-d', strtotime($data->date_time. ' + '.$data->query_tat.' day'));
+                //           $new_date = \Carbon\Carbon::create($cal_date);
+                //           $isAfter = \Carbon\Carbon::create(date('Y-m-d'))->diffInDays($new_date);
+                //           $isExpired = ($isAfter <= 0) ?'Yes':'No';
+                //     }
+                // }
                 /***************************TAT EXPIRE LOGIC******************************* */ 
                 // email and sms 
                 $query_status_id=$data->query_status_id;
