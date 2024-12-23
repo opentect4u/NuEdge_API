@@ -309,6 +309,8 @@ class QueryController extends Controller
                 $update_data->expected_close_date=$request->expected_close_date;
                 if ($request->query_status_id==5 || $request->query_status_id==7) {
                     $update_data->actual_close_date=date('Y-m-d H:i:s');
+                    $update_data->query_solve_by_id=Helper::modifyUser($request->user());
+                    $update_data->query_solve_date=date('Y-m-d H:i:s');
                 }
                 if ($request->query_status_id==6) { //reopen
                     $update_data->actual_close_date=NULL;
@@ -377,10 +379,11 @@ class QueryController extends Controller
                     ->leftJoin('md_query_rec_given_through as md_query_given_through','md_query_given_through.id','=','td_query.query_given_through_id')
                     ->leftJoin('md_client','md_client.id','=','td_query.invester_id')
                     ->leftJoin('users','users.id','=','td_query.query_rec_by_id')
+                    ->leftJoin('users as solve_users','solve_users.id','=','td_query.query_solve_by_id')
                     ->select('td_query.*','md_query_status.status_name','md_query_status.color_code','md_query_type.query_type','md_query_sub_type.query_subtype','md_query_sub_type.query_tat',
                     'md_query_given_by.name as query_given_by','md_query_rec_given_through.name as query_receive_through','md_query_nature.query_nature','md_query_given_through.name as query_given_through',
                     'md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.id as investor_id','md_client.email as investor_email','md_client.mobile as investor_mobile',
-                    'users.name as entry_name')
+                    'users.name as entry_name','solve_users.name as query_solve_by')
                     ->where('td_query.id',$update_data->id)
                     ->first();
                 // return $data;

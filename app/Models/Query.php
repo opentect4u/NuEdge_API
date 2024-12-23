@@ -57,6 +57,8 @@ class Query extends Model
         'short_url',
         'feedback_url',
         'tat_remarks',
+        'query_solve_by_id',
+        'query_solve_date',
         'created_by',
         'updated_by',
     ];

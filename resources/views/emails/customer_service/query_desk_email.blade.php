@@ -158,7 +158,7 @@
                                        Query Solved By</td>
                                     <td
                                        style="width:30%;color:#000;font-size:14px;text-align:left;font-family:'calibri','Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif;padding:6px 0 6px 10px;border-bottom:1px solid #ddd;border-right:1px solid #ddd">
-                                       N/A</td>
+                                       {{($data->query_solve_by)?$data->query_solve_by:"N/A"}}</td>
                                  </tr>
                                  <tr style="background:#f6f6f6">
                                     <td
