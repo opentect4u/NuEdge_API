@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Query Desk</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="{{ asset('public/css/email.css') }}">
+  {{-- <link rel="stylesheet" href="{{ asset('public/css/email.css') }}"> --}}
 
 
   <style>
@@ -25,40 +25,25 @@
     /* background: #10486b; */
     background: #f1820bc9;
     color: #fff;
-    margin: 0px 9px;
+    margin: 0px 2px;
     -webkit-border-radius: 10px;
     border-radius: 10px;
     border: none;
     color: #FFFFFF;
     cursor: pointer;
-    /* display: inline-block; */
     font-family: Arial;
     font-size: 20px;
     padding: 5px 10px;
     text-align: center;
     text-decoration: none;
-    /* -webkit-animation: glowing 1500ms infinite;
-  -moz-animation: glowing 1500ms infinite;
-  -o-animation: glowing 1500ms infinite;
-  animation: glowing 1500ms infinite; */
-    /* animation: shadow-pulse 1s infinite; */
 }
 
 .animatedBtn {
     position: relative;
-    /* margin: auto; */
-    margin: 0px 16px;
-    /* width: 120px;
-line-height: 64px; */
+    margin: 0px 2px;
     text-align: center;
     color: #fff;
-    /* font-size: 20px; */
-    /* border: 2px solid gold;
-border-radius: 10px;
-background: gold; */
     cursor: pointer;
-
-    
 
     &:active {
         filter: contrast(0.9);
@@ -68,11 +53,11 @@ background: gold; */
     &::after {
         content: "";
         position: absolute;
-        top: -4px;
+        top: -10px;
         left: 1px;
         right: 1px;
-        bottom: -4px;
-        border: 2px solid #f1820bc9;
+        bottom: -10px;
+        border: 3px solid #f1820bc9;
         transition: all .5s;
         animation: clippath 3s infinite linear;
         border-radius: 10px;

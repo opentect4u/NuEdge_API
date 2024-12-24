@@ -316,14 +316,13 @@
                                     style="text-align: center;width:100%;font-weight:600;
                                 color:#000;font-size:14px;
                                 font-family:'calibri','Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif;
-                                padding:3px;
+                                padding:10px;
                                 border-right:1px solid #ddd;border-bottom:1px solid #ddd;border-left:1px solid #ddd;border-top:1px solid #ddd">
                                     <!-- <h3 style="color: red;" class="animateFeedback">Feedback</h3>
                                     <img src="{{asset('public/feedback.gif')}}" alt="" srcset="" width="100px"
                                        height="70px">  -->
 
-                                    <div class="animatedBtn"
-                                       style="position: relative;margin: 0px 16px;text-align: center;color: #fff;cursor: pointer;">
+                                    <span class="animatedBtn">
 
                                        <span style="
                                        background: #f1820bc9;
@@ -335,7 +334,7 @@
     color: #FFFFFF;
     cursor: pointer;
     font-family: Arial;
-    font-size: 20px;
+    font-size: 12px;
     padding: 5px 10px;
     text-align: center;
     text-decoration: none;
@@ -350,7 +349,7 @@
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffc107', endColorstr='#ff5722', GradientType=1);
                                        
                                        ">Feedback</span>
-                                    </div>
+                                    </span>
                                  </td>
                               </tr>
                               <tr>

@@ -417,13 +417,13 @@ class QueryController extends Controller
                 $subject="Query status changed to ".$query_status."- QueryId : ".$query_id;
                 /**********************start sending email and sms and whatsapp******************************/
                 $short_url=$update_data->short_url;
-                // if ($update_data->query_status_id==2 || $update_data->query_status_id==6) {  // register and reopen
-                //     $res=SMSHelper::registerReOpen($mobile_no,$short_url,$query_status,$investor_name,$query_id);
-                // } else if ($update_data->query_status_id==3 || $update_data->query_status_id==4) {  // in process and re in process 
-                //     $res=SMSHelper::inReinProcess($mobile_no,$short_url,$query_status,$investor_name,$query_id,$expected_close_date);
-                // } else if ($update_data->query_status_id==5 || $update_data->query_status_id==7) {  // Completed and Re-Completed
-                //     $res=SMSHelper::completedReCompleted($mobile_no,$short_url,$query_status,$investor_name,$query_id,$close_date,$feedback_url);
-                // }
+                if ($update_data->query_status_id==2 || $update_data->query_status_id==6) {  // register and reopen
+                    $res=SMSHelper::registerReOpen($mobile_no,$short_url,$query_status,$investor_name,$query_id);
+                } else if ($update_data->query_status_id==3 || $update_data->query_status_id==4) {  // in process and re in process 
+                    $res=SMSHelper::inReinProcess($mobile_no,$short_url,$query_status,$investor_name,$query_id,$expected_close_date);
+                } else if ($update_data->query_status_id==5 || $update_data->query_status_id==7) {  // Completed and Re-Completed
+                    $res=SMSHelper::completedReCompleted($mobile_no,$short_url,$query_status,$investor_name,$query_id,$close_date,$feedback_url);
+                }
                 // Mail::to($investor_email)->send(new QueryStatusEmail($subject,$investor_name,$query_status,$query_status_id,$data));
                 // $allAtched=QuerySolveAttach::where('query_id',$data->id)->get();
                 $files=[];
@@ -498,6 +498,7 @@ class QueryController extends Controller
                 // }else {
                 //     Mail::to($investor_email)->send(new QueryStatusEmail($subject,$investor_name,$query_status,$query_status_id,$data,$files,$total_client_count));
                 // }
+                // return view('emails.customer_service.query_desk_email',compact('data','investor_name','query_status','query_status_id','files','total_client_count'));
                 Mail::to($investor_email)->send(new QueryStatusEmail($subject,$investor_name,$query_status,$query_status_id,$data,$files,$total_client_count));
 
                 /**********************end sending email and sms and whatsapp******************************/
