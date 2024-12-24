@@ -109,16 +109,18 @@ class CompanyController extends Controller
                     ->orderBy('md_fd_company.updated_at','DESC')
                     ->paginate($paginate);  
             }elseif (!empty($comp_type)) {
-                $arr_comp_type=[];
-                foreach ($comp_type as $key => $comp_types) {
-                    array_push($arr_comp_type,$comp_types->id);
-                }
+                // return $comp_type;
+                // $arr_comp_type=[];
+                // foreach ($comp_type as $key => $comp_types) {
+                //     array_push($arr_comp_type,$comp_types->id);
+                // }
                 $data=FDCompany::leftJoin('md_fd_type_of_company','md_fd_type_of_company.id','=','md_fd_company.comp_type_id')
                     ->select('md_fd_company.*','md_fd_type_of_company.comp_type as comp_type')
                     ->where('md_fd_company.delete_flag','N')
-                    ->whereIn('md_fd_company.comp_type_id',$arr_comp_type)
+                    ->whereIn('md_fd_company.comp_type_id',$comp_type)
                     ->orderBy('md_fd_company.updated_at','DESC')
                     ->paginate($paginate);  
+                // return $data;
             }elseif (!empty($comp_name)) {
                 $setarray=[];
                 foreach ($comp_name as $key => $comp) {
@@ -239,14 +241,14 @@ class CompanyController extends Controller
                     ->orderBy('md_fd_company.updated_at','DESC')
                     ->get();  
             }elseif (!empty($comp_type)) {
-                $arr_comp_type=[];
-                foreach ($comp_type as $key => $comp_types) {
-                    array_push($arr_comp_type,$comp_types->id);
-                }
+                // $arr_comp_type=[];
+                // foreach ($comp_type as $key => $comp_types) {
+                //     array_push($arr_comp_type,$comp_types->id);
+                // }
                 $data=FDCompany::leftJoin('md_fd_type_of_company','md_fd_type_of_company.id','=','md_fd_company.comp_type_id')
                     ->select('md_fd_company.*','md_fd_type_of_company.comp_type as comp_type')
                     ->where('md_fd_company.delete_flag','N')
-                    ->whereIn('md_fd_company.comp_type_id',$arr_comp_type)
+                    ->whereIn('md_fd_company.comp_type_id',$comp_type)
                     ->orderBy('md_fd_company.updated_at','DESC')
                     ->get();  
             }elseif (!empty($comp_name)) {
