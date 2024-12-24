@@ -319,8 +319,8 @@
                                 padding:10px;
                                 border-right:1px solid #ddd;border-bottom:1px solid #ddd;border-left:1px solid #ddd;border-top:1px solid #ddd">
                                     <!-- <h3 style="color: red;" class="animateFeedback">Feedback</h3> -->
-                                    <img src="{{asset('public/feedback.gif')}}" alt="" srcset="" width="100px"
-                                       height="70px">
+                                    <img src="{{asset('public/feedback.gif')}}" alt="" srcset="" width="80px"
+                                       height="36px" style="object-fit: scale-down;">
 
                                     <!-- <span class="animatedBtn">
 
