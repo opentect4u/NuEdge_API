@@ -318,11 +318,11 @@
                                 font-family:'calibri','Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif;
                                 padding:10px;
                                 border-right:1px solid #ddd;border-bottom:1px solid #ddd;border-left:1px solid #ddd;border-top:1px solid #ddd">
-                                    <!-- <h3 style="color: red;" class="animateFeedback">Feedback</h3>
+                                    <!-- <h3 style="color: red;" class="animateFeedback">Feedback</h3> -->
                                     <img src="{{asset('public/feedback.gif')}}" alt="" srcset="" width="100px"
-                                       height="70px">  -->
+                                       height="70px">
 
-                                    <span class="animatedBtn">
+                                    <!-- <span class="animatedBtn">
 
                                        <span style="
                                        background: #f1820bc9;
@@ -349,7 +349,7 @@
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffc107', endColorstr='#ff5722', GradientType=1);
                                        
                                        ">Feedback</span>
-                                    </span>
+                                    </span> -->
                                  </td>
                               </tr>
                               <tr>
