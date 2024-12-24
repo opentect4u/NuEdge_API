@@ -61,8 +61,8 @@ class FolioDetailsController extends Controller
 
                 $queryString='tt_folio_details_reports.folio_no';
                 $rawQuery.=Helper::WhereRawQuery($folio_no,$rawQuery,$queryString);
-                $queryString='tt_folio_details_reports.folio_status';
-                $rawQuery.=Helper::WhereRawQuery($folio_status,$rawQuery,$queryString);
+                // $queryString='tt_folio_details_reports.folio_status';
+                // $rawQuery.=Helper::WhereRawQuery($folio_status,$rawQuery,$queryString);
 
                 if ($view_type=='F') {
                     $queryString='tt_folio_details_reports.pan';
@@ -572,9 +572,20 @@ class FolioDetailsController extends Controller
                 $curr_val=number_format((float)($value->curr_nav * $value->tot_units), 2, '.', '');
                 $value->folio_balance=($curr_val <= 0)?0:$curr_val;
                 $value->folio_status=($value->folio_balance==0)?'Inactive':'Active';
-                   
+
                 array_push($data,$value);
+
             }
+            if ($folio_status) {
+                $folio_status_data=[];
+                foreach ($data as $key => $value1) {
+                    if ($folio_status && $value1['folio_status']==$folio_status) {
+                        array_push($folio_status_data,$value1);
+                    } 
+                }
+                $data=$folio_status_data;
+            }
+
 
             $disclaimer=Disclaimer::select('dis_des','font_size','color_code')->find(4);
             $mydata=[];
