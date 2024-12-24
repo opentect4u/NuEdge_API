@@ -41,25 +41,25 @@ class QueryStatusEmail extends Mailable
      */
     public function build()
     {
-        $html = view('emails.customer_service.query_desk_email', [
-            'investor_name'=> $this->investor_name,
-            'data' => $this->data,
-            'query_status'=> $this->query_status,
-            'query_status_id'=> $this->query_status_id,
-            'total_client_count'=> $this->total_client_count,
-            ])->render();
-        $css = file_get_contents(public_path('css/email.css'));
+        // $html = view('emails.customer_service.query_desk_email', [
+        //     'investor_name'=> $this->investor_name,
+        //     'data' => $this->data,
+        //     'query_status'=> $this->query_status,
+        //     'query_status_id'=> $this->query_status_id,
+        //     'total_client_count'=> $this->total_client_count,
+        //     ])->render();
+        // $css = file_get_contents(public_path('css/email.css'));
 
-        $inliner = new CssToInlineStyles();
-        $htmlWithInlineCss = $inliner->convert($html, $css);
+        // $inliner = new CssToInlineStyles();
+        // $htmlWithInlineCss = $inliner->convert($html, $css);
             // dd($htmlWithInlineCss);
         // return $htmlWithInlineCss;
         
         $from_email=env('MAIL_FROM_ADDRESS');
         $email = $this->from($from_email)
             ->subject($this->subject)
-            ->html($htmlWithInlineCss);
-            // ->view('emails.customer_service.query_desk_email');
+            // ->html($htmlWithInlineCss);
+            ->view('emails.customer_service.query_desk_email');
             
         if (count($this->files)>0) {
             foreach ($this->files as $file) {
