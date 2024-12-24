@@ -125,7 +125,7 @@ class QueryController extends Controller
                 'md_query_given_by.name as query_given_by','md_query_rec_given_through.name as query_receive_through','md_query_nature.query_nature','md_query_given_through.name as query_given_through',
                 'md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.id as investor_id','md_client.email as investor_email','md_client.mobile as investor_mobile',
                 // 'md_scheme.scheme_name as scheme_name','md_plan.plan_name as plan_name','md_option.opt_name as option_name','md_amc.amc_name'
-                'users.name as entry_name'
+                'users.name as entry_name','td_query.rating as query_feedback_received'
                 )
                 ->where('td_query.query_id',$query_id)
                 ->first();
@@ -227,7 +227,7 @@ class QueryController extends Controller
                         'md_query_given_by.name as query_given_by','md_query_rec_given_through.name as query_receive_through','md_query_nature.query_nature','md_query_given_through.name as query_given_through',
                         'md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.id as investor_id','md_client.email as investor_email','md_client.mobile as investor_mobile',
                         // 'md_scheme.scheme_name as scheme_name','md_plan.plan_name as plan_name','md_option.opt_name as option_name','md_amc.amc_name'
-                        'users.name as entry_name'
+                        'users.name as entry_name','td_query.rating as query_feedback_received'
                         )
                         ->whereRaw($rawQuery)
                         ->orderBy('td_query.date_time','desc')
