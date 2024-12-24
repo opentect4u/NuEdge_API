@@ -20,7 +20,7 @@ class SchemeController extends Controller
 
             $comp_type_id=json_decode($request->comp_type_id);
             $comp_id=json_decode($request->company_id);
-            $scheme_name=$request->scheme_name;
+            $scheme_name=json_decode($request->scheme_name);
 
             if ($paginate=='A') {
                 $paginate=999999999;
@@ -32,7 +32,7 @@ class SchemeController extends Controller
                     ->where('md_fd_scheme.delete_flag','N')
                     ->orderBy('md_fd_scheme.updated_at','DESC')
                     ->paginate($paginate);  
-            }elseif (!empty($comp_id)) {
+            }else if (!empty($comp_id)) {
                 $setarray=[];
                 foreach ($comp_id as $key => $comp) {
                     array_push($setarray,$comp->id);
@@ -44,7 +44,7 @@ class SchemeController extends Controller
                     ->whereIn('md_fd_scheme.comp_id', $setarray)
                     ->orderBy('md_fd_scheme.updated_at','DESC')
                     ->paginate($paginate);  
-            }elseif (!empty($comp_type_id)) {
+            }else if (!empty($comp_type_id)) {
                 $arr_comp_type=[];
                 foreach ($comp_type_id as $key => $comp_types) {
                     array_push($arr_comp_type,$comp_types->id);
@@ -56,11 +56,11 @@ class SchemeController extends Controller
                     ->where('md_fd_scheme.delete_flag','N')
                     ->orderBy('md_fd_scheme.updated_at','DESC')
                     ->paginate($paginate);  
-            }elseif ($scheme_name) {
+            } else if (!empty($scheme_name)) {
                 $data=FDScheme::leftJoin('md_fd_company','md_fd_company.id','=','md_fd_scheme.comp_id')
                     ->leftJoin('md_fd_type_of_company','md_fd_type_of_company.id','=','md_fd_scheme.comp_type_id')
                     ->select('md_fd_scheme.*','md_fd_company.comp_short_name as comp_short_name','md_fd_company.comp_full_name as comp_full_name','md_fd_type_of_company.comp_type as comp_type')
-                    ->where('md_fd_scheme.scheme_name','like', '%' . $scheme_name . '%')
+                    ->whereIn('md_fd_scheme.scheme_name', $scheme_name)
                     ->where('md_fd_scheme.delete_flag','N')
                     ->orderBy('md_fd_scheme.updated_at','DESC')
                     ->paginate($paginate);  
