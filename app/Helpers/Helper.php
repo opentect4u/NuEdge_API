@@ -269,7 +269,7 @@ class Helper{
             // return $res_array;
     }
 
-    function addWorkingDays($startDate, $days, $holidays = []) {
+    public static function addWorkingDays($startDate, $days, $holidays = []) {
         $currentDate = date('Y-m-d',strtotime($startDate));
         $workingDaysAdded = 0;
     
