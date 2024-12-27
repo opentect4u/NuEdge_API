@@ -185,6 +185,8 @@ class QueryController extends Controller
                     $rawQuery.=Helper::WhereRawQuery($query_given_by_id,$rawQuery,$queryString);
                     $queryString='td_query.query_status_id';
                     $rawQuery.=Helper::WhereRawQuery($query_status_id,$rawQuery,$queryString);
+                    $queryString='td_query.query_given_through_id';
+                    $rawQuery.=Helper::WhereRawQuery($query_given_through_id,$rawQuery,$queryString);
                     if ($date_range) {
                         $from_date=Carbon::parse(str_replace('/','-',explode("-",$date_range)[0]))->format('Y-m-d') ;
                         $to_date=Carbon::parse(str_replace('/','-',explode("-",$date_range)[1]))->format('Y-m-d') ;
