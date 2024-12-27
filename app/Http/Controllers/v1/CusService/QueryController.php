@@ -179,8 +179,8 @@ class QueryController extends Controller
                     $rawQuery.=Helper::WhereRawQuery($client_id,$rawQuery,$queryString);
                     $queryString='td_query.query_rec_by_id';
                     $rawQuery.=Helper::WhereRawQuery($query_rec_by_id,$rawQuery,$queryString);
-                    // $queryString='td_query.query_solve_by_id';
-                    // $rawQuery.=Helper::WhereRawQuery($query_solve_by_id,$rawQuery,$queryString);
+                    $queryString='td_query.query_solve_by_id';
+                    $rawQuery.=Helper::WhereRawQuery($query_solve_by_id,$rawQuery,$queryString);
                     $queryString='td_query.query_given_to_id';
                     $rawQuery.=Helper::WhereRawQuery($query_given_by_id,$rawQuery,$queryString);
                     $queryString='td_query.query_status_id';
