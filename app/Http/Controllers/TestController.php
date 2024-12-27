@@ -625,8 +625,24 @@ class TestController extends Controller
 
     public function hash()
     {
-        return Crypt::encrypt('123456');
-        return Hash::make('@N#admin');
+        // return Crypt::encrypt('123456');
+        // return Hash::make('@N#admin');
+        return Hash::make('123456');
         return 'hash';    
+    }
+
+    public function checkwokingday()
+    {
+        // return date('N');
+        $startDate='2024-12-24';
+        $daysToAdd=1;
+        $holidays=[];
+        $holidays=['2024-12-25','2024-12-26','2024-12-27'];
+        $newDate = Helper::addWorkingDays($startDate, $daysToAdd, $holidays);
+        return $newDate;
+        // return Crypt::encrypt('123456');
+        // return Hash::make('@N#admin');
+        // return Hash::make('123456');
+        // return 'hash';    
     }
 }

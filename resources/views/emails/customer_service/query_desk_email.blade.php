@@ -431,7 +431,7 @@
                                 font-family:'calibri','Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif;
                                 padding:3px">
                                     <h5 style="margin:0px;;font-size:14px;">
-                                       300 Crore*
+                                       {{$total_amu_balance}} Crore*
                                     </h5>
                                     <h5 style="margin:0px;;font-size:14px;">
                                        Asset Under Management

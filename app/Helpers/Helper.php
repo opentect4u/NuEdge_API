@@ -268,4 +268,19 @@ class Helper{
             // $res_array = json_decode($response, true);
             // return $res_array;
     }
+
+    function addWorkingDays($startDate, $days, $holidays = []) {
+        $currentDate = date('Y-m-d',strtotime($startDate));
+        $workingDaysAdded = 0;
+    
+        while ($workingDaysAdded < $days) {
+            $currentDate=date('Y-m-d', strtotime($currentDate. ' + 1 days'));
+            $dayOfWeek =date('N', strtotime($currentDate));
+            // Check if the current day is a weekend or a holiday
+            if ($dayOfWeek < 6 && !in_array(date('Y-m-d',strtotime($currentDate)), $holidays)) {
+                $workingDaysAdded++;
+            }
+        }
+        return date('Y-m-d',strtotime($currentDate));
+    }
 }

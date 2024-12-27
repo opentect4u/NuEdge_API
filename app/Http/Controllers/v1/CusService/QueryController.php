@@ -20,6 +20,7 @@ use App\Models\{
     QueryEntryAttach,
     QuerySolveAttach,
     QueryAttachment,
+    Holiday,
 };
 use Validator;
 use Illuminate\Support\Carbon;
@@ -290,6 +291,7 @@ class QueryController extends Controller
         // }
         try {
             $total_client_count=Client::whereIn('client_type',['M','N','P'])->count();
+            $total_amu_balance=300;
             if ($request->id > 0) {
                 // return $request;
                 $update_data=Query::find($request->id);
@@ -499,7 +501,7 @@ class QueryController extends Controller
                 //     Mail::to($investor_email)->send(new QueryStatusEmail($subject,$investor_name,$query_status,$query_status_id,$data,$files,$total_client_count));
                 // }
                 // return view('emails.customer_service.query_desk_email',compact('data','investor_name','query_status','query_status_id','files','total_client_count'));
-                Mail::to($investor_email)->send(new QueryStatusEmail($subject,$investor_name,$query_status,$query_status_id,$data,$files,$total_client_count));
+                Mail::to($investor_email)->send(new QueryStatusEmail($subject,$investor_name,$query_status,$query_status_id,$data,$files,$total_client_count,$total_amu_balance));
 
                 /**********************end sending email and sms and whatsapp******************************/
             }else{
@@ -622,6 +624,17 @@ class QueryController extends Controller
                     ->where('td_query.id',$data->id)
                     ->first();
                 // email and sms 
+                /**add working day */
+                // return $data;
+                $startDate=date('Y-m-d',strtotime($data->date_time));
+                $daysToAdd=$data->query_tat;
+                $holidays=Holiday::where('occ_date','>',date('Y-m-d'))->orderBy('occ_date','ASC')->pluck('occ_date')->all();
+                // return $holidays;
+                $newDate = Helper::addWorkingDays($startDate, $daysToAdd, $holidays);
+                // return $newDate;
+                $data->expected_close_date=$newDate;
+                // return $data;
+                /**end working day */
                 
                 // $invester_email=DB::table('md_client')->where('id',$invester_id)->first();
                 $investor_name=$data->investor_name;
@@ -648,9 +661,9 @@ class QueryController extends Controller
                     //     $filePath=public_path('query-entry/'.$value1->name);
                     //     array_push($files,$filePath);
                     // }
-                    Mail::to($investor_email)->send(new QueryStatusEmail($subject,$investor_name,$query_status,$query_status_id,$data,$files,$total_client_count));
+                    Mail::to($investor_email)->send(new QueryStatusEmail($subject,$investor_name,$query_status,$query_status_id,$data,$files,$total_client_count,$total_amu_balance));
                 }else {
-                    Mail::to($investor_email)->send(new QueryStatusEmail($subject,$investor_name,$query_status,$query_status_id,$data,$files,$total_client_count));
+                    Mail::to($investor_email)->send(new QueryStatusEmail($subject,$investor_name,$query_status,$query_status_id,$data,$files,$total_client_count,$total_amu_balance));
                 }
             }    
         } catch (\Throwable $th) {

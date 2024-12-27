@@ -38,3 +38,5 @@ Route::get('hash',[App\Http\Controllers\TestController::class,'hash']);
 Route::get('/mail_index', function () {
     return view('emails.customer_service.query_desk_sample');
 });
+
+Route::get('checkwokingday',[App\Http\Controllers\TestController::class,'checkwokingday']);

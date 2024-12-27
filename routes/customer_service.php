@@ -39,6 +39,7 @@ Route::prefix('v1')->group(function () {
 
 
                 Route::get('index',[App\Http\Controllers\v1\CusService\IndexController::class,'index']);
+                Route::get('holiday',[App\Http\Controllers\v1\Master\HolidayController::class,'index']);
 
             });
             Route::post('downloadFile',[App\Http\Controllers\v1\CusService\QueryController::class,'downloadFile']);
