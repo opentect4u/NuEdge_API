@@ -122,11 +122,12 @@ class QueryController extends Controller
                 ->leftJoin('md_query_rec_given_through as md_query_given_through','md_query_given_through.id','=','td_query.query_given_through_id')
                 ->leftJoin('md_client','md_client.id','=','td_query.invester_id')
                 ->leftJoin('users','users.id','=','td_query.query_rec_by_id')
+                ->leftJoin('users as solve_users','solve_users.id','=','td_query.query_solve_by_id')
                 ->select('td_query.*','md_query_status.status_name','md_query_status.color_code','md_query_type.query_type','md_query_sub_type.query_subtype','md_query_sub_type.query_tat',
                 'md_query_given_by.name as query_given_by','md_query_rec_given_through.name as query_receive_through','md_query_nature.query_nature','md_query_given_through.name as query_given_through',
                 'md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.id as investor_id','md_client.email as investor_email','md_client.mobile as investor_mobile',
                 // 'md_scheme.scheme_name as scheme_name','md_plan.plan_name as plan_name','md_option.opt_name as option_name','md_amc.amc_name'
-                'users.name as entry_name','td_query.rating as query_feedback_received'
+                'users.name as entry_name','td_query.rating as query_feedback_received','solve_users.name as query_solve_by'
                 )
                 ->where('td_query.query_id',$query_id)
                 ->first();
@@ -219,6 +220,7 @@ class QueryController extends Controller
                         
                         ->leftJoin('md_client','md_client.id','=','td_query.invester_id')
                         ->leftJoin('users','users.id','=','td_query.query_rec_by_id')
+                        ->leftJoin('users as solve_users','solve_users.id','=','td_query.query_solve_by_id')
                         // ->leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_query.product_code')
                         // ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
                         // ->leftJoin('md_amc','md_amc.id','=','md_scheme.amc_id')
@@ -228,7 +230,7 @@ class QueryController extends Controller
                         'md_query_given_by.name as query_given_by','md_query_rec_given_through.name as query_receive_through','md_query_nature.query_nature','md_query_given_through.name as query_given_through',
                         'md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.id as investor_id','md_client.email as investor_email','md_client.mobile as investor_mobile',
                         // 'md_scheme.scheme_name as scheme_name','md_plan.plan_name as plan_name','md_option.opt_name as option_name','md_amc.amc_name'
-                        'users.name as entry_name','td_query.rating as query_feedback_received'
+                        'users.name as entry_name','td_query.rating as query_feedback_received','solve_users.name as query_solve_by'
                         )
                         ->whereRaw($rawQuery)
                         ->orderBy('td_query.date_time','desc')
