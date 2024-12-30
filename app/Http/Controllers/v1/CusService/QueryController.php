@@ -197,7 +197,7 @@ class QueryController extends Controller
                     // $queryString2='td_query.query_mode_id';
                     // $rawQuery.=Helper::WhereRawQuery($query_mode_id,$rawQuery,$queryString2);
 
-
+                    
                     $queryString1='td_query.product_id';
                     $rawQuery.=Helper::WhereRawQuery($product_id,$rawQuery,$queryString1);
                 } else {
