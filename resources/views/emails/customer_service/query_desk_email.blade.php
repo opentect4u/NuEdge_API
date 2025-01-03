@@ -439,7 +439,7 @@
                                        Asset Under Management
                                     </h5>
                                     <h5 style="margin:0px;font-size:8px;">
-                                       *As on {{date('d-m-Y')}}
+                                       *As on 31-12-2024
                                     </h5>
                                  </td>
                            </tbody>
