@@ -293,7 +293,7 @@ class QueryController extends Controller
         // }
         try {
             $total_client_count=Client::whereIn('client_type',['M','N','P'])->count();
-            $total_amu_balance=300;
+            $total_amu_balance=269.50;
             if ($request->id > 0) {
                 // return $request;
                 $update_data=Query::find($request->id);
