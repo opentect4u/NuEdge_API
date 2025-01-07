@@ -24,94 +24,136 @@ class ProductController extends Controller
             if ($paginate=='A') {
                 $paginate=999999999;
             }
-            if ($sort_by && $column_name) {
-                if ($column_name=='ins_type_name') {
-                    $data=InsProduct::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_products.ins_type_id')
-                        ->leftJoin('md_ins_company','md_ins_company.id','=','md_ins_products.company_id')
-                    ->leftJoin('md_ins_product_type','md_ins_product_type.id','=','md_ins_products.product_type_id')
-                        ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name','md_ins_product_type.product_type as product_type')
-                        ->where('md_ins_products.delete_flag','N')
-                        ->orderBy('md_ins_type.'.$column_name,$sort_by)
-                        ->paginate($paginate); 
-                }elseif ($column_name=='comp_short_name' || $column_name=='comp_full_name') {
-                    $data=InsProduct::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_products.ins_type_id')
-                        ->leftJoin('md_ins_company','md_ins_company.id','=','md_ins_products.company_id')
-                    ->leftJoin('md_ins_product_type','md_ins_product_type.id','=','md_ins_products.product_type_id')
-                        ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name','md_ins_product_type.product_type as product_type')
-                        ->where('md_ins_products.delete_flag','N')
-                        ->orderBy('md_ins_company.'.$column_name,$sort_by)
-                        ->paginate($paginate); 
-                }else {
-                    $data=InsProduct::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_products.ins_type_id')
-                        ->leftJoin('md_ins_company','md_ins_company.id','=','md_ins_products.company_id')
-                    ->leftJoin('md_ins_product_type','md_ins_product_type.id','=','md_ins_products.product_type_id')
-                        ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name','md_ins_product_type.product_type as product_type')
-                        ->where('md_ins_products.delete_flag','N')
-                        ->orderBy('md_ins_products.'.$column_name,$sort_by)
-                        ->paginate($paginate); 
+
+            // if ($sort_by && $column_name) {
+            //     if ($column_name=='ins_type_name') {
+            //         $data=InsProduct::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_products.ins_type_id')
+            //             ->leftJoin('md_ins_company','md_ins_company.id','=','md_ins_products.company_id')
+            //         ->leftJoin('md_ins_product_type','md_ins_product_type.id','=','md_ins_products.product_type_id')
+            //             ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name','md_ins_product_type.product_type as product_type')
+            //             ->where('md_ins_products.delete_flag','N')
+            //             ->orderBy('md_ins_type.'.$column_name,$sort_by)
+            //             ->paginate($paginate); 
+            //     }elseif ($column_name=='comp_short_name' || $column_name=='comp_full_name') {
+            //         $data=InsProduct::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_products.ins_type_id')
+            //             ->leftJoin('md_ins_company','md_ins_company.id','=','md_ins_products.company_id')
+            //         ->leftJoin('md_ins_product_type','md_ins_product_type.id','=','md_ins_products.product_type_id')
+            //             ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name','md_ins_product_type.product_type as product_type')
+            //             ->where('md_ins_products.delete_flag','N')
+            //             ->orderBy('md_ins_company.'.$column_name,$sort_by)
+            //             ->paginate($paginate); 
+            //     }else {
+            //         $data=InsProduct::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_products.ins_type_id')
+            //             ->leftJoin('md_ins_company','md_ins_company.id','=','md_ins_products.company_id')
+            //         ->leftJoin('md_ins_product_type','md_ins_product_type.id','=','md_ins_products.product_type_id')
+            //             ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name','md_ins_product_type.product_type as product_type')
+            //             ->where('md_ins_products.delete_flag','N')
+            //             ->orderBy('md_ins_products.'.$column_name,$sort_by)
+            //             ->paginate($paginate); 
+            //     }
+            // }elseif ($ins_type_id && $company_id) {
+            //     $data=InsProduct::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_products.ins_type_id')
+            //         ->leftJoin('md_ins_company','md_ins_company.id','=','md_ins_products.company_id')
+            //         ->leftJoin('md_ins_product_type','md_ins_product_type.id','=','md_ins_products.product_type_id')
+            //         ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name','md_ins_product_type.product_type as product_type')
+            //         ->where('md_ins_products.delete_flag','N')
+            //         ->where('md_ins_products.ins_type_id',$ins_type_id)
+            //         ->where('md_ins_products.company_id',$company_id)
+            //         ->orderBy('md_ins_products.updated_at','DESC')
+            //         ->paginate($paginate); 
+            // }elseif (!empty($ins_type_id)) {
+            //     $data=InsProduct::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_products.ins_type_id')
+            //         ->leftJoin('md_ins_company','md_ins_company.id','=','md_ins_products.company_id')
+            //         ->leftJoin('md_ins_product_type','md_ins_product_type.id','=','md_ins_products.product_type_id')
+            //         ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name','md_ins_product_type.product_type as product_type')
+            //         ->where('md_ins_products.delete_flag','N')
+            //         ->whereIn('md_ins_products.ins_type_id',$ins_type_id)
+            //         ->orderBy('md_ins_products.updated_at','DESC')
+            //         ->paginate($paginate);  
+            // }elseif (!empty($company_id)) {
+            //     $setarray=[];
+            //     foreach ($company_id as $key => $comp) {
+            //         array_push($setarray,$comp->id);
+            //     }
+            //     $data=InsProduct::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_products.ins_type_id')
+            //         ->leftJoin('md_ins_company','md_ins_company.id','=','md_ins_products.company_id')
+            //         ->leftJoin('md_ins_product_type','md_ins_product_type.id','=','md_ins_products.product_type_id')
+            //         ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name','md_ins_product_type.product_type as product_type')
+            //         ->where('md_ins_products.delete_flag','N')
+            //         ->whereIn('md_ins_products.company_id',$setarray)
+            //         ->orderBy('md_ins_products.updated_at','DESC')
+            //         ->paginate($paginate);  
+            // }elseif (!empty($product_type_id)) {
+            //     $pdtarray=[];
+            //     foreach ($product_type_id as $product_type) {
+            //         array_push($pdtarray,$product_type->id);
+            //     }
+            //     $data=InsProduct::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_products.ins_type_id')
+            //         ->leftJoin('md_ins_company','md_ins_company.id','=','md_ins_products.company_id')
+            //         ->leftJoin('md_ins_product_type','md_ins_product_type.id','=','md_ins_products.product_type_id')
+            //         ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name','md_ins_product_type.product_type as product_type')
+            //         ->where('md_ins_products.delete_flag','N')
+            //         ->whereIn('md_ins_product_type.id',$pdtarray)
+            //         ->orderBy('md_ins_products.updated_at','DESC')
+            //         ->paginate($paginate);  
+            // } elseif (!empty($product_name)) {
+            //     $data=InsProduct::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_products.ins_type_id')
+            //         ->leftJoin('md_ins_company','md_ins_company.id','=','md_ins_products.company_id')
+            //         ->leftJoin('md_ins_product_type','md_ins_product_type.id','=','md_ins_products.product_type_id')
+            //         ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name','md_ins_product_type.product_type as product_type')
+            //         ->where('md_ins_products.delete_flag','N')
+            //         ->where('md_ins_products.product_name','like', '%' . $product_name . '%')
+            //         ->orderBy('md_ins_products.updated_at','DESC')
+            //         ->paginate($paginate);  
+            // } else {
+            //     $data=InsProduct::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_products.ins_type_id')
+            //         ->leftJoin('md_ins_company','md_ins_company.id','=','md_ins_products.company_id')
+            //         ->leftJoin('md_ins_product_type','md_ins_product_type.id','=','md_ins_products.product_type_id')
+            //         ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name','md_ins_product_type.product_type as product_type')
+            //         ->where('md_ins_products.delete_flag','N')
+            //         ->orderBy('md_ins_products.updated_at','DESC')
+            //         // ->paginate($paginate);
+            //         ->get();  
+            // }
+
+            if (!empty($product_name) || !empty($company_id) || !empty($ins_type_id) || !empty($product_type_id)) {
+                $rawQuery='';
+                // return $ins_type_id;
+                if (!empty($ins_type_id)) {
+                    $queryString='md_ins_products.ins_type_id';
+                    $rawQuery .=Helper::WhereRawQuery($ins_type_id,$rawQuery,$queryString);
                 }
-            }elseif ($ins_type_id && $company_id) {
-                $data=InsProduct::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_products.ins_type_id')
-                    ->leftJoin('md_ins_company','md_ins_company.id','=','md_ins_products.company_id')
-                    ->leftJoin('md_ins_product_type','md_ins_product_type.id','=','md_ins_products.product_type_id')
-                    ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name','md_ins_product_type.product_type as product_type')
-                    ->where('md_ins_products.delete_flag','N')
-                    ->where('md_ins_products.ins_type_id',$ins_type_id)
-                    ->where('md_ins_products.company_id',$company_id)
-                    ->orderBy('md_ins_products.updated_at','DESC')
-                    ->paginate($paginate); 
-            }elseif (!empty($ins_type_id)) {
-                $data=InsProduct::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_products.ins_type_id')
-                    ->leftJoin('md_ins_company','md_ins_company.id','=','md_ins_products.company_id')
-                    ->leftJoin('md_ins_product_type','md_ins_product_type.id','=','md_ins_products.product_type_id')
-                    ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name','md_ins_product_type.product_type as product_type')
-                    ->where('md_ins_products.delete_flag','N')
-                    ->whereIn('md_ins_products.ins_type_id',$ins_type_id)
-                    ->orderBy('md_ins_products.updated_at','DESC')
-                    ->paginate($paginate);  
-            }elseif (!empty($company_id)) {
-                $setarray=[];
-                foreach ($company_id as $key => $comp) {
-                    array_push($setarray,$comp->id);
+                if (!empty($company_id)) {
+                    $queryString='md_ins_products.company_id';
+                    $rawQuery .=Helper::WhereRawQuery($company_id,$rawQuery,$queryString);
                 }
-                $data=InsProduct::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_products.ins_type_id')
-                    ->leftJoin('md_ins_company','md_ins_company.id','=','md_ins_products.company_id')
-                    ->leftJoin('md_ins_product_type','md_ins_product_type.id','=','md_ins_products.product_type_id')
-                    ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name','md_ins_product_type.product_type as product_type')
-                    ->where('md_ins_products.delete_flag','N')
-                    ->whereIn('md_ins_products.company_id',$setarray)
-                    ->orderBy('md_ins_products.updated_at','DESC')
-                    ->paginate($paginate);  
-            }elseif (!empty($product_type_id)) {
-                $pdtarray=[];
-                foreach ($product_type_id as $product_type) {
-                    array_push($pdtarray,$product_type->id);
+                if (!empty($product_type_id)) {
+                    $queryString='md_ins_products.product_type_id';
+                    $rawQuery .=Helper::WhereRawQuery($product_type_id,$rawQuery,$queryString);
                 }
+                if (!empty($product_name)) {
+                    $queryString='md_ins_products.product_name';
+                    $rawQuery.=Helper::WhereRawQuery($product_name,$rawQuery,$queryString);
+                }
+                // return $rawQuery;
+                // ->whereIn('md_fd_scheme.scheme_name', $scheme_name)
+
                 $data=InsProduct::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_products.ins_type_id')
                     ->leftJoin('md_ins_company','md_ins_company.id','=','md_ins_products.company_id')
                     ->leftJoin('md_ins_product_type','md_ins_product_type.id','=','md_ins_products.product_type_id')
                     ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name','md_ins_product_type.product_type as product_type')
                     ->where('md_ins_products.delete_flag','N')
-                    ->whereIn('md_ins_product_type.id',$pdtarray)
+                    ->whereRaw($rawQuery)
                     ->orderBy('md_ins_products.updated_at','DESC')
-                    ->paginate($paginate);  
-            } elseif (!empty($product_name)) {
-                $data=InsProduct::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_products.ins_type_id')
-                    ->leftJoin('md_ins_company','md_ins_company.id','=','md_ins_products.company_id')
-                    ->leftJoin('md_ins_product_type','md_ins_product_type.id','=','md_ins_products.product_type_id')
-                    ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name','md_ins_product_type.product_type as product_type')
-                    ->where('md_ins_products.delete_flag','N')
-                    ->where('md_ins_products.product_name','like', '%' . $product_name . '%')
-                    ->orderBy('md_ins_products.updated_at','DESC')
-                    ->paginate($paginate);  
-            } else {
+                    ->get(); 
+            }else {
                 $data=InsProduct::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_products.ins_type_id')
                     ->leftJoin('md_ins_company','md_ins_company.id','=','md_ins_products.company_id')
                     ->leftJoin('md_ins_product_type','md_ins_product_type.id','=','md_ins_products.product_type_id')
                     ->select('md_ins_products.*','md_ins_type.type as ins_type_name','md_ins_company.comp_short_name as comp_short_name','md_ins_company.comp_full_name as comp_full_name','md_ins_product_type.product_type as product_type')
                     ->where('md_ins_products.delete_flag','N')
                     ->orderBy('md_ins_products.updated_at','DESC')
-                    ->paginate($paginate);  
+                    ->get();  
             }
         } catch (\Throwable $th) {
             throw $th;
@@ -232,9 +274,9 @@ class ProductController extends Controller
                     ->where('company_id',$company_id)
                     ->where('ins_type_id',$ins_type_id)
                     ->get();      
-            }elseif ($arr_product_type_id) {
+            }elseif (!empty($arr_product_type_id)) {
                 $data=InsProduct::where('delete_flag','N')
-                    ->whereIn('product_type_id',$product_type_id)
+                    ->whereIn('product_type_id',$arr_product_type_id)
                     ->get();    
             }else if ($search!='') {
                 $data=InsProduct::where('delete_flag','N')

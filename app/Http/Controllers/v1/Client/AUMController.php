@@ -31,12 +31,18 @@ class AUMController extends Controller
             $date=$request->date;
             $arn_no=$request->arn_no;
             $date=date('Y-m-d');
+            // $date='2020-01-01';
             if ($date || $arn_no) {
                 $rawQuery='';
+                $rawQueryBroker='';
                 if ($date) {
                     $condition_v=(strlen($rawQuery) > 0)? " AND ":" ";
                     $queryString='td_mutual_fund_trans.trans_date';
                     $rawQuery.=$condition_v.$queryString."<= '".$date."'";
+                    
+                    $condition_v1=(strlen($rawQueryBroker) > 0)? " AND ":" ";
+                    $queryString1='tt_broker_change_trans_report.trans_date';
+                    $rawQueryBroker.=$condition_v1.$queryString1."<= '".$date."'";
                 }
             } 
             // session()->forget('date');
@@ -45,10 +51,12 @@ class AUMController extends Controller
             // DB::enableQueryLog();
             // $md_mf_trans_type_subtype=MFTransTypeSubType::get()->toArray();
             $all_data=MutualFundTransaction::leftJoin('md_amc','md_amc.amc_code','=','td_mutual_fund_trans.amc_code')
+                ->leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_mutual_fund_trans.product_code')
+                ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
                 ->select('td_mutual_fund_trans.*',
                 // 'td_mutual_fund_trans.rnt_id','td_mutual_fund_trans.units','td_mutual_fund_trans.amount','td_mutual_fund_trans.stamp_duty','td_mutual_fund_trans.tds',
                 // 'td_mutual_fund_trans.amc_code','td_mutual_fund_trans.product_code','td_mutual_fund_trans.isin_no',
-                'md_amc.amc_short_name as amc_name')
+                'md_amc.amc_short_name as amc_name','md_scheme.scheme_name')
                 // ->selectRaw('IF(td_mutual_fund_trans.rnt_id=1,
                 // (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=td_mutual_fund_trans.trxn_type_code AND c_k_trans_type=td_mutual_fund_trans.trxn_type_flag AND c_k_trans_sub_type=td_mutual_fund_trans.trxn_nature_code limit 1),
                 // (CASE 
@@ -87,9 +95,162 @@ class AUMController extends Controller
                 ->get();
 
             $transaction_type_subtype=MFTransTypeSubType::get();
-            return $transaction_type_subtype;
-            return count($all_data);
-            return $all_data[0];
+                // ->toArray();
+            // return $transaction_type_subtype[0];
+            // return count($all_data);
+            // return $all_data[0];
+            return 'dd';
+
+            $broker_data=BrokerChangeTransReport::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','tt_broker_change_trans_report.product_code')
+                ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
+                ->select('tt_broker_change_trans_report.*',
+                //     'tt_broker_change_trans_report.rnt_id','tt_broker_change_trans_report.folio_no','tt_broker_change_trans_report.product_code',
+                // 'tt_broker_change_trans_report.isin_no','tt_broker_change_trans_report.trans_date','tt_broker_change_trans_report.trxn_type',
+                // 'tt_broker_change_trans_report.trxn_type_flag','tt_broker_change_trans_report.trxn_nature','tt_broker_change_trans_report.amount',
+                // 'tt_broker_change_trans_report.stamp_duty','tt_broker_change_trans_report.tds','tt_broker_change_trans_report.units','tt_broker_change_trans_report.pur_price',
+                // 'tt_broker_change_trans_report.trans_no',
+                'md_scheme.scheme_name as scheme_name')
+                ->selectRaw('sum(units) as tot_units')
+                ->selectRaw('sum(amount) as tot_amount')
+                ->selectRaw('sum(stamp_duty) as tot_stamp_duty')
+                ->selectRaw('IF(tt_broker_change_trans_report.tds!="",sum(tds),0.00)as tot_tds')
+                ->selectRaw('count(*) as tot_rows')
+                // ->selectRaw('(SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=tt_broker_change_trans_report.trxn_type_code AND c_k_trans_type=tt_broker_change_trans_report.trxn_type_flag AND c_k_trans_sub_type=tt_broker_change_trans_report.trxn_nature_code limit 1)as transaction_type')
+                // ->selectRaw('(SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=tt_broker_change_trans_report.trxn_type_code AND c_k_trans_type=tt_broker_change_trans_report.trxn_type_flag AND c_k_trans_sub_type=tt_broker_change_trans_report.trxn_nature_code limit 1)as transaction_subtype')
+                // ->selectRaw('(SELECT lmf_pl FROM md_mf_trans_type_subtype WHERE c_trans_type_code=tt_broker_change_trans_report.trxn_type_code AND c_k_trans_type=tt_broker_change_trans_report.trxn_type_flag AND c_k_trans_sub_type=tt_broker_change_trans_report.trxn_nature_code limit 1)as lmf_pl')
+                ->where('tt_broker_change_trans_report.delete_flag','N')
+                ->where('tt_broker_change_trans_report.amc_flag','N')
+                ->where('tt_broker_change_trans_report.scheme_flag','N')
+                ->where('tt_broker_change_trans_report.plan_option_flag','N')
+                ->where('tt_broker_change_trans_report.bu_type_flag','N')
+                ->where('tt_broker_change_trans_report.divi_mismatch_flag','N')
+                ->whereRaw($rawQueryBroker)
+                ->groupBy('tt_broker_change_trans_report.trans_no')
+                ->groupBy('tt_broker_change_trans_report.trxn_type_flag')
+                ->groupBy('tt_broker_change_trans_report.trxn_nature_code')
+                ->groupBy('tt_broker_change_trans_report.trans_desc')
+                ->groupBy('tt_broker_change_trans_report.kf_trans_type')
+                ->groupBy('tt_broker_change_trans_report.trans_flag')
+                ->groupBy('tt_broker_change_trans_report.pur_price')
+                ->orderBy('tt_broker_change_trans_report.trans_date','ASC')
+                ->get();
+            // return $broker_data;
+            // return 'ddd';
+            /** start for get nav data */
+            $all_trans_product=[];
+            foreach ($all_data as $value_product_code) {
+                $f_trans_product="(nav_date=(SELECT MAX(nav_date) FROM td_nav_details WHERE product_code='".$value_product_code->product_code."' AND nav_date <='".$date."') AND product_code='".$value_product_code->product_code."')";
+                array_push($all_trans_product,$f_trans_product);
+            }
+            $res_array=[];
+            if (count($all_data)>0) {
+                $all_trans_product_unique = array_unique($all_trans_product);
+                $string_version_product_code = implode(',', $all_trans_product_unique);
+                $res_array =DB::connection('mysql_nav')
+                    ->select('SELECT product_code,isin_no,DATE_FORMAT(nav_date, "%Y-%m-%d") as nav_date,nav FROM td_nav_details where '.str_replace(",","  OR  ",$string_version_product_code));
+            }
+            // return $res_array[0];
+            // return 'ddd';
+            /** end for get nav data */
+
+            /** other all values set */
+            $all_values_data=[];
+            foreach ($all_data as $value_set) {
+                $trxn_type_subtype='';
+                if ($value_set->rnt_id==1) {
+                    foreach ($transaction_type_subtype as $type_subtype) {
+                        if ($type_subtype->c_trans_type_code==$value_set->trxn_type_code && $type_subtype->c_k_trans_type==$value_set->trxn_type_flag && $type_subtype->c_k_trans_sub_type==$value_set->trxn_nature_code) {
+                            $trxn_type_subtype=$type_subtype;
+                            break;
+                        }
+                    }
+                    // $trxn_type_subtype = array_filter($transaction_type_subtype, fn($data) => $data['c_trans_type_code'] == $value_set->trxn_type_code && $data['c_k_trans_type'] == $value_set->trxn_type_flag && $data['c_k_trans_sub_type'] == $value_set->trxn_nature_code);
+                    // return $trxn_type_subtype;
+                } else if ($value_set->rnt_id==2){
+                    if ($value_set->trans_flag=="TO") {
+                        $trxn_type_subtype=["trans_type"=>"Transfer Out","trans_sub_type"=>"Transfer Out"];
+                    }else if($value_set->trans_flag=="DP" || $value_set->trans_flag=="DR"){
+                        // return $value_set;
+                        foreach ($transaction_type_subtype as $type_subtype) {
+                            if ($type_subtype->c_k_trans_sub_type==$value_set->kf_trans_type && $type_subtype->k_divident_flag==$value_set->trans_flag) {
+                                $trxn_type_subtype=$type_subtype;
+                                break;
+                            }
+                        }
+                        // $trxn_type_subtype = array_filter($transaction_type_subtype, fn($data) => $data['c_k_trans_sub_type'] == $value_set->kf_trans_type && $data['k_divident_flag'] == $value_set->trans_flag);
+
+                    }else {
+                        foreach ($transaction_type_subtype as $type_subtype) {
+                            if ($type_subtype->c_k_trans_sub_type==$value_set->kf_trans_type) {
+                                $trxn_type_subtype=$type_subtype;
+                                break;
+                            }
+                        }
+                        // $trxn_type_subtype = array_filter($transaction_type_subtype, fn($data) => $data['c_k_trans_sub_type'] == $value_set->kf_trans_type);
+                    }
+                }
+                $value_set->transaction_type=isset($trxn_type_subtype->trans_type)?$trxn_type_subtype->trans_type:'';
+                $value_set->transaction_subtype=isset($trxn_type_subtype->trans_sub_type)?$trxn_type_subtype->trans_sub_type:'';
+                $new='';
+                if (count($res_array) > 0) {
+                    foreach($res_array as $val_nav){
+                        if($val_nav->product_code==$value_set->product_code){
+                            $new=$val_nav;
+                            break;
+                        }
+                    }
+                }
+                $value_set->curr_nav=isset($new->nav)?$new->nav:0;
+                $value_set->nav_date=isset($new->nav_date)?$new->nav_date:0;
+                if ($value_set->rnt_id==1 && $value_set->amount < 0) {
+                    $value_set->transaction_type=$value_set->transaction_type." Rejection";
+                    $value_set->transaction_subtype=$value_set->transaction_subtype." Rejection";
+                }
+                array_push($all_values_data,$value_set);
+            }
+            // return $all_values_data[0];
+            return 'ddd';
+            
+
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             // $all_data=MutualFundTransaction::
             //     with(['transdetails'=>function ($query) {
             //         // $query->select('rnt_id','amc_code','folio_no','product_code','isin_no','trans_date','trxn_type_code','trxn_type_flag','trxn_nature_code','kf_trans_type','trans_flag','amount','stamp_duty','tds','units','pur_price')

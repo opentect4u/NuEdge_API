@@ -22,108 +22,134 @@ class CompanyController extends Controller
             $ins_type_id=json_decode($request->ins_type_id);
             $comp_name=json_decode($request->comp_name);
             
-            if ($paginate=='A') {
-                $paginate=999999999;
-            }
-            if ($sort_by && $column_name) {
-                if ($column_name='ins_type') {
-                    $data=$data=InsCompany::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_company.ins_type_id')
-                    ->select('md_ins_company.*','md_ins_type.type as ins_type')
-                    ->where('md_ins_company.delete_flag','N')
-                    ->orderBy('md_ins_type.type',$sort_by)
-                    ->paginate($paginate); 
-                }else {
-                    $data=$data=InsCompany::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_company.ins_type_id')
-                    ->select('md_ins_company.*','md_ins_type.type as ins_type')
-                    ->where('md_ins_company.delete_flag','N')
-                    ->orderBy('md_ins_company.'.$column_name,$sort_by)
-                    ->paginate($paginate); 
+            // if ($paginate=='A') {
+            //     $paginate=999999999;
+            // }
+            // if ($sort_by && $column_name) {
+            //     if ($column_name='ins_type') {
+            //         $data=$data=InsCompany::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_company.ins_type_id')
+            //         ->select('md_ins_company.*','md_ins_type.type as ins_type')
+            //         ->where('md_ins_company.delete_flag','N')
+            //         ->orderBy('md_ins_type.type',$sort_by)
+            //         ->paginate($paginate); 
+            //     }else {
+            //         $data=$data=InsCompany::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_company.ins_type_id')
+            //         ->select('md_ins_company.*','md_ins_type.type as ins_type')
+            //         ->where('md_ins_company.delete_flag','N')
+            //         ->orderBy('md_ins_company.'.$column_name,$sort_by)
+            //         ->paginate($paginate); 
+            //     }
+            // }elseif ($contact_person && !empty($ins_type_id) && $contact_person) {
+            //     $setarray=[];
+            //     foreach ($comp_name as $key => $comp) {
+            //         array_push($setarray,$comp->id);
+            //     }
+            //     $data=InsCompany::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_company.ins_type_id')
+            //         ->select('md_ins_company.*','md_ins_type.type as ins_type')
+            //         ->where('md_ins_company.delete_flag','N')
+            //         ->whereIn('md_ins_company.id',$setarray)
+            //         ->whereIn('md_ins_company.ins_type_id',$ins_type_id)
+            //         ->where('md_ins_company.local_ofc_contact_per','like', '%' . $contact_person . '%')
+            //         ->OrWhere('md_ins_company.local_ofc_contact_per','like', '%' . $contact_person . '%')
+            //         ->orderBy('md_ins_company.updated_at','DESC')
+            //         ->paginate($paginate);  
+            // }elseif ($contact_person && !empty($ins_type_id)) {
+            //     $setarray=[];
+            //     foreach ($comp_name as $key => $comp) {
+            //         array_push($setarray,$comp->id);
+            //     }
+            //     $data=InsCompany::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_company.ins_type_id')
+            //         ->select('md_ins_company.*','md_ins_type.type as ins_type')
+            //         ->where('md_ins_company.delete_flag','N')
+            //         ->whereIn('md_ins_company.ins_type_id',$ins_type_id)
+            //         ->where('md_ins_company.local_ofc_contact_per','like', '%' . $contact_person . '%')
+            //         ->OrWhere('md_ins_company.local_ofc_contact_per','like', '%' . $contact_person . '%')
+            //         ->orderBy('md_ins_company.updated_at','DESC')
+            //         ->paginate($paginate);  
+            // }elseif (!empty($ins_type_id) && !empty($comp_name)) {
+            //     $setarray=[];
+            //     foreach ($comp_name as $key => $comp) {
+            //         array_push($setarray,$comp->id);
+            //     }
+            //     $data=InsCompany::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_company.ins_type_id')
+            //         ->select('md_ins_company.*','md_ins_type.type as ins_type')
+            //         ->where('md_ins_company.delete_flag','N')
+            //         ->whereIn('md_ins_company.id',$setarray)
+            //         ->whereIn('md_ins_company.ins_type_id',$ins_type_id)
+            //         ->orderBy('md_ins_company.updated_at','DESC')
+            //         ->paginate($paginate);  
+            // }elseif ($contact_person && !empty($comp_name)) {
+            //     $setarray=[];
+            //     foreach ($comp_name as $key => $comp) {
+            //         array_push($setarray,$comp->id);
+            //     }
+            //     $data=InsCompany::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_company.ins_type_id')
+            //         ->select('md_ins_company.*','md_ins_type.type as ins_type')
+            //         ->where('md_ins_company.delete_flag','N')
+            //         ->whereIn('md_ins_company.id',$setarray)
+            //         ->where('md_ins_company.local_ofc_contact_per','like', '%' . $contact_person . '%')
+            //         ->OrWhere('md_ins_company.local_ofc_contact_per','like', '%' . $contact_person . '%')
+            //         ->orderBy('md_ins_company.updated_at','DESC')
+            //         ->paginate($paginate);  
+            // } elseif ($contact_person) {
+            //     $data=InsCompany::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_company.ins_type_id')
+            //         ->select('md_ins_company.*','md_ins_type.type as ins_type')
+            //         ->where('md_ins_company.delete_flag','N')
+            //         ->where('md_ins_company.local_ofc_contact_per','like', '%' . $contact_person . '%')
+            //         ->OrWhere('md_ins_company.local_ofc_contact_per','like', '%' . $contact_person . '%')
+            //         ->orderBy('md_ins_company.updated_at','DESC')
+            //         ->paginate($paginate);  
+            // }elseif (!empty($ins_type_id)) {
+            //     $data=InsCompany::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_company.ins_type_id')
+            //         ->select('md_ins_company.*','md_ins_type.type as ins_type')
+            //         ->where('md_ins_company.delete_flag','N')
+            //         ->whereIn('md_ins_company.ins_type_id',$ins_type_id)
+            //         ->orderBy('md_ins_company.updated_at','DESC')
+            //         ->paginate($paginate);  
+            // }elseif (!empty($comp_name)) {
+            //     $setarray=[];
+            //     foreach ($comp_name as $key => $comp) {
+            //         array_push($setarray,$comp->id);
+            //     }
+            //     // return $setarray;
+            //     $data=InsCompany::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_company.ins_type_id')
+            //         ->select('md_ins_company.*','md_ins_type.type as ins_type')
+            //         ->where('md_ins_company.delete_flag','N')
+            //         ->whereIn('md_ins_company.id',$setarray)
+            //         ->orderBy('md_ins_company.updated_at','DESC')
+            //         ->paginate($paginate);  
+            // } else {
+            //     $data=InsCompany::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_company.ins_type_id')
+            //         ->select('md_ins_company.*','md_ins_type.type as ins_type')
+            //         ->where('md_ins_company.delete_flag','N')
+            //         ->orderBy('md_ins_company.updated_at','DESC')
+            //         // ->paginate($paginate);  
+            //         ->get();
+            // }
+
+            if (!empty($ins_type_id) || !empty($comp_name)) {
+                $rawQuery='';
+                // return $ins_type_id;
+                if (!empty($ins_type_id)) {
+                    $queryString='md_ins_company.ins_type_id';
+                    $rawQuery .=Helper::WhereRawQuery($ins_type_id,$rawQuery,$queryString);
                 }
-            }elseif ($contact_person && !empty($ins_type_id) && $contact_person) {
-                $setarray=[];
-                foreach ($comp_name as $key => $comp) {
-                    array_push($setarray,$comp->id);
+                if (!empty($comp_name)) {
+                    $queryString='md_ins_company.id';
+                    $rawQuery .=Helper::WhereRawQuery($comp_name,$rawQuery,$queryString);
                 }
                 $data=InsCompany::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_company.ins_type_id')
                     ->select('md_ins_company.*','md_ins_type.type as ins_type')
                     ->where('md_ins_company.delete_flag','N')
-                    ->whereIn('md_ins_company.id',$setarray)
-                    ->whereIn('md_ins_company.ins_type_id',$ins_type_id)
-                    ->where('md_ins_company.local_ofc_contact_per','like', '%' . $contact_person . '%')
-                    ->OrWhere('md_ins_company.local_ofc_contact_per','like', '%' . $contact_person . '%')
+                    ->whereRaw($rawQuery)
                     ->orderBy('md_ins_company.updated_at','DESC')
-                    ->paginate($paginate);  
-            }elseif ($contact_person && !empty($ins_type_id)) {
-                $setarray=[];
-                foreach ($comp_name as $key => $comp) {
-                    array_push($setarray,$comp->id);
-                }
-                $data=InsCompany::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_company.ins_type_id')
-                    ->select('md_ins_company.*','md_ins_type.type as ins_type')
-                    ->where('md_ins_company.delete_flag','N')
-                    ->whereIn('md_ins_company.ins_type_id',$ins_type_id)
-                    ->where('md_ins_company.local_ofc_contact_per','like', '%' . $contact_person . '%')
-                    ->OrWhere('md_ins_company.local_ofc_contact_per','like', '%' . $contact_person . '%')
-                    ->orderBy('md_ins_company.updated_at','DESC')
-                    ->paginate($paginate);  
-            }elseif (!empty($ins_type_id) && !empty($comp_name)) {
-                $setarray=[];
-                foreach ($comp_name as $key => $comp) {
-                    array_push($setarray,$comp->id);
-                }
-                $data=InsCompany::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_company.ins_type_id')
-                    ->select('md_ins_company.*','md_ins_type.type as ins_type')
-                    ->where('md_ins_company.delete_flag','N')
-                    ->whereIn('md_ins_company.id',$setarray)
-                    ->whereIn('md_ins_company.ins_type_id',$ins_type_id)
-                    ->orderBy('md_ins_company.updated_at','DESC')
-                    ->paginate($paginate);  
-            }elseif ($contact_person && !empty($comp_name)) {
-                $setarray=[];
-                foreach ($comp_name as $key => $comp) {
-                    array_push($setarray,$comp->id);
-                }
-                $data=InsCompany::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_company.ins_type_id')
-                    ->select('md_ins_company.*','md_ins_type.type as ins_type')
-                    ->where('md_ins_company.delete_flag','N')
-                    ->whereIn('md_ins_company.id',$setarray)
-                    ->where('md_ins_company.local_ofc_contact_per','like', '%' . $contact_person . '%')
-                    ->OrWhere('md_ins_company.local_ofc_contact_per','like', '%' . $contact_person . '%')
-                    ->orderBy('md_ins_company.updated_at','DESC')
-                    ->paginate($paginate);  
-            } elseif ($contact_person) {
-                $data=InsCompany::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_company.ins_type_id')
-                    ->select('md_ins_company.*','md_ins_type.type as ins_type')
-                    ->where('md_ins_company.delete_flag','N')
-                    ->where('md_ins_company.local_ofc_contact_per','like', '%' . $contact_person . '%')
-                    ->OrWhere('md_ins_company.local_ofc_contact_per','like', '%' . $contact_person . '%')
-                    ->orderBy('md_ins_company.updated_at','DESC')
-                    ->paginate($paginate);  
-            }elseif (!empty($ins_type_id)) {
-                $data=InsCompany::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_company.ins_type_id')
-                    ->select('md_ins_company.*','md_ins_type.type as ins_type')
-                    ->where('md_ins_company.delete_flag','N')
-                    ->whereIn('md_ins_company.ins_type_id',$ins_type_id)
-                    ->orderBy('md_ins_company.updated_at','DESC')
-                    ->paginate($paginate);  
-            }elseif (!empty($comp_name)) {
-                $setarray=[];
-                foreach ($comp_name as $key => $comp) {
-                    array_push($setarray,$comp->id);
-                }
-                // return $setarray;
-                $data=InsCompany::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_company.ins_type_id')
-                    ->select('md_ins_company.*','md_ins_type.type as ins_type')
-                    ->where('md_ins_company.delete_flag','N')
-                    ->whereIn('md_ins_company.id',$setarray)
-                    ->orderBy('md_ins_company.updated_at','DESC')
-                    ->paginate($paginate);  
-            } else {
+                    ->get();
+            }else {
                 $data=InsCompany::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_company.ins_type_id')
                     ->select('md_ins_company.*','md_ins_type.type as ins_type')
                     ->where('md_ins_company.delete_flag','N')
                     ->orderBy('md_ins_company.updated_at','DESC')
-                    ->paginate($paginate);  
+                    ->get();
             }
         } catch (\Throwable $th) {
             //throw $th;
