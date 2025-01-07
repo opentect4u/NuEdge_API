@@ -95,7 +95,7 @@ class ProductController extends Controller
                     ->whereIn('md_ins_product_type.id',$pdtarray)
                     ->orderBy('md_ins_products.updated_at','DESC')
                     ->paginate($paginate);  
-            } elseif ($product_name) {
+            } elseif (!empty($product_name)) {
                 $data=InsProduct::leftJoin('md_ins_type','md_ins_type.id','=','md_ins_products.ins_type_id')
                     ->leftJoin('md_ins_company','md_ins_company.id','=','md_ins_products.company_id')
                     ->leftJoin('md_ins_product_type','md_ins_product_type.id','=','md_ins_products.product_type_id')
@@ -389,4 +389,3 @@ class ProductController extends Controller
         return Helper::SuccessResponse($data);
     }
 }
-
