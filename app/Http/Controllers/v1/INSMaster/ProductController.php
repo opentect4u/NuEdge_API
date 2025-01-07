@@ -17,7 +17,7 @@ class ProductController extends Controller
             $paginate=$request->paginate;
             $sort_by=$request->sort_by;
             $column_name=$request->column_name;
-            $product_name=$request->product_name;
+            $product_name=json_decode($request->product_name);
             $company_id=json_decode($request->company_id);
             $ins_type_id=json_decode($request->ins_type_id);
             $product_type_id=json_decode($request->product_type_id);
