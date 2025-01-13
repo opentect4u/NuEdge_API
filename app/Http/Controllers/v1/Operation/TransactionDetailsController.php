@@ -311,34 +311,35 @@ class TransactionDetailsController extends Controller
             //         ->get();
             // }
             // return $all_data;
-                $data=[];
-                foreach ($all_data as $key => $value) {
-                    $amount=$value->amount;
-                    if ($amount <= 0) {
-                        $transaction_type=$value->transaction_type." Rejection";
-                        $transaction_subtype=$value->transaction_subtype." Rejection";
-                    }else {
-                        $transaction_type=$value->transaction_type;
-                        $transaction_subtype=$value->transaction_subtype;
-                    }
-                    $value->gross_amount= number_format((float)((float)$amount + (float)$value->stamp_duty + (float)$value->tds), 2, '.', '');
-                    // number_format((float)$foo, 2, '.', '')
-                    $value->tot_gross_amount= number_format((float)((float)$value->tot_amount + (float)$value->tot_stamp_duty + (float)$value->tot_tds), 2, '.', '');
-                    $value->transaction_type=$transaction_type;
-                    $value->transaction_subtype=$transaction_subtype;
+            $data=[];
+            foreach ($all_data as $key => $value) {
+                $amount=$value->amount;
+                $rnt_id=$value->rnt_id;
+                if ($rnt_id==1 && $amount < 0) {
+                    $transaction_type=$value->transaction_type." Rejection";
+                    $transaction_subtype=$value->transaction_subtype." Rejection";
+                } else {
+                    $transaction_type=$value->transaction_type;
+                    $transaction_subtype=$value->transaction_subtype;
+                }
+                $value->gross_amount= number_format((float)((float)$amount + (float)$value->stamp_duty + (float)$value->tds), 2, '.', '');
+                // number_format((float)$foo, 2, '.', '')
+                $value->tot_gross_amount= number_format((float)((float)$value->tot_amount + (float)$value->tot_stamp_duty + (float)$value->tot_tds), 2, '.', '');
+                $value->transaction_type=$transaction_type;
+                $value->transaction_subtype=$transaction_subtype;
 
-                    if (!empty($trans_type) || !empty($trans_sub_type)) {
-                        if (in_array($transaction_type ,$trans_type) && in_array($transaction_subtype ,$trans_sub_type)) {
-                            array_push($data,$value);
-                        }else if (in_array($transaction_type ,$trans_type)) {
-                            array_push($data,$value);
-                        }else if (in_array($transaction_subtype ,$trans_sub_type)) {
-                            array_push($data,$value);
-                        }
-                    } else {
+                if (!empty($trans_type) || !empty($trans_sub_type)) {
+                    if (in_array($transaction_type ,$trans_type) && in_array($transaction_subtype ,$trans_sub_type)) {
+                        array_push($data,$value);
+                    }else if (in_array($transaction_type ,$trans_type)) {
+                        array_push($data,$value);
+                    }else if (in_array($transaction_subtype ,$trans_sub_type)) {
                         array_push($data,$value);
                     }
+                } else {
+                    array_push($data,$value);
                 }
+            }
             
             $disclaimer=Disclaimer::select('dis_des','font_size','color_code')->find(5);
             $mydata=[];
