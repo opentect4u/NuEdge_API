@@ -25,7 +25,7 @@ Route::prefix('v1')->group(function () {
                 Route::post('realisedCapitalGain',[App\Http\Controllers\v1\Client\CapitalGLController::class,'search']);
                 Route::post('finYearWiseTrans',[App\Http\Controllers\v1\Client\CapitalGLController::class,'finWiseTrans']);
                 Route::post('realisedDivHistory',[App\Http\Controllers\v1\Client\CapitalGLController::class,'divHistory']);
-                Route::post('aum',[App\Http\Controllers\v1\Client\AUMController::class,'search']);  // 
+                Route::post('aumFundHouse',[App\Http\Controllers\v1\Client\AUMController::class,'search']);  // 
             });
             Route::post('downloadValuation',[App\Http\Controllers\v1\Client\PDFController::class,'downloadValuation']);  // 
             Route::get('downloadValuation',[App\Http\Controllers\v1\Client\PDFController::class,'autoDownloadValuation']);  // 

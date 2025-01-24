@@ -48,7 +48,7 @@ Route::prefix('v1')->group(function () {
 
 
             // Route::get('sendsms',[App\Http\Controllers\v1\CusService\QueryController::class,'sendSMS']);
-            // Route::get('whatsapp',[App\Http\Controllers\v1\CusService\QueryController::class,'whatsapp']);
+            Route::get('whatsapp',[App\Http\Controllers\v1\CusService\QueryController::class,'whatsapp']);
             // Route::get('index1',[App\Http\Controllers\v1\CusService\IndexController::class,'index']);
 
         });

@@ -1083,49 +1083,123 @@ Mutual Fund investments are subject to market risks, read all scheme related doc
     public function whatsapp(Request $request)
     {
         // return $request;
-        $messages = array(
-            // Put parameters here such as force or test
-            'send_channel' => 'whatsapp',
-            'messages' => array(
-                array(
-                    'number' => '',
-                    'template' => array(
-                        'id' => '',
-                        'merge_fields' => array(
-                            'Name' => ' ',
-                            'Status' => ' ',
-                            'Number' => ' ',
-                            'Details' => ' ',
-                            'Date' => ' ',
-                            'Link' => ' ',
-                        )
-                    )
-                )
-            )
-        );
-         
-        // Prepare data for POST request
-        $data = array(
-            'apikey' => env('SMS_API_KEY'),
-            'data' => json_encode($messages),
-            'test'=>true
-        );
-         
-        // Send the POST request with cURL
-        $ch = curl_init('https://api.textlocal.in/bulk_json/');
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-        // curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-        //     'Content-Type: application/json',
-        //     'Connection: Keep-Alive'
-        //     ));
-        $response = curl_exec($ch);
-        curl_close($ch);
-         
-        echo $response;
+        $curl = curl_init();
+
+        // curl_setopt_array($curl, array(
+        // CURLOPT_URL => 'https://server.gallabox.com/devapi/accounts/'.env('GALLABOX_ACC_ID').'/users',
+        // CURLOPT_RETURNTRANSFER => true,
+        // CURLOPT_ENCODING => '',
+        // CURLOPT_MAXREDIRS => 10,
+        // CURLOPT_TIMEOUT => 0,
+        // CURLOPT_FOLLOWLOCATION => true,
+        // CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        // CURLOPT_CUSTOMREQUEST => 'GET',
+        // CURLOPT_HTTPHEADER => array(
+        //     'apiKey: '.env('GALLABOX_API_KEY'),
+        //     'apiSecret: '.env('GALLABOX_API_SECRET'),
+        //     'Content-Type: application/json'
+        // ),
+        // ));
+
+        // $response = curl_exec($curl);
+
+        // curl_close($curl);
+        // // echo $response;
+        /***************List WhatsApp Templates*******************************************  */
+        // $CURLOPT_URL='https://server.gallabox.com/devapi/accounts/'.env('GALLABOX_ACC_ID').'/whatsappTemplates';
         
+        /****************************************Get WhatsApp Template********************************* */
+        // $CURLOPT_URL ='https://server.gallabox.com/devapi/accounts/'.env('GALLABOX_ACC_ID').'/whatsappTemplates/67862bfa34e6a772b4ce6440';
+
+        // curl_setopt_array($curl, array(
+        //     CURLOPT_URL => $CURLOPT_URL,
+        //     CURLOPT_RETURNTRANSFER => true,
+        //     CURLOPT_ENCODING => '',
+        //     CURLOPT_MAXREDIRS => 10,
+        //     CURLOPT_TIMEOUT => 0,
+        //     CURLOPT_FOLLOWLOCATION => true,
+        //     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        //     CURLOPT_CUSTOMREQUEST => 'GET',
+        //     CURLOPT_HTTPHEADER => array(
+        //       'apiKey: '.env('GALLABOX_API_KEY'),
+        //       'apiSecret: '.env('GALLABOX_API_SECRET'),
+        //       'Content-Type: application/json'
+        //     ),
+        // ));
+        // $response = curl_exec($curl);
+        // curl_close($curl);
+        // // echo $response;
+        // $data= json_decode($response);
+        // return $data;
+        /*********************Send Message**************************** */
+        // 67862bfa34e6a772b4ce6440 //template id
+        $channelId='67862bf96e69f3dd498f164d';
+        $p='8159821331';
+        $recipientName='Chitta';
+        $templateName='welcome_basic_template';
+        // $jsondata=['chitta'];
+        // $bodyvalues=json_encode($jsondata);
+        // return $bodyvalues;
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://server.gallabox.com/devapi/messages/whatsapp',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS =>'{
+                "channelId": "67862bf96e69f3dd498f164d",
+                "channelType": "whatsapp",
+                "recipient": {
+                    "name": "Chitta",
+                    "phone": "918159821331"
+                },
+                "whatsapp": {
+                    "type": "template",
+                    "template": {
+                        "templateName": "welcome_basic_template",
+                        "bodyValues": {
+                            "customer_name": "Chitta"
+                        }
+                    }
+                }
+            }',
+            CURLOPT_HTTPHEADER => array(
+              'apiSecret: '.env('GALLABOX_API_SECRET'),
+              'apiKey: '.env('GALLABOX_API_KEY'),
+              'Content-Type: application/json'
+            ),
+        ));
+        $response = curl_exec($curl);
+        curl_close($curl);
+        // echo $response;
+        $msg_data= json_decode($response);
+        // return $msg_data;
+
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://server.gallabox.com/devapi/accounts/'.env('GALLABOX_ACC_ID').'/messages/'.$msg_data->id.'/status',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'GET',
+            CURLOPT_HTTPHEADER => array(
+              'apiKey: '.env('GALLABOX_API_KEY'),
+              'apiSecret: '.env('GALLABOX_API_SECRET'),
+              'Content-Type: application/json'
+            ),
+        ));
+
+        $response = curl_exec($curl);
+        curl_close($curl);
+        // echo $response;
+
+        $data= json_decode($response);
+        return $data;
     }
 }

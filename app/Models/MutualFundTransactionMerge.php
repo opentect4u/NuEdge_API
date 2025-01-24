@@ -8,10 +8,10 @@ use App\Models\{MutualFundTransaction};
 use Session;
 use DB;
 
-class MutualFundTransaction extends Model
+class MutualFundTransactionMerge extends Model
 {
     use HasFactory;
-    protected $table="td_mutual_fund_trans";
+    protected $table="td_mutual_fund_trans_merge";
     // protected $primaryKey = 'tin_no';
     protected $fillable = [
         'mailback_process_id',
@@ -76,6 +76,8 @@ class MutualFundTransaction extends Model
         'deleted_at',
         'deleted_date',
         'portfolio_show_flag',
+        'transaction_type',
+        'transaction_subtype',
     ];
 
     use \Awobaz\Compoships\Compoships;
