@@ -162,7 +162,6 @@ class ClientController extends Controller
                     ->leftJoin('md_country','md_country.id','=','md_client.country_id')
                     ->leftJoin('md_pincode','md_pincode.id','=','md_client.pincode')
                     ->leftJoin('md_client_type','md_client_type.id','=','md_client.client_type_mode')
-                    ->leftJoin('md_pincode','md_pincode.id','=','md_client.pincode')
                     ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as client_type_name',
                     'md_country.name as country_name','md_pincode.pincode as pincode_name')
                     ->where('md_client.id',$client_id)
@@ -175,7 +174,7 @@ class ClientController extends Controller
                 ->get();      
             }
         } catch (\Throwable $th) {
-            //throw $th;
+            // throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
         }
         return Helper::SuccessResponse($data);
@@ -183,23 +182,23 @@ class ClientController extends Controller
 
     public function createUpdate(Request $request)
     {
-        $validator = Validator::make(request()->all(),[
-            'client_name'=>'required',
-            'dob'=>'required',
-            // 'add_line_1'=>'required',
-            // 'city'=>'required',
-            // 'dist'=>'required',
-            // 'state'=>'required',
-            // 'pincode'=>'required',
-            // 'pan'=>'required',
-            // 'mobile'=>'required',
-            // 'email'=>'required',
-        ]);
+        // $validator = Validator::make(request()->all(),[
+        //     'client_name'=>'required',
+        //     'dob'=>'required',
+        //     // 'add_line_1'=>'required',
+        //     // 'city'=>'required',
+        //     // 'dist'=>'required',
+        //     // 'state'=>'required',
+        //     // 'pincode'=>'required',
+        //     // 'pan'=>'required',
+        //     // 'mobile'=>'required',
+        //     // 'email'=>'required',
+        // ]);
     
-        if($validator->fails()) {
-            $errors = $validator->errors();
-            return Helper::ErrorResponse(parent::VALIDATION_ERROR);
-        }
+        // if($validator->fails()) {
+        //     $errors = $validator->errors();
+        //     return Helper::ErrorResponse(parent::VALIDATION_ERROR);
+        // }
         try {
             // return $request;
             if ($request->id > 0) {
