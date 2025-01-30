@@ -10,20 +10,20 @@ use Illuminate\Queue\SerializesModels;
 class SendAckEmail extends Mailable
 {
     use Queueable, SerializesModels;
-    public $LeaderName;
-    public $email;
+    public $name;
+    public $app_form;
+    public $count;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($LeaderName,$email,$passwords,$pdf)
+    public function __construct($name,$app_form,$count)
     {
-        $this->LeaderName=$LeaderName;
-        $this->email=$email;
-        $this->passwords=$passwords;
-        $this->pdf=$pdf;
+        $this->name=$name;
+        $this->app_form=$app_form;
+        $this->count=$count;
     }
 
     /**
@@ -33,13 +33,18 @@ class SendAckEmail extends Mailable
      */
     public function build()
     {
-        return $this->view('view.name');
-        $from_email='info@puriurbanruralcoop.com';
-        return $this->from($from_email)
-                    ->subject('Cloud Travel - Login Details and Invoice')
-                    ->view('emails.hotel.register-invoice')
-                    ->attachData($this->pdf->output(), 'invoice.pdf', [
-                        'mime' => 'application/pdf',
-                    ]);
+        if ($this->count > 0) {
+            # code...
+        }else {
+            $email=$this->from(env('MAIL_FROM_ADDRESS'))
+                ->subject('Welome Mail')
+                ->view('emails.operation.welcome');
+                    
+            $email->attach($this->app_form, [
+                'as' => basename($this->app_form),
+                'mime' => mime_content_type($this->app_form)
+            ]);
+            return $email;
+        }
     }
 }

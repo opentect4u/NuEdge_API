@@ -351,3 +351,43 @@ FROM
         //     AND (`cte2`.`in_out` < `cte2`.`cal_amount`)) 
         //     ORDER BY `cte2`.`trans_date)
             
+
+        // Y
+        // [
+        //     {
+        //     "id":"N",
+        //     "value":"KYC REGISTERED - New KYC"
+        //     },
+        //     {
+        //         "id":"R",
+        //         "value":"KYC Rejected"
+        //     },
+        //     {
+        //         "id":"M",
+        //         "value":"Modified KYC Rejected"
+        //     },
+        //       {
+        //         "id":"I",
+        //         "value":"Incomplete KYC"
+        //     },
+        //     {
+        //       "id":"C",
+        //       "value":"CVLMF KYC"
+        //     },
+        //     {
+        //       "id":"F",
+        //       "value":"No Data Found"
+        //     }
+        // ]
+        // N
+        // [
+        //     {
+        //       "id":"N",
+        //       "value":"KYC REGISTERED - New KYC"
+        //     },
+        //     {
+        //       "id":"V",
+        //       "value":"KYC Validated"
+        //     }
+        //   ]
+        //   .

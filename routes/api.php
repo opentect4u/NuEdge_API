@@ -338,6 +338,7 @@ Route::prefix('v1')->group(function () {
             // Route::get('checkTransUsingTIN',[App\Http\Controllers\v1\Operation\CommonController::class,'checkTransUsingTIN']);
 
 
+            Route::get('kycStatus',[App\Http\Controllers\v1\Operation\FinancialController::class,'getKYCStatus']);
             Route::get('mfTraxShow',[App\Http\Controllers\v1\Operation\FinancialController::class,'index']);
             Route::get('mfTraxCreateShow',[App\Http\Controllers\v1\Operation\FinancialController::class,'createShow']);
             Route::post('mfTraxCreate',[App\Http\Controllers\v1\Operation\FinancialController::class,'create']);

@@ -11,6 +11,7 @@ use Illuminate\Support\Carbon;
 use Mail;
 use App\Mail\Master\SendAckEmail;
 use App\Models\Email;
+use App\Jobs\AckFinalSubmitJob;
 
 class AcknowledgementController extends Controller
 {
@@ -125,6 +126,7 @@ class AcknowledgementController extends Controller
                     'md_client_2.client_code as second_client_code','md_client_2.client_name as second_client_name','md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
                     'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to',
                     'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_deposit_bank.bank_name as bank_name',
+                    'td_mutual_fund.first_kyc as first_client_kyc_status','td_mutual_fund.second_kyc as second_client_kyc_status','td_mutual_fund.third_kyc as third_client_kyc_status',
                     'md_branch.brn_name as branch_name')
                     ->where('md_trans.trans_type_id',$trans_type_id)
                     ->where('td_mutual_fund.trans_id',$trans_id)
@@ -154,6 +156,7 @@ class AcknowledgementController extends Controller
                     'md_client_2.client_code as second_client_code','md_client_2.client_name as second_client_name','md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
                     'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to',
                     'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_deposit_bank.bank_name as bank_name',
+                    'td_mutual_fund.first_kyc as first_client_kyc_status','td_mutual_fund.second_kyc as second_client_kyc_status','td_mutual_fund.third_kyc as third_client_kyc_status',
                     'md_branch.brn_name as branch_name')
                     ->where('md_trans.trans_type_id',$trans_type_id)
                     ->where('td_mutual_fund.trans_id',$trans_id)
@@ -469,18 +472,56 @@ class AcknowledgementController extends Controller
     {
         try {
             $trans_type_id=$request->trans_type_id;
+            $trans_id=$request->trans_id;
             // return $request;
-            $data=MutualFund::join('td_form_received','td_form_received.temp_tin_no','=','td_mutual_fund.temp_tin_no')
-                ->join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
-                        ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_mutual_fund.chq_bank')
-                ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id',
-                'td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_deposit_bank.bank_name as bank_name')
-                ->where('md_trans.trans_type_id',$trans_type_id)
-                ->whereDate('td_mutual_fund.updated_at',date('Y-m-d'))
+            $data=MutualFund::join('md_client','md_client.id','=','td_mutual_fund.first_client_id')
+                ->select('td_mutual_fund.id','td_mutual_fund.first_client_id','td_mutual_fund.app_form_scan','td_mutual_fund.ack_copy_scan',
+                'md_client.client_name as first_client_name','md_client.email as first_client_email','md_client.pan as first_client_pan')
+                ->where('td_mutual_fund.trans_id',$trans_id)
+                ->whereDate('td_mutual_fund.rnt_login_dt',date('Y-m-d'))
                 ->where('td_mutual_fund.form_status','=','A')
-                ->get();   
-
+                ->where('td_mutual_fund.ack_final_submit','=','N')
+                ->get();  
             // return $data;
+            if (count($data) > 0) {
+                foreach ($data as $key => $item) {
+                    // return $item;
+                    dispatch(new AckFinalSubmitJob($item));
+                }
+            }
+        } catch (\Throwable $th) {
+            // throw $th;
+            $msg="Email Sending Error.";
+            return Helper::ErrorResponse($msg);
+        }
+        return Helper::SuccessResponse($data);
+    }
+
+    public function finalSubmit_old(Request $request)
+    {
+        try {
+            $trans_type_id=$request->trans_type_id;
+            $trans_id=$request->trans_id;
+            // return $request;
+            // $data=MutualFund::join('td_form_received','td_form_received.temp_tin_no','=','td_mutual_fund.temp_tin_no')
+            //     ->join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
+            //     ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_mutual_fund.chq_bank')
+            //     ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id',
+            //     'td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_deposit_bank.bank_name as bank_name')
+            //     // ->where('md_trans.trans_type_id',$trans_type_id)
+            //     ->where('td_mutual_fund.trans_id',$trans_id)
+            //     ->whereDate('td_mutual_fund.rnt_login_dt',date('Y-m-d'))
+            //     ->where('td_mutual_fund.form_status','=','A')
+            //     ->get();  
+
+            $data=MutualFund::join('md_client','md_client.id','=','td_mutual_fund.first_client_id')
+                ->select('td_mutual_fund.first_client_id','td_mutual_fund.app_form_scan','td_mutual_fund.ack_copy_scan',
+                'md_client.client_name as first_client_name')
+                ->where('td_mutual_fund.trans_id',$trans_id)
+                ->whereDate('td_mutual_fund.rnt_login_dt',date('Y-m-d'))
+                ->where('td_mutual_fund.form_status','=','A')
+                ->get();  
+            return $data;
             $sort_arr=[];
             foreach ($data as $key => $item) {
                 $sort_arr[$item['first_client_id']][$key] = $item;
@@ -530,12 +571,10 @@ class AcknowledgementController extends Controller
             }
             
         } catch (\Throwable $th) {
-            //throw $th;
-           $msg="Email Sending Error.";
+            throw $th;
+            $msg="Email Sending Error.";
             return Helper::ErrorResponse($msg);
         }
         return Helper::SuccessResponse($data);
     }
-
-
 }

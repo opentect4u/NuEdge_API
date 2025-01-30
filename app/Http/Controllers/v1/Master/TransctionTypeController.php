@@ -73,7 +73,7 @@ class TransctionTypeController extends Controller
                     ->orderBy('updated_at','DESC')
                     ->paginate($paginate);      
             }else{
-                $data=TransctionType::where('product_id',$product_id)->get();      
+                $data=TransctionType::where('product_id',$product_id)->orderBy('created_at','ASC')->get();      
                 // $data=[];
             }
         } catch (\Throwable $th) {
