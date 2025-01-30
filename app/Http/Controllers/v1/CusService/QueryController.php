@@ -74,6 +74,7 @@ class QueryController extends Controller
                     ->orWhere('md_client.email','like', '%' . $search . '%')
                     ->orWhere('td_mutual_fund_trans.folio_no','like', '%' . $search . '%')
                     ->groupBy('td_mutual_fund_trans.first_client_name')
+                    ->groupBy('td_mutual_fund_trans.first_client_pan')
                     ->get();
             // dd(DB::getQueryLog());
         } catch (\Throwable $th) {
