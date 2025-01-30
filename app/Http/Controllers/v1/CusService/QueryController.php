@@ -64,8 +64,14 @@ class QueryController extends Controller
             //         ->groupBy('td_mutual_fund_trans.first_client_pan')
             //         ->get();
             
-            $data=Client::leftJoin('td_mutual_fund_trans','td_mutual_fund_trans.first_client_name','=','md_client.client_name')
+            $data=Client::leftJoin('td_mutual_fund_trans','td_mutual_fund_trans.first_client_pan','=','md_client.pan')
+            // leftJoin('td_mutual_fund_trans','td_mutual_fund_trans.first_client_name','=','md_client.client_name')
                     ->select('md_client.*','td_mutual_fund_trans.folio_no','td_mutual_fund_trans.first_client_name')
+                    // ->selectRaw('IF(md_client.pan,(select folio_no from td_mutual_fund_trans where first_client_pan=md_client.pan limit 1),
+                    // (select folio_no from td_mutual_fund_trans where first_client_name=md_client.client_name limit 1))as folio_no')
+                    ->selectRaw('IF(td_mutual_fund_trans.folio_no,td_mutual_fund_trans.folio_no,
+                    (select folio_no from td_mutual_fund_trans where LOWER(first_client_name)=LOWER(md_client.client_name) order by trans_date asc limit 1))as folio_no')
+                    // ->selectRaw('select first_client_name from td_mutual_fund_trans where first_client_name=md_client.client_name limit 1 as first_client_name')
                     // ->where('client_type','!=','E')
                     ->where('md_client.client_name','like', '%' . $search . '%')
                     ->orWhere('md_client.client_code','like', '%' . $search . '%')
@@ -76,6 +82,7 @@ class QueryController extends Controller
                     ->groupBy('td_mutual_fund_trans.first_client_name')
                     ->groupBy('td_mutual_fund_trans.first_client_pan')
                     ->get();
+            
             // dd(DB::getQueryLog());
         } catch (\Throwable $th) {
             // throw $th;
