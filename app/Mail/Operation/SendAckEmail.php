@@ -35,7 +35,7 @@ class SendAckEmail extends Mailable
     {
         if ($this->count > 0) {
             $email=$this->from(env('MAIL_FROM_ADDRESS'))
-                ->subject('Welome Mail')
+                ->subject('Thank You')
                 ->view('emails.operation.thank_you');
                     
             $email->attach($this->app_form, [
@@ -44,7 +44,7 @@ class SendAckEmail extends Mailable
             ]);
         }else {
             $email=$this->from(env('MAIL_FROM_ADDRESS'))
-                ->subject('Welome Mail')
+                ->subject('Welome')
                 ->view('emails.operation.welcome');
                     
             $email->attach($this->app_form, [
