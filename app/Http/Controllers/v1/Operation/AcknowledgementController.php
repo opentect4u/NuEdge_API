@@ -501,7 +501,7 @@ class AcknowledgementController extends Controller
                 }
             }
         } catch (\Throwable $th) {
-            // throw $th;
+            throw $th;
             $msg="Email Sending Error.";
             return Helper::ErrorResponse($msg);
         }
