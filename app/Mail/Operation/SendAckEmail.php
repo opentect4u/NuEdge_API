@@ -34,7 +34,14 @@ class SendAckEmail extends Mailable
     public function build()
     {
         if ($this->count > 0) {
-            # code...
+            $email=$this->from(env('MAIL_FROM_ADDRESS'))
+                ->subject('Welome Mail')
+                ->view('emails.operation.thank_you');
+                    
+            $email->attach($this->app_form, [
+                'as' => basename($this->app_form),
+                'mime' => mime_content_type($this->app_form)
+            ]);
         }else {
             $email=$this->from(env('MAIL_FROM_ADDRESS'))
                 ->subject('Welome Mail')
@@ -44,7 +51,7 @@ class SendAckEmail extends Mailable
                 'as' => basename($this->app_form),
                 'mime' => mime_content_type($this->app_form)
             ]);
-            return $email;
         }
+        return $email;
     }
 }
