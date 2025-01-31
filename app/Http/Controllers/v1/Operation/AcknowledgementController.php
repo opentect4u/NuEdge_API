@@ -127,9 +127,10 @@ class AcknowledgementController extends Controller
                     'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to',
                     'md_client.client_code as first_client_code','md_client.client_name as first_client_name','md_client.pan as first_client_pan','md_client.client_type as first_client_type',
                     'md_client_2.client_code as second_client_code','md_client_2.client_name as second_client_name','md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
+                    'md_client_3.client_code as third_client_code','md_client_3.client_name as third_client_name','md_client_3.pan as third_client_pan','md_client_3.client_type as third_client_type',
                     'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to',
                     'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_deposit_bank.bank_name as bank_name',
-                    'td_mutual_fund.first_kyc as first_client_kyc_status','td_mutual_fund.second_kyc as second_client_kyc_status','td_mutual_fund.third_kyc as third_client_kyc_status',
+                    'td_mutual_fund.first_kyc as first_client_kyc_status',
                     'md_branch.brn_name as branch_name','td_form_received.application_no as application_no','md_employee.emp_name as rm_name',
                     'md_sip_type.sip_type_name as sip_type_name','md_stp_type.stp_type_name as stp_type_name','md_swp_type.swp_type_name as swp_type_name',
                     'td_mutual_fund.sip_swp_stp_inst_date as sip_date','td_mutual_fund.sip_swp_stp_start_date as sip_start_date','td_mutual_fund.sip_swp_stp_end_date as sip_end_date','td_mutual_fund.amount as sip_amount')
@@ -162,9 +163,10 @@ class AcknowledgementController extends Controller
                     'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme_2.scheme_name as scheme_name_to',
                     'md_client.client_code as first_client_code','md_client.client_name as first_client_name','md_client.pan as first_client_pan','md_client.client_type as first_client_type',
                     'md_client_2.client_code as second_client_code','md_client_2.client_name as second_client_name','md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
+                    'md_client_3.client_code as third_client_code','md_client_3.client_name as third_client_name','md_client_3.pan as third_client_pan','md_client_3.client_type as third_client_type',
                     'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to',
                     'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_deposit_bank.bank_name as bank_name',
-                    'td_mutual_fund.first_kyc as first_client_kyc_status','td_mutual_fund.second_kyc as second_client_kyc_status','td_mutual_fund.third_kyc as third_client_kyc_status',
+                    'td_mutual_fund.first_kyc as first_client_kyc_status',
                     'md_branch.brn_name as branch_name','td_form_received.application_no as application_no','md_employee.emp_name as rm_name',
                     'md_sip_type.sip_type_name as sip_type_name','md_stp_type.stp_type_name as stp_type_name','md_swp_type.swp_type_name as swp_type_name',
                     'td_mutual_fund.sip_swp_stp_inst_date as sip_date','td_mutual_fund.sip_swp_stp_start_date as sip_start_date','td_mutual_fund.sip_swp_stp_end_date as sip_end_date','td_mutual_fund.amount as sip_amount')

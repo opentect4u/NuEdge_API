@@ -98,6 +98,8 @@ class MutualFund extends Model
         'reject_memo',
         'pending_reason',
         'ack_status',
+        'second_client_kyc_status',
+        'third_client_kyc_status',
         'form_status',
         'delete_flag',
         'deleted_date',
