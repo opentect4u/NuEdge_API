@@ -65,6 +65,8 @@ class MutualFund extends Model
         'nominee_opt_out',
         'redemp_type',
         'redemp_unit_type',
+        'existing_bank_acc_no',
+        'existing_acc_bank_id',
         'acc_no',
         'acc_bank_id',
         'swp_type',
