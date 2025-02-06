@@ -171,7 +171,8 @@ class QueryController extends Controller
                     ->leftJoin('md_query_sub_type','md_query_sub_type.id','=','td_query.query_subtype_id')
                     ->leftJoin('users','users.id','=','td_query.query_rec_by_id')
                     ->select('td_query.*','md_query_status.status_name','md_query_status.color_code','md_query_sub_type.query_subtype',
-                    'md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.id as investor_id','md_client.email as investor_email','md_client.mobile as investor_mobile','users.name as entry_name')
+                    'md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.id as investor_id','md_client.email as investor_email','md_client.mobile as investor_mobile','users.name as entry_name',
+                    'md_client.client_code as client_code')
                     ->selectRaw('IF(td_query.query_tat IS NULL || td_query.query_tat="",md_query_sub_type.query_tat,td_query.query_tat)as query_tat')
                     ->where('td_query.id',$id)
                     ->first();
@@ -236,7 +237,7 @@ class QueryController extends Controller
                         // ->leftJoin('md_option','md_option.id','=','md_scheme_isin.option_id')
                         ->select('td_query.*','md_query_status.status_name','md_query_status.color_code','md_query_type.query_type','md_query_sub_type.query_subtype','md_query_sub_type.query_tat',
                         'md_query_given_by.name as query_given_by','md_query_rec_given_through.name as query_receive_through','md_query_nature.query_nature','md_query_given_through.name as query_given_through',
-                        'md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.id as investor_id','md_client.email as investor_email','md_client.mobile as investor_mobile',
+                        'md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.id as investor_id','md_client.email as investor_email','md_client.mobile as investor_mobile','md_client.client_code as client_code',
                         // 'md_scheme.scheme_name as scheme_name','md_plan.plan_name as plan_name','md_option.opt_name as option_name','md_amc.amc_name'
                         'users.name as entry_name','td_query.rating as query_feedback_received','solve_users.name as query_solve_by'
                         )
@@ -270,6 +271,29 @@ class QueryController extends Controller
                         'md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.id as investor_id','md_client.email as investor_email','md_client.mobile as investor_mobile',
                         'md_fd_scheme.scheme_name')
                         ->whereRaw($rawQuery)
+                        ->get();
+                } else if ($product_id==12) {
+                    $data=Query::with('allscheme','allscheme.schemename')
+                        // ->with('entryattach')->with('solveattach')
+                        ->with('allattach')
+                        ->leftJoin('md_query_status','md_query_status.id','=','td_query.query_status_id')
+                        ->leftJoin('md_query_type','md_query_type.id','=','td_query.query_type_id')
+                        ->leftJoin('md_query_sub_type','md_query_sub_type.id','=','td_query.query_subtype_id')
+                        ->leftJoin('md_query_given_by','md_query_given_by.id','=','td_query.query_given_by_id')
+                        ->leftJoin('md_query_rec_given_through','md_query_rec_given_through.id','=','td_query.query_rec_through_id')
+                        ->leftJoin('md_query_nature','md_query_nature.id','=','td_query.query_nature_id')
+                        ->leftJoin('md_query_rec_given_through as md_query_given_through','md_query_given_through.id','=','td_query.query_given_through_id')
+                        ->leftJoin('md_client','md_client.id','=','td_query.invester_id')
+                        ->leftJoin('users','users.id','=','td_query.query_rec_by_id')
+                        ->leftJoin('users as solve_users','solve_users.id','=','td_query.query_solve_by_id')
+                        ->select('td_query.*','md_query_status.status_name','md_query_status.color_code','md_query_type.query_type','md_query_sub_type.query_subtype','md_query_sub_type.query_tat',
+                        'md_query_given_by.name as query_given_by','md_query_rec_given_through.name as query_receive_through','md_query_nature.query_nature','md_query_given_through.name as query_given_through',
+                        'md_client.client_name as investor_name','md_client.pan as investor_pan','md_client.id as investor_id','md_client.email as investor_email','md_client.mobile as investor_mobile','md_client.client_code as client_code',
+                        // 'md_scheme.scheme_name as scheme_name','md_plan.plan_name as plan_name','md_option.opt_name as option_name','md_amc.amc_name'
+                        'users.name as entry_name','td_query.rating as query_feedback_received','solve_users.name as query_solve_by'
+                        )
+                        ->whereRaw($rawQuery)
+                        ->orderBy('td_query.date_time','desc')
                         ->get();
                 }else {
                     $data=Query::with('entryattach')->with('solveattach')
@@ -539,6 +563,8 @@ class QueryController extends Controller
                     $query_id=($count > 0)?"QRY-FD-".(1000+$count):"QRY-FD-1000";
                 } elseif ($request->product_id==11) {
                     $query_id=($count > 0)?"QRY-PMS-".(1000+$count):"QRY-PMS-1000";
+                } elseif ($request->product_id==12) {
+                    $query_id=($count > 0)?"QRY-ONL-".(1000+$count):"QRY-ONL-1000";
                 } else {
                     $query_id='QRY-'.(microtime(true)*1000);
                 }

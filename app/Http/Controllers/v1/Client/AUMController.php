@@ -27,7 +27,7 @@ use Session;
 class AUMController extends Controller
 {
     
-    public function search(Request $request)
+    public function search____(Request $request)
     {
         try {
             $date=$request->date;
@@ -205,13 +205,13 @@ class AUMController extends Controller
     
     
     
-    public function search_old(Request $request)
+    public function search(Request $request)
     {
         try {
             // return $request;
             $date=$request->date;
             $arn_no=$request->arn_no;
-            $date=date('Y-m-d');
+            // $date=date('Y-m-d');
             // $date='2025-01-12';
             if ($date || $arn_no) {
                 $rawQuery='';

@@ -1724,4 +1724,17 @@ class FinancialController extends Controller
         $rawQuery.=Helper::WhereRawQuery($rnt_name,$rawQuery,$queryString5);
         return $rawQuery;
     }
+
+
+    public function getClientWiseFolio(Request $request)
+    {
+        try {
+            
+            //code...
+        } catch (\Throwable $th) {
+            //throw $th;
+            return Helper::ErrorResponse(parent::DATA_SAVE_ERROR);
+        }
+        return Helper::SuccessResponse($data);
+    }
 }
