@@ -83,6 +83,8 @@ class QueryController extends Controller
                     ->groupBy('td_mutual_fund_trans.first_client_pan')
                     ->get();
             
+
+                    
             // dd(DB::getQueryLog());
         } catch (\Throwable $th) {
             // throw $th;
