@@ -1405,7 +1405,6 @@ class FinancialController extends Controller
 
                         'sip_swp_stp_inst_date'=>(($request->sip_date)?$request->sip_date:(($request->installment_dt)?$request->installment_dt:NULL)),
 
-                        
                         // 'sip_swp_stp_start_date'=>isset($request->sip_start_date)?date('Y-m-d',strtotime($request->sip_start_date)):isset($request->swp_stp_start_date)?date('Y-m-d',strtotime($request->swp_stp_start_date)):NULL,
                         'sip_swp_stp_start_date'=>(($request->sip_start_date) ? date('Y-m-d',strtotime($request->sip_start_date)):(($request->swp_stp_start_date)? date('Y-m-d',strtotime($request->swp_stp_start_date)):NULL)),
                         'sip_swp_stp_end_date'=>(($request->sip_end_date)?date('Y-m-d',strtotime($request->sip_end_date)):(($request->swp_stp_end_date)?date('Y-m-d',strtotime($request->swp_stp_end_date)):NULL)),
