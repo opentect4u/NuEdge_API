@@ -11,7 +11,8 @@ use DB;
 class MutualFundTransactionMerge extends Model
 {
     use HasFactory;
-    protected $table="td_mutual_fund_trans_merge";
+    // protected $table="td_mutual_fund_trans_merge";
+    protected $table="td_mutual_fund_trans_merge_one";
     // protected $primaryKey = 'tin_no';
     protected $fillable = [
         'mailback_process_id',
@@ -78,6 +79,7 @@ class MutualFundTransactionMerge extends Model
         'portfolio_show_flag',
         'transaction_type',
         'transaction_subtype',
+        'amc_name','scheme_name','cat_name','subcat_name','plan_name','option_name',
     ];
 
     use \Awobaz\Compoships\Compoships;

@@ -27,7 +27,7 @@ use Session;
 class AUMController extends Controller
 {
     
-    public function search____(Request $request)
+    public function search______________(Request $request)
     {
         try {
             $date=$request->date;
@@ -195,17 +195,177 @@ class AUMController extends Controller
         }
         return Helper::SuccessResponse($final_data);
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
     public function search(Request $request)
+    {
+        try {
+            $date=$request->date;
+            $arn_no=$request->arn_no;
+            // $date=date('Y-m-d');
+            // $date='2025-01-12';
+            if ($date || $arn_no) {
+                $rawQuery='';
+                $rawQueryBroker='';
+                if ($date) {
+                    $condition_v=(strlen($rawQuery) > 0)? " AND ":" ";
+                    $queryString='trans_date';
+                    $rawQuery.=$condition_v.$queryString."<= '".$date."'";
+                }
+            } 
+            // DB::enableQueryLog();
+            // DB::statement("call validate_reservation(4,'2016-04-26 20:30',1,10,1,$status,$message)");
+
+            // $data=MutualFundTransaction::where('folio_no','401116563703')->get()->toArray();
+            // dd(DB::getQueryLog());
+            // return $data;
+            // $all_data=[];
+            // $all_data=DB::select('SELECT td_mutual_fund_trans_merge.product_code,
+            //     td_mutual_fund_trans_merge.folio_no,
+            //     td_mutual_fund_trans_merge.trans_date,
+            //     td_mutual_fund_trans_merge.pur_price,
+            //     td_mutual_fund_trans_merge.units,
+            //     td_mutual_fund_trans_merge.amount,
+            //     td_mutual_fund_trans_merge.stamp_duty,
+            //     td_mutual_fund_trans_merge.transaction_type,
+            //     td_mutual_fund_trans_merge.transaction_subtype,
+            //     SUM(td_mutual_fund_trans_merge.units) AS tot_units,
+            //     SUM(td_mutual_fund_trans_merge.amount) AS tot_amount,
+            //     SUM(td_mutual_fund_trans_merge.stamp_duty) AS tot_stamp_duty,
+            //     IF(td_mutual_fund_trans_merge.tds!="",SUM(td_mutual_fund_trans_merge.tds),0.00) AS tot_tds,
+            //     md_amc.amc_short_name AS amc_name,
+            //     md_scheme.scheme_name AS scheme_name,
+            //     md_category.cat_name AS cat_name,
+            //     md_subcategory.subcategory_name AS subcat_name,
+            //     md_plan.plan_name AS plan_name,
+            //     md_option.opt_name AS option_name
+            //     FROM td_mutual_fund_trans_merge 
+            //     LEFT JOIN md_amc ON md_amc.amc_code = td_mutual_fund_trans_merge.amc_code
+            //     LEFT JOIN md_scheme_isin ON md_scheme_isin.product_code = td_mutual_fund_trans_merge.product_code
+            //     LEFT JOIN md_plan ON md_plan.id = md_scheme_isin.plan_id
+            //     LEFT JOIN md_scheme ON md_scheme.id = md_scheme_isin.scheme_id
+            //     LEFT JOIN md_option ON md_option.id = md_scheme_isin.option_id
+            //     LEFT JOIN md_category ON md_category.id = md_scheme.category_id
+            //     LEFT JOIN md_subcategory ON md_subcategory.id = md_scheme.subcategory_id
+            //     WHERE td_mutual_fund_trans_merge.delete_flag="N"
+            //     AND td_mutual_fund_trans_merge.amc_flag="N"
+            //     AND td_mutual_fund_trans_merge.scheme_flag="N"
+            //     AND td_mutual_fund_trans_merge.plan_option_flag="N"
+            //     AND td_mutual_fund_trans_merge.bu_type_flag="N"
+            //     AND td_mutual_fund_trans_merge.divi_mismatch_flag="N"
+            //     GROUP BY td_mutual_fund_trans_merge.trans_no,
+            //     td_mutual_fund_trans_merge.trxn_type_flag,
+            //     td_mutual_fund_trans_merge.trxn_nature_code,
+            //     td_mutual_fund_trans_merge.trans_desc,
+            //     td_mutual_fund_trans_merge.kf_trans_type,
+            //     td_mutual_fund_trans_merge.trans_flag,
+            //     td_mutual_fund_trans_merge.pur_price
+            //     ORDER BY trans_date ASC');
+
+            // $all_data=DB::select("CALL aum_report_calculation('".$date."')");
+            // $all_data = collect($all_data)->map(function($x){ return (array) $x; })->toArray(); 
+            // return 'hii';
+            $all_data=MutualFundTransactionMerge::select('amc_code','product_code','folio_no','trans_date','pur_price','units',
+                'amount','stamp_duty','transaction_type','transaction_subtype','amc_name','scheme_name','cat_name','subcat_name','plan_name','option_name')
+                ->selectRaw('SUM(units) AS tot_units')
+                ->selectRaw('SUM(amount) AS tot_amount')
+                ->selectRaw('SUM(stamp_duty) AS tot_stamp_duty')
+                ->selectRaw('IF(tds!="",SUM(tds),0.00) AS tot_tds')
+                ->where('delete_flag','N')
+                ->where('amc_flag','N')
+                ->where('scheme_flag','N')
+                ->where('plan_option_flag','N')
+                ->where('bu_type_flag','N')
+                ->where('divi_mismatch_flag','N')
+                // ->whereRaw($rawQuery)
+                ->groupBy('trans_no')
+                ->groupBy('trxn_type_flag')
+                ->groupBy('trxn_nature_code')
+                ->groupBy('trans_desc')
+                ->groupBy('kf_trans_type')
+                ->groupBy('trans_flag')
+                ->groupBy('pur_price')
+                ->orderBy('trans_date','ASC')
+                ->get()
+                ->toArray();
+            // return 'hii';
+            $all_trans_product=[];
+            $group_amc_data=[];
+            foreach ($all_data as $value_product_code) {
+                $f_trans_product="(nav_date=(SELECT MAX(nav_date) FROM td_nav_details WHERE product_code='".$value_product_code['product_code']."' AND nav_date <='".$date."') AND product_code='".$value_product_code['product_code']."')";
+                array_push($all_trans_product,$f_trans_product);
+                $group_amc_data[$value_product_code['amc_name']][$value_product_code['scheme_name']][]=$value_product_code;
+                // $group_amc_data[$value_product_code->amc_code][$value_product_code->product_code][]=$value_product_code;
+            }
+            // return $all_trans_product;
+            $res_array=[];
+            if (count($all_data)>0) {
+                $all_trans_product_unique = array_unique($all_trans_product);
+                $string_version_product_code = implode(',', $all_trans_product_unique);
+                $res_array =DB::connection('mysql_nav')
+                    ->select('SELECT product_code,isin_no,DATE_FORMAT(nav_date, "%Y-%m-%d") as nav_date,nav FROM td_nav_details where '.str_replace(",","  OR  ",$string_version_product_code));
+            }
+            // return $res_array;
+            $final_data=[];
+            foreach ($group_amc_data as $key_group_amc_data => $value_group_amc_data) {  // amc loop
+                // return $value_group_amc_data;
+                foreach ($value_group_amc_data as $key_amc_wise_product_loop => $value_amc_wise_product_loop) { //amc wise product loop
+                    // return $value_amc_wise_product_loop; //RMFSCGP
+                    $my_data=[];
+                    $product_code=$value_amc_wise_product_loop[0]['product_code'];
+                    $new='';
+                    if (count($res_array) > 0) {
+                        foreach($res_array as $val_nav){
+                            if($val_nav->product_code==$product_code){
+                                $new=$val_nav;
+                            }
+                        }
+                    }
+                    $my_data['new']=$new;
+                    $my_data['curr_nav']=isset($new->nav)?$new->nav:0;
+                    $my_data['nav_date']=isset($new->nav_date)?$new->nav_date:0;
+                    $my_data['amc_name']=$key_group_amc_data;
+                    $my_data['amc_code']=$value_amc_wise_product_loop[0]['amc_code'];
+                    $my_data['product_code']=$product_code;
+                    $my_data['scheme_name']=$key_amc_wise_product_loop;
+                    $my_data['cat_name']=$value_amc_wise_product_loop[0]['cat_name'];
+                    $my_data['subcat_name']=$value_amc_wise_product_loop[0]['subcat_name'];
+                    $my_data['plan_name']=$value_amc_wise_product_loop[0]['plan_name'];
+                    $my_data['option_name']=$value_amc_wise_product_loop[0]['option_name'];
+                    
+                    $aum_calculation=AumHelper::calculate($value_amc_wise_product_loop,$my_data['curr_nav'],$my_data['nav_date']);
+                    // return $aum_calculation;
+                    $my_data['aum_calculation']=$aum_calculation;
+                    $my_data['tot_units']=isset($aum_calculation['tot_units'])?$aum_calculation['tot_units']:0;
+                    $my_data['inv_cost']=isset($aum_calculation['inv_cost'])?$aum_calculation['inv_cost']:0;
+                    $my_data['idcw_reinv']=isset($aum_calculation['idcw_reinv'])?$aum_calculation['idcw_reinv']:0;
+                    $my_data['idcw_paid']=isset($aum_calculation['idcw_paid'])?$aum_calculation['idcw_paid']:0;
+                    $my_data['idcwr']=number_format((float)($my_data['idcw_paid'] + $my_data['idcw_reinv']), 2, '.', '');
+                    $my_data['curr_aum']=number_format((float)($my_data['tot_units'] * $my_data['curr_nav']), 2, '.', '');
+                    $my_data['gain_loss']=number_format((float)(($my_data['curr_aum'] - $my_data['inv_cost']) + $my_data['idcwr']), 2, '.', '');
+                    $my_data['abs_rtn']= ($my_data['inv_cost']!=0)?number_format((float)(($my_data['gain_loss'] / $my_data['inv_cost']) * 100), 2, '.', ''):0;
+                    array_push($final_data,$my_data);
+                }
+            }
+            usort($final_data, function($a, $b) {
+                return $a['amc_name'] <=> $b['amc_name'];
+            });
+
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+        return Helper::SuccessResponse($final_data);
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    public function search____(Request $request)
     {
         try {
             // return $request;
@@ -231,35 +391,67 @@ class AUMController extends Controller
             // return $rawQuery;
             /******************************************************* */
             $all_data=DB::select("WITH 
-cte1 AS (
-    SELECT product_code, SUM(units * (in_out = 'out')) went_out,
-    SUM(amount * (in_out = 'out')) went_out_amount
-    FROM td_mutual_fund_trans_merge
-    GROUP BY product_code
-),
-cte2 AS (
-    SELECT *, SUM(units * (in_out = 'in')) OVER (PARTITION BY product_code ORDER BY trans_date) cal_units,
-    SUM(amount * (in_out = 'in')) OVER (PARTITION BY product_code ORDER BY trans_date) cal_amount
-    FROM td_mutual_fund_trans_merge
-)
-SELECT rnt_id,amc_code,folio_no,product_code,trans_date,pur_price,units,amount,stamp_duty,
-in_out, amc_name,scheme_name,cat_name,subcat_name,plan_name,option_name,
-CASE WHEN cal_amount - amount < in_out THEN cal_amount - in_out ELSE amount END result_amount,
-CASE WHEN cal_units - units < in_out THEN cal_units - in_out ELSE units END result
-FROM cte1
-JOIN cte2 USING (product_code)
-WHERE in_out = 'in'
-AND in_out < cal_units
-ORDER BY trans_date ASC");
+            cte1 AS (
+                SELECT product_code, SUM(units * (in_out = 'out')) went_out,
+                SUM(amount * (in_out = 'out')) went_out_amount
+                FROM td_mutual_fund_trans_merge_one
+                GROUP BY product_code
+            ),
+            cte2 AS (
+                SELECT *, SUM(units * (in_out = 'in')) OVER (PARTITION BY product_code ORDER BY trans_date) cal_units,
+                SUM(amount * (in_out = 'in')) OVER (PARTITION BY product_code ORDER BY trans_date) cal_amount
+                FROM td_mutual_fund_trans_merge_one
+            )
+            SELECT rnt_id,amc_code,folio_no,product_code,trans_date,pur_price,units,amount,stamp_duty,
+            in_out, amc_name,scheme_name,cat_name,subcat_name,plan_name,option_name,
+            CASE WHEN cal_amount - amount < in_out THEN cal_amount - in_out ELSE amount END result_amount,
+            CASE WHEN cal_units - units < in_out THEN cal_units - in_out ELSE units END result
+            FROM cte1
+            JOIN cte2 USING (product_code)
+            WHERE in_out = 'in'
+            AND in_out < cal_units
+            ORDER BY trans_date ASC");
+
+            // $all_data=DB::select("WITH 
+            // cte1 AS (
+            //     SELECT product_code, SUM(units * (in_out = 'out')) went_out,
+            //     SUM(amount * (in_out = 'out')) went_out_amount
+            //     FROM td_mutual_fund_trans_merge
+            //     GROUP BY product_code
+            // ),
+            // cte2 AS (
+            //     SELECT *, SUM(units * (in_out = 'in')) OVER (PARTITION BY product_code ORDER BY trans_date) cal_units,
+            //     SUM(amount * (in_out = 'in')) OVER (PARTITION BY product_code ORDER BY trans_date) cal_amount
+            //     FROM td_mutual_fund_trans_merge
+            // )
+            // SELECT rnt_id,amc_code,folio_no,product_code,trans_date,pur_price,units,amount,stamp_duty,
+            // in_out,
+            // (SELECT amc_short_name FROM md_amc WHERE amc_code=amc_code LIMIT 1)AS amc_name,
+            // (SELECT scheme_name FROM md_scheme WHERE id=(SELECT scheme_id FROM md_scheme_isin WHERE product_code=product_code LIMIT 1) LIMIT 1)AS scheme_name,
+            // (SELECT plan_name FROM md_plan WHERE id=(SELECT plan_id FROM md_scheme_isin WHERE product_code=product_code LIMIT 1) LIMIT 1)AS plan_name,
+            // (SELECT opt_name FROM md_option WHERE id=(SELECT option_id FROM md_scheme_isin WHERE product_code=product_code LIMIT 1) LIMIT 1)AS option_name,
+            // (SELECT cat_name FROM md_category WHERE id=(SELECT category_id FROM md_scheme WHERE id=(SELECT scheme_id FROM md_scheme_isin WHERE product_code=product_code LIMIT 1) LIMIT 1) LIMIT 1)AS cat_name,
+            // (SELECT subcategory_name FROM md_subcategory WHERE id=(SELECT subcategory_id FROM md_scheme WHERE id=(SELECT scheme_id FROM md_scheme_isin WHERE product_code=product_code LIMIT 1) LIMIT 1) LIMIT 1)AS subcat_name,
+            // CASE WHEN cal_amount - amount < in_out THEN cal_amount - in_out ELSE amount END result_amount,
+            // CASE WHEN cal_units - units < in_out THEN cal_units - in_out ELSE units END result
+            // FROM cte1
+            // JOIN cte2 USING (product_code)
+            // WHERE in_out = 'in'
+            // AND in_out < cal_units
+            // ORDER BY trans_date ASC");
+
+            
             // return $sp_data;
+            // $all_data = collect($all_data)->map(function($x){ return (array) $x; })->toArray(); 
             /******************************************************* */
             // return DB::select('SELECT count(*) FROM v_aum_report');
             // DB::enableQueryLog();
             // MFTransTypeSubType::get()->toArray();
             // dd(DB::getQueryLog());
             // IF amc code
+            // $all_data=DB::select('SELECT * FROM v_my_aum_report');
             // $all_data=DB::select('SELECT * FROM v_aum_report where amc_code IN ("IF","189") and '.$rawQuery.' order by trans_date asc');
-            $broker_data=DB::select('SELECT * FROM v_broker_change_report where amc_code IN ("IF","189") order by trans_date asc');
+            // $broker_data=DB::select('SELECT * FROM v_broker_change_report where amc_code IN ("IF","189") order by trans_date asc');
             // dd(DB::getQueryLog());
             // return $all_data[0];
             // return count($all_data);

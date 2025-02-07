@@ -391,3 +391,658 @@ FROM
         //     }
         //   ]
         //   .
+
+
+//         INSERT INTO td_mutual_fund_trans_merge_one
+// SELECT 
+// (@cnt := @cnt + 1) AS id,
+// td_mutual_fund_trans.mailback_process_id,
+// td_mutual_fund_trans.rnt_id,
+// td_mutual_fund_trans.arn_no,
+// td_mutual_fund_trans.sub_brk_cd,
+// td_mutual_fund_trans.euin_no,
+// td_mutual_fund_trans.old_euin_no,
+// td_mutual_fund_trans.first_client_name,
+// td_mutual_fund_trans.first_client_pan,
+// td_mutual_fund_trans.amc_code,
+// td_mutual_fund_trans.folio_no,
+// td_mutual_fund_trans.product_code,
+// td_mutual_fund_trans.trans_no,
+// td_mutual_fund_trans.trans_mode,
+// td_mutual_fund_trans.trans_status,
+// td_mutual_fund_trans.user_trans_no,
+// td_mutual_fund_trans.trans_date,
+// td_mutual_fund_trans.post_date,
+// td_mutual_fund_trans.pur_price,
+// td_mutual_fund_trans.units,
+// td_mutual_fund_trans.amount,
+// td_mutual_fund_trans.rec_date,
+// td_mutual_fund_trans.trxn_type,
+// td_mutual_fund_trans.trxn_type_flag,
+// td_mutual_fund_trans.trxn_nature,
+// td_mutual_fund_trans.trxn_type_code,
+// td_mutual_fund_trans.trxn_nature_code,
+// td_mutual_fund_trans.trans_desc,
+// td_mutual_fund_trans.kf_trans_type,
+// td_mutual_fund_trans.trans_flag,
+// td_mutual_fund_trans.te_15h,
+// td_mutual_fund_trans.micr_code,
+// td_mutual_fund_trans.sw_flag,
+// td_mutual_fund_trans.old_folio,
+// td_mutual_fund_trans.seq_no,
+// td_mutual_fund_trans.stt,
+// td_mutual_fund_trans.stamp_duty,
+// td_mutual_fund_trans.tds,
+// td_mutual_fund_trans.acc_no,
+// td_mutual_fund_trans.bank_name,
+// td_mutual_fund_trans.remarks,
+// td_mutual_fund_trans.reinvest_flag,
+// td_mutual_fund_trans.dividend_option,
+// td_mutual_fund_trans.isin_no,
+// td_mutual_fund_trans.bu_type_flag,
+// td_mutual_fund_trans.bu_type_lock_flag,
+// td_mutual_fund_trans.amc_flag,
+// td_mutual_fund_trans.scheme_flag,
+// td_mutual_fund_trans.plan_option_flag,
+// td_mutual_fund_trans.divi_mismatch_flag,
+// td_mutual_fund_trans.divi_lock_flag,
+// td_mutual_fund_trans.delete_flag,
+// td_mutual_fund_trans.deleted_at,
+// td_mutual_fund_trans.deleted_date,
+// td_mutual_fund_trans.portfolio_show_flag,
+// td_mutual_fund_trans.created_at,
+// td_mutual_fund_trans.updated_at,
+// TRANS_TYPE_SUBTYPE(IF(td_mutual_fund_trans.rnt_id=1,(SELECT trans_type FROM md_mf_trans_type_subtype WHERE
+// c_trans_type_code=td_mutual_fund_trans.trxn_type_code AND c_k_trans_type=td_mutual_fund_trans.trxn_type_flag AND
+// c_k_trans_sub_type=td_mutual_fund_trans.trxn_nature_code LIMIT 1),
+// (CASE
+// WHEN td_mutual_fund_trans.trans_flag="DP" || td_mutual_fund_trans.trans_flag="DR" THEN (SELECT trans_type FROM
+// md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type AND k_divident_flag=td_mutual_fund_trans.trans_flag
+// LIMIT 1)
+// WHEN td_mutual_fund_trans.trans_flag="TO" THEN "Transfer Out"
+// ELSE (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type LIMIT 1)
+// END)
+// ),td_mutual_fund_trans.rnt_id,td_mutual_fund_trans.amount) AS transaction_type,
+// TRANS_TYPE_SUBTYPE(IF(td_mutual_fund_trans.rnt_id=1,
+// (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=td_mutual_fund_trans.trxn_type_code AND
+// c_k_trans_type=td_mutual_fund_trans.trxn_type_flag AND c_k_trans_sub_type=td_mutual_fund_trans.trxn_nature_code LIMIT
+// 1),
+// (CASE
+// WHEN td_mutual_fund_trans.trans_flag="DP" || td_mutual_fund_trans.trans_flag="DR" THEN (SELECT trans_sub_type FROM
+// md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type AND k_divident_flag=td_mutual_fund_trans.trans_flag
+// LIMIT 1)
+// WHEN td_mutual_fund_trans.trans_flag="TO" THEN "Transfer Out"
+// ELSE (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type LIMIT 1)
+// END)
+// ),td_mutual_fund_trans.rnt_id,td_mutual_fund_trans.amount) AS transaction_subtype,
+// CALCULATION_IN_OUT(TRANS_TYPE_SUBTYPE(IF(td_mutual_fund_trans.rnt_id=1,
+// (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=td_mutual_fund_trans.trxn_type_code AND
+// c_k_trans_type=td_mutual_fund_trans.trxn_type_flag AND c_k_trans_sub_type=td_mutual_fund_trans.trxn_nature_code LIMIT
+// 1),
+// (CASE
+// WHEN td_mutual_fund_trans.trans_flag="DP" || td_mutual_fund_trans.trans_flag="DR" THEN (SELECT trans_sub_type FROM
+// md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type AND k_divident_flag=td_mutual_fund_trans.trans_flag
+// LIMIT 1)
+// WHEN td_mutual_fund_trans.trans_flag="TO" THEN "Transfer Out"
+// ELSE (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type LIMIT 1)
+// END)
+// ),td_mutual_fund_trans.rnt_id,td_mutual_fund_trans.amount)) AS in_out,
+// md_amc.amc_short_name AS amc_name,
+// md_scheme.scheme_name AS scheme_name,
+// md_category.cat_name AS cat_name,
+// md_subcategory.subcategory_name AS subcat_name,
+// md_plan.plan_name AS plan_name,
+// md_option.opt_name AS option_name
+// FROM td_mutual_fund_trans
+// LEFT JOIN md_amc ON md_amc.amc_code = td_mutual_fund_trans.amc_code
+// LEFT JOIN md_scheme_isin ON md_scheme_isin.product_code = td_mutual_fund_trans.product_code
+// LEFT JOIN md_plan ON md_plan.id = md_scheme_isin.plan_id
+// LEFT JOIN md_scheme ON md_scheme.id = md_scheme_isin.scheme_id
+// LEFT JOIN md_option ON md_option.id = md_scheme_isin.option_id
+// LEFT JOIN md_category ON md_category.id = md_scheme.category_id
+// LEFT JOIN md_subcategory ON md_subcategory.id = md_scheme.subcategory_id
+
+// ===========================================
+
+
+// CREATE OR REPLACE VIEW v_my_aum_report AS
+// WITH
+// cte1 AS (
+//                 SELECT product_code,
+//                 SUM(units * (in_out = 'out')) went_out,
+//                 SUM(amount * (in_out = 'out')) went_out_amount
+//                 FROM td_mutual_fund_trans_merge
+//                 GROUP BY product_code ORDER BY trans_date ASC
+//             ),
+//             cte2 AS (
+//                 SELECT *, SUM(units * (in_out = 'in')) OVER (PARTITION BY product_code ORDER BY trans_date) cal_units,
+//                 SUM(amount * (in_out = 'in')) OVER (PARTITION BY product_code ORDER BY trans_date) cal_amount
+//                 FROM td_mutual_fund_trans_merge ORDER BY trans_date ASC
+//             )
+//             SELECT rnt_id,amc_code,folio_no,product_code,trans_date,pur_price,units,amount,stamp_duty,
+//             in_out,amc_name,
+//             /*(select amc_short_name from md_amc where amc_code=amc_code limit 1)as amc_name,*/
+//             (SELECT scheme_name FROM md_scheme WHERE id=(SELECT scheme_id FROM md_scheme_isin WHERE product_code=product_code LIMIT 1) LIMIT 1)AS scheme_name,
+//             (SELECT plan_name FROM md_plan WHERE id=(SELECT plan_id FROM md_scheme_isin WHERE product_code=product_code LIMIT 1) LIMIT 1)AS plan_name,
+//             (SELECT opt_name FROM md_option WHERE id=(SELECT option_id FROM md_scheme_isin WHERE product_code=product_code LIMIT 1) LIMIT 1)AS option_name,
+//             (SELECT cat_name FROM md_category WHERE id=(SELECT category_id FROM md_scheme WHERE id=(SELECT scheme_id FROM md_scheme_isin WHERE product_code=product_code LIMIT 1) LIMIT 1) LIMIT 1)AS cat_name,
+//             (SELECT subcategory_name FROM md_subcategory WHERE id=(SELECT subcategory_id FROM md_scheme WHERE id=(SELECT scheme_id FROM md_scheme_isin WHERE product_code=product_code LIMIT 1) LIMIT 1) LIMIT 1)AS subcat_name,
+//             CASE WHEN cal_amount - amount < in_out THEN cal_amount - in_out ELSE amount END result_amount,
+//             CASE WHEN cal_units - units < in_out THEN cal_units - in_out ELSE units END result
+//             FROM cte1
+//             JOIN cte2 USING (product_code)
+//             WHERE in_out = 'in'
+//             AND in_out < cal_units
+//             ORDER BY trans_date ASC
+
+/**************************************************************** */
+// INSERT INTO td_mutual_fund_trans_merge_one
+// (
+// mailback_process_id,
+// rnt_id,
+// arn_no,
+// sub_brk_cd,
+// euin_no,
+// old_euin_no,
+// first_client_name,
+// first_client_pan,
+// amc_code,
+// folio_no,
+// product_code,
+// trans_no,
+// trans_mode,
+// trans_status,
+// user_trans_no,
+// trans_date,
+// post_date,
+// pur_price,
+// units,
+// amount,
+// rec_date,
+// trxn_type,
+// trxn_type_flag,
+// trxn_nature,
+// trxn_type_code,
+// trxn_nature_code,
+// trans_desc,
+// kf_trans_type,
+// trans_flag,
+// te_15h,
+// micr_code,
+// sw_flag,
+// old_folio,
+// seq_no,
+// stt,
+// stamp_duty,
+// tds,
+// acc_no,
+// bank_name,
+// remarks,
+// reinvest_flag,
+// dividend_option,
+// isin_no,
+// bu_type_flag,
+// bu_type_lock_flag,
+// amc_flag,
+// scheme_flag,
+// plan_option_flag,
+// divi_mismatch_flag,
+// divi_lock_flag,
+// delete_flag,
+// deleted_at,
+// deleted_date,
+// portfolio_show_flag,
+// created_at,
+// updated_at,
+// transaction_type,
+// transaction_subtype,
+// in_out,
+// amc_name,
+// scheme_id,
+// plan_id,
+// option_id,
+// scheme_name,
+// plan_name,
+// option_name,
+// category_id,
+// subcategory_id,
+// cat_name,
+// subcat_name,
+// )
+// SELECT 
+// td_mutual_fund_trans.mailback_process_id,
+// td_mutual_fund_trans.rnt_id,
+// td_mutual_fund_trans.arn_no,
+// td_mutual_fund_trans.sub_brk_cd,
+// td_mutual_fund_trans.euin_no,
+// td_mutual_fund_trans.old_euin_no,
+// td_mutual_fund_trans.first_client_name,
+// td_mutual_fund_trans.first_client_pan,
+// td_mutual_fund_trans.amc_code,
+// td_mutual_fund_trans.folio_no,
+// td_mutual_fund_trans.product_code,
+// td_mutual_fund_trans.trans_no,
+// td_mutual_fund_trans.trans_mode,
+// td_mutual_fund_trans.trans_status,
+// td_mutual_fund_trans.user_trans_no,
+// td_mutual_fund_trans.trans_date,
+// td_mutual_fund_trans.post_date,
+// td_mutual_fund_trans.pur_price,
+// td_mutual_fund_trans.units,
+// td_mutual_fund_trans.amount,
+// td_mutual_fund_trans.rec_date,
+// td_mutual_fund_trans.trxn_type,
+// td_mutual_fund_trans.trxn_type_flag,
+// td_mutual_fund_trans.trxn_nature,
+// td_mutual_fund_trans.trxn_type_code,
+// td_mutual_fund_trans.trxn_nature_code,
+// td_mutual_fund_trans.trans_desc,
+// td_mutual_fund_trans.kf_trans_type,
+// td_mutual_fund_trans.trans_flag,
+// td_mutual_fund_trans.te_15h,
+// td_mutual_fund_trans.micr_code,
+// td_mutual_fund_trans.sw_flag,
+// td_mutual_fund_trans.old_folio,
+// td_mutual_fund_trans.seq_no,
+// td_mutual_fund_trans.stt,
+// td_mutual_fund_trans.stamp_duty,
+// td_mutual_fund_trans.tds,
+// td_mutual_fund_trans.acc_no,
+// td_mutual_fund_trans.bank_name,
+// td_mutual_fund_trans.remarks,
+// td_mutual_fund_trans.reinvest_flag,
+// td_mutual_fund_trans.dividend_option,
+// td_mutual_fund_trans.isin_no,
+// td_mutual_fund_trans.bu_type_flag,
+// td_mutual_fund_trans.bu_type_lock_flag,
+// td_mutual_fund_trans.amc_flag,
+// td_mutual_fund_trans.scheme_flag,
+// td_mutual_fund_trans.plan_option_flag,
+// td_mutual_fund_trans.divi_mismatch_flag,
+// td_mutual_fund_trans.divi_lock_flag,
+// td_mutual_fund_trans.delete_flag,
+// td_mutual_fund_trans.deleted_at,
+// td_mutual_fund_trans.deleted_date,
+// td_mutual_fund_trans.portfolio_show_flag,
+// td_mutual_fund_trans.created_at,
+// td_mutual_fund_trans.updated_at,
+// TRANS_TYPE_SUBTYPE(IF(td_mutual_fund_trans.rnt_id=1,(SELECT trans_type FROM md_mf_trans_type_subtype WHERE
+// c_trans_type_code=td_mutual_fund_trans.trxn_type_code AND c_k_trans_type=td_mutual_fund_trans.trxn_type_flag AND
+// c_k_trans_sub_type=td_mutual_fund_trans.trxn_nature_code LIMIT 1),
+// (CASE
+// WHEN td_mutual_fund_trans.trans_flag="DP" || td_mutual_fund_trans.trans_flag="DR" THEN (SELECT trans_type FROM
+// md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type AND k_divident_flag=td_mutual_fund_trans.trans_flag
+// LIMIT 1)
+// WHEN td_mutual_fund_trans.trans_flag="TO" THEN "Transfer Out"
+// ELSE (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type LIMIT 1)
+// END)
+// ),td_mutual_fund_trans.rnt_id,td_mutual_fund_trans.amount) AS transaction_type,
+// TRANS_TYPE_SUBTYPE(IF(td_mutual_fund_trans.rnt_id=1,
+// (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=td_mutual_fund_trans.trxn_type_code AND
+// c_k_trans_type=td_mutual_fund_trans.trxn_type_flag AND c_k_trans_sub_type=td_mutual_fund_trans.trxn_nature_code LIMIT
+// 1),
+// (CASE
+// WHEN td_mutual_fund_trans.trans_flag="DP" || td_mutual_fund_trans.trans_flag="DR" THEN (SELECT trans_sub_type FROM
+// md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type AND k_divident_flag=td_mutual_fund_trans.trans_flag
+// LIMIT 1)
+// WHEN td_mutual_fund_trans.trans_flag="TO" THEN "Transfer Out"
+// ELSE (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type LIMIT 1)
+// END)
+// ),td_mutual_fund_trans.rnt_id,td_mutual_fund_trans.amount) AS transaction_subtype,
+// CALCULATION_IN_OUT(TRANS_TYPE_SUBTYPE(IF(td_mutual_fund_trans.rnt_id=1,
+// (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=td_mutual_fund_trans.trxn_type_code AND
+// c_k_trans_type=td_mutual_fund_trans.trxn_type_flag AND c_k_trans_sub_type=td_mutual_fund_trans.trxn_nature_code LIMIT
+// 1),
+// (CASE
+// WHEN td_mutual_fund_trans.trans_flag="DP" || td_mutual_fund_trans.trans_flag="DR" THEN (SELECT trans_sub_type FROM
+// md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type AND k_divident_flag=td_mutual_fund_trans.trans_flag
+// LIMIT 1)
+// WHEN td_mutual_fund_trans.trans_flag="TO" THEN "Transfer Out"
+// ELSE (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type LIMIT 1)
+// END)
+// ),td_mutual_fund_trans.rnt_id,td_mutual_fund_trans.amount)) AS in_out,
+// md_amc.amc_short_name AS amc_name,
+// (SELECT scheme_id FROM md_scheme_isin WHERE product_code=td_mutual_fund_trans.product_code LIMIT 1)AS scheme_id,
+// (SELECT plan_id FROM md_scheme_isin WHERE product_code=td_mutual_fund_trans.product_code LIMIT 1)AS plan_id,
+// (SELECT option_id FROM md_scheme_isin WHERE product_code=td_mutual_fund_trans.product_code LIMIT 1)AS option_id,
+// (SELECT scheme_name FROM md_scheme WHERE id=scheme_id LIMIT 1)AS scheme_name,
+// (SELECT plan_name FROM md_plan WHERE id=plan_id LIMIT 1) AS plan_name,
+// (SELECT opt_name FROM md_option WHERE id=option_id LIMIT 1) AS option_name,
+// (SELECT category_id FROM md_scheme WHERE id=scheme_id LIMIT 1)AS category_id,
+// (SELECT subcategory_id FROM md_scheme WHERE id=scheme_id LIMIT 1)AS subcategory_id,
+// (SELECT cat_name FROM md_category WHERE id=category_id LIMIT 1)AS cat_name,
+// (SELECT subcategory_name FROM md_subcategory WHERE id=subcategory_id LIMIT 1)AS subcat_name
+// FROM td_mutual_fund_trans
+// LEFT JOIN md_amc ON md_amc.amc_code = td_mutual_fund_trans.amc_code
+
+/******************************************************* */
+
+// INSERT INTO td_mutual_fund_trans_merge_one
+// (
+//     mailback_process_id,
+// rnt_id,
+// arn_no,
+// sub_brk_cd,
+// euin_no,
+// old_euin_no,
+// first_client_name,
+// first_client_pan,
+// amc_code,
+// folio_no,
+// product_code,
+// trans_no,
+// trans_mode,
+// trans_status,
+// user_trans_no,
+// trans_date,
+// post_date,
+// pur_price,
+// units,
+// amount,
+// rec_date,
+// trxn_type,
+// trxn_type_flag,
+// trxn_nature,
+// trxn_type_code,
+// trxn_nature_code,
+// trans_desc,
+// kf_trans_type,
+// trans_flag,
+// te_15h,
+// micr_code,
+// sw_flag,
+// old_folio,
+// seq_no,
+// stt,
+// stamp_duty,
+// tds,
+// acc_no,
+// bank_name,
+// remarks,
+// reinvest_flag,
+// dividend_option,
+// isin_no,
+// bu_type_flag,
+// bu_type_lock_flag,
+// amc_flag,
+// scheme_flag,
+// plan_option_flag,
+// divi_mismatch_flag,
+// divi_lock_flag,
+// delete_flag,
+// deleted_at,
+// deleted_date,
+// portfolio_show_flag,
+// created_at,
+// updated_at,
+// transaction_type,
+// transaction_subtype,
+// in_out,
+// amc_name
+// )
+// SELECT 
+// td_mutual_fund_trans.mailback_process_id,
+// td_mutual_fund_trans.rnt_id,
+// td_mutual_fund_trans.arn_no,
+// td_mutual_fund_trans.sub_brk_cd,
+// td_mutual_fund_trans.euin_no,
+// td_mutual_fund_trans.old_euin_no,
+// td_mutual_fund_trans.first_client_name,
+// td_mutual_fund_trans.first_client_pan,
+// td_mutual_fund_trans.amc_code,
+// td_mutual_fund_trans.folio_no,
+// td_mutual_fund_trans.product_code,
+// td_mutual_fund_trans.trans_no,
+// td_mutual_fund_trans.trans_mode,
+// td_mutual_fund_trans.trans_status,
+// td_mutual_fund_trans.user_trans_no,
+// td_mutual_fund_trans.trans_date,
+// td_mutual_fund_trans.post_date,
+// td_mutual_fund_trans.pur_price,
+// td_mutual_fund_trans.units,
+// td_mutual_fund_trans.amount,
+// td_mutual_fund_trans.rec_date,
+// td_mutual_fund_trans.trxn_type,
+// td_mutual_fund_trans.trxn_type_flag,
+// td_mutual_fund_trans.trxn_nature,
+// td_mutual_fund_trans.trxn_type_code,
+// td_mutual_fund_trans.trxn_nature_code,
+// td_mutual_fund_trans.trans_desc,
+// td_mutual_fund_trans.kf_trans_type,
+// td_mutual_fund_trans.trans_flag,
+// td_mutual_fund_trans.te_15h,
+// td_mutual_fund_trans.micr_code,
+// td_mutual_fund_trans.sw_flag,
+// td_mutual_fund_trans.old_folio,
+// td_mutual_fund_trans.seq_no,
+// td_mutual_fund_trans.stt,
+// td_mutual_fund_trans.stamp_duty,
+// td_mutual_fund_trans.tds,
+// td_mutual_fund_trans.acc_no,
+// td_mutual_fund_trans.bank_name,
+// td_mutual_fund_trans.remarks,
+// td_mutual_fund_trans.reinvest_flag,
+// td_mutual_fund_trans.dividend_option,
+// td_mutual_fund_trans.isin_no,
+// td_mutual_fund_trans.bu_type_flag,
+// td_mutual_fund_trans.bu_type_lock_flag,
+// td_mutual_fund_trans.amc_flag,
+// td_mutual_fund_trans.scheme_flag,
+// td_mutual_fund_trans.plan_option_flag,
+// td_mutual_fund_trans.divi_mismatch_flag,
+// td_mutual_fund_trans.divi_lock_flag,
+// td_mutual_fund_trans.delete_flag,
+// td_mutual_fund_trans.deleted_at,
+// td_mutual_fund_trans.deleted_date,
+// td_mutual_fund_trans.portfolio_show_flag,
+// td_mutual_fund_trans.created_at,
+// td_mutual_fund_trans.updated_at,
+// TRANS_TYPE_SUBTYPE(IF(td_mutual_fund_trans.rnt_id=1,(SELECT trans_type FROM md_mf_trans_type_subtype WHERE
+// c_trans_type_code=td_mutual_fund_trans.trxn_type_code AND c_k_trans_type=td_mutual_fund_trans.trxn_type_flag AND
+// c_k_trans_sub_type=td_mutual_fund_trans.trxn_nature_code LIMIT 1),
+// (CASE
+// WHEN td_mutual_fund_trans.trans_flag="DP" || td_mutual_fund_trans.trans_flag="DR" THEN (SELECT trans_type FROM
+// md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type AND k_divident_flag=td_mutual_fund_trans.trans_flag
+// LIMIT 1)
+// WHEN td_mutual_fund_trans.trans_flag="TO" THEN "Transfer Out"
+// ELSE (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type LIMIT 1)
+// END)
+// ),td_mutual_fund_trans.rnt_id,td_mutual_fund_trans.amount) AS transaction_type,
+// TRANS_TYPE_SUBTYPE(IF(td_mutual_fund_trans.rnt_id=1,
+// (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=td_mutual_fund_trans.trxn_type_code AND
+// c_k_trans_type=td_mutual_fund_trans.trxn_type_flag AND c_k_trans_sub_type=td_mutual_fund_trans.trxn_nature_code LIMIT
+// 1),
+// (CASE
+// WHEN td_mutual_fund_trans.trans_flag="DP" || td_mutual_fund_trans.trans_flag="DR" THEN (SELECT trans_sub_type FROM
+// md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type AND k_divident_flag=td_mutual_fund_trans.trans_flag
+// LIMIT 1)
+// WHEN td_mutual_fund_trans.trans_flag="TO" THEN "Transfer Out"
+// ELSE (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type LIMIT 1)
+// END)
+// ),td_mutual_fund_trans.rnt_id,td_mutual_fund_trans.amount) AS transaction_subtype,
+// CALCULATION_IN_OUT(TRANS_TYPE_SUBTYPE(IF(td_mutual_fund_trans.rnt_id=1,
+// (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=td_mutual_fund_trans.trxn_type_code AND
+// c_k_trans_type=td_mutual_fund_trans.trxn_type_flag AND c_k_trans_sub_type=td_mutual_fund_trans.trxn_nature_code LIMIT
+// 1),
+// (CASE
+// WHEN td_mutual_fund_trans.trans_flag="DP" || td_mutual_fund_trans.trans_flag="DR" THEN (SELECT trans_sub_type FROM
+// md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type AND k_divident_flag=td_mutual_fund_trans.trans_flag
+// LIMIT 1)
+// WHEN td_mutual_fund_trans.trans_flag="TO" THEN "Transfer Out"
+// ELSE (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type LIMIT 1)
+// END)
+// ),td_mutual_fund_trans.rnt_id,td_mutual_fund_trans.amount)) AS in_out,
+// md_amc.amc_short_name AS amc_name,
+// (SELECT scheme_id FROM md_scheme_isin WHERE product_code=td_mutual_fund_trans.product_code LIMIT 1)AS scheme_id,
+// (SELECT plan_id FROM md_scheme_isin WHERE product_code=td_mutual_fund_trans.product_code LIMIT 1)AS plan_id,
+// (SELECT option_id FROM md_scheme_isin WHERE product_code=td_mutual_fund_trans.product_code LIMIT 1)AS option_id,
+// (SELECT scheme_name FROM md_scheme WHERE id=scheme_id LIMIT 1)AS scheme_name,
+// (SELECT plan_name FROM md_plan WHERE id=plan_id LIMIT 1) AS plan_name,
+// (SELECT opt_name FROM md_option WHERE id=option_id LIMIT 1) AS option_name,
+// (SELECT category_id FROM md_scheme WHERE id=scheme_id LIMIT 1)AS category_id,
+// (SELECT subcategory_id FROM md_scheme WHERE id=scheme_id LIMIT 1)AS subcategory_id,
+// (SELECT cat_name FROM md_category WHERE id=category_id LIMIT 1)AS cat_name,
+// (SELECT subcategory_name FROM md_subcategory WHERE id=subcategory_id LIMIT 1)AS subcat_name
+// FROM td_mutual_fund_trans
+// LEFT JOIN md_amc ON md_amc.amc_code = td_mutual_fund_trans.amc_code
+
+
+/******************************************************** */
+// INSERT INTO td_mutual_fund_trans_merge_one
+// (mailback_process_id,
+// rnt_id,
+// arn_no,
+// sub_brk_cd,
+// euin_no,
+// old_euin_no,
+// first_client_name,
+// first_client_pan,
+// amc_code,
+// folio_no,
+// product_code,
+// trans_no,
+// trans_mode,
+// trans_status,
+// user_trans_no,
+// trans_date,
+// post_date,
+// pur_price,
+// units,
+// amount,
+// rec_date,
+// trxn_type,
+// trxn_type_flag,
+// trxn_nature,
+// trxn_type_code,
+// trxn_nature_code,
+// trans_desc,
+// kf_trans_type,
+// trans_flag,
+// te_15h,
+// micr_code,
+// sw_flag,
+// old_folio,
+// seq_no,
+// stt,
+// stamp_duty,
+// tds,
+// acc_no,
+// bank_name,
+// remarks,
+// reinvest_flag,
+// dividend_option,
+// isin_no,
+// bu_type_flag,
+// bu_type_lock_flag,
+// amc_flag,
+// scheme_flag,
+// plan_option_flag,
+// divi_mismatch_flag,
+// divi_lock_flag,
+// delete_flag,
+// deleted_at,
+// deleted_date,
+// portfolio_show_flag,
+// created_at,
+// updated_at,
+// transaction_type,
+// transaction_subtype,
+// in_out,
+// amc_name)
+// SELECT 
+// td_mutual_fund_trans.mailback_process_id,
+// td_mutual_fund_trans.rnt_id,
+// td_mutual_fund_trans.arn_no,
+// td_mutual_fund_trans.sub_brk_cd,
+// td_mutual_fund_trans.euin_no,
+// td_mutual_fund_trans.old_euin_no,
+// td_mutual_fund_trans.first_client_name,
+// td_mutual_fund_trans.first_client_pan,
+// td_mutual_fund_trans.amc_code,
+// td_mutual_fund_trans.folio_no,
+// td_mutual_fund_trans.product_code,
+// td_mutual_fund_trans.trans_no,
+// td_mutual_fund_trans.trans_mode,
+// td_mutual_fund_trans.trans_status,
+// td_mutual_fund_trans.user_trans_no,
+// td_mutual_fund_trans.trans_date,
+// td_mutual_fund_trans.post_date,
+// td_mutual_fund_trans.pur_price,
+// td_mutual_fund_trans.units,
+// td_mutual_fund_trans.amount,
+// td_mutual_fund_trans.rec_date,
+// td_mutual_fund_trans.trxn_type,
+// td_mutual_fund_trans.trxn_type_flag,
+// td_mutual_fund_trans.trxn_nature,
+// td_mutual_fund_trans.trxn_type_code,
+// td_mutual_fund_trans.trxn_nature_code,
+// td_mutual_fund_trans.trans_desc,
+// td_mutual_fund_trans.kf_trans_type,
+// td_mutual_fund_trans.trans_flag,
+// td_mutual_fund_trans.te_15h,
+// td_mutual_fund_trans.micr_code,
+// td_mutual_fund_trans.sw_flag,
+// td_mutual_fund_trans.old_folio,
+// td_mutual_fund_trans.seq_no,
+// td_mutual_fund_trans.stt,
+// td_mutual_fund_trans.stamp_duty,
+// td_mutual_fund_trans.tds,
+// td_mutual_fund_trans.acc_no,
+// td_mutual_fund_trans.bank_name,
+// td_mutual_fund_trans.remarks,
+// td_mutual_fund_trans.reinvest_flag,
+// td_mutual_fund_trans.dividend_option,
+// td_mutual_fund_trans.isin_no,
+// td_mutual_fund_trans.bu_type_flag,
+// td_mutual_fund_trans.bu_type_lock_flag,
+// td_mutual_fund_trans.amc_flag,
+// td_mutual_fund_trans.scheme_flag,
+// td_mutual_fund_trans.plan_option_flag,
+// td_mutual_fund_trans.divi_mismatch_flag,
+// td_mutual_fund_trans.divi_lock_flag,
+// td_mutual_fund_trans.delete_flag,
+// td_mutual_fund_trans.deleted_at,
+// td_mutual_fund_trans.deleted_date,
+// td_mutual_fund_trans.portfolio_show_flag,
+// td_mutual_fund_trans.created_at,
+// td_mutual_fund_trans.updated_at,
+// TRANS_TYPE_SUBTYPE(IF(td_mutual_fund_trans.rnt_id=1,(SELECT trans_type FROM md_mf_trans_type_subtype WHERE
+// c_trans_type_code=td_mutual_fund_trans.trxn_type_code AND c_k_trans_type=td_mutual_fund_trans.trxn_type_flag AND
+// c_k_trans_sub_type=td_mutual_fund_trans.trxn_nature_code LIMIT 1),
+// (CASE
+// WHEN td_mutual_fund_trans.trans_flag="DP" || td_mutual_fund_trans.trans_flag="DR" THEN (SELECT trans_type FROM
+// md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type AND k_divident_flag=td_mutual_fund_trans.trans_flag
+// LIMIT 1)
+// WHEN td_mutual_fund_trans.trans_flag="TO" THEN "Transfer Out"
+// ELSE (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type LIMIT 1)
+// END)
+// ),td_mutual_fund_trans.rnt_id,td_mutual_fund_trans.amount) AS transaction_type,
+// TRANS_TYPE_SUBTYPE(IF(td_mutual_fund_trans.rnt_id=1,
+// (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=td_mutual_fund_trans.trxn_type_code AND
+// c_k_trans_type=td_mutual_fund_trans.trxn_type_flag AND c_k_trans_sub_type=td_mutual_fund_trans.trxn_nature_code LIMIT
+// 1),
+// (CASE
+// WHEN td_mutual_fund_trans.trans_flag="DP" || td_mutual_fund_trans.trans_flag="DR" THEN (SELECT trans_sub_type FROM
+// md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type AND k_divident_flag=td_mutual_fund_trans.trans_flag
+// LIMIT 1)
+// WHEN td_mutual_fund_trans.trans_flag="TO" THEN "Transfer Out"
+// ELSE (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type LIMIT 1)
+// END)
+// ),td_mutual_fund_trans.rnt_id,td_mutual_fund_trans.amount) AS transaction_subtype,
+// CALCULATION_IN_OUT(TRANS_TYPE_SUBTYPE(IF(td_mutual_fund_trans.rnt_id=1,
+// (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=td_mutual_fund_trans.trxn_type_code AND
+// c_k_trans_type=td_mutual_fund_trans.trxn_type_flag AND c_k_trans_sub_type=td_mutual_fund_trans.trxn_nature_code LIMIT
+// 1),
+// (CASE
+// WHEN td_mutual_fund_trans.trans_flag="DP" || td_mutual_fund_trans.trans_flag="DR" THEN (SELECT trans_sub_type FROM
+// md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type AND k_divident_flag=td_mutual_fund_trans.trans_flag
+// LIMIT 1)
+// WHEN td_mutual_fund_trans.trans_flag="TO" THEN "Transfer Out"
+// ELSE (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type LIMIT 1)
+// END)
+// ),td_mutual_fund_trans.rnt_id,td_mutual_fund_trans.amount)) AS in_out,
+// md_amc.amc_short_name AS amc_name
+// FROM td_mutual_fund_trans
+// LEFT JOIN md_amc ON md_amc.amc_code = td_mutual_fund_trans.amc_code
+
+/************************************* */
