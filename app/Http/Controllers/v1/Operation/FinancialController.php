@@ -1392,7 +1392,7 @@ class FinancialController extends Controller
                         'option_id_to'=>isset($request->option_to)?$request->option_to:NULL,
                         'plan_id_to'=>isset($request->plan_to)?$request->plan_to:NULL,
                         'folio_no'=>isset($request->folio_no)?$request->folio_no:NULL,
-                        'amount'=>(($request->amount)?$request->amount:(($request->redemp_amount)?$request->redemp_amount:(($request->swp_stp_amount)?$request->swp_stp_amount:0))),
+                        'amount'=>(($request->amount)?$request->amount:(($request->redemp_amount)?$request->redemp_amount:(($request->swp_stp_amt)?$request->swp_stp_amt:0))),
                         'unit'=>(($request->unit)?$request->unit:(($request->redemp_unit)?$request->redemp_unit:'')),
                         'switch_by'=>isset($request->switch_by)?$request->switch_by:NULL,
                         'trans_id'=>$request->trans_id,
@@ -1405,6 +1405,7 @@ class FinancialController extends Controller
 
                         'sip_swp_stp_inst_date'=>(($request->sip_date)?$request->sip_date:(($request->installment_dt)?$request->installment_dt:NULL)),
 
+                        
                         // 'sip_swp_stp_start_date'=>isset($request->sip_start_date)?date('Y-m-d',strtotime($request->sip_start_date)):isset($request->swp_stp_start_date)?date('Y-m-d',strtotime($request->swp_stp_start_date)):NULL,
                         'sip_swp_stp_start_date'=>(($request->sip_start_date) ? date('Y-m-d',strtotime($request->sip_start_date)):(($request->swp_stp_start_date)? date('Y-m-d',strtotime($request->swp_stp_start_date)):NULL)),
                         'sip_swp_stp_end_date'=>(($request->sip_end_date)?date('Y-m-d',strtotime($request->sip_end_date)):(($request->swp_stp_end_date)?date('Y-m-d',strtotime($request->swp_stp_end_date)):NULL)),
