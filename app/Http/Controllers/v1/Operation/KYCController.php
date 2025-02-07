@@ -221,9 +221,10 @@ class KYCController extends Controller
                         ->leftJoin('md_amc','md_amc.id','=','td_kyc.kyc_login_at')
                         ->leftJoin('md_branch','md_branch.id','=','td_kyc.branch_code')
                         ->leftJoin('md_employee','md_employee.euin_no','=','td_kyc.euin_no')
+                        ->leftJoin('md_employee as md_employee_2','md_employee_2.euin_no','=','td_kyc.euin_no')
                         ->select('td_kyc.*','md_client.client_code as client_code','md_client.client_name as client_name','md_client.client_type as client_type','md_client.pan as pan',
                         'md_rnt.rnt_name as rnt_name','md_amc.amc_name as amc_name','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','md_branch.brn_name as branch_name'
-                        ,'md_employee.emp_name as emp_name')
+                        ,'md_employee.emp_name as emp_name','md_employee_2.emp_name as rm_name')
                         ->whereDate('td_kyc.entry_dt',date('Y-m-d'))
                         ->where('td_kyc.deleted_flag','N')
                         ->orderBy('td_kyc.entry_dt','DESC')
