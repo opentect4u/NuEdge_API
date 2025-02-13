@@ -108,5 +108,11 @@ class MutualFund extends Model
         'deleted_by',
         'created_by',
         'updated_by',
+        'ack_final_submit',
+        'pause_freq',
+        'pause_duration',
+        'pause_start_date',
+        'pause_end_date',
+        'pause_amount',
     ];
 }

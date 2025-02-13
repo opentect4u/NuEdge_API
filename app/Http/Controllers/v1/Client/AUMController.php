@@ -196,7 +196,7 @@ class AUMController extends Controller
         return Helper::SuccessResponse($final_data);
     }
 
-    public function search(Request $request)
+    public function search_____(Request $request)
     {
         try {
             $date=$request->date;
@@ -365,7 +365,7 @@ class AUMController extends Controller
     
     
     
-    public function search____(Request $request)
+    public function search(Request $request)
     {
         try {
             // return $request;
@@ -394,13 +394,13 @@ class AUMController extends Controller
             cte1 AS (
                 SELECT product_code, SUM(units * (in_out = 'out')) went_out,
                 SUM(amount * (in_out = 'out')) went_out_amount
-                FROM td_mutual_fund_trans_merge_one
+                FROM td_mutual_fund_trans_2
                 GROUP BY product_code
             ),
             cte2 AS (
                 SELECT *, SUM(units * (in_out = 'in')) OVER (PARTITION BY product_code ORDER BY trans_date) cal_units,
                 SUM(amount * (in_out = 'in')) OVER (PARTITION BY product_code ORDER BY trans_date) cal_amount
-                FROM td_mutual_fund_trans_merge_one
+                FROM td_mutual_fund_trans_2
             )
             SELECT rnt_id,amc_code,folio_no,product_code,trans_date,pur_price,units,amount,stamp_duty,
             in_out, amc_name,scheme_name,cat_name,subcat_name,plan_name,option_name,

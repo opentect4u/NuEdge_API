@@ -1409,6 +1409,12 @@ class FinancialController extends Controller
                         'sip_swp_stp_start_date'=>(($request->sip_start_date) ? date('Y-m-d',strtotime($request->sip_start_date)):(($request->swp_stp_start_date)? date('Y-m-d',strtotime($request->swp_stp_start_date)):NULL)),
                         'sip_swp_stp_end_date'=>(($request->sip_end_date)?date('Y-m-d',strtotime($request->sip_end_date)):(($request->swp_stp_end_date)?date('Y-m-d',strtotime($request->swp_stp_end_date)):NULL)),
 
+                        'pause_freq'=>($request->pause_freq)?$request->pause_freq:NULL,
+                        'pause_duration'=>($request->pause_duration)?$request->pause_duration:NULL,
+                        'pause_start_date'=>($request->pause_start_date)?date('Y-m-d',strtotime($request->pause_start_date)):NULL,
+                        'pause_end_date'=>($request->pause_end_date)?date('Y-m-d',strtotime($request->pause_end_date)):NULL,
+                        'pause_amount'=>($request->pause_amount)?$request->pause_amount:0,
+
                         'chq_no'=>$request->chq_no,
                         'chq_bank'=>$request->chq_bank,
                         // 'rnt_login_at'=>$request->rnt_login_at,
