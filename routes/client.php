@@ -26,6 +26,8 @@ Route::prefix('v1')->group(function () {
                 Route::post('finYearWiseTrans',[App\Http\Controllers\v1\Client\CapitalGLController::class,'finWiseTrans']);
                 Route::post('realisedDivHistory',[App\Http\Controllers\v1\Client\CapitalGLController::class,'divHistory']);
                 Route::post('aumFundHouse',[App\Http\Controllers\v1\Client\AUMController::class,'search']);  // 
+                Route::post('aumScheme',[App\Http\Controllers\v1\Client\AUMController::class,'aumByScheme']);  // 
+                Route::post('aumClient',[App\Http\Controllers\v1\Client\AUMController::class,'aumByClient']);  // 
             });
             Route::post('downloadValuation',[App\Http\Controllers\v1\Client\PDFController::class,'downloadValuation']);  // 
             Route::get('downloadValuation',[App\Http\Controllers\v1\Client\PDFController::class,'autoDownloadValuation']);  // 
@@ -35,7 +37,9 @@ Route::prefix('v1')->group(function () {
             Route::any('genpdf',[App\Http\Controllers\v1\Client\PDFController::class,'generatePDF']);  // 
             Route::any('testgenpdf',[App\Http\Controllers\v1\Client\PDFController::class,'generatePDFTest']);  // 
             
-            Route::get('aum1',[App\Http\Controllers\v1\Client\AUMController::class,'search']);  // 
+            // Route::get('aum1',[App\Http\Controllers\v1\Client\AUMController::class,'search']);  // 
+            // Route::get('aumScheme1',[App\Http\Controllers\v1\Client\AUMController::class,'aumByScheme']);  // 
+            // Route::get('aumClient1',[App\Http\Controllers\v1\Client\AUMController::class,'aumByClient']);  // 
 
         });
     // })

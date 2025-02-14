@@ -44,7 +44,7 @@ class AcknowledgementController extends Controller
 
             $rawQuery='';
             if (($from_date && $to_date) || $tin_no || $client_code || !empty($amc_name) || !empty($scheme_name) || !empty($rnt_name) 
-            || !empty($ack_status) || !empty($brn_cd) || !empty($bu_type) || !empty($rm_id) || !empty($sub_brk_cd) || !empty($euin_no)) {
+                || !empty($ack_status) || !empty($brn_cd) || !empty($bu_type) || !empty($rm_id) || !empty($sub_brk_cd) || !empty($euin_no)) {
                 if ($from_date && $to_date) {
                     if (strlen($rawQuery) > 0) {
                         $rawQuery.=" AND td_mutual_fund.entry_date >= '". date("Y-m-d",strtotime($from_date))."'";
@@ -106,26 +106,26 @@ class AcknowledgementController extends Controller
                 }
                 // return $rawQuery;
                 $data=MutualFund::join('td_form_received','td_form_received.temp_tin_no','=','td_mutual_fund.temp_tin_no')
-                        ->join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
-                        ->join('md_scheme','md_scheme.id','=','td_mutual_fund.trans_scheme_from')
-                        ->leftJoin('md_scheme as md_scheme_2','md_scheme_2.id','=','td_mutual_fund.trans_scheme_to')
-                        ->join('md_client','md_client.id','=','td_mutual_fund.first_client_id')
-                        ->leftJoin('md_client as md_client_2','md_client_2.id','=','td_mutual_fund.second_client_id')
-                        ->leftJoin('md_client as md_client_3','md_client_3.id','=','td_mutual_fund.third_client_id')
-                        ->join('md_plan','md_plan.id','=','td_mutual_fund.plan_id')
-                        ->join('md_option','md_option.id','=','td_mutual_fund.option_id')
-                        ->leftJoin('md_plan as md_plan_2','md_plan_2.id','=','td_mutual_fund.plan_id_to')
-                        ->leftJoin('md_option as md_option_2','md_option_2.id','=','td_mutual_fund.option_id_to')
-                        ->leftJoin('md_rnt','md_rnt.id','=','td_mutual_fund.rnt_login_at')
-                        ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_mutual_fund.chq_bank')
-                        ->leftJoin('md_deposit_bank as ex_md_deposit_bank','ex_md_deposit_bank.id','=','td_mutual_fund.existing_acc_bank_id')
-                        ->leftJoin('md_deposit_bank as md_deposit_bank_new','md_deposit_bank_new.id','=','td_mutual_fund.acc_bank_id')
-                        ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
-                        ->leftJoin('md_branch','md_branch.id','=','td_form_received.branch_code')
-                        ->leftJoin('md_sip_type','md_sip_type.id','=','td_mutual_fund.sip_type')
-                        ->leftJoin('md_stp_type','md_stp_type.id','=','td_mutual_fund.stp_type')
-                        ->leftJoin('md_swp_type','md_swp_type.id','=','td_mutual_fund.swp_type')
-                        ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','td_form_received.application_no as application_no',
+                    ->join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
+                    ->join('md_scheme','md_scheme.id','=','td_mutual_fund.trans_scheme_from')
+                    ->leftJoin('md_scheme as md_scheme_2','md_scheme_2.id','=','td_mutual_fund.trans_scheme_to')
+                    ->join('md_client','md_client.id','=','td_mutual_fund.first_client_id')
+                    ->leftJoin('md_client as md_client_2','md_client_2.id','=','td_mutual_fund.second_client_id')
+                    ->leftJoin('md_client as md_client_3','md_client_3.id','=','td_mutual_fund.third_client_id')
+                    ->join('md_plan','md_plan.id','=','td_mutual_fund.plan_id')
+                    ->join('md_option','md_option.id','=','td_mutual_fund.option_id')
+                    ->leftJoin('md_plan as md_plan_2','md_plan_2.id','=','td_mutual_fund.plan_id_to')
+                    ->leftJoin('md_option as md_option_2','md_option_2.id','=','td_mutual_fund.option_id_to')
+                    ->leftJoin('md_rnt','md_rnt.id','=','td_mutual_fund.rnt_login_at')
+                    ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_mutual_fund.chq_bank')
+                    ->leftJoin('md_deposit_bank as ex_md_deposit_bank','ex_md_deposit_bank.id','=','td_mutual_fund.existing_acc_bank_id')
+                    ->leftJoin('md_deposit_bank as md_deposit_bank_new','md_deposit_bank_new.id','=','td_mutual_fund.acc_bank_id')
+                    ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
+                    ->leftJoin('md_branch','md_branch.id','=','td_form_received.branch_code')
+                    ->leftJoin('md_sip_type','md_sip_type.id','=','td_mutual_fund.sip_type')
+                    ->leftJoin('md_stp_type','md_stp_type.id','=','td_mutual_fund.stp_type')
+                    ->leftJoin('md_swp_type','md_swp_type.id','=','td_mutual_fund.swp_type')
+                    ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','td_form_received.application_no as application_no',
                         'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme.id as scheme_id','md_scheme_2.scheme_name as scheme_name_to','md_scheme_2.id as scheme_id_to',
                         'md_client.client_code as first_client_code','md_client.client_name as first_client_name',
                         'td_mutual_fund.kyc_status as first_client_kyc_status',
@@ -148,8 +148,10 @@ class AcknowledgementController extends Controller
                         'md_deposit_bank_new.bank_name as new_bank_name','md_deposit_bank_new.ifs_code as new_ifsc','md_deposit_bank_new.micr_code as new_micr_code','md_deposit_bank_new.branch_name as new_branch_name','td_mutual_fund.acc_no as new_bank_acc_no',
                         'md_branch.brn_name as branch_name','td_form_received.application_no as application_no','md_employee.emp_name as rm_name',
                         'md_sip_type.sip_type_name as sip_type_name','md_stp_type.stp_type_name as stp_type_name','md_swp_type.swp_type_name as swp_type_name',
-                        'td_mutual_fund.sip_swp_stp_inst_date as sip_date','td_mutual_fund.sip_swp_stp_start_date as sip_start_date','td_mutual_fund.sip_swp_stp_end_date as sip_end_date','td_mutual_fund.amount as sip_amount')
-                        ->where('md_trans.trans_type_id',$trans_type_id)
+                        'td_mutual_fund.sip_swp_stp_inst_date as sip_date','td_mutual_fund.sip_swp_stp_start_date as sip_start_date','td_mutual_fund.sip_swp_stp_end_date as sip_end_date','td_mutual_fund.amount as sip_amount',
+                        'td_mutual_fund.sip_swp_stp_frequency as swp_frequency','td_mutual_fund.sip_swp_stp_inst_date as swp_date','td_mutual_fund.sip_swp_stp_start_date as swp_start_date','td_mutual_fund.sip_swp_stp_end_date as swp_end_date','td_mutual_fund.amount as swp_amount',
+                        'td_mutual_fund.sip_swp_stp_frequency as stp_frequency','td_mutual_fund.sip_swp_stp_inst_date as stp_date','td_mutual_fund.sip_swp_stp_start_date as stp_start_date','td_mutual_fund.sip_swp_stp_end_date as stp_end_date','td_mutual_fund.amount as stp_amount')
+                    ->where('md_trans.trans_type_id',$trans_type_id)
                     ->where('td_mutual_fund.trans_id',$trans_id)
                     ->whereRaw($rawQuery)
                     // ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
@@ -199,7 +201,9 @@ class AcknowledgementController extends Controller
                         'md_deposit_bank_new.bank_name as new_bank_name','md_deposit_bank_new.ifs_code as new_ifsc','md_deposit_bank_new.micr_code as new_micr_code','md_deposit_bank_new.branch_name as new_branch_name','td_mutual_fund.acc_no as new_bank_acc_no',
                         'md_branch.brn_name as branch_name','td_form_received.application_no as application_no','md_employee.emp_name as rm_name',
                         'md_sip_type.sip_type_name as sip_type_name','md_stp_type.stp_type_name as stp_type_name','md_swp_type.swp_type_name as swp_type_name',
-                        'td_mutual_fund.sip_swp_stp_inst_date as sip_date','td_mutual_fund.sip_swp_stp_start_date as sip_start_date','td_mutual_fund.sip_swp_stp_end_date as sip_end_date','td_mutual_fund.amount as sip_amount')
+                        'td_mutual_fund.sip_swp_stp_inst_date as sip_date','td_mutual_fund.sip_swp_stp_start_date as sip_start_date','td_mutual_fund.sip_swp_stp_end_date as sip_end_date','td_mutual_fund.amount as sip_amount',
+                        'td_mutual_fund.sip_swp_stp_frequency as swp_frequency','td_mutual_fund.sip_swp_stp_inst_date as swp_date','td_mutual_fund.sip_swp_stp_start_date as swp_start_date','td_mutual_fund.sip_swp_stp_end_date as swp_end_date','td_mutual_fund.amount as swp_amount',
+                        'td_mutual_fund.sip_swp_stp_frequency as stp_frequency','td_mutual_fund.sip_swp_stp_inst_date as stp_date','td_mutual_fund.sip_swp_stp_start_date as stp_start_date','td_mutual_fund.sip_swp_stp_end_date as stp_end_date','td_mutual_fund.amount as stp_amount')
                     ->where('md_trans.trans_type_id',$trans_type_id)
                     ->where('td_mutual_fund.trans_id',$trans_id)
                     ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
