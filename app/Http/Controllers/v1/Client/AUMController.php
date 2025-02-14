@@ -1239,51 +1239,8 @@ class AUMController extends Controller
                     // $rawQueryBroker.=$condition_v1.$queryString1."<= '".$date."'";
                 }
             } 
-
-            // WHERE trans_date <= '2025-01-31' 
-            // session()->forget('date');
-            // session(['date' => $date]);
-            // return $rawQuery;
-            /******************************************************* */
-            $all_data=DB::select("WITH 
-            cte1 AS (
-                SELECT product_code, SUM(units * (in_out = 'out')) went_out,
-                SUM(amount * (in_out = 'out')) went_out_amount
-                FROM td_mutual_fund_trans_2
-                GROUP BY product_code
-            ),
-            cte2 AS (
-                SELECT *, 
-                SUM(units * (in_out = 'in')) OVER (PARTITION BY product_code ORDER BY trans_date) cal_units,
-                SUM(amount * (in_out = 'in')) OVER (PARTITION BY product_code ORDER BY trans_date) cal_amount
-                FROM td_mutual_fund_trans_2
-            )
-            SELECT rnt_id,first_client_name,first_client_pan,amc_code,folio_no,product_code,trans_date,pur_price,units,amount,stamp_duty,
-            in_out, amc_name,scheme_name,cat_name,subcat_name,plan_name,option_name,
-            CASE WHEN cal_amount - amount < in_out THEN cal_amount - in_out ELSE amount END result_amount,
-            CASE WHEN cal_units - units < in_out THEN cal_units - in_out ELSE units END result
-            FROM cte1
-            JOIN cte2 USING (product_code)
-            WHERE in_out = 'in'
-            AND in_out < cal_units
-            ORDER BY trans_date ASC");
-
-            
-            
-            // return $sp_data;
-            // $all_data = collect($all_data)->map(function($x){ return (array) $x; })->toArray(); 
-            /******************************************************* */
-            // return DB::select('SELECT count(*) FROM v_aum_report');
-            // DB::enableQueryLog();
-            // MFTransTypeSubType::get()->toArray();
-            // dd(DB::getQueryLog());
-            // IF amc code
-            // $all_data=DB::select('SELECT * FROM v_my_aum_report');
-            // $all_data=DB::select('SELECT * FROM v_aum_report where amc_code IN ("IF","189") and '.$rawQuery.' order by trans_date asc');
-            // $broker_data=DB::select('SELECT * FROM v_broker_change_report where amc_code IN ("IF","189") order by trans_date asc');
-            // dd(DB::getQueryLog());
-            // return $all_data[0];
-            // return count($all_data);
+            DB::statement("call aum_by_client_report()");
+            $all_data=DB::select("SELECT * FROM v_my_aum_report");
             /******************************************************* */
             /** start for get nav data */
             $all_trans_product=[];
@@ -1305,12 +1262,6 @@ class AUMController extends Controller
             // return $res_array[0];
             // return 'ddd';
             /** end for get nav data */
-            // return $all_data[0];
-            // $group_amc_data=[];
-            // foreach ($all_data as $value_amc_data) {
-            //     $group_amc_data[$value_amc_data->amc_code][$value_amc_data->product_code][]=$value_amc_data;
-            // }
-            // return $group_amc_data;
             $final_data=[];
             foreach ($group_amc_data as $key_group_amc_data => $value_group_amc_data) {  // amc loop
                 // return $value_group_amc_data;
@@ -1325,6 +1276,8 @@ class AUMController extends Controller
                     }
                     $my_data=[];
                     $product_code=$value_amc_wise_product_loop[0]->product_code;
+                    $my_data['first_client_name']=$value_amc_wise_product_loop[0]->first_client_name;
+                    $my_data['first_client_pan']=$value_amc_wise_product_loop[0]->first_client_pan;
                     $my_data['amc_name']=$key_group_amc_data;
                     $my_data['amc_code']=$value_amc_wise_product_loop[0]->amc_code;
                     $my_data['product_code']=$product_code;
@@ -1368,60 +1321,6 @@ class AUMController extends Controller
             usort($final_data, function($a, $b) {
                 return $a['amc_name'] <=> $b['amc_name'];
             });
-            // return $final_data;
-            // $filter_data=[];
-            // foreach ($all_data as $data_key => $value1) {
-            //     $isin_no=$value1->isin_no;
-            //     $product_code=$value1->product_code;
-            //     $new='';
-            //     if (count($res_array) > 0) {
-            //         foreach($res_array as $val_nav){
-            //             if($val_nav->product_code==$product_code){
-            //                 $new=$val_nav;
-            //             }
-            //         }
-            //     }
-            //     // return $new;
-            //     $value1->new=$new;
-            //     $value1->curr_nav=isset($new->nav)?$new->nav:0;
-            //     $value1->nav_date=isset($new->nav_date)?$new->nav_date:0;
-            //     //calculation
-            //     $mydata='';
-            //     $foliotrans=$value1->foliotrans;
-            //     // if ($value1->tot_amount > 0) {
-            //         $json  = json_encode($foliotrans);
-            //         $array = json_decode($json, true);
-            //         if (array_search('Consolidation In',array_column($array,'transaction_subtype'))) {
-            //             $foliotrans=TransHelper::ConsolidationInQuery($value1->rnt_id,$value1->folio_no,$value1->isin_no,$value1->product_code,$valuation_as_on);
-            //         }
-            //         $mydata=TransHelper::calculate($foliotrans,$value1->curr_nav,$valuation_as_on);
-            //     // }
-            //     // $mydata=$this->calculate($value1->foliotrans);
-            //     $value1->mydata=$mydata;
-            //     $value1->nifty50=isset($mydata['nifty50'])?(int)$mydata['nifty50']:$value1->nifty50;
-            //     $value1->sensex=isset($mydata['sensex'])?(int)$mydata['sensex']:$value1->sensex;
-            //     $value1->idcwp=0;
-            //     $value1->idcw_reinv=isset($mydata['idcw_reinv'])? number_format((float)$mydata['idcw_reinv'], 2, '.', ''):0;
-            //     $value1->idcwr=number_format((float)($value1->idcwp + $value1->idcw_reinv), 2, '.', '');
-            //     $value1->inv_since=isset($mydata['inv_since'])? $mydata['inv_since']:$value1->inv_since;
-            //     $value1->pur_nav=isset($mydata['pur_nav'])?$mydata['pur_nav']:$value1->pur_nav;
-            //     $value1->transaction_type=isset($mydata['transaction_type'])?$mydata['transaction_type']:$value1->transaction_type;
-            //     $value1->transaction_subtype=isset($mydata['transaction_subtype'])?$mydata['transaction_subtype']:$value1->transaction_subtype;
-            //     $value1->inv_cost=isset($mydata['inv_cost'])?number_format((float)$mydata['inv_cost'], 2, '.', ''):0;
-            //     $value1->tot_units=isset($mydata['tot_units'])?number_format((float)$mydata['tot_units'], 2, '.', ''):0;
-            //     $value1->curr_val= number_format((float)($value1->curr_nav * $value1->tot_units), 2, '.', '');
-            //     $value1->gain_loss=number_format((float)(($value1->curr_val - $value1->inv_cost) + $value1->idcwr), 2, '.', '');
-            //     if ($value1->gain_loss==0 || $value1->inv_cost==0) {
-            //         $value1->ret_abs=0;
-            //     }else {
-            //         $value1->ret_abs=number_format((float)(($value1->gain_loss / $value1->inv_cost) * 100), 2, '.', '');
-            //     }
-                
-            //     array_push($filter_data,$value1);
-            // }
-            // return $all_values_data[0];
-            // return 'ddd';
-            
         } catch (\Throwable $th) {
             throw $th;
             return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
