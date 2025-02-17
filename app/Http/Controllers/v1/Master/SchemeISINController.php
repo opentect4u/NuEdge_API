@@ -24,6 +24,7 @@ use App\Models\{
 };
 use Validator;
 use Excel;
+use DB;
 use App\Imports\SchemeImport;
 
 class SchemeISINController extends Controller
@@ -358,7 +359,7 @@ class SchemeISINController extends Controller
                 ]);
 
                 DB::connection('mysql_nav')
-                ->select('UPDATE td_nav_details SET scheme_flag ="N" WHERE product_code="'.$value->product_code.'";');
+                ->select('UPDATE td_nav_details SET scheme_flag ="N" WHERE product_code="'.$value->product_code.'"');
 
                 // NAVDetails::where('product_code',$value->product_code)->update([
                 //     'scheme_flag'=>'N'
