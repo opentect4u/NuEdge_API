@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class NAVDetails extends Model
 {
     use HasFactory;
+    protected $database="mysql_nav";
     protected $table="td_nav_details";
     protected $fillable = [
         'rnt_id',

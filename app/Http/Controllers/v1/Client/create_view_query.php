@@ -1046,3 +1046,161 @@ FROM
 // LEFT JOIN md_amc ON md_amc.amc_code = td_mutual_fund_trans.amc_code
 
 /************************************* */
+
+// INSERT INTO td_mutual_fund_trans_2
+// (mailback_process_id,
+// rnt_id,
+// arn_no,
+// sub_brk_cd,
+// euin_no,
+// old_euin_no,
+// first_client_name,
+// first_client_pan,
+// amc_code,
+// folio_no,
+// product_code,
+// trans_no,
+// trans_mode,
+// trans_status,
+// user_trans_no,
+// trans_date,
+// post_date,
+// pur_price,
+// units,
+// amount,
+// rec_date,
+// trxn_type,
+// trxn_type_flag,
+// trxn_nature,
+// trxn_type_code,
+// trxn_nature_code,
+// trans_desc,
+// kf_trans_type,
+// trans_flag,
+// te_15h,
+// micr_code,
+// sw_flag,
+// old_folio,
+// seq_no,
+// stt,
+// stamp_duty,
+// tds,
+// acc_no,
+// bank_name,
+// remarks,
+// reinvest_flag,
+// dividend_option,
+// isin_no,
+// bu_type_flag,
+// bu_type_lock_flag,
+// amc_flag,
+// scheme_flag,
+// plan_option_flag,
+// divi_mismatch_flag,
+// divi_lock_flag,
+// delete_flag,
+// deleted_at,
+// deleted_date,
+// portfolio_show_flag,
+// created_at,
+// updated_at,
+// transaction_type,
+// transaction_subtype,
+// in_out,
+// amc_name)
+// SELECT 
+// tt_broker_change_trans_report.mailback_process_id,
+// tt_broker_change_trans_report.rnt_id,
+// tt_broker_change_trans_report.arn_no,
+// tt_broker_change_trans_report.sub_brk_cd,
+// tt_broker_change_trans_report.euin_no,
+// tt_broker_change_trans_report.old_euin_no,
+// tt_broker_change_trans_report.first_client_name,
+// tt_broker_change_trans_report.first_client_pan,
+// tt_broker_change_trans_report.amc_code,
+// tt_broker_change_trans_report.folio_no,
+// tt_broker_change_trans_report.product_code,
+// tt_broker_change_trans_report.trans_no,
+// tt_broker_change_trans_report.trans_mode,
+// tt_broker_change_trans_report.trans_status,
+// tt_broker_change_trans_report.user_trans_no,
+// tt_broker_change_trans_report.trans_date,
+// tt_broker_change_trans_report.post_date,
+// tt_broker_change_trans_report.pur_price,
+// tt_broker_change_trans_report.units,
+// tt_broker_change_trans_report.amount,
+// tt_broker_change_trans_report.rec_date,
+// tt_broker_change_trans_report.trxn_type,
+// tt_broker_change_trans_report.trxn_type_flag,
+// tt_broker_change_trans_report.trxn_nature,
+// tt_broker_change_trans_report.trxn_type_code,
+// tt_broker_change_trans_report.trxn_nature_code,
+// tt_broker_change_trans_report.trans_desc,
+// tt_broker_change_trans_report.kf_trans_type,
+// tt_broker_change_trans_report.trans_flag,
+// tt_broker_change_trans_report.te_15h,
+// tt_broker_change_trans_report.micr_code,
+// tt_broker_change_trans_report.sw_flag,
+// tt_broker_change_trans_report.old_folio,
+// tt_broker_change_trans_report.seq_no,
+// tt_broker_change_trans_report.stt,
+// tt_broker_change_trans_report.stamp_duty,
+// tt_broker_change_trans_report.tds,
+// tt_broker_change_trans_report.acc_no,
+// tt_broker_change_trans_report.bank_name,
+// tt_broker_change_trans_report.remarks,
+// tt_broker_change_trans_report.reinvest_flag,
+// tt_broker_change_trans_report.dividend_option,
+// tt_broker_change_trans_report.isin_no,
+// tt_broker_change_trans_report.bu_type_flag,
+// tt_broker_change_trans_report.bu_type_lock_flag,
+// tt_broker_change_trans_report.amc_flag,
+// tt_broker_change_trans_report.scheme_flag,
+// tt_broker_change_trans_report.plan_option_flag,
+// tt_broker_change_trans_report.divi_mismatch_flag,
+// tt_broker_change_trans_report.divi_lock_flag,
+// tt_broker_change_trans_report.delete_flag,
+// tt_broker_change_trans_report.deleted_at,
+// tt_broker_change_trans_report.deleted_date,
+// "Y" AS portfolio_show_flag,
+// tt_broker_change_trans_report.created_at,
+// tt_broker_change_trans_report.updated_at,
+// TRANS_TYPE_SUBTYPE(IF(tt_broker_change_trans_report.rnt_id=1,(SELECT trans_type FROM md_mf_trans_type_subtype WHERE
+// c_trans_type_code=tt_broker_change_trans_report.trxn_type_code AND c_k_trans_type=tt_broker_change_trans_report.trxn_type_flag AND
+// c_k_trans_sub_type=tt_broker_change_trans_report.trxn_nature_code LIMIT 1),
+// (CASE
+// WHEN tt_broker_change_trans_report.trans_flag="DP" || tt_broker_change_trans_report.trans_flag="DR" THEN (SELECT trans_type FROM
+// md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type AND k_divident_flag=tt_broker_change_trans_report.trans_flag
+// LIMIT 1)
+// WHEN tt_broker_change_trans_report.trans_flag="TO" THEN "Transfer Out"
+// ELSE (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type LIMIT 1)
+// END)
+// ),tt_broker_change_trans_report.rnt_id,tt_broker_change_trans_report.amount) AS transaction_type,
+// TRANS_TYPE_SUBTYPE(IF(tt_broker_change_trans_report.rnt_id=1,
+// (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=tt_broker_change_trans_report.trxn_type_code AND
+// c_k_trans_type=tt_broker_change_trans_report.trxn_type_flag AND c_k_trans_sub_type=tt_broker_change_trans_report.trxn_nature_code LIMIT
+// 1),
+// (CASE
+// WHEN tt_broker_change_trans_report.trans_flag="DP" || tt_broker_change_trans_report.trans_flag="DR" THEN (SELECT trans_sub_type FROM
+// md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type AND k_divident_flag=tt_broker_change_trans_report.trans_flag
+// LIMIT 1)
+// WHEN tt_broker_change_trans_report.trans_flag="TO" THEN "Transfer Out"
+// ELSE (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type LIMIT 1)
+// END)
+// ),tt_broker_change_trans_report.rnt_id,tt_broker_change_trans_report.amount) AS transaction_subtype,
+// CALCULATION_IN_OUT(TRANS_TYPE_SUBTYPE(IF(tt_broker_change_trans_report.rnt_id=1,
+// (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=tt_broker_change_trans_report.trxn_type_code AND
+// c_k_trans_type=tt_broker_change_trans_report.trxn_type_flag AND c_k_trans_sub_type=tt_broker_change_trans_report.trxn_nature_code LIMIT
+// 1),
+// (CASE
+// WHEN tt_broker_change_trans_report.trans_flag="DP" || tt_broker_change_trans_report.trans_flag="DR" THEN (SELECT trans_sub_type FROM
+// md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type AND k_divident_flag=tt_broker_change_trans_report.trans_flag
+// LIMIT 1)
+// WHEN tt_broker_change_trans_report.trans_flag="TO" THEN "Transfer Out"
+// ELSE (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type LIMIT 1)
+// END)
+// ),tt_broker_change_trans_report.rnt_id,tt_broker_change_trans_report.amount)) AS in_out,
+// md_amc.amc_short_name AS amc_name
+// FROM tt_broker_change_trans_report
+// LEFT JOIN md_amc ON md_amc.amc_code = tt_broker_change_trans_report.amc_code
+// WHERE tt_broker_change_trans_report.rnt_id=1

@@ -20,6 +20,7 @@ use App\Models\{
     SipStpTransaction,
     FolioDetails,
     BrokerChangeTrans,
+    NAVDetails,
 };
 use Validator;
 use Excel;
@@ -355,6 +356,14 @@ class SchemeISINController extends Controller
                     'scheme_flag'=>'N',
                     'plan_option_flag'=>'N',
                 ]);
+
+                // DB::connection('mysql_nav')
+                //     ->select('UPDATE td_nav_details SET scheme_flag ="N", plan_option_flag = "N" WHERE product_code="'.$value->product_code.'";');
+
+                NAVDetails::where('product_code',$value->product_code)->update([
+                    'scheme_flag'=>'N'
+                ]);
+           
             }
           
         } catch (\Throwable $th) {
