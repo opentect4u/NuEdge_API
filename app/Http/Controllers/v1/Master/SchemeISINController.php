@@ -357,12 +357,12 @@ class SchemeISINController extends Controller
                     'plan_option_flag'=>'N',
                 ]);
 
-                // DB::connection('mysql_nav')
-                //     ->select('UPDATE td_nav_details SET scheme_flag ="N", plan_option_flag = "N" WHERE product_code="'.$value->product_code.'";');
+                DB::connection('mysql_nav')
+                ->select('UPDATE td_nav_details SET scheme_flag ="N" WHERE product_code="'.$value->product_code.'";');
 
-                NAVDetails::where('product_code',$value->product_code)->update([
-                    'scheme_flag'=>'N'
-                ]);
+                // NAVDetails::where('product_code',$value->product_code)->update([
+                //     'scheme_flag'=>'N'
+                // ]);
            
             }
           
