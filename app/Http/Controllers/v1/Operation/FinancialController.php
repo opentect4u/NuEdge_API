@@ -1205,114 +1205,108 @@ class FinancialController extends Controller
                     ));
 
                     // START only for non financial changes
-                    if ($request->change_contact_type!='') {  // client update
-                        $first_client_id=$data->first_client_id;
-                        $up_data=Client::find($first_client_id);
-                        if ($request->email) {
-                            $up_data->email=$request->email;
-                        }
-                        if ($request->mobile) {
-                            $up_data->mobile=$request->mobile;
-                        }
-                        $up_data->updated_by=Helper::modifyUser($request->user());
-                        $up_data->save();
-                    }
+                    // if ($request->change_contact_type!='') {  // client update
+                    //     $first_client_id=$data->first_client_id;
+                    //     $up_data=Client::find($first_client_id);
+                    //     if ($request->email) {
+                    //         $up_data->email=$request->email;
+                    //     }
+                    //     if ($request->mobile) {
+                    //         $up_data->mobile=$request->mobile;
+                    //     }
+                    //     $up_data->updated_by=Helper::modifyUser($request->user());
+                    //     $up_data->save();
+                    // }
 
-                    if ($data->trans_id==22) {  // address change
-                        $first_client_id=$data->first_client_id;
-                        $up_data=Client::find($first_client_id);
-                        $up_data->add_line_1=$request->add_line_1;
-                        $up_data->add_line_2=$request->add_line_2;
-                        $up_data->city=$request->city;
-                        $up_data->dist=$request->dist;
-                        $up_data->state=$request->state;
-                        $up_data->pincode=$request->pincode;
-                        $up_data->country_id=$request->country_id;
-                        $up_data->updated_by=Helper::modifyUser($request->user());
-                        $up_data->save();
-                    }
+                    // if ($data->trans_id==22) {  // address change
+                    //     $first_client_id=$data->first_client_id;
+                    //     $up_data=Client::find($first_client_id);
+                    //     $up_data->add_line_1=$request->add_line_1;
+                    //     $up_data->add_line_2=$request->add_line_2;
+                    //     $up_data->city=$request->city;
+                    //     $up_data->dist=$request->dist;
+                    //     $up_data->state=$request->state;
+                    //     $up_data->pincode=$request->pincode;
+                    //     $up_data->country_id=$request->country_id;
+                    //     $up_data->updated_by=Helper::modifyUser($request->user());
+                    //     $up_data->save();
+                    // }
 
-                    if ($data->trans_id==23) {  // name change
-                        $first_client_id=$data->first_client_id;
-                        $up_data=Client::find($first_client_id);
+                    // if ($data->trans_id==23) {  // name change
+                    //     $first_client_id=$data->first_client_id;
+                    //     $up_data=Client::find($first_client_id);
 
-                        $client_name=ucwords($request->new_name);
-                        $words = explode(" ",$client_name);
-                        $client_code="";
-                        $client_code_1 = mb_substr($words[0], 0, 1).mb_substr($words[(count($words)-1)], 0, 1);;
+                    //     $client_name=ucwords($request->new_name);
+                    //     $words = explode(" ",$client_name);
+                    //     $client_code="";
+                    //     $client_code_1 = mb_substr($words[0], 0, 1).mb_substr($words[(count($words)-1)], 0, 1);;
 
-                        $is_has=Client::where('client_code',$client_code_1)->get();
-                        if (count($is_has)>0) {
-                            $client_code=$client_code_1.date('dmy',strtotime($up_data->dob)).count($is_has);
-                        }else {
-                            $client_code=$client_code_1.date('dmy',strtotime($up_data->dob));
-                        }
-                        $up_data->client_code=$client_code;
-                        $up_data->client_name=$client_name;
-                        $up_data->updated_by=Helper::modifyUser($request->user());
-                        $up_data->save();
-                    }
+                    //     $is_has=Client::where('client_code',$client_code_1)->get();
+                    //     if (count($is_has)>0) {
+                    //         $client_code=$client_code_1.date('dmy',strtotime($up_data->dob)).count($is_has);
+                    //     }else {
+                    //         $client_code=$client_code_1.date('dmy',strtotime($up_data->dob));
+                    //     }
+                    //     $up_data->client_code=$client_code;
+                    //     $up_data->client_name=$client_name;
+                    //     $up_data->updated_by=Helper::modifyUser($request->user());
+                    //     $up_data->save();
+                    // }
 
-                    if ($data->trans_id==24) {  // change status
-                        $first_client_id=$data->first_client_id;
-                        $up_data=Client::find($first_client_id);
-                        $up_data->client_type_mode=$request->change_status;
-                        $up_data->updated_by=Helper::modifyUser($request->user());
-                        $up_data->save();
-                    }
+                    // if ($data->trans_id==24) {  // change status
+                    //     $first_client_id=$data->first_client_id;
+                    //     $up_data=Client::find($first_client_id);
+                    //     $up_data->client_type_mode=$request->change_status;
+                    //     $up_data->updated_by=Helper::modifyUser($request->user());
+                    //     $up_data->save();
+                    // }
 
-                    if ($data->trans_id==25) {  // Nominee Opt-Out
+                    // if ($data->trans_id==25) {  // Nominee Opt-Out
+                    // }
 
-                        # code...
-                    }
+                    // if ($data->trans_id==28) {  // Folio PAN Updation
+                    //     $first_client_id=$data->first_client_id;
+                    //     $up_data=Client::find($first_client_id);
+                    //     $up_data->pan=$request->folio_pan;
+                    //     $up_data->client_type='P';
+                    //     $up_data->updated_by=Helper::modifyUser($request->user());
+                    //     $up_data->save();
+                    // }
+                    // if ($data->trans_id==29) {  // Redemption
+                    // }
+                    // if ($data->trans_id==20) {  // minor to major
+                    //     $first_client_id=$data->first_client_id;
+                    //     $up_data=Client::find($first_client_id);
+                    //     $up_data->pan=$request->minor_to_major_pan;
+                    //     $up_data->client_type='P';
+                    //     $up_data->updated_by=Helper::modifyUser($request->user());
+                    //     $up_data->save();
+                    // }
 
-                    if ($data->trans_id==28) {  // Folio PAN Updation
-                        $first_client_id=$data->first_client_id;
-                        $up_data=Client::find($first_client_id);
-                        $up_data->pan=$request->folio_pan;
-                        $up_data->client_type='P';
-                        $up_data->updated_by=Helper::modifyUser($request->user());
-                        $up_data->save();
-                    }
-                    if ($data->trans_id==29) {  // Redemption
+                    // if ($request->transmission_type!='' && $data->trans_id==19) {
+                    //     $fetch_data=MutualFund::where('folio_no',$data->folio_no)
+                    //     ->orderBy('td_mutual_fund.created_at','ASC')
+                    //     ->get();
+                    //     // return $fetch_data;
+                    //     if ($request->transmission_type==1) {
+                    //         // $data=MutualFund::
+                    //     }elseif ($request->transmission_type==2) {
+                    //     }
 
-                        # code...
-                    }
-                    if ($data->trans_id==20) {  // minor to major
-                        $first_client_id=$data->first_client_id;
-                        $up_data=Client::find($first_client_id);
-                        $up_data->pan=$request->minor_to_major_pan;
-                        $up_data->client_type='P';
-                        $up_data->updated_by=Helper::modifyUser($request->user());
-                        $up_data->save();
-                    }
+                    // }
 
-                    if ($request->transmission_type!='' && $data->trans_id==19) {
-                        $fetch_data=MutualFund::where('folio_no',$data->folio_no)
-                        ->orderBy('td_mutual_fund.created_at','ASC')
-                        ->get();
-                        // return $fetch_data;
-                        if ($request->transmission_type==1) {
-                            # code...
-                            // $data=MutualFund::
-                        }elseif ($request->transmission_type==2) {
-                            # code...
-                        }
+                    // if ($data->trans_id==32) {  // change mode of holding
+                    //     $fetch_folio_data=MutualFund::where('folio_no',$data->folio_no)
+                    //         ->orderBy('td_mutual_fund.created_at','ASC')
+                    //         ->get();
 
-                    }
+                    // }
 
-                    if ($data->trans_id==32) {  // change mode of holding
-                        $fetch_folio_data=MutualFund::where('folio_no',$data->folio_no)
-                            ->orderBy('td_mutual_fund.created_at','ASC')
-                            ->get();
-
-                    }
-
-                    if ($data->trans_id==11 || $data->trans_id==21) {  // nominee 11 change & 21 addition
-                        $fetch_folio_data=MutualFund::where('folio_no',$data->folio_no)
-                            ->orderBy('td_mutual_fund.created_at','ASC')
-                            ->get();
-                    }
+                    // if ($data->trans_id==11 || $data->trans_id==21) {  // nominee 11 change & 21 addition
+                    //     $fetch_folio_data=MutualFund::where('folio_no',$data->folio_no)
+                    //         ->orderBy('td_mutual_fund.created_at','ASC')
+                    //         ->get();
+                    // }
 
                     // END only for non financial changes
                 }
@@ -1390,7 +1384,7 @@ class FinancialController extends Controller
                     $app_form_scan->move(public_path('application-form/'),$doc_name);
                 }
                 // return $request->amount;
-                    $data=MutualFund::create(array(
+                $data=MutualFund::create(array(
                         'temp_tin_no' =>$ttin_no,
                         'tin_no'=> $tin_no,
                         'entry_tin_status'=>$request->tin_status,
@@ -1478,120 +1472,121 @@ class FinancialController extends Controller
                     ));
 
                 // START only for non financial changes
-                if ($request->change_contact_type!='') {  // client update
-                    $first_client_id=$data->first_client_id;
-                    $up_data=Client::find($first_client_id);
-                    if ($request->email) {
-                        $up_data->email=$request->email;
-                    }
-                    if ($request->mobile) {
-                        $up_data->mobile=$request->mobile;
-                    }
-                    $up_data->updated_by=Helper::modifyUser($request->user());
-                    $up_data->save();
-                }
 
-                if ($data->trans_id==22) {  // address change
-                    $first_client_id=$data->first_client_id;
-                    $up_data=Client::find($first_client_id);
-                    $up_data->add_line_1=$request->add_line_1;
-                    $up_data->add_line_2=$request->add_line_2;
-                    $up_data->city=$request->city;
-                    $up_data->dist=$request->dist;
-                    $up_data->state=$request->state;
-                    $up_data->pincode=$request->pincode;
-                    $up_data->country_id=$request->country_id;
-                    $up_data->updated_by=Helper::modifyUser($request->user());
-                    $up_data->save();
-                }
+                // if ($request->change_contact_type!='') {  // client update
+                //     $first_client_id=$data->first_client_id;
+                //     $up_data=Client::find($first_client_id);
+                //     if ($request->email) {
+                //         $up_data->email=$request->email;
+                //     }
+                //     if ($request->mobile) {
+                //         $up_data->mobile=$request->mobile;
+                //     }
+                //     $up_data->updated_by=Helper::modifyUser($request->user());
+                //     $up_data->save();
+                // }
 
-                if ($data->trans_id==23) {  // name change
-                    $first_client_id=$data->first_client_id;
-                    $up_data=Client::find($first_client_id);
-                    $client_name=ucwords($request->new_name);
-                    $words = explode(" ",$client_name);
-                    $client_code="";
-                    $client_code_1 = mb_substr($words[0], 0, 1).mb_substr($words[(count($words)-1)], 0, 1);;
-                    $is_has=Client::where('client_code',$client_code_1)->get();
-                    if (count($is_has)>0) {
-                        $client_code=$client_code_1.date('dmy',strtotime($up_data->dob)).count($is_has);
-                    }else {
-                        $client_code=$client_code_1.date('dmy',strtotime($up_data->dob));
-                    }
-                    $up_data->client_code=$client_code;
-                    $up_data->client_name=$client_name;
-                    $up_data->updated_by=Helper::modifyUser($request->user());
-                    $up_data->save();
-                }
+                // if ($data->trans_id==22) {  // address change
+                //     $first_client_id=$data->first_client_id;
+                //     $up_data=Client::find($first_client_id);
+                //     $up_data->add_line_1=$request->add_line_1;
+                //     $up_data->add_line_2=$request->add_line_2;
+                //     $up_data->city=$request->city;
+                //     $up_data->dist=$request->dist;
+                //     $up_data->state=$request->state;
+                //     $up_data->pincode=$request->pincode;
+                //     $up_data->country_id=$request->country_id;
+                //     $up_data->updated_by=Helper::modifyUser($request->user());
+                //     $up_data->save();
+                // }
 
-                if ($data->trans_id==24) {  // change status
-                    $first_client_id=$data->first_client_id;
-                    $up_data=Client::find($first_client_id);
-                    $up_data->client_type_mode=$request->change_status;
-                    $up_data->updated_by=Helper::modifyUser($request->user());
-                    $up_data->save();
-                }
+                // if ($data->trans_id==23) {  // name change
+                //     $first_client_id=$data->first_client_id;
+                //     $up_data=Client::find($first_client_id);
+                //     $client_name=ucwords($request->new_name);
+                //     $words = explode(" ",$client_name);
+                //     $client_code="";
+                //     $client_code_1 = mb_substr($words[0], 0, 1).mb_substr($words[(count($words)-1)], 0, 1);;
+                //     $is_has=Client::where('client_code',$client_code_1)->get();
+                //     if (count($is_has)>0) {
+                //         $client_code=$client_code_1.date('dmy',strtotime($up_data->dob)).count($is_has);
+                //     }else {
+                //         $client_code=$client_code_1.date('dmy',strtotime($up_data->dob));
+                //     }
+                //     $up_data->client_code=$client_code;
+                //     $up_data->client_name=$client_name;
+                //     $up_data->updated_by=Helper::modifyUser($request->user());
+                //     $up_data->save();
+                // }
 
-                if ($data->trans_id==25) {  // Nominee Opt-Out
+                // if ($data->trans_id==24) {  // change status
+                //     $first_client_id=$data->first_client_id;
+                //     $up_data=Client::find($first_client_id);
+                //     $up_data->client_type_mode=$request->change_status;
+                //     $up_data->updated_by=Helper::modifyUser($request->user());
+                //     $up_data->save();
+                // }
 
-                    # code...
-                }
+                // if ($data->trans_id==25) {  // Nominee Opt-Out
 
-                if ($data->trans_id==28) {  // Folio PAN Updation
-                    $first_client_id=$data->first_client_id;
-                    $up_data=Client::find($first_client_id);
-                    $up_data->pan=$request->folio_pan;
-                    $up_data->client_type='P';
-                    $up_data->updated_by=Helper::modifyUser($request->user());
-                    $up_data->save();
-                }
-                if ($data->trans_id==29) {  // Redemption
+                //     # code...
+                // }
 
-                    # code...
-                }
-                if ($data->trans_id==20) {  // minor to major
-                    $first_client_id=$data->first_client_id;
-                    $up_data=Client::find($first_client_id);
-                    $up_data->pan=$request->minor_to_major_pan;
-                    $up_data->client_type='P';
-                    $up_data->updated_by=Helper::modifyUser($request->user());
-                    $up_data->save();
-                }
+                // if ($data->trans_id==28) {  // Folio PAN Updation
+                //     $first_client_id=$data->first_client_id;
+                //     $up_data=Client::find($first_client_id);
+                //     $up_data->pan=$request->folio_pan;
+                //     $up_data->client_type='P';
+                //     $up_data->updated_by=Helper::modifyUser($request->user());
+                //     $up_data->save();
+                // }
+                // if ($data->trans_id==29) {  // Redemption
 
-                if ($request->transmission_type!='' && $data->trans_id==19) {
-                    $fetch_data=MutualFund::where('folio_no',$data->folio_no)
-                    ->orderBy('td_mutual_fund.created_at','ASC')
-                    ->get();
-                    // return $fetch_data;
-                    if ($request->transmission_type==1) {
-                        # code...
-                        // $data=MutualFund::
-                    }elseif ($request->transmission_type==2) {
-                        # code...
-                    }
+                //     # code...
+                // }
+                // if ($data->trans_id==20) {  // minor to major
+                //     $first_client_id=$data->first_client_id;
+                //     $up_data=Client::find($first_client_id);
+                //     $up_data->pan=$request->minor_to_major_pan;
+                //     $up_data->client_type='P';
+                //     $up_data->updated_by=Helper::modifyUser($request->user());
+                //     $up_data->save();
+                // }
 
-                }
+                // if ($request->transmission_type!='' && $data->trans_id==19) {
+                //     $fetch_data=MutualFund::where('folio_no',$data->folio_no)
+                //     ->orderBy('td_mutual_fund.created_at','ASC')
+                //     ->get();
+                //     // return $fetch_data;
+                //     if ($request->transmission_type==1) {
+                //         # code...
+                //         // $data=MutualFund::
+                //     }elseif ($request->transmission_type==2) {
+                //         # code...
+                //     }
 
-                if ($data->trans_id==32) {  // change mode of holding
-                    $fetch_folio_data=MutualFund::where('folio_no',$data->folio_no)
-                        ->orderBy('td_mutual_fund.created_at','ASC')
-                        ->get();
+                // }
 
-                }
+                // if ($data->trans_id==32) {  // change mode of holding
+                //     $fetch_folio_data=MutualFund::where('folio_no',$data->folio_no)
+                //         ->orderBy('td_mutual_fund.created_at','ASC')
+                //         ->get();
 
-                if ($data->trans_id==11 || $data->trans_id==21) {  // nominee 11 change & 21 addition
-                    $fetch_folio_data=MutualFund::where('folio_no',$data->folio_no)
-                        ->orderBy('td_mutual_fund.created_at','ASC')
-                        ->get();
-                }
+                // }
 
-                if($data->trans_id == 18){
-                    $up_data=Client::find($first_client_id);
-                    $up_data->email = ($request->change_contact_type == 'B' || $request->change_contact_type == 'E') ? $request->email : $up_data->email;
-                    $up_data->mobile = ($request->change_contact_type == 'B' || $request->change_contact_type == 'M') ? $request->mobile : $up_data->mobile;
-                    $up_data->updated_by=Helper::modifyUser($request->user());
-                    $up_data->save();
-                }
+                // if ($data->trans_id==11 || $data->trans_id==21) {  // nominee 11 change & 21 addition
+                //     $fetch_folio_data=MutualFund::where('folio_no',$data->folio_no)
+                //         ->orderBy('td_mutual_fund.created_at','ASC')
+                //         ->get();
+                // }
+
+                // if($data->trans_id == 18){
+                //     $up_data=Client::find($first_client_id);
+                //     $up_data->email = ($request->change_contact_type == 'B' || $request->change_contact_type == 'E') ? $request->email : $up_data->email;
+                //     $up_data->mobile = ($request->change_contact_type == 'B' || $request->change_contact_type == 'M') ? $request->mobile : $up_data->mobile;
+                //     $up_data->updated_by=Helper::modifyUser($request->user());
+                //     $up_data->save();
+                // }
 
 
 

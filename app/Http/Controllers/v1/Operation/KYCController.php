@@ -18,6 +18,7 @@ class KYCController extends Controller
             $login_status_id=json_decode($request->login_status_id);
 
             $trans_type_id=$request->trans_type_id;
+            $trans_id=$request->trans_id;
 
             $recv_from=$request->recv_from;
             $sub_brk_cd=$request->sub_brk_cd;
@@ -141,7 +142,8 @@ class KYCController extends Controller
                             'md_rnt.rnt_name as rnt_name','md_amc.amc_name as amc_name','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','md_branch.brn_name as branch_name'
                             ,'md_employee.emp_name as emp_name')
                             ->where('td_kyc.deleted_flag','N')
-                            // ->where('td_kyc.tin_no',$tin_no)
+                        ->where('td_kyc.kyc_type',$trans_id)
+                        // ->where('td_kyc.tin_no',$tin_no)
                             ->whereRaw($rawQuery)
                             ->orderByRaw($rawOrderBy)
                             ->paginate($paginate); 
@@ -157,10 +159,11 @@ class KYCController extends Controller
                             ,'md_employee.emp_name as emp_name')
                             ->whereDate('td_kyc.entry_dt',date('Y-m-d'))
                             ->where('td_kyc.deleted_flag','N')
-                            ->orderByRaw($rawOrderBy)
+                        ->where('td_kyc.kyc_type',$trans_id)
+                        ->orderByRaw($rawOrderBy)
                             ->paginate($paginate); 
                     }
-                } elseif (($from_date && $to_date) || $tin_no || $client_code || ($login_type && !empty($login_at))) {
+                } elseif (($from_date && $to_date) || $tin_no || $client_code || $login_type || !empty($login_at)) {
                     $rawQuery='';
                     if ($from_date && $to_date) {
                         if (strlen($rawQuery) > 0) {
@@ -184,21 +187,45 @@ class KYCController extends Controller
                             $rawQuery.=" td_kyc.client_id='".$client_code."'";
                         }
                     }
-                    if ($login_type && $login_type=='A' && !empty($login_at)) {
-                        $login_at_string= implode(',', $login_at);
+                    if($login_type){
                         if (strlen($rawQuery) > 0) {
-                            $rawQuery.=" AND md_amc.id IN (".$login_at_string.")";
+                            $rawQuery.=" AND td_kyc.kyc_login_type='".$login_type."'";
                         }else {
-                            $rawQuery.=" md_amc.id IN (".$login_at_string.")";
-                        }
-                    }elseif ($login_type && $login_type!='A' && !empty($login_at)) {
-                        $login_at_string= implode(',', $login_at);
-                        if (strlen($rawQuery) > 0) {
-                            $rawQuery.=" AND md_rnt.id IN (".$login_at_string.")";
-                        }else {
-                            $rawQuery.=" md_rnt.id IN (".$login_at_string.")";
+                            $rawQuery.=" td_kyc.kyc_login_type='".$login_type."'";
                         }
                     }
+                    if (!empty($login_at)) {
+                        $login_at_string= implode(',', $login_at);
+                        if ($login_type=='A') {
+                            if (strlen($rawQuery) > 0) {
+                                $rawQuery.=" AND md_amc.id IN (".$login_at_string.")";
+                            }else {
+                                $rawQuery.=" md_amc.id IN (".$login_at_string.")";
+                            }
+                        }else {
+                            if (strlen($rawQuery) > 0) {
+                                $rawQuery.=" AND md_rnt.id IN (".$login_at_string.")";
+                            }else {
+                                $rawQuery.=" md_rnt.id IN (".$login_at_string.")";
+                            }
+                        }
+                    }
+
+                    // if ($login_type && $login_type=='A' && !empty($login_at)) {
+                    //     $login_at_string= implode(',', $login_at);
+                    //     if (strlen($rawQuery) > 0) {
+                    //         $rawQuery.=" AND md_amc.id IN (".$login_at_string.")";
+                    //     }else {
+                    //         $rawQuery.=" md_amc.id IN (".$login_at_string.")";
+                    //     }
+                    // }elseif ($login_type && $login_type!='A' && !empty($login_at)) {
+                    //     $login_at_string= implode(',', $login_at);
+                    //     if (strlen($rawQuery) > 0) {
+                    //         $rawQuery.=" AND md_rnt.id IN (".$login_at_string.")";
+                    //     }else {
+                    //         $rawQuery.=" md_rnt.id IN (".$login_at_string.")";
+                    //     }
+                    // }
                     // return $rawQuery;
                     $data=KYC::join('md_client','md_client.id','=','td_kyc.client_id')
                         ->leftJoin('md_trans','md_trans.id','=','td_kyc.kyc_type')
@@ -211,6 +238,7 @@ class KYCController extends Controller
                         ,'md_employee.emp_name as emp_name')
                         ->where('td_kyc.deleted_flag','N')
                         // ->where('td_kyc.tin_no',$tin_no)
+                        ->where('td_kyc.kyc_type',$trans_id)
                         ->whereRaw($rawQuery)
                         ->orderBy('td_kyc.entry_dt','DESC')
                         ->paginate($paginate); 
@@ -228,6 +256,8 @@ class KYCController extends Controller
                         ->whereDate('td_kyc.entry_dt',date('Y-m-d'))
                         ->where('td_kyc.deleted_flag','N')
                         ->orderBy('td_kyc.entry_dt','DESC')
+                        // ->where('md_trans.trans_type_id',$trans_type_id)
+                        ->where('td_kyc.kyc_type',$trans_id)
                         ->paginate($paginate); 
                 }
             }
@@ -530,12 +560,13 @@ class KYCController extends Controller
                 $arn_no=Helper::CommonParamValue(1);
 
                 $scaned_form=$request->scaned_form;
-                    $doc_name='';
-                    if ($scaned_form) {
-                        $cv_path_extension=$scaned_form->getClientOriginalExtension();
-                        $doc_name=microtime(true).".".$cv_path_extension;
-                        $scaned_form->move(public_path('kyc-form/'),$doc_name);
-                    }
+                $doc_name='';
+                if ($scaned_form) {
+                    $cv_path_extension=$scaned_form->getClientOriginalExtension();
+                    $doc_name=microtime(true).".".$cv_path_extension;
+                    $scaned_form->move(public_path('kyc-form/'),$doc_name);
+                }
+                    
 
                 $data=KYC::create(array(
                     'tin_no'=>$tin_no,

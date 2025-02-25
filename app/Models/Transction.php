@@ -12,6 +12,7 @@ class Transction extends Model
     protected $fillable = [
         'trans_type_id',
         'trns_name',
+        'manual_update_tat',
         'created_by',
         'updated_by',
     ];
