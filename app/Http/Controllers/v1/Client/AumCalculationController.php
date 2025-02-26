@@ -26,6 +26,7 @@ use Session;
 use App\Models\Disclaimer;
 use App\Models\AumReport;
 use App\Jobs\AumCalculationJob;
+use App\Jobs\PrevDayUnitsJob;
 use App\Http\Controllers\V1\Client\AumCalculationController as AumCalculationController1;
 
 class AumCalculationController extends Controller
@@ -33,7 +34,12 @@ class AumCalculationController extends Controller
     public function index(Request $request)
     {
         try {
+            // return  'hii';
+
             $mydata=[];
+
+            PrevDayUnitsJob::dispatch();
+            return 'Job Run Successfully';
             $clients=MutualFundTransaction::select('id','first_client_name','first_client_pan')
             // ->where('delete_flag','N')
             // ->where('amc_flag','N')
