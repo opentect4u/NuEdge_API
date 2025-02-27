@@ -45,10 +45,10 @@ class Helper{
     public static function ipWhitelist($ip)
     {
         return response()->json([
-            'suc'=>10,
+            'suc'=>0,
             'msg'=>Controller::IP_WHITELIST_ERROR.$ip,
             'data'=>[]
-        ],400);
+        ],403);
     }
 
     public static function unauthorized($msg)

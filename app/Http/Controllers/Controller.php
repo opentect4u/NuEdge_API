@@ -13,7 +13,7 @@ class Controller extends BaseController
     const DATA_FETCH_SUCCESS = 'Successfull';
     const DATA_SAVE_ERROR = 'Currently we are facing some data saving problem. Please try again.';
     const ALREADY_EXIST = 'Record already exist.';
-    const IP_WHITELIST_ERROR = 'You can not access ';
+    const IP_WHITELIST_ERROR = 'Your IP address is not whitelisted. IP Address: ';
     const POST_METHOD_ACCESS_ERROR='Method is not allowed for the requested route.';
     const CONTROLLER_NOT_FOUND='Controller does not exist.';
     const METHOD_NOT_FOUND='Method does not exist.';

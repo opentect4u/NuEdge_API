@@ -17,9 +17,10 @@ class IpMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        if(in_array($request->ip(), explode(",",env('ip_whitelist')))) {
+        $serverIp = request()->server('SERVER_ADDR');
+        if(in_array($serverIp, explode(",",env('ip_whitelist')))) {
             return $next($request);
         }
-        return Helper::ipWhitelist($request->ip());
+        return Helper::ipWhitelist($serverIp);
     }
 }

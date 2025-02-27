@@ -15,6 +15,7 @@ class HomeController extends Controller
     public function index(Request $request)
     {
         try {
+            // return  $request;
             $data=$request->user();
         } catch (\Throwable $th) {
             //throw $th;
