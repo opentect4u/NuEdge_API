@@ -15,6 +15,8 @@ class TestController extends Controller
     public function ShowIp(Request $request)
     {
         $data=$request->ip();
+        // $hostname = gethostname();
+        // $hostIp = gethostbyname($hostname);
         return Helper::SuccessResponse($data);
         return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
     }
