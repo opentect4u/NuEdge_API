@@ -5,7 +5,7 @@ namespace App\Http\Controllers\v1\Operation;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Helpers\Helper;
-use App\Models\{MutualFund,Client,FormReceived};
+use App\Models\{MutualFund,Client,FormReceived,FolioDetailsReport};
 use Validator;
 use Illuminate\Support\Carbon;
 
@@ -1070,6 +1070,13 @@ class FinancialController extends Controller
                     $error='Temporary TIN no already exist.';
                     return Helper::ErrorResponse($error);
                 }else {
+
+                    $old_details="";
+                    if($request->trans_id==18)
+                    {
+                        $old_details=json_encode(Client::where('id',$request->first_client_id)->first());
+                    }
+
                     $second_client_id=$request->second_client_id;
                     $second_client_name=$request->second_client_name;
                     $second_client_pan=$request->second_client_pan;
@@ -1124,7 +1131,7 @@ class FinancialController extends Controller
                         'entry_date'=> date('Y-m-d'),
                         'first_client_id'=>$request->first_client_id,
                         'first_kyc'=>$request->first_kyc,
-                        'mode_of_holding'=>(($request->mode_of_holding)?$request->mode_of_holding:(($request->change_existing_mode_of_holding)?$request->change_existing_mode_of_holding:NULL)),
+                        'mode_of_holding'=>isset($request->mode_of_holding)?$request->mode_of_holding:NULL,
 
                         'second_client_id'=>isset($second_client_id)?$second_client_id:NULL,
                         'second_kyc'=>isset($request->second_client_kyc)?$request->second_client_kyc:NULL,
@@ -1185,12 +1192,21 @@ class FinancialController extends Controller
                         'third_client_kyc_status'=>isset($request->third_client_kyc_status)?$request->third_client_kyc_status:NULL,
                         'transmission_type'=>isset($request->transmission_type)?$request->transmission_type:NULL,
 
+
+                        'change_existing_mode_of_holding'=>isset($request->change_existing_mode_of_holding)?$request->change_existing_mode_of_holding:NULL,
                         'change_new_mode_of_holding'=>isset($request->change_new_mode_of_holding)?$request->change_new_mode_of_holding:NULL,
+                        /********************* */
+                        'old_details'=>($old_details)?$old_details:NULL,
+                        'new_email'=>isset($request->email)?$request->email:NULL,
+                        'new_mobile'=>isset($request->mobile)?$request->mobile:NULL,
+                        'new_name'=>isset($request->new_name)?$request->new_name:NULL,
+
                         'mob_declaration_flag'=>isset($request->mob_dec)?$request->mob_dec:NULL,
                         'email_declaration_flag'=>isset($request->email_dec)?$request->email_dec:NULL,
                         'merge_folio'=>isset($request->merge_folio)?$request->merge_folio:NULL,
                         'new_nominee'=>isset($request->new_nominee)?$request->new_nominee:NULL,
-
+                        'existing_nominee'=>isset($request->existing_nominee)?$request->existing_nominee:NULL,
+                        
                         // for special sip
                         'swp_frequency'=>isset($request->swp_frequency)?$request->swp_frequency:NULL,
                         'swp_start_date'=>isset($request->swp_start_date)?date('Y-m-d',strtotime($request->swp_start_date)):NULL,
@@ -1315,6 +1331,18 @@ class FinancialController extends Controller
                 // return $request->sip_start_date;
                 // return $tin_no;
                 // craete TTIN no
+
+
+                
+                /******************************************* */
+                $old_details="";
+                if($request->trans_id==18)
+                {
+                    $old_details=json_encode(Client::where('id',$request->first_client_id)->first());
+                }
+
+                /******************************************* */
+
                 $is_has=FormReceived::orderBy('created_at','desc')->get();
                 if (count($is_has)>0) {
                     $last_no=str_split($is_has[0]['temp_tin_no'],5)[1];
@@ -1391,7 +1419,7 @@ class FinancialController extends Controller
                         'entry_date'=> date('Y-m-d'),
                         'first_client_id'=>$request->first_client_id,
                         'first_kyc'=>isset($request->first_kyc)?$request->first_kyc:NULL,
-                        'mode_of_holding'=>(($request->mode_of_holding)?$request->mode_of_holding:(($request->change_existing_mode_of_holding)?$request->change_existing_mode_of_holding:NULL)),
+                        'mode_of_holding'=>($request->mode_of_holding)?$request->mode_of_holding:NULL,
 
                         'second_client_id'=>isset($second_client_id)?$second_client_id:NULL,
                         'second_kyc'=>isset($request->second_client_kyc)?$request->second_client_kyc:NULL,
@@ -1452,11 +1480,19 @@ class FinancialController extends Controller
                         'third_client_kyc_status'=>isset($request->third_client_kyc_status)?$request->third_client_kyc_status:NULL,
                         'transmission_type'=>isset($request->transmission_type)?$request->transmission_type:NULL,
 
+                        'change_existing_mode_of_holding'=>isset($request->change_existing_mode_of_holding)?$request->change_existing_mode_of_holding:NULL,
                         'change_new_mode_of_holding'=>isset($request->change_new_mode_of_holding)?$request->change_new_mode_of_holding:NULL,
+                        /********************* */
+                        'old_details'=>($old_details)?$old_details:NULL,
+                        'new_email'=>isset($request->email)?$request->email:NULL,
+                        'new_mobile'=>isset($request->mobile)?$request->mobile:NULL,
+                        'new_name'=>isset($request->new_name)?$request->new_name:NULL,
+
                         'mob_declaration_flag'=>isset($request->mob_dec)?$request->mob_dec:NULL,
                         'email_declaration_flag'=>isset($request->email_dec)?$request->email_dec:NULL,
                         'merge_folio'=>isset($request->merge_folio)?$request->merge_folio:NULL,
                         'new_nominee'=>isset($request->new_nominee)?$request->new_nominee:NULL,
+                        'existing_nominee'=>isset($request->existing_nominee)?$request->existing_nominee:NULL,
 
                         // for special sip
                         'swp_frequency'=>isset($request->swp_frequency)?$request->swp_frequency:NULL,
@@ -1604,34 +1640,88 @@ class FinancialController extends Controller
     {
         try {
             $folio_no=$request->folio_no;
-            $data=MutualFund::join('td_form_received','td_form_received.temp_tin_no','=','td_mutual_fund.temp_tin_no')
-                        ->join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
-                        ->join('md_scheme','md_scheme.id','=','td_mutual_fund.trans_scheme_from')
-                        ->leftJoin('md_scheme as md_scheme_2','md_scheme_2.id','=','td_mutual_fund.trans_scheme_to')
-                        ->join('md_client','md_client.id','=','td_mutual_fund.first_client_id')
-                        ->leftJoin('md_client as md_client_2','md_client_2.id','=','td_mutual_fund.second_client_id')
-                        ->leftJoin('md_client as md_client_3','md_client_3.id','=','td_mutual_fund.third_client_id')
-                        ->join('md_plan','md_plan.id','=','td_mutual_fund.plan_id')
-                        ->join('md_option','md_option.id','=','td_mutual_fund.option_id')
-                        ->leftJoin('md_plan as md_plan_2','md_plan_2.id','=','td_mutual_fund.plan_id_to')
-                        ->leftJoin('md_option as md_option_2','md_option_2.id','=','td_mutual_fund.option_id_to')
-                        ->leftJoin('md_rnt','md_rnt.id','=','td_mutual_fund.rnt_login_at')
-                        ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_mutual_fund.chq_bank')
-                        ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
-                        ->leftJoin('md_branch','md_branch.id','=','td_form_received.branch_code')
-                        ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','td_form_received.application_no as application_no',
-                        'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme.id as scheme_id','md_scheme_2.scheme_name as scheme_name_to','md_scheme_2.id as scheme_id_to',
-                        'md_client.client_code as first_client_code','md_client.client_name as first_client_name','md_client.pan as first_client_pan','md_client.client_type as first_client_type',
-                        'md_client_2.client_code as second_client_code','md_client_2.client_name as second_client_name','md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
-                        'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to',
-                        'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_branch.brn_name as branch_name',
-                        'md_deposit_bank.bank_name as bank_name','md_deposit_bank.ifs_code as ifs_code','md_deposit_bank.micr_code as micr_code','md_deposit_bank.branch_name as chq_branch_name','md_deposit_bank.branch_addr as chq_branch_addr',
-                        'md_employee.emp_name as emp_name')
-                        ->where('td_mutual_fund.folio_no',$folio_no)
-                        // ->orderBy('td_mutual_fund.created_at','ASC')
-                        ->get();
+            $client_name=$request->client_name;
+            $pan=$request->pan;
+            $source_folio_no=$request->source_folio_no;
+            $rawQuery='';
+            if ($source_folio_no) {
+                $rawQuery='tt_folio_details_reports.folio_no!="'.$source_folio_no.'"';
+            }else {
+                $rawQuery='tt_folio_details_reports.folio_no="'.$folio_no.'"';
+            }
+            if ($pan) {
+                $data = FolioDetailsReport::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','tt_folio_details_reports.product_code')
+                    ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
+                    ->leftJoin('md_plan','md_plan.id','=','md_scheme_isin.plan_id')
+                    ->leftJoin('md_option','md_option.id','=','md_scheme_isin.option_id')
+                    ->join('md_client','md_client.pan','=','tt_folio_details_reports.pan')
+                    ->leftJoin('md_client as md_client_2','md_client_2.pan','=','tt_folio_details_reports.pan_2_holder')
+                    ->leftJoin('md_client as md_client_3','md_client_3.pan','=','tt_folio_details_reports.pan_3_holder')
+                    ->select('tt_folio_details_reports.rnt_id','tt_folio_details_reports.folio_no','tt_folio_details_reports.mode_of_holding','tt_folio_details_reports.mode_of_holding_des',
+                        'tt_folio_details_reports.*',
+                        'md_scheme_isin.scheme_id','md_scheme_isin.plan_id','md_scheme_isin.option_id','md_scheme.scheme_name as scheme_name',
+                        'md_plan.plan_name','md_option.opt_name as option_name',
+                        'md_client.client_code as first_client_code','md_client.id as first_client_id','md_client_2.client_code as second_client_code','md_client_2.id as second_client_id','md_client_3.client_code as third_client_code','md_client_3.id as third_client_id')
+                    ->selectRaw('CASE
+                        WHEN tt_folio_details_reports.mode_of_holding="AS" || tt_folio_details_reports.mode_of_holding="ES" || tt_folio_details_reports.mode_of_holding="ANYONE OR SURVIVOR" || tt_folio_details_reports.mode_of_holding="EITHER OR SURVIVOR" THEN "A"
+                        WHEN tt_folio_details_reports.mode_of_holding="JO" || tt_folio_details_reports.mode_of_holding="JOINT" || tt_folio_details_reports.mode_of_holding="JOINTLY" THEN "J"
+                        WHEN tt_folio_details_reports.mode_of_holding="SI" || tt_folio_details_reports.mode_of_holding="SINGLE" THEN "S"
+                        END AS mode_of_holding_code')
+                    ->where('tt_folio_details_reports.pan',$pan)
+                    ->whereRaw($rawQuery)
+                    ->get();
+            }else {
+                $data = FolioDetailsReport::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','tt_folio_details_reports.product_code')
+                    ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
+                    ->leftJoin('md_plan','md_plan.id','=','md_scheme_isin.plan_id')
+                    ->leftJoin('md_option','md_option.id','=','md_scheme_isin.option_id')
+                    ->join('md_client','md_client.pan','=','tt_folio_details_reports.pan')
+                    ->leftJoin('md_client as md_client_2','md_client_2.pan','=','tt_folio_details_reports.pan_2_holder')
+                    ->leftJoin('md_client as md_client_3','md_client_3.pan','=','tt_folio_details_reports.pan_3_holder')
+                    ->select('tt_folio_details_reports.rnt_id','tt_folio_details_reports.folio_no','tt_folio_details_reports.mode_of_holding','tt_folio_details_reports.mode_of_holding_des',
+                        'tt_folio_details_reports.*',
+                        'md_scheme_isin.scheme_id','md_scheme_isin.plan_id','md_scheme_isin.option_id','md_scheme.scheme_name as scheme_name',
+                        'md_plan.plan_name','md_option.opt_name as option_name',
+                        'md_client.client_code as first_client_code','md_client.id as first_client_id','md_client_2.client_code as second_client_code','md_client_2.id as second_client_id','md_client_3.client_code as third_client_code','md_client_3.id as third_client_id')
+                    ->selectRaw('CASE
+                        WHEN tt_folio_details_reports.mode_of_holding="AS" || tt_folio_details_reports.mode_of_holding="ES" || tt_folio_details_reports.mode_of_holding="ANYONE OR SURVIVOR" || tt_folio_details_reports.mode_of_holding="EITHER OR SURVIVOR" THEN "A"
+                        WHEN tt_folio_details_reports.mode_of_holding="JO" || tt_folio_details_reports.mode_of_holding="JOINT" || tt_folio_details_reports.mode_of_holding="JOINTLY" THEN "J"
+                        WHEN tt_folio_details_reports.mode_of_holding="SI" || tt_folio_details_reports.mode_of_holding="SINGLE" THEN "S"
+                        END AS mode_of_holding_code')
+                    ->where('tt_folio_details_reports.first_client_name',$client_name)
+                    ->whereRaw($rawQuery)
+                    ->get();
+            }
+            
+
+            // $data=MutualFund::join('td_form_received','td_form_received.temp_tin_no','=','td_mutual_fund.temp_tin_no')
+            //             ->join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
+            //             ->join('md_scheme','md_scheme.id','=','td_mutual_fund.trans_scheme_from')
+            //             ->leftJoin('md_scheme as md_scheme_2','md_scheme_2.id','=','td_mutual_fund.trans_scheme_to')
+            //             ->join('md_client','md_client.id','=','td_mutual_fund.first_client_id')
+            //             ->leftJoin('md_client as md_client_2','md_client_2.id','=','td_mutual_fund.second_client_id')
+            //             ->leftJoin('md_client as md_client_3','md_client_3.id','=','td_mutual_fund.third_client_id')
+            //             ->join('md_plan','md_plan.id','=','td_mutual_fund.plan_id')
+            //             ->join('md_option','md_option.id','=','td_mutual_fund.option_id')
+            //             ->leftJoin('md_plan as md_plan_2','md_plan_2.id','=','td_mutual_fund.plan_id_to')
+            //             ->leftJoin('md_option as md_option_2','md_option_2.id','=','td_mutual_fund.option_id_to')
+            //             ->leftJoin('md_rnt','md_rnt.id','=','td_mutual_fund.rnt_login_at')
+            //             ->leftJoin('md_deposit_bank','md_deposit_bank.id','=','td_mutual_fund.chq_bank')
+            //             ->leftJoin('md_employee','md_employee.euin_no','=','td_form_received.euin_no')
+            //             ->leftJoin('md_branch','md_branch.id','=','td_form_received.branch_code')
+            //             ->select('td_mutual_fund.*','md_trans.trns_name as trans_name','md_trans.trans_type_id as trans_type_id','td_form_received.application_no as application_no',
+            //             'td_form_received.bu_type as bu_type','td_form_received.inv_type as inv_type','md_scheme.scheme_name as scheme_name','md_scheme.id as scheme_id','md_scheme_2.scheme_name as scheme_name_to','md_scheme_2.id as scheme_id_to',
+            //             'md_client.client_code as first_client_code','md_client.client_name as first_client_name','md_client.pan as first_client_pan','md_client.client_type as first_client_type',
+            //             'md_client_2.client_code as second_client_code','md_client_2.client_name as second_client_name','md_client_2.pan as second_client_pan','md_client_2.client_type as second_client_type',
+            //             'md_plan.plan_name as plan_name','md_option.opt_name as opt_name','md_plan_2.plan_name as plan_name_to','md_option_2.opt_name as opt_name_to',
+            //             'md_rnt.rnt_name as rnt_name','td_form_received.arn_no as arn_no','td_form_received.euin_no as euin_no','md_branch.brn_name as branch_name',
+            //             'md_deposit_bank.bank_name as bank_name','md_deposit_bank.ifs_code as ifs_code','md_deposit_bank.micr_code as micr_code','md_deposit_bank.branch_name as chq_branch_name','md_deposit_bank.branch_addr as chq_branch_addr',
+            //             'md_employee.emp_name as emp_name')
+            //             ->where('td_mutual_fund.folio_no',$folio_no)
+            //             // ->orderBy('td_mutual_fund.created_at','ASC')
+            //             ->get();
         } catch (\Throwable $th) {
-            //throw $th;
+            throw $th;
             return Helper::ErrorResponse(parent::DATA_SAVE_ERROR);
         }
         return Helper::SuccessResponse($data);

@@ -114,5 +114,11 @@ class MutualFund extends Model
         'pause_start_date',
         'pause_end_date',
         'pause_amount',
+        'old_details',
+        'new_email',
+        'new_mobile',
+        'new_name',
+        'change_existing_mode_of_holding',
+        'existing_nominee',
     ];
 }
