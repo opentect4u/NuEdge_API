@@ -57,7 +57,7 @@ class AckFinalSubmitJob implements ShouldQueue
         // \Log::info($name);
         // \Log::info($app_form);
         // \Log::info($email);
-        $email='sovandasdas3@gmail.com';
+        // $email='sovandasdas3@gmail.com';
         Mail::to($email)->send(new SendAckEmail($name,$app_form,$count));
         MutualFund::where('tin_no',$this->item['tin_no'])->update(['ack_final_submit'=>'Y']);
     }
