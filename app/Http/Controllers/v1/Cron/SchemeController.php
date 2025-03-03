@@ -22,7 +22,7 @@ class SchemeController extends Controller
             $ud='';
             foreach ($datas as $key => $data) {
                 $id=$data->id;
-                if ($data->nfo_reopen_dt < date('Y-m-d')) {
+                if ($data->nfo_reopen_dt <= date('Y-m-d')) {
                     // return $data->nfo_reopen_dt;
                     $ud=Scheme::find($id);
                     $ud->scheme_type='O';
