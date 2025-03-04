@@ -132,7 +132,8 @@ class ManualUpdateController extends Controller
                         )
                         ->where('td_mutual_fund.delete_flag','N')
                         ->where('md_trans.trans_type_id',$trans_type_id)
-                        ->where('td_mutual_fund.form_status','!=','P')
+                        // ->where('td_mutual_fund.form_status','!=','P')
+                        ->where('td_mutual_fund.form_status','A')
                         ->whereRaw($rawQuery)
                         ->orderByRaw($rawOrderBy)
                         ->paginate($paginate);  
@@ -160,7 +161,8 @@ class ManualUpdateController extends Controller
                         )
                         ->where('td_mutual_fund.delete_flag','N')
                         ->where('md_trans.trans_type_id',$trans_type_id)
-                        ->where('td_mutual_fund.form_status','!=','P')
+                        // ->where('td_mutual_fund.form_status','!=','P')
+                        ->where('td_mutual_fund.form_status','A')
                         ->orderByRaw($rawOrderBy)
                         ->paginate($paginate);   
                 }
@@ -236,7 +238,8 @@ class ManualUpdateController extends Controller
                         )
                         ->where('td_mutual_fund.delete_flag','N')
                         ->where('md_trans.trans_type_id',$trans_type_id)
-                        ->where('td_mutual_fund.form_status','!=','P')
+                        // ->where('td_mutual_fund.form_status','!=','P')
+                        ->where('td_mutual_fund.form_status','A')
                         ->whereRaw($rawQuery)
                         // ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
                         ->paginate($paginate);  
@@ -264,7 +267,8 @@ class ManualUpdateController extends Controller
                         )
                         ->where('td_mutual_fund.delete_flag','N')
                         ->where('md_trans.trans_type_id',$trans_type_id)
-                        ->where('td_mutual_fund.form_status','!=','P')
+                        // ->where('td_mutual_fund.form_status','!=','P')
+                        ->where('td_mutual_fund.form_status','A')
                         ->orderBy('td_mutual_fund.updated_at','desc')
                         ->paginate($paginate);   
             }
