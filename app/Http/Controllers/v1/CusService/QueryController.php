@@ -396,7 +396,7 @@ class QueryController extends Controller
                     // $short_url_json=json_decode($short_url_json);
                     // return $short_url_json;
                     $feedback_url="";
-                    if ($short_url_json->status=='success') {
+                    if (isset($short_url_json->status) && $short_url_json->status=='success') {
                         $feedback_url=$short_url_json->shorturl;
                     }
                     // return $short_url;
@@ -632,7 +632,7 @@ class QueryController extends Controller
                 // $short_url_json=json_decode($short_url_json);
                 // return $short_url_json;
                 $short_url="";
-                if ($short_url_json->status=='success') {
+                if (isset($short_url_json->status) && $short_url_json->status=='success') {
                     $short_url=$short_url_json->shorturl;
                 }
                 // return $short_url;

@@ -25,6 +25,7 @@ Route::prefix('v1')->group(function () {
         Route::get('index1',[App\Http\Controllers\v1\TestController::class,'index1']);
         Route::get('index2',[App\Http\Controllers\v1\TestController::class,'index2']);
         Route::get('index3',[App\Http\Controllers\v1\TestController::class,'index3']);
+        // Route::get('hash',[App\Http\Controllers\TestController::class,'hash']);
 
         Route::post('register',[App\Http\Controllers\v1\RegisterController::class,'register']);
         Route::post('login',[App\Http\Controllers\v1\LoginController::class,'login']);
