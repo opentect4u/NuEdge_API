@@ -329,6 +329,21 @@ class ClientController extends Controller
                 $data['data']=$set_data;
             }else{
                 // return $request;
+
+                if ($request->client_type=='E') { // for existing client
+                    $already=Client::where('pan',$request->pan)->get();
+                    if (count($already)>0) {
+                        $ms='PAN no already exist.';
+                        return Helper::WarningResponse($ms);
+                    }else{
+                        $data=Client::create(array(
+                            'client_name'=>$request->client_name,
+                            'pan'=>$request->pan,
+                            'client_type'=>$request->client_type,
+                            'created_by'=>Helper::modifyUser($request->user()),
+                        )); 
+                    }
+                } else { // for other client
                 
                     $client_code="";
                     if ($request->client_type_mode==14) {
@@ -541,7 +556,7 @@ class ClientController extends Controller
 
                         $data=Client::with('ClientDoc')->where('id',$u_data->id)->first();    
                     }
-                
+                }
             }  
         } catch (\Throwable $th) {
             throw $th;
