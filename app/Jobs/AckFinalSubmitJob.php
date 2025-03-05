@@ -34,6 +34,7 @@ class AckFinalSubmitJob implements ShouldQueue
      */
     public function handle()
     {
+        \Log::info('Ack Final Submit Job Run Successfully');
         // MutualFundTransaction
         // \Log::info($this->item);
         // \Log::info($this->item['tin_no']);

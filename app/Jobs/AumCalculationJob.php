@@ -32,16 +32,16 @@ class AumCalculationJob implements ShouldQueue
      */
     public function handle()
     {
-        // \Log::info($this->clients);
+        \Log::info('Aum Calculation Job Run Successfully');
         foreach ($this->clients as $key => $client) {
             $client_name=$client['first_client_name'];
             $pan_no=$client['first_client_pan'];
             $valuation_as_on= date("Y-m-d", strtotime("- 1 day"));
-            \Log::info($client_name);
-            \Log::info($pan_no);
-            \Log::info($valuation_as_on);
+            // \Log::info($client_name);
+            // \Log::info($pan_no);
+            // \Log::info($valuation_as_on);
             $portfolio=AumCalculationController::calucationTotUnitsAndInvCost($client_name,$pan_no,$valuation_as_on);
-            \Log::info('portfolio count : '.count($portfolio));
+            // \Log::info('portfolio count : '.count($portfolio));
             $insert_arr=[];
             foreach ($portfolio as $key => $single) {
                 // return $single;
@@ -74,7 +74,7 @@ class AumCalculationJob implements ShouldQueue
                 ];
             }
             AumReport::insert($insert_arr);
-            \Log::info('***********************************');
+            // \Log::info('***********************************');
         }
         // \Log::info($this->client['first_client_name']);
         // \Log::info($this->client['first_client_pan']);

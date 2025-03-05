@@ -30,6 +30,8 @@ use Validator;
 use Illuminate\Support\Carbon;
 use Excel;
 use DB;
+use App\Jobs\AumCalculationJob;
+use App\Jobs\OpManualUpJob;
 
 class MailBackController extends Controller
 {
@@ -178,6 +180,28 @@ class MailBackController extends Controller
                     ->where('md_mailback_process.process_type','M')
                     ->orderBy('process_date','DESC')
                     ->first();
+
+                /*****************Start QUEUE WORK***************************** */
+                if ($rnt_id==1) { // CAMS
+                    if ($file_type_id=='1' && $file_id=='1') {  // transction  WBR2
+                        OpManualUpJob::dispatch();
+                        $clients=MutualFundTransaction::select('id','first_client_name','first_client_pan')
+                            ->groupBy('first_client_name')
+                            ->groupBy('first_client_pan')
+                            ->get();
+                        AumCalculationJob::dispatch($clients);
+                    }
+                }else if($rnt_id==2){  // KFINTECH
+                    if ($file_type_id==1 && $file_id==5) {  // transction MFSD201
+                        OpManualUpJob::dispatch();
+                        $clients=MutualFundTransaction::select('id','first_client_name','first_client_pan')
+                            ->groupBy('first_client_name')
+                            ->groupBy('first_client_pan')
+                            ->get();
+                        AumCalculationJob::dispatch($clients);
+                    }
+                }
+                /*****************End QUEUE WORK***************************** */
             }
 
             // tata nua plus 

@@ -33,7 +33,7 @@ class OpManualUpJob implements ShouldQueue
      */
     public function handle()
     {
-        \Log::info('hii');
+        \Log::info('Operation (FIN + NFO) Manual Update Job Run Successfully');
         // for final 
         $fin_array=array(1, 4);
             // DB::enableQueryLog();
@@ -51,21 +51,21 @@ class OpManualUpJob implements ShouldQueue
         // \Log::info(DB::getQueryLog());
 
         foreach ($all_data as $key => $value) {
-            \Log::info($value->id);
-            \Log::info($value->rnt_login_dt);
-            \Log::info($value->first_client_id);
-            \Log::info($value->product_code);
-            \Log::info($value->first_client_name);
-            \Log::info($value->first_client_pan);
-            \Log::info($value->amount);
-            \Log::info('---------------------------');
+            // \Log::info($value->id);
+            // \Log::info($value->rnt_login_dt);
+            // \Log::info($value->first_client_id);
+            // \Log::info($value->product_code);
+            // \Log::info($value->first_client_name);
+            // \Log::info($value->first_client_pan);
+            // \Log::info($value->amount);
+            // \Log::info('---------------------------');
             if ($value->first_client_pan) {
-                \Log::info('if');
+                // \Log::info('if');
                 $mydata=MutualFundTransaction::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_mutual_fund_trans.product_code')
                     // ->leftjoin('md_scheme','md_scheme.scheme_id','=','md_scheme_isin.scheme_id')
                     ->select('td_mutual_fund_trans.product_code','td_mutual_fund_trans.folio_no','td_mutual_fund_trans.trans_date','td_mutual_fund_trans.amount','td_mutual_fund_trans.stamp_duty',
-                    'md_scheme_isin.scheme_id','md_scheme_isin.plan_id','md_scheme_isin.option_id'
-                    )
+                    'md_scheme_isin.scheme_id','md_scheme_isin.plan_id','md_scheme_isin.option_id',
+                    'td_mutual_fund_trans.remarks')
                     ->selectRaw('(SELECT id FROM md_client WHERE pan=td_mutual_fund_trans.first_client_pan LIMIT 1)as first_client_id')
                     ->where('td_mutual_fund_trans.product_code',$value->product_code)
                     ->where('td_mutual_fund_trans.first_client_pan',$value->first_client_pan)
@@ -74,12 +74,12 @@ class OpManualUpJob implements ShouldQueue
                     ->get()
                     ->take(1);
                 if (count($mydata)>0) {
-                    \Log::info($mydata[0]->first_client_id);
-                    \Log::info($mydata[0]->scheme_id);
+                    // \Log::info($mydata[0]->first_client_id);
+                    // \Log::info($mydata[0]->scheme_id);
                     $amount=$mydata[0]->amount + $mydata[0]->stamp_duty;
-                    \Log::info($amount);
-                    \Log::info($mydata[0]->folio_no);
-                    \Log::info($mydata[0]->trans_date);
+                    // \Log::info($amount);
+                    // \Log::info($mydata[0]->folio_no);
+                    // \Log::info($mydata[0]->trans_date);
                     $up_data=MutualFund::where('first_client_id',$mydata[0]->first_client_id)
                         ->where('trans_scheme_from',$mydata[0]->scheme_id)
                         ->where('amount',$amount)
@@ -89,12 +89,12 @@ class OpManualUpJob implements ShouldQueue
                     \Log::info("count: ".$up_data);
                 }
             }else {
-                \Log::info('else');
+                // \Log::info('else');
                 $mydata=MutualFundTransaction::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_mutual_fund_trans.product_code')
                     // ->leftjoin('md_scheme','md_scheme.scheme_id','=','md_scheme_isin.scheme_id')
                     ->select('td_mutual_fund_trans.product_code','td_mutual_fund_trans.folio_no','td_mutual_fund_trans.trans_date','td_mutual_fund_trans.amount','td_mutual_fund_trans.stamp_duty',
-                    'md_scheme_isin.scheme_id','md_scheme_isin.plan_id','md_scheme_isin.option_id'
-                    )
+                    'md_scheme_isin.scheme_id','md_scheme_isin.plan_id','md_scheme_isin.option_id',
+                    'td_mutual_fund_trans.remarks')
                     ->selectRaw('(SELECT id FROM md_client WHERE client_name=td_mutual_fund_trans.first_client_name LIMIT 1)as first_client_id')
                     ->where('td_mutual_fund_trans.product_code',$value->product_code)
                     ->where('td_mutual_fund_trans.first_client_name',$value->first_client_name)
@@ -103,21 +103,27 @@ class OpManualUpJob implements ShouldQueue
                     ->get()
                     ->take(1);
                 if (count($mydata)>0) {
-                    \Log::info($mydata[0]->first_client_id);
-                    \Log::info($mydata[0]->scheme_id);
+                    // \Log::info($mydata[0]->first_client_id);
+                    // \Log::info($mydata[0]->scheme_id);
                     $amount=$mydata[0]->amount + $mydata[0]->stamp_duty;
-                    \Log::info($amount);
-                    \Log::info($mydata[0]->folio_no);
-                    \Log::info($mydata[0]->trans_date);
+                    // \Log::info($amount);
+                    // \Log::info($mydata[0]->folio_no);
+                    // \Log::info($mydata[0]->trans_date);
                     // DB::enableQueryLog();
                     $up_data=MutualFund::where('first_client_id',$mydata[0]->first_client_id)
                         ->where('trans_scheme_from',$mydata[0]->scheme_id)
                         ->where('amount',$amount)
                         ->whereDate('rnt_login_dt','=',date('Y-m-d',strtotime($value->rnt_login_dt)))
                         // ->count();
-                        ->update(['manual_trans_status'=>'P','process_date'=>$mydata[0]->trans_date,'form_status'=>'M','folio_no'=>$mydata[0]->folio_no]);
+                        ->update([
+                            'manual_trans_status'=>'P',
+                            'process_date'=>$mydata[0]->trans_date,
+                            'form_status'=>'M',
+                            'folio_no'=>$mydata[0]->folio_no,
+                            'manual_update_remarks'=>$mydata[0]->remarks,
+                        ]);
                     // \Log::info(DB::getQueryLog());
-                    \Log::info("count: ".$up_data);
+                    // \Log::info("count: ".$up_data);
                 }
             }
             // \Log::info(json_encode($mydata));

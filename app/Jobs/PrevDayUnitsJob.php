@@ -32,6 +32,7 @@ class PrevDayUnitsJob implements ShouldQueue
      */
     public function handle()
     {
+        \Log::info('Previous Day Units Job Run Successfully');
         $old_2_day= date("Y-m-d", strtotime("- 2 day"));
         $old_1_day= date("Y-m-d", strtotime("- 1 day"));
         $all_datas=DB::select('SELECT * FROM td_mutual_fund_trans_aum WHERE (trans_date=(SELECT MAX(trans_date) FROM td_mutual_fund_trans_aum WHERE trans_date <="'.$old_2_day.'"))');
@@ -64,7 +65,7 @@ class PrevDayUnitsJob implements ShouldQueue
                 'updated_at'=>date('Y-m-d H:i:s')
             ];
             AumReport::insert($insert);
-            \Log::info('******************'.$key.'******************');
+            // \Log::info('******************'.$key.'******************');
         }
     }
 }
