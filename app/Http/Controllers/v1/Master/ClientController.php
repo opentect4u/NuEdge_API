@@ -251,7 +251,7 @@ class ClientController extends Controller
                     $datas->anniversary_date=isset($request->anniversary_date)?$request->anniversary_date:NULL;
                     $datas->country_id=$request->country_id;
                     $datas->client_type_mode=$request->client_type_mode;
-                    // $data->updated_by=Helper::modifyUser($request->user());
+                    $data->updated_by=Helper::modifyUser($request->user());
                     $datas->save();
                 }elseif ($request->client_type=='N') {
                     $datas=Client::find($id);

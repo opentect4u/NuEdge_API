@@ -15,6 +15,23 @@ use App\Jobs\AckFinalSubmitJob;
 
 class AcknowledgementController extends Controller
 {
+    
+    public function pending(Request $request)
+    {
+        try {
+            $data=MutualFund::join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
+                ->join('md_trns_type','md_trns_type.id','=','md_trans.trans_type_id')
+                ->select('md_trans.trans_type_id as trans_type_id','md_trns_type.trns_type as trns_type_name')
+                ->selectRaw('count(td_mutual_fund.id) as total_count')
+                ->where('td_mutual_fund.form_status','P')
+                ->groupBy('md_trans.trans_type_id')
+                ->get();
+        } catch (\Throwable $th) {
+            throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($data);
+    }
     public function searchDetails(Request $request)
     {
         try {
@@ -503,7 +520,7 @@ class AcknowledgementController extends Controller
                 MutualFund::where('tin_no',$request->tin_no)->update(array(
                     'ack_remarks'=>$request->ack_remarks,
                     'ack_status'=>$request->ack_status,
-                    'form_status'=>'P',
+                    'form_status'=>($request->ack_status=='R')?'R':'P',
                     'updated_by'=>Helper::modifyUser($request->user()),
                 ));
             }

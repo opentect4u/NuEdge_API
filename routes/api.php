@@ -353,6 +353,7 @@ Route::prefix('v1')->group(function () {
             Route::get('daysheetReport',[App\Http\Controllers\v1\Operation\ReportController::class,'index']);
 
 
+            Route::get('ackPendingDetails',[App\Http\Controllers\v1\Operation\AcknowledgementController::class,'pending']);
             Route::get('ackDetailSearch',[App\Http\Controllers\v1\Operation\AcknowledgementController::class,'searchDetails']);
             Route::post('ackDetailSearch',[App\Http\Controllers\v1\Operation\AcknowledgementController::class,'searchDetails']);
             Route::post('ackExport',[App\Http\Controllers\v1\Operation\AcknowledgementController::class,'export']);
