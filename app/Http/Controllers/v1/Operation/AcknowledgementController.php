@@ -487,15 +487,23 @@ class AcknowledgementController extends Controller
 
             $data1=MutualFund::where('tin_no',$request->tin_no)->first();
             if ($request->ack_status=='P') {  // for ack process
+                $validator = Validator::make(request()->all(),[
+                    'ack_copy_scan' =>'required|mimes:pdf',
+                    'rnt_login_dt' =>'required',
+                    'rnt_login_time' =>'required',
+                    'ack_status' =>'required',
+                ]);
+                if($validator->fails()) {
+                    $errors = $validator->errors();
+                    return Helper::ErrorResponse(parent::VALIDATION_ERROR);
+                }
+
                 $ack_copy_scan=$request->ack_copy_scan;
                 if ($ack_copy_scan) {
                     $path_extension=$ack_copy_scan->getClientOriginalExtension();
                     // $ack_copy_scan_name=microtime(true).".".$path_extension;
                     $ack_copy_scan_name="ack_".$request->tin_no.".".$path_extension;
                     $ack_copy_scan->move(public_path('acknowledgement-copy/'),$ack_copy_scan_name);
-                }else{
-                    $ack_copy_scan_name=$data1->ack_copy_scan;
-                    // return $doc_name;
                 }
                 
                 if (Carbon::parse($request->rnt_login_time)->format('H') < 15) {
