@@ -252,7 +252,7 @@ class ClientController extends Controller
                     $datas->country_id=$request->country_id;
                     $datas->client_type_mode=$request->client_type_mode;
                     $datas->maritial_status=$request->maritial_status;
-                    $data->updated_by=Helper::modifyUser($request->user());
+                    $datas->updated_by=Helper::modifyUser($request->user());
                     $datas->save();
                 }elseif ($request->client_type=='N') {
                     $datas=Client::find($id);
@@ -279,7 +279,7 @@ class ClientController extends Controller
                     $datas->client_type=$request->client_type;
                     $datas->client_type_mode=$request->client_type_mode;
                     $datas->maritial_status=$request->maritial_status;
-                    $data->updated_by=Helper::modifyUser($request->user());
+                    $datas->updated_by=Helper::modifyUser($request->user());
                     $datas->save();
                 }elseif ($request->client_type=='M') {
                     $datas=Client::find($id);
@@ -306,7 +306,7 @@ class ClientController extends Controller
                     $datas->relation=$request->relation;
                     $datas->client_type_mode=$request->client_type_mode;
                     $datas->maritial_status=$request->maritial_status;
-                    $data->updated_by=Helper::modifyUser($request->user());
+                    $datas->updated_by=Helper::modifyUser($request->user());
                     $datas->save();
                 }
 
@@ -326,6 +326,7 @@ class ClientController extends Controller
                                 'doc_type_id'=>$request->doc_type_id[$key],
                                 'doc_name'=>$doc_name,
                                 'created_by'=>Helper::modifyUser($request->user()),
+                                'updated_by'=>Helper::modifyUser($request->user()),
                             )); 
                         }
                     }
@@ -404,7 +405,7 @@ class ClientController extends Controller
                                 'client_type_mode'=>$request->client_type_mode,
                                 'maritial_status'=>$request->maritial_status,
                                 'created_by'=>Helper::modifyUser($request->user()),
-                                'updated_by'=>Helper::modifyUser($request->user()),
+                                // 'updated_by'=>Helper::modifyUser($request->user()),
                             )); 
                             $doc_name='';
                             $files=$request->file;
@@ -422,7 +423,7 @@ class ClientController extends Controller
                                         'doc_type_id'=>$request->doc_type_id[$key],
                                         'doc_name'=>$doc_name,
                                         'created_by'=>Helper::modifyUser($request->user()),
-                                        'updated_by'=>Helper::modifyUser($request->user()),
+                                        // 'updated_by'=>Helper::modifyUser($request->user()),
                                     ));      
                                 }
                             }
