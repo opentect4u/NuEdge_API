@@ -32,6 +32,7 @@ use Excel;
 use DB;
 use App\Jobs\AumCalculationJob;
 use App\Jobs\OpManualUpJob;
+use App\Jobs\OpNFTManualUpJob;
 
 class MailBackController extends Controller
 {
@@ -185,6 +186,7 @@ class MailBackController extends Controller
                 if ($rnt_id==1) { // CAMS
                     if ($file_type_id=='1' && $file_id=='1') {  // transction  WBR2
                         OpManualUpJob::dispatch();
+                        OpNFTManualUpJob::dispatch();
                         $clients=MutualFundTransaction::select('id','first_client_name','first_client_pan')
                             ->groupBy('first_client_name')
                             ->groupBy('first_client_pan')
@@ -194,6 +196,7 @@ class MailBackController extends Controller
                 }else if($rnt_id==2){  // KFINTECH
                     if ($file_type_id==1 && $file_id==5) {  // transction MFSD201
                         OpManualUpJob::dispatch();
+                        OpNFTManualUpJob::dispatch();
                         $clients=MutualFundTransaction::select('id','first_client_name','first_client_pan')
                             ->groupBy('first_client_name')
                             ->groupBy('first_client_pan')

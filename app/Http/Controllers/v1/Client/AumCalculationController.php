@@ -28,6 +28,7 @@ use App\Models\AumReport;
 use App\Jobs\AumCalculationJob;
 use App\Jobs\PrevDayUnitsJob;
 use App\Jobs\OpManualUpJob;
+use App\Jobs\OpNFTManualUpJob;
 use App\Http\Controllers\V1\Client\AumCalculationController as AumCalculationController1;
 
 class AumCalculationController extends Controller
@@ -40,7 +41,7 @@ class AumCalculationController extends Controller
             $mydata=[];
 
             // PrevDayUnitsJob::dispatch();
-            OpManualUpJob::dispatch();
+            OpNFTManualUpJob::dispatch();
             return 'Job Run Successfully';
             $clients=MutualFundTransaction::select('id','first_client_name','first_client_pan')
             // ->where('delete_flag','N')

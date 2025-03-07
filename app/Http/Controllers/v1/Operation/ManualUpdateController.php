@@ -21,6 +21,7 @@ class ManualUpdateController extends Controller
             $sort_by=$request->sort_by;
             $column_name=$request->column_name;
             $trans_type_id=$request->trans_type_id;
+            $trans_id=$request->trans_id;
             
             $tin_no=$request->tin_no;
             $option=$request->option;
@@ -113,11 +114,11 @@ class ManualUpdateController extends Controller
                         ->join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
                         ->join('md_scheme','md_scheme.id','=','td_mutual_fund.trans_scheme_from')
                         ->leftJoin('md_scheme as md_scheme_2','md_scheme_2.id','=','td_mutual_fund.trans_scheme_to')
-                        ->join('md_client','md_client.id','=','td_mutual_fund.first_client_id')
+                        ->leftJoin('md_client','md_client.id','=','td_mutual_fund.first_client_id')
                         ->leftJoin('md_client as md_client_2','md_client_2.id','=','td_mutual_fund.second_client_id')
                         ->leftJoin('md_client as md_client_3','md_client_3.id','=','td_mutual_fund.third_client_id')
-                        ->join('md_plan','md_plan.id','=','td_mutual_fund.plan_id')
-                        ->join('md_option','md_option.id','=','td_mutual_fund.option_id')
+                        ->leftJoin('md_plan','md_plan.id','=','td_mutual_fund.plan_id')
+                        ->leftJoin('md_option','md_option.id','=','td_mutual_fund.option_id')
                         ->leftJoin('md_plan as md_plan_2','md_plan_2.id','=','td_mutual_fund.plan_id_to')
                         ->leftJoin('md_option as md_option_2','md_option_2.id','=','td_mutual_fund.option_id_to')
                         ->leftJoin('md_rnt','md_rnt.id','=','td_mutual_fund.rnt_login_at')
@@ -132,11 +133,13 @@ class ManualUpdateController extends Controller
                         )
                         ->where('td_mutual_fund.delete_flag','N')
                         ->where('md_trans.trans_type_id',$trans_type_id)
+                        ->where('td_mutual_fund.trans_id',$trans_id)
                         // ->where('td_mutual_fund.form_status','!=','P')
                         ->where('td_mutual_fund.form_status','A')
                         ->whereRaw($rawQuery)
                         ->orderByRaw($rawOrderBy)
-                        ->paginate($paginate);  
+                        ->get();
+                        // ->paginate($paginate);  
                 } else {
                     $data=MutualFund::join('td_form_received','td_form_received.temp_tin_no','=','td_mutual_fund.temp_tin_no')
                         ->join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
@@ -161,10 +164,12 @@ class ManualUpdateController extends Controller
                         )
                         ->where('td_mutual_fund.delete_flag','N')
                         ->where('md_trans.trans_type_id',$trans_type_id)
+                        ->where('td_mutual_fund.trans_id',$trans_id)
                         // ->where('td_mutual_fund.form_status','!=','P')
                         ->where('td_mutual_fund.form_status','A')
                         ->orderByRaw($rawOrderBy)
-                        ->paginate($paginate);   
+                        ->get();
+                        // ->paginate($paginate);   
                 }
             } elseif (($from_date && $to_date) || $tin_no || $client_code || $amc_name || $scheme_name || $rnt_name) {
                 $rawQuery='';
@@ -215,15 +220,17 @@ class ManualUpdateController extends Controller
                         $rawQuery.=" td_mutual_fund.trans_scheme_from IN (".$rnt_name_string.")";
                     }
                 }
+                // return $rawQuery;
+            // DB::enableQueryLog();
                 $data=MutualFund::join('td_form_received','td_form_received.temp_tin_no','=','td_mutual_fund.temp_tin_no')
                         ->join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
                         ->join('md_scheme','md_scheme.id','=','td_mutual_fund.trans_scheme_from')
                         ->leftJoin('md_scheme as md_scheme_2','md_scheme_2.id','=','td_mutual_fund.trans_scheme_to')
-                        ->join('md_client','md_client.id','=','td_mutual_fund.first_client_id')
+                        ->leftJoin('md_client','md_client.id','=','td_mutual_fund.first_client_id')
                         ->leftJoin('md_client as md_client_2','md_client_2.id','=','td_mutual_fund.second_client_id')
                         ->leftJoin('md_client as md_client_3','md_client_3.id','=','td_mutual_fund.third_client_id')
-                        ->join('md_plan','md_plan.id','=','td_mutual_fund.plan_id')
-                        ->join('md_option','md_option.id','=','td_mutual_fund.option_id')
+                        ->leftJoin('md_plan','md_plan.id','=','td_mutual_fund.plan_id')
+                        ->leftJoin('md_option','md_option.id','=','td_mutual_fund.option_id')
                         ->leftJoin('md_plan as md_plan_2','md_plan_2.id','=','td_mutual_fund.plan_id_to')
                         ->leftJoin('md_option as md_option_2','md_option_2.id','=','td_mutual_fund.option_id_to')
                         ->leftJoin('md_rnt','md_rnt.id','=','td_mutual_fund.rnt_login_at')
@@ -237,23 +244,26 @@ class ManualUpdateController extends Controller
                         'md_trans.manual_update_tat','md_scheme.nfo_reopen_dt'
                         )
                         ->where('td_mutual_fund.delete_flag','N')
+                        ->where('td_mutual_fund.trans_id',$trans_id)
                         ->where('md_trans.trans_type_id',$trans_type_id)
                         // ->where('td_mutual_fund.form_status','!=','P')
                         ->where('td_mutual_fund.form_status','A')
                         ->whereRaw($rawQuery)
                         // ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
-                        ->paginate($paginate);  
+                        ->get();
+                        // ->paginate($paginate);  
+        // \Log::info(DB::getQueryLog());
                 
             } else {
                     $data=MutualFund::join('td_form_received','td_form_received.temp_tin_no','=','td_mutual_fund.temp_tin_no')
                         ->join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
                         ->join('md_scheme','md_scheme.id','=','td_mutual_fund.trans_scheme_from')
                         ->leftJoin('md_scheme as md_scheme_2','md_scheme_2.id','=','td_mutual_fund.trans_scheme_to')
-                        ->join('md_client','md_client.id','=','td_mutual_fund.first_client_id')
+                        ->leftJoin('md_client','md_client.id','=','td_mutual_fund.first_client_id')
                         ->leftJoin('md_client as md_client_2','md_client_2.id','=','td_mutual_fund.second_client_id')
                         ->leftJoin('md_client as md_client_3','md_client_3.id','=','td_mutual_fund.third_client_id')
-                        ->join('md_plan','md_plan.id','=','td_mutual_fund.plan_id')
-                        ->join('md_option','md_option.id','=','td_mutual_fund.option_id')
+                        ->leftJoin('md_plan','md_plan.id','=','td_mutual_fund.plan_id')
+                        ->leftJoin('md_option','md_option.id','=','td_mutual_fund.option_id')
                         ->leftJoin('md_plan as md_plan_2','md_plan_2.id','=','td_mutual_fund.plan_id_to')
                         ->leftJoin('md_option as md_option_2','md_option_2.id','=','td_mutual_fund.option_id_to')
                         ->leftJoin('md_rnt','md_rnt.id','=','td_mutual_fund.rnt_login_at')
@@ -267,10 +277,12 @@ class ManualUpdateController extends Controller
                         )
                         ->where('td_mutual_fund.delete_flag','N')
                         ->where('md_trans.trans_type_id',$trans_type_id)
+                        ->where('td_mutual_fund.trans_id',$trans_id)
                         // ->where('td_mutual_fund.form_status','!=','P')
                         ->where('td_mutual_fund.form_status','A')
                         ->orderBy('td_mutual_fund.updated_at','desc')
-                        ->paginate($paginate);   
+                        ->get();
+                        // ->paginate($paginate);   
             }
             
         } catch (\Throwable $th) {
