@@ -11,6 +11,7 @@ use Illuminate\Support\Carbon;
 use Mail;
 use App\Mail\Master\SendAckEmail;
 use App\Models\Email;
+use DB;
 
 class ManualUpdateController extends Controller
 {
@@ -65,11 +66,11 @@ class ManualUpdateController extends Controller
                     $rawQuery='';
                     if ($from_date && $to_date) {
                         if (strlen($rawQuery) > 0) {
-                            $rawQuery.=' AND td_mutual_fund.entry_date'.' >= '. $from_date;
+                            $rawQuery.=' AND td_mutual_fund.entry_date'.' >= "'. $from_date.'"';
                         } else {
-                            $rawQuery.=' td_mutual_fund.entry_date'.' >= '. $from_date;
+                            $rawQuery.=' td_mutual_fund.entry_date'.' >= "'. $from_date.'"';
                         }
-                        $rawQuery.=' AND td_mutual_fund.entry_date'.' <= '. $to_date;
+                        $rawQuery.=' AND td_mutual_fund.entry_date'.' <= "'. $to_date.'"';
                     }
                     if ($tin_no) {
                         if (strlen($rawQuery) > 0) {
@@ -175,11 +176,11 @@ class ManualUpdateController extends Controller
                 $rawQuery='';
                 if ($from_date && $to_date) {
                     if (strlen($rawQuery) > 0) {
-                        $rawQuery.=' AND td_mutual_fund.entry_date'.' >= '. $from_date;
+                        $rawQuery.=' AND td_mutual_fund.entry_date'.' >= "'. $from_date.'"';
                     } else {
-                        $rawQuery.=' td_mutual_fund.entry_date'.' >= '. $from_date;
+                        $rawQuery.=' td_mutual_fund.entry_date'.' >= "'. $from_date.'"';
                     }
-                    $rawQuery.=' AND td_mutual_fund.entry_date'.' <= '. $to_date;
+                    $rawQuery.=' AND td_mutual_fund.entry_date'.' <= "'. $to_date.'"';
                 }
                 if ($tin_no) {
                     if (strlen($rawQuery) > 0) {
@@ -252,7 +253,7 @@ class ManualUpdateController extends Controller
                         // ->whereDate('td_mutual_fund.entry_date',date('Y-m-d'))
                         ->get();
                         // ->paginate($paginate);  
-        // \Log::info(DB::getQueryLog());
+                    // \Log::info(DB::getQueryLog());
                 
             } else {
                     $data=MutualFund::join('td_form_received','td_form_received.temp_tin_no','=','td_mutual_fund.temp_tin_no')
@@ -553,6 +554,16 @@ class ManualUpdateController extends Controller
             $data1=MutualFund::where('tin_no',$request->tin_no)->first();
             
             if ($request->manual_trans_status=="P") { //process
+                $validator = Validator::make(request()->all(),[
+                    'tin_no' =>'required',
+                    'process_date' =>'required',
+                    'folio_no' =>'required',
+                ]);
+                if($validator->fails()) {
+                    $errors = $validator->errors();
+                    return Helper::ErrorResponse(parent::VALIDATION_ERROR);
+                }
+
                 $upload_soa=$request->upload_soa;
                 if ($upload_soa) {
                     $path_extension=$upload_soa->getClientOriginalExtension();
