@@ -45,7 +45,7 @@ class ClientController extends Controller
                 ->leftJoin('md_states','md_states.id','=','md_client.state')
                 ->leftJoin('md_client_type','md_client_type.id','=','md_client.client_type_mode')
                 ->leftJoin('md_pincode','md_pincode.id','=','md_client.pincode')
-                ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name','md_pincode.pincode as pincode')
+                ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name','md_pincode.pincode as pincode_name')
                 ->whereRaw($rawQuery)
                 ->orderBy('md_client.created_at','desc')
                 ->get();  
@@ -73,7 +73,7 @@ class ClientController extends Controller
                     ->leftJoin('md_states','md_states.id','=','md_client.state')
                     ->leftJoin('md_client_type','md_client_type.id','=','md_client.client_type_mode')
                     ->leftJoin('md_pincode','md_pincode.id','=','md_client.pincode')
-                    ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name','md_pincode.pincode as pincode')
+                    ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name','md_pincode.pincode as pincode_name')
                     ->where('md_client.client_type',$client_type)
                     ->orderBy('md_client.'.$column_name,$sort_by)
                     ->orderBy('md_client.created_at','desc')
@@ -86,7 +86,7 @@ class ClientController extends Controller
                         ->leftJoin('md_states','md_states.id','=','md_client.state')
                         ->leftJoin('md_client_type','md_client_type.id','=','md_client.client_type_mode')
                         ->leftJoin('md_pincode','md_pincode.id','=','md_client.pincode')
-                        ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name','md_pincode.pincode as pincode')
+                        ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name','md_pincode.pincode as pincode_name')
                         ->where('md_client.client_type',$client_type)
                         ->whereMonth('md_client.dob',$birth_date_month)
                         // ->whereMonth('md_client.dob_actual',$birth_date_month)
@@ -99,7 +99,7 @@ class ClientController extends Controller
                         ->leftJoin('md_states','md_states.id','=','md_client.state')
                         ->leftJoin('md_client_type','md_client_type.id','=','md_client.client_type_mode')
                         ->leftJoin('md_pincode','md_pincode.id','=','md_client.pincode')
-                        ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name','md_pincode.pincode as pincode')
+                        ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name','md_pincode.pincode as pincode_name')
                         ->where('md_client.client_type',$client_type)
                         ->whereMonth('md_client.anniversary_date',$anniversary_date_month)
                         ->orderBy('md_client.created_at','desc')
@@ -111,7 +111,7 @@ class ClientController extends Controller
                     ->leftJoin('md_states','md_states.id','=','md_client.state')
                     ->leftJoin('md_client_type','md_client_type.id','=','md_client.client_type_mode')
                     ->leftJoin('md_pincode','md_pincode.id','=','md_client.pincode')
-                    ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name','md_pincode.pincode as pincode')
+                    ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as type_name','md_pincode.pincode as pincode_name')
                     ->where('md_client.client_type',$client_type)
                     ->orderBy('md_client.created_at','desc')
                     ->get();    
@@ -162,8 +162,8 @@ class ClientController extends Controller
                     ->leftJoin('md_country','md_country.id','=','md_client.country_id')
                     ->leftJoin('md_pincode','md_pincode.id','=','md_client.pincode')
                     ->leftJoin('md_client_type','md_client_type.id','=','md_client.client_type_mode')
-                    ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name','md_client_type.type_name as client_type_name',
-                    'md_country.name as country_name','md_pincode.pincode as pincode_name')
+                    ->select('md_client.*','md_city.name as city_name','md_district.name as district_name','md_states.name as state_name',
+                    'md_client_type.type_name as client_type_name','md_country.name as country_name','md_pincode.pincode as pincode_name')
                     ->where('md_client.id',$client_id)
                     ->get();
             // }else if ($paginate!='') {
