@@ -34,6 +34,8 @@ class Client extends Model
         'relation',
         'client_type_mode',
 
+        'maritial_status',
+
         'country_id',
         'karta_name',
         'inc_date',
