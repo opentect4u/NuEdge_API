@@ -30,5 +30,7 @@ class AumReport extends Model
         'divident_reinvest',
         'total_unit',
         'total_inv_cost',
+        'all_amount_arr',
+        'all_date_arr',
     ];
 }

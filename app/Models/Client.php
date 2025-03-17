@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\{Document,Client,ClientPertner};
+use App\Models\AumReport;
 
 class Client extends Model
 {
@@ -56,4 +57,9 @@ class Client extends Model
     {
         return $this->hasMany(ClientPertner::class,'client_id','id');
     }
+
+    // public function clientdetails()
+    // {
+    //     return $this->hasMany(Client::class,'first_client_pan','pan');
+    // }
 }

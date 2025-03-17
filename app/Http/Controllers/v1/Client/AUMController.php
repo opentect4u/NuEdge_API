@@ -14,7 +14,9 @@ use App\Models\{
     NAVDetailsSec,
     BrokerChangeTransReport,
     SchemeISIN,
-    MutualFundTransactionMerge
+    MutualFundTransactionMerge,
+    AumReport,
+    ClientFamily
 };
 use Validator;
 use Illuminate\Support\Carbon;
@@ -355,15 +357,6 @@ class AUMController extends Controller
         }
         return Helper::SuccessResponse($final_data);
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
     public function search____3(Request $request)
     {
@@ -956,148 +949,7 @@ class AUMController extends Controller
     }
 
 
-    /*********************aum report as ************************** */
-    public function search(Request $request)
-    {
-        try {
-            // return $request;
-            $date=$request->date;
-            $arn_no=$request->arn_no;
-            // $date=date('Y-m-d');
-            // $date='2025-01-12';
-            if ($date || $arn_no) {
-                $rawQuery='';
-                $rawQueryBroker='';
-                if ($date) {
-                    $condition_v=(strlen($rawQuery) > 0)? " AND ":" ";
-                    $queryString='trans_date';
-                    $rawQuery.=$condition_v.$queryString." <= '".$date."'";
-                    
-                    // $condition_v1=(strlen($rawQueryBroker) > 0)? " AND ":" ";
-                    // $queryString1='trans_date';
-                    // $rawQueryBroker.=$condition_v1.$queryString1."<= '".$date."'";
-                }
-            } 
-
-            // WHERE trans_date <= '2025-01-31' 
-            // session()->forget('date');
-            // session(['date' => $date]);
-            // return $rawQuery;
-            /******************************************************* */
-            $all_data=DB::select('SELECT *,SUM(total_unit) AS tot_units,SUM(total_inv_cost) as inv_cost FROM td_mutual_fund_trans_aum where trans_date=(SELECT MAX(trans_date) FROM td_mutual_fund_trans_aum WHERE trans_date <="'.$date.'") GROUP BY amc_code,product_code');
-            // return $all_data;
-            /******************************************************* */
-            /** start for get nav data */
-            $all_trans_product=[];
-            foreach ($all_data as $value_product_code) {
-                $f_trans_product="(nav_date=(SELECT MAX(nav_date) FROM td_nav_details WHERE product_code='".$value_product_code->product_code."' AND nav_date <='".$date."') AND product_code='".$value_product_code->product_code."')";
-                array_push($all_trans_product,$f_trans_product);
-            }
-            // return $all_trans_product;
-            $res_array=[];
-            if (count($all_data)>0) {
-                $string_version_product_code = implode(',', $all_trans_product);
-                $res_array =DB::connection('mysql_nav')
-                    ->select('SELECT product_code,isin_no,DATE_FORMAT(nav_date, "%Y-%m-%d") as nav_date,nav FROM td_nav_details where '.str_replace(",","  OR  ",$string_version_product_code));
-            }
-            // return $res_array[0];
-            // return 'ddd';
-            /** end for get nav data */
-            // return $all_data[0];
-            // $group_amc_data=[];
-            // foreach ($all_data as $value_amc_data) {
-            //     $group_amc_data[$value_amc_data->amc_code][$value_amc_data->product_code][]=$value_amc_data;
-            // }
-            // return $all_data;
-            $final_data=[];
-            foreach ($all_data as $key_group_amc_data => $value_group_amc_data) {  // amc loop
-                // return $value_group_amc_data;
-                $product_code=$value_group_amc_data->product_code;
-                $new='';
-                if (count($res_array) > 0) {
-                    foreach($res_array as $val_nav){
-                        if($val_nav->product_code==$product_code){
-                            $new=$val_nav;
-                        }
-                    }
-                }
-                $value_group_amc_data->new=$new;
-                $value_group_amc_data->curr_nav=isset($new->nav)?$new->nav:0;
-                $value_group_amc_data->nav_date=isset($new->nav_date)?$new->nav_date:0;
-                $value_group_amc_data->idcw_reinv=0;
-                $value_group_amc_data->idcw_paid=0;
-                $value_group_amc_data->idcwr=0;
-                $value_group_amc_data->curr_aum= number_format((float)($value_group_amc_data->curr_nav * $value_group_amc_data->tot_units), 2, '.', '');
-                $value_group_amc_data->gain_loss=number_format((float)(($value_group_amc_data->curr_aum - $value_group_amc_data->inv_cost) + $value_group_amc_data->idcwr), 2, '.', '');
-                $value_group_amc_data->abs_rtn= ($value_group_amc_data->gain_loss!=0 && $value_group_amc_data->inv_cost!=0)?number_format((float)(($value_group_amc_data->gain_loss / $value_group_amc_data->inv_cost) * 100), 2, '.', ''):0;
-                array_push($final_data,$value_group_amc_data);
-            }
-            $final_data = collect($final_data)->map(function($x){ return (array) $x; })->toArray(); 
-            usort($final_data, function($a, $b) {
-                return $a['amc_name'] <=> $b['amc_name'];
-            });
-            // return $final_data;
-            // $filter_data=[];
-            // foreach ($all_data as $data_key => $value1) {
-            //     $isin_no=$value1->isin_no;
-            //     $product_code=$value1->product_code;
-            //     $new='';
-            //     if (count($res_array) > 0) {
-            //         foreach($res_array as $val_nav){
-            //             if($val_nav->product_code==$product_code){
-            //                 $new=$val_nav;
-            //             }
-            //         }
-            //     }
-            //     // return $new;
-            //     $value1->new=$new;
-            //     $value1->curr_nav=isset($new->nav)?$new->nav:0;
-            //     $value1->nav_date=isset($new->nav_date)?$new->nav_date:0;
-            //     //calculation
-            //     $mydata='';
-            //     $foliotrans=$value1->foliotrans;
-            //     // if ($value1->tot_amount > 0) {
-            //         $json  = json_encode($foliotrans);
-            //         $array = json_decode($json, true);
-            //         if (array_search('Consolidation In',array_column($array,'transaction_subtype'))) {
-            //             $foliotrans=TransHelper::ConsolidationInQuery($value1->rnt_id,$value1->folio_no,$value1->isin_no,$value1->product_code,$valuation_as_on);
-            //         }
-            //         $mydata=TransHelper::calculate($foliotrans,$value1->curr_nav,$valuation_as_on);
-            //     // }
-            //     // $mydata=$this->calculate($value1->foliotrans);
-            //     $value1->mydata=$mydata;
-            //     $value1->nifty50=isset($mydata['nifty50'])?(int)$mydata['nifty50']:$value1->nifty50;
-            //     $value1->sensex=isset($mydata['sensex'])?(int)$mydata['sensex']:$value1->sensex;
-            //     $value1->idcwp=0;
-            //     $value1->idcw_reinv=isset($mydata['idcw_reinv'])? number_format((float)$mydata['idcw_reinv'], 2, '.', ''):0;
-            //     $value1->idcwr=number_format((float)($value1->idcwp + $value1->idcw_reinv), 2, '.', '');
-            //     $value1->inv_since=isset($mydata['inv_since'])? $mydata['inv_since']:$value1->inv_since;
-            //     $value1->pur_nav=isset($mydata['pur_nav'])?$mydata['pur_nav']:$value1->pur_nav;
-            //     $value1->transaction_type=isset($mydata['transaction_type'])?$mydata['transaction_type']:$value1->transaction_type;
-            //     $value1->transaction_subtype=isset($mydata['transaction_subtype'])?$mydata['transaction_subtype']:$value1->transaction_subtype;
-            //     $value1->inv_cost=isset($mydata['inv_cost'])?number_format((float)$mydata['inv_cost'], 2, '.', ''):0;
-            //     $value1->tot_units=isset($mydata['tot_units'])?number_format((float)$mydata['tot_units'], 2, '.', ''):0;
-            //     $value1->curr_val= number_format((float)($value1->curr_nav * $value1->tot_units), 2, '.', '');
-            //     $value1->gain_loss=number_format((float)(($value1->curr_val - $value1->inv_cost) + $value1->idcwr), 2, '.', '');
-            //     if ($value1->gain_loss==0 || $value1->inv_cost==0) {
-            //         $value1->ret_abs=0;
-            //     }else {
-            //         $value1->ret_abs=number_format((float)(($value1->gain_loss / $value1->inv_cost) * 100), 2, '.', '');
-            //     }
-                
-            //     array_push($filter_data,$value1);
-            // }
-            // return $all_values_data[0];
-            // return 'ddd';
-            
-        } catch (\Throwable $th) {
-            throw $th;
-            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
-        }
-        return Helper::SuccessResponse($final_data);
-    }
-
-    public function aumByScheme(Request $request)
+    public function aumByScheme_old(Request $request)
     {
         try {
             // return $request;
@@ -1357,7 +1209,7 @@ class AUMController extends Controller
     }
     
 
-    public function aumByClient(Request $request)
+    public function aumByClient_old(Request $request)
     {
         try {
             // return $request;
@@ -1393,7 +1245,6 @@ class AUMController extends Controller
             // return $all_trans_product;
             $res_array=[];
             if (count($all_data)>0) {
-                $all_trans_product_unique = array_unique($all_trans_product);
                 $string_version_product_code = implode(',', $all_trans_product_unique);
                 $res_array =DB::connection('mysql_nav')
                     ->select('SELECT product_code,isin_no,DATE_FORMAT(nav_date, "%Y-%m-%d") as nav_date,nav FROM td_nav_details where '.str_replace(",","  OR  ",$string_version_product_code));
@@ -1466,5 +1317,418 @@ class AUMController extends Controller
         }
         return Helper::SuccessResponse($final_data);
     }
+    /*********************aum report as ************************** */
+    public function search(Request $request)
+    {
+        try {
+            // return $request;
+            $date=$request->date;
+            // $arn_no=$request->arn_no;
+            $amc_id=json_decode($request->amc_id);
+            $cat_id=json_decode($request->cat_id);
+            $sub_cat_id=json_decode($request->sub_cat_id);
+            $scheme_id=json_decode($request->scheme_id);
+            // return $amc_id;
+            // $date=date('Y-m-d');
+            // $date='2025-01-12';
+            $rnt_id=$request->rnt_id;
 
+            if ($date || $rnt_id || !empty($amc_id) || !empty($cat_id) || !empty($sub_cat_id) || !empty($scheme_id)) {
+                $rawQuery='';
+                $rawQueryBroker='';
+                if ($date) {
+                    $condition_v=(strlen($rawQuery) > 0)? " AND ":" ";
+                    $queryString='td_mutual_fund_trans_aum.trans_date';
+                    $rawQuery.=$condition_v.$queryString."=(SELECT MAX(trans_date) FROM td_mutual_fund_trans_aum WHERE trans_date <='".$date."')";
+                }
+                if ($rnt_id) {
+                    $queryString='td_mutual_fund_trans_aum.rnt_id';
+                    $rawQuery.=Helper::WhereRawQuery($rnt_id,$rawQuery,$queryString);
+                }
+
+                $queryString='md_scheme.amc_id';
+                $rawQuery.=Helper::WhereRawQuery($amc_id,$rawQuery,$queryString);
+                $queryString='md_scheme.category_id';
+                $rawQuery.=Helper::WhereRawQuery($cat_id,$rawQuery,$queryString);
+                $queryString='md_scheme.subcategory_id';
+                $rawQuery.=Helper::WhereRawQuery($sub_cat_id,$rawQuery,$queryString);
+                $queryString='md_scheme_isin.scheme_id';
+                $rawQuery.=Helper::WhereRawQuery($scheme_id,$rawQuery,$queryString);
+
+            }
+                
+            // WHERE trans_date <= '2025-01-31' 
+            // session()->forget('date');
+            // session(['date' => $date]);
+            // return $rawQuery;
+            /******************************************************* */
+            // $all_data=DB::select('SELECT *,SUM(total_unit) AS tot_units,SUM(total_inv_cost) as inv_cost FROM td_mutual_fund_trans_aum where trans_date=(SELECT MAX(trans_date) FROM td_mutual_fund_trans_aum WHERE trans_date <="'.$date.'") GROUP BY amc_code,product_code');
+            $all_data=AumReport::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_mutual_fund_trans_aum.product_code')
+                ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
+                ->leftJoin('md_rnt','md_rnt.id','=','td_mutual_fund_trans_aum.rnt_id')
+                ->selectRaw('td_mutual_fund_trans_aum.*,SUM(td_mutual_fund_trans_aum.total_unit) AS tot_units, SUM(td_mutual_fund_trans_aum.total_inv_cost) as inv_cost,md_rnt.rnt_name')
+                ->whereRaw($rawQuery)
+                ->groupBy('td_mutual_fund_trans_aum.amc_code','td_mutual_fund_trans_aum.product_code')
+                ->get();
+            // return $all_data;
+            /******************************************************* */
+            /** start for get nav data */
+            $all_trans_product=[];
+            foreach ($all_data as $value_product_code) {
+                $f_trans_product="(nav_date=(SELECT MAX(nav_date) FROM td_nav_details WHERE product_code='".$value_product_code->product_code."' AND nav_date <='".$date."') AND product_code='".$value_product_code->product_code."')";
+                array_push($all_trans_product,$f_trans_product);
+            }
+            // return $all_trans_product;
+            $res_array=[];
+            if (count($all_data)>0) {
+                $string_version_product_code = implode(',', $all_trans_product);
+                $res_array =DB::connection('mysql_nav')
+                    ->select('SELECT product_code,isin_no,DATE_FORMAT(nav_date, "%Y-%m-%d") as nav_date,nav FROM td_nav_details where '.str_replace(",","  OR  ",$string_version_product_code));
+            }
+            // return $res_array[0];
+            // return 'ddd';
+            /** end for get nav data */
+            // return $all_data[0];
+            // $group_amc_data=[];
+            // foreach ($all_data as $value_amc_data) {
+            //     $group_amc_data[$value_amc_data->amc_code][$value_amc_data->product_code][]=$value_amc_data;
+            // }
+            // return $all_data;
+            $final_data=[];
+            foreach ($all_data as $key_group_amc_data => $value_group_amc_data) {  // amc loop
+                // return $value_group_amc_data;
+                $product_code=$value_group_amc_data->product_code;
+                $new='';
+                if (count($res_array) > 0) {
+                    foreach($res_array as $val_nav){
+                        if($val_nav->product_code==$product_code){
+                            $new=$val_nav;
+                        }
+                    }
+                }
+                $value_group_amc_data->new=$new;
+                $value_group_amc_data->curr_nav=isset($new->nav)?$new->nav:0;
+                $value_group_amc_data->nav_date=isset($new->nav_date)?$new->nav_date:0;
+                $value_group_amc_data->idcw_reinv=0;
+                $value_group_amc_data->idcw_paid=0;
+                $value_group_amc_data->idcwr=0;
+                $value_group_amc_data->curr_aum= number_format((float)($value_group_amc_data->curr_nav * $value_group_amc_data->tot_units), 2, '.', '');
+                $value_group_amc_data->gain_loss=number_format((float)(($value_group_amc_data->curr_aum - $value_group_amc_data->inv_cost) + $value_group_amc_data->idcwr), 2, '.', '');
+                $value_group_amc_data->abs_rtn= ($value_group_amc_data->gain_loss!=0 && $value_group_amc_data->inv_cost!=0)?number_format((float)(($value_group_amc_data->gain_loss / $value_group_amc_data->inv_cost) * 100), 2, '.', ''):0;
+                array_push($final_data,$value_group_amc_data);
+            }
+            // $final_data = collect($final_data)->map(function($x){ return (array) $x; })->toArray(); 
+            usort($final_data, function($a, $b) {
+                return $a['amc_name'] <=> $b['amc_name'];
+                // return $a->amc_name <=> $b->amc_name;
+            });
+            // return $final_data;
+            // $filter_data=[];
+            // foreach ($all_data as $data_key => $value1) {
+            //     $isin_no=$value1->isin_no;
+            //     $product_code=$value1->product_code;
+            //     $new='';
+            //     if (count($res_array) > 0) {
+            //         foreach($res_array as $val_nav){
+            //             if($val_nav->product_code==$product_code){
+            //                 $new=$val_nav;
+            //             }
+            //         }
+            //     }
+            //     // return $new;
+            //     $value1->new=$new;
+            //     $value1->curr_nav=isset($new->nav)?$new->nav:0;
+            //     $value1->nav_date=isset($new->nav_date)?$new->nav_date:0;
+            //     //calculation
+            //     $mydata='';
+            //     $foliotrans=$value1->foliotrans;
+            //     // if ($value1->tot_amount > 0) {
+            //         $json  = json_encode($foliotrans);
+            //         $array = json_decode($json, true);
+            //         if (array_search('Consolidation In',array_column($array,'transaction_subtype'))) {
+            //             $foliotrans=TransHelper::ConsolidationInQuery($value1->rnt_id,$value1->folio_no,$value1->isin_no,$value1->product_code,$valuation_as_on);
+            //         }
+            //         $mydata=TransHelper::calculate($foliotrans,$value1->curr_nav,$valuation_as_on);
+            //     // }
+            //     // $mydata=$this->calculate($value1->foliotrans);
+            //     $value1->mydata=$mydata;
+            //     $value1->nifty50=isset($mydata['nifty50'])?(int)$mydata['nifty50']:$value1->nifty50;
+            //     $value1->sensex=isset($mydata['sensex'])?(int)$mydata['sensex']:$value1->sensex;
+            //     $value1->idcwp=0;
+            //     $value1->idcw_reinv=isset($mydata['idcw_reinv'])? number_format((float)$mydata['idcw_reinv'], 2, '.', ''):0;
+            //     $value1->idcwr=number_format((float)($value1->idcwp + $value1->idcw_reinv), 2, '.', '');
+            //     $value1->inv_since=isset($mydata['inv_since'])? $mydata['inv_since']:$value1->inv_since;
+            //     $value1->pur_nav=isset($mydata['pur_nav'])?$mydata['pur_nav']:$value1->pur_nav;
+            //     $value1->transaction_type=isset($mydata['transaction_type'])?$mydata['transaction_type']:$value1->transaction_type;
+            //     $value1->transaction_subtype=isset($mydata['transaction_subtype'])?$mydata['transaction_subtype']:$value1->transaction_subtype;
+            //     $value1->inv_cost=isset($mydata['inv_cost'])?number_format((float)$mydata['inv_cost'], 2, '.', ''):0;
+            //     $value1->tot_units=isset($mydata['tot_units'])?number_format((float)$mydata['tot_units'], 2, '.', ''):0;
+            //     $value1->curr_val= number_format((float)($value1->curr_nav * $value1->tot_units), 2, '.', '');
+            //     $value1->gain_loss=number_format((float)(($value1->curr_val - $value1->inv_cost) + $value1->idcwr), 2, '.', '');
+            //     if ($value1->gain_loss==0 || $value1->inv_cost==0) {
+            //         $value1->ret_abs=0;
+            //     }else {
+            //         $value1->ret_abs=number_format((float)(($value1->gain_loss / $value1->inv_cost) * 100), 2, '.', '');
+            //     }
+                
+            //     array_push($filter_data,$value1);
+            // }
+            // return $all_values_data[0];
+            // return 'ddd';
+            
+        } catch (\Throwable $th) {
+            throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($final_data);
+    }
+
+    public function aumByClient(Request $request)
+    {
+        try {
+            // return $request;
+            $date=$request->date;
+            $product_code=$request->product_code;
+            // $arn_no=$request->arn_no;
+            $amc_id=json_decode($request->amc_id);
+            $cat_id=json_decode($request->cat_id);
+            $sub_cat_id=json_decode($request->sub_cat_id);
+            $scheme_id=json_decode($request->scheme_id);
+            // return $amc_id;
+            // $date=date('Y-m-d');
+            // $date='2025-01-12';
+            if ($date || $product_code || !empty($amc_id) || !empty($cat_id) || !empty($sub_cat_id) || !empty($scheme_id)) {
+                $rawQuery='';
+                $rawQueryBroker='';
+                if ($date) {
+                    $condition_v=(strlen($rawQuery) > 0)? " AND ":" ";
+                    $queryString='td_mutual_fund_trans_aum.trans_date';
+                    $rawQuery.=$condition_v.$queryString."=(SELECT MAX(trans_date) FROM td_mutual_fund_trans_aum WHERE trans_date <='".$date."')";
+                }
+                if ($product_code) {
+                    $queryString='td_mutual_fund_trans_aum.product_code';
+                    $rawQuery.=Helper::WhereRawQuery($product_code,$rawQuery,$queryString);
+                }
+
+                $queryString='md_scheme.amc_id';
+                $rawQuery.=Helper::WhereRawQuery($amc_id,$rawQuery,$queryString);
+                $queryString='md_scheme.category_id';
+                $rawQuery.=Helper::WhereRawQuery($cat_id,$rawQuery,$queryString);
+                $queryString='md_scheme.subcategory_id';
+                $rawQuery.=Helper::WhereRawQuery($sub_cat_id,$rawQuery,$queryString);
+                $queryString='md_scheme_isin.scheme_id';
+                $rawQuery.=Helper::WhereRawQuery($scheme_id,$rawQuery,$queryString);
+            }
+                
+            // WHERE trans_date <= '2025-01-31' 
+            // session()->forget('date');
+            // session(['date' => $date]);
+            // return $rawQuery;
+            /******************************************************* */
+            // $all_data=DB::select('SELECT *,SUM(total_unit) AS tot_units,SUM(total_inv_cost) as inv_cost FROM td_mutual_fund_trans_aum where trans_date=(SELECT MAX(trans_date) FROM td_mutual_fund_trans_aum WHERE trans_date <="'.$date.'") GROUP BY amc_code,product_code');
+            $all_data=AumReport::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_mutual_fund_trans_aum.product_code')
+                ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
+                // ->selectRaw('td_mutual_fund_trans_aum.*,SUM(td_mutual_fund_trans_aum.total_unit) AS tot_units, SUM(td_mutual_fund_trans_aum.total_inv_cost) as inv_cost')
+                ->selectRaw('td_mutual_fund_trans_aum.*,SUM(total_unit) AS tot_units,SUM(total_inv_cost) as inv_cost')
+                ->whereRaw($rawQuery)
+                ->groupBy('td_mutual_fund_trans_aum.folio_no','td_mutual_fund_trans_aum.product_code')
+                ->get();
+            // return $all_data;
+            /******************************************************* */
+            /** start for get nav data */
+            $all_trans_product=[];
+            foreach ($all_data as $value_product_code) {
+                $f_trans_product="(nav_date=(SELECT MAX(nav_date) FROM td_nav_details WHERE product_code='".$value_product_code->product_code."' AND nav_date <='".$date."') AND product_code='".$value_product_code->product_code."')";
+                array_push($all_trans_product,$f_trans_product);
+            }
+            // return $all_trans_product;
+            $res_array=[];
+            if (count($all_data)>0) {
+                $all_trans_product_unique = array_unique($all_trans_product);
+                // return count($all_trans_product).' - '.count($all_trans_product_unique);
+                $string_version_product_code = implode(',', $all_trans_product_unique);
+                // return $string_version_product_code;
+                // return 'SELECT product_code,isin_no,DATE_FORMAT(nav_date, "%Y-%m-%d") as nav_date,nav FROM td_nav_details where '.str_replace(",","  OR  ",$string_version_product_code);
+                $res_array =DB::connection('mysql_nav')
+                    ->select('SELECT product_code,isin_no,DATE_FORMAT(nav_date, "%Y-%m-%d") as nav_date,nav FROM td_nav_details where '.str_replace(",","  OR  ",$string_version_product_code));
+            }
+            // return $all_data;
+            // return $res_array[0];
+            // return 'ddd';
+            /** end for get nav data */
+            // return $all_data[0];
+            // $group_amc_data=[];
+            // foreach ($all_data as $value_amc_data) {
+            //     $group_amc_data[$value_amc_data->amc_code][$value_amc_data->product_code][]=$value_amc_data;
+            // }
+            // return $all_data;
+            $final_data=[];
+            foreach ($all_data as $key_group_amc_data => $value_group_amc_data) {  // amc loop
+                // return $value_group_amc_data;
+                $product_code=$value_group_amc_data->product_code;
+                $new='';
+                if (count($res_array) > 0) {
+                    foreach($res_array as $val_nav){
+                        if($val_nav->product_code==$product_code){
+                            $new=$val_nav;
+                        }
+                    }
+                }
+                $value_group_amc_data->new=$new;
+                $value_group_amc_data->curr_nav=isset($new->nav)?$new->nav:0;
+                $value_group_amc_data->nav_date=isset($new->nav_date)?$new->nav_date:0;
+                $value_group_amc_data->idcw_reinv=0;
+                $value_group_amc_data->idcw_paid=0;
+                $value_group_amc_data->idcwr=0;
+                $value_group_amc_data->curr_aum= number_format((float)($value_group_amc_data->curr_nav * $value_group_amc_data->tot_units), 2, '.', '');
+                $value_group_amc_data->gain_loss=number_format((float)(($value_group_amc_data->curr_aum - $value_group_amc_data->inv_cost) + $value_group_amc_data->idcwr), 2, '.', '');
+                $value_group_amc_data->abs_rtn= ($value_group_amc_data->gain_loss!=0 && $value_group_amc_data->inv_cost!=0)?number_format((float)(($value_group_amc_data->gain_loss / $value_group_amc_data->inv_cost) * 100), 2, '.', ''):0;
+                array_push($final_data,$value_group_amc_data);
+            }
+            // $final_data = collect($final_data)->map(function($x){ return (array) $x; })->toArray(); 
+            // usort($final_data, function($a, $b) {
+            //     return $a['first_client_name'] <=> $b['first_client_name'];
+            //     // return $a->amc_name <=> $b->amc_name;
+            // });
+        } catch (\Throwable $th) {
+            throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($final_data);
+    }
+
+    public function aumByFamily(Request $request)
+    {
+        try {
+            // return $request;
+            $date=$request->date;
+            $product_code=$request->product_code;
+            // $arn_no=$request->arn_no;
+            $amc_id=json_decode($request->amc_id);
+            $cat_id=json_decode($request->cat_id);
+            $sub_cat_id=json_decode($request->sub_cat_id);
+            $scheme_id=json_decode($request->scheme_id);
+            // return $amc_id;
+            $date=date('Y-m-d');
+            // $date='2025-01-12';
+            if ($date || $product_code || !empty($amc_id) || !empty($cat_id) || !empty($sub_cat_id) || !empty($scheme_id)) {
+                $rawQuery='';
+                $rawQueryBroker='';
+                if ($date) {
+                    $condition_v=(strlen($rawQuery) > 0)? " AND ":" ";
+                    $queryString='td_mutual_fund_trans_aum.trans_date';
+                    $rawQuery.=$condition_v.$queryString."=(SELECT MAX(trans_date) FROM td_mutual_fund_trans_aum WHERE trans_date <='".$date."')";
+                }
+                if ($product_code) {
+                    $queryString='td_mutual_fund_trans_aum.product_code';
+                    $rawQuery.=Helper::WhereRawQuery($product_code,$rawQuery,$queryString);
+                }
+
+                $queryString='md_scheme.amc_id';
+                $rawQuery.=Helper::WhereRawQuery($amc_id,$rawQuery,$queryString);
+                $queryString='md_scheme.category_id';
+                $rawQuery.=Helper::WhereRawQuery($cat_id,$rawQuery,$queryString);
+                $queryString='md_scheme.subcategory_id';
+                $rawQuery.=Helper::WhereRawQuery($sub_cat_id,$rawQuery,$queryString);
+                $queryString='md_scheme_isin.scheme_id';
+                $rawQuery.=Helper::WhereRawQuery($scheme_id,$rawQuery,$queryString);
+            }
+
+            // $all_data=ClientFamily::
+            // with('client')
+            // with(['videos' => function($q) {
+            //     $q->select('first_client_name', 'first_client_pan');
+            //     $q->where('first_client_pan', '=', 'md_client.pan');
+            // }])  
+            
+            // ->
+            // leftjoin('md_client','md_client.id','=','md_client_family.family_id')
+            // ->leftjoin('td_mutual_fund_trans_aum','md_client.pan','=','td_mutual_fund_trans_aum.first_client_pan')
+            // // ->leftJoin('td_mutual_fund_trans_aum', function ($join) {
+            // //     $join->on('md_client.pan', '=', 'td_mutual_fund_trans_aum.first_client_pan');
+            // //     $join->on('md_client.name','>=',DB::raw("'%td_mutual_fund_trans_aum.name%'"));
+
+            // // })
+            //     ->select('md_client_family.type as family_head_type','md_client_family.client_id as family_head_group_id',
+            //     'md_client.client_name as first_client_name','md_client.pan as first_client_pan')
+            //     ->get();
+            // return $all_data;
+            // WHERE trans_date <= '2025-01-31' 
+            // session()->forget('date');
+            // session(['date' => $date]);
+            // return $rawQuery;
+            /******************************************************* */
+            // $all_data=DB::select('SELECT *,SUM(total_unit) AS tot_units,SUM(total_inv_cost) as inv_cost FROM td_mutual_fund_trans_aum where trans_date=(SELECT MAX(trans_date) FROM td_mutual_fund_trans_aum WHERE trans_date <="'.$date.'") GROUP BY amc_code,product_code');
+            $all_data=AumReport::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_mutual_fund_trans_aum.product_code')
+                ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
+                ->leftJoin('md_client','md_client.pan','=','td_mutual_fund_trans_aum.first_client_pan')
+                ->leftJoin('md_client_family','md_client_family.family_id','=','md_client.id')
+                // ->selectRaw('td_mutual_fund_trans_aum.*,SUM(td_mutual_fund_trans_aum.total_unit) AS tot_units, SUM(td_mutual_fund_trans_aum.total_inv_cost) as inv_cost')
+                ->selectRaw('td_mutual_fund_trans_aum.*,SUM(total_unit) AS tot_units,SUM(total_inv_cost) as inv_cost,md_client.id as client_id,md_client_family.type as family_head_type,md_client_family.client_id as family_head_group_id')
+                ->whereRaw($rawQuery)
+                ->groupBy('td_mutual_fund_trans_aum.folio_no','td_mutual_fund_trans_aum.product_code')
+                ->get();
+            // return $all_data;
+            /******************************************************* */
+            /** start for get nav data */
+            $all_trans_product=[];
+            foreach ($all_data as $value_product_code) {
+                $f_trans_product="(nav_date=(SELECT MAX(nav_date) FROM td_nav_details WHERE product_code='".$value_product_code->product_code."' AND nav_date <='".$date."') AND product_code='".$value_product_code->product_code."')";
+                array_push($all_trans_product,$f_trans_product);
+            }
+            // return $all_trans_product;
+            $res_array=[];
+            if (count($all_data)>0) {
+                $all_trans_product_unique = array_unique($all_trans_product);
+                // return count($all_trans_product).' - '.count($all_trans_product_unique);
+                $string_version_product_code = implode(',', $all_trans_product_unique);
+                // return $string_version_product_code;
+                // return 'SELECT product_code,isin_no,DATE_FORMAT(nav_date, "%Y-%m-%d") as nav_date,nav FROM td_nav_details where '.str_replace(",","  OR  ",$string_version_product_code);
+                $res_array =DB::connection('mysql_nav')
+                    ->select('SELECT product_code,isin_no,DATE_FORMAT(nav_date, "%Y-%m-%d") as nav_date,nav FROM td_nav_details where '.str_replace(",","  OR  ",$string_version_product_code));
+            }
+            // return $all_data;
+            // return $res_array[0];
+            // return 'ddd';
+            /** end for get nav data */
+            // return $all_data[0];
+            // $group_amc_data=[];
+            // foreach ($all_data as $value_amc_data) {
+            //     $group_amc_data[$value_amc_data->amc_code][$value_amc_data->product_code][]=$value_amc_data;
+            // }
+            // return $all_data;
+            $final_data=[];
+            foreach ($all_data as $key_group_amc_data => $value_group_amc_data) {  // amc loop
+                // return $value_group_amc_data;
+                $product_code=$value_group_amc_data->product_code;
+                $new='';
+                if (count($res_array) > 0) {
+                    foreach($res_array as $val_nav){
+                        if($val_nav->product_code==$product_code){
+                            $new=$val_nav;
+                        }
+                    }
+                }
+                $value_group_amc_data->new=$new;
+                $value_group_amc_data->curr_nav=isset($new->nav)?$new->nav:0;
+                $value_group_amc_data->nav_date=isset($new->nav_date)?$new->nav_date:0;
+                $value_group_amc_data->idcw_reinv=0;
+                $value_group_amc_data->idcw_paid=0;
+                $value_group_amc_data->idcwr=0;
+                $value_group_amc_data->curr_aum= number_format((float)($value_group_amc_data->curr_nav * $value_group_amc_data->tot_units), 2, '.', '');
+                $value_group_amc_data->gain_loss=number_format((float)(($value_group_amc_data->curr_aum - $value_group_amc_data->inv_cost) + $value_group_amc_data->idcwr), 2, '.', '');
+                $value_group_amc_data->abs_rtn= ($value_group_amc_data->gain_loss!=0 && $value_group_amc_data->inv_cost!=0)?number_format((float)(($value_group_amc_data->gain_loss / $value_group_amc_data->inv_cost) * 100), 2, '.', ''):0;
+                array_push($final_data,$value_group_amc_data);
+            }
+            // $final_data = collect($final_data)->map(function($x){ return (array) $x; })->toArray(); 
+            // usort($final_data, function($a, $b) {
+            //     return $a['first_client_name'] <=> $b['first_client_name'];
+            //     // return $a->amc_name <=> $b->amc_name;
+            // });
+        } catch (\Throwable $th) {
+            throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($final_data);
+    }
 }

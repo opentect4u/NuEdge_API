@@ -69,6 +69,9 @@ class AumCalculationJob implements ShouldQueue
                     'divident_reinvest'=>$single['idcw_reinv'],
                     'total_unit'=>$single['tot_units'],
                     'total_inv_cost'=>$single['inv_cost'],
+                    'all_amount_arr'=>json_encode($single['mydata']['all_amt_arr']),
+                    'all_date_arr'=>json_encode($single['mydata']['all_date_arr']),
+                    'portfolio_show_flag'=>$single['portfolio_show_flag'],
                     'created_at'=>date('Y-m-d H:i:s'),
                     'updated_at'=>date('Y-m-d H:i:s')
                 ];

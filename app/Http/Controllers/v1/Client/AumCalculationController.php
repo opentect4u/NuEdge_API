@@ -41,8 +41,8 @@ class AumCalculationController extends Controller
             $mydata=[];
 
             // PrevDayUnitsJob::dispatch();
-            OpNFTManualUpJob::dispatch();
-            return 'Job Run Successfully';
+            // OpNFTManualUpJob::dispatch();
+            // return 'Job Run Successfully';
             $clients=MutualFundTransaction::select('id','first_client_name','first_client_pan')
             // ->where('delete_flag','N')
             // ->where('amc_flag','N')
@@ -51,12 +51,15 @@ class AumCalculationController extends Controller
             // ->where('bu_type_flag','N')
             // ->where('divi_mismatch_flag','N')
             // ->where('portfolio_show_flag','Y')
+            // ->where('rnt_id',1)
+            // ->whereDate('created_at',date('Y-m-d'))
             ->groupBy('first_client_name')
             ->groupBy('first_client_pan')
             ->get();
             // return $clients;
             // $valuation_as_on= date("Y-m-d", strtotime("- 1 day"));
             // foreach ($clients as $key => $client) {
+            //     // return $client;
             //     $port=AumCalculationController1::calucationTotUnitsAndInvCost($client->first_client_name,$client->first_client_pan,$valuation_as_on);
             //     // return $port;
             //     $insert_arr=[];
@@ -82,11 +85,14 @@ class AumCalculationController extends Controller
             //             'divident_reinvest'=>$single['idcw_reinv'],
             //             'total_unit'=>$single['tot_units'],
             //             'total_inv_cost'=>$single['inv_cost'],
+            //             'all_amount_arr'=>json_encode($single['mydata']['all_amt_arr']),
+            //             'all_date_arr'=>json_encode($single['mydata']['all_date_arr']),
+            //             'portfolio_show_flag'=>$single['portfolio_show_flag'],
             //             'created_at'=>date('Y-m-d H:i:s'),
             //             'updated_at'=>date('Y-m-d H:i:s')
             //         ];
             //     }
-            //     AumReport::insert($insert_arr);
+            //     // AumReport::insert($insert_arr);
             //     return $insert_arr;
             // }
             // dispatch((new AumCalculationJob($clients))->onQueue('clients'));
@@ -306,10 +312,18 @@ class AumCalculationController extends Controller
             if(strpos($value['transaction_subtype'], 'Purchase' )!== false || strpos($value['transaction_subtype'], 'Switch In' )!== false 
                 || strpos($value['transaction_subtype'], 'Dividend Reinvestment')!== false || strpos($value['transaction_subtype'], 'STP In')!== false) {
                 array_push($purchase_data,$value);
+                /****************************************** */
+                array_push($all_amt_arr,-$value['tot_amount']);
+                array_push($all_date_arr,$value['trans_date']);
+                /****************************************** */
             }elseif (strpos($value['transaction_subtype'], 'Redemption' )!== false || strpos($value['transaction_subtype'], 'Switch Out' )!== false 
                 || strpos($value['transaction_subtype'], 'Transfer Out')!== false || strpos($value['transaction_subtype'], 'SWP')!== false
                 || strpos($value['transaction_subtype'], 'STP Out')!== false) {
                 array_push($redemption_data,$value);
+                /****************************************** */
+                array_push($all_amt_arr,-$value['tot_amount']);
+                array_push($all_date_arr,$value['trans_date']);
+                /****************************************** */
             }
         }
         // return $purchase_data;

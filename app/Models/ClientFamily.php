@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\AumReport;
+use App\Models\Client;
 
 class ClientFamily extends Model
 {
@@ -24,8 +26,13 @@ class ClientFamily extends Model
     //         ->select('md_documents.*','md_document_type.doc_type as doc_type_name');
     // }
 
-    // public function PertnerDetails()
-    // {
-    //     return $this->hasMany(ClientPertner::class,'client_id','id');
-    // }
+    public function videos()
+    {
+        return $this->hasMany(AumReport::class);
+    }
+
+    public function client()
+    {
+        return $this->hasMany(Client::class,'id','family_id');
+    }
 }
