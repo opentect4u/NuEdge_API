@@ -188,8 +188,8 @@ class MailBackController extends Controller
                         OpManualUpJob::dispatch();
                         OpNFTManualUpJob::dispatch();
                         $clients=MutualFundTransaction::select('id','first_client_name','first_client_pan')
-                            ->groupBy('first_client_name')
-                            ->groupBy('first_client_pan')
+                            ->where('rnt_id',$rnt_id)
+                            ->groupBy('first_client_name','first_client_pan')
                             ->get();
                         AumCalculationJob::dispatch($clients);
                     }
@@ -198,8 +198,8 @@ class MailBackController extends Controller
                         OpManualUpJob::dispatch();
                         OpNFTManualUpJob::dispatch();
                         $clients=MutualFundTransaction::select('id','first_client_name','first_client_pan')
-                            ->groupBy('first_client_name')
-                            ->groupBy('first_client_pan')
+                            ->where('rnt_id',$rnt_id)
+                            ->groupBy('first_client_name','first_client_pan')
                             ->get();
                         AumCalculationJob::dispatch($clients);
                     }
