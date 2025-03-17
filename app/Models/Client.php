@@ -1,16 +1,17 @@
 <?php
-
 namespace App\Models;
 
+use App\Models\AumReport;
+use App\Models\Client;
+use App\Models\ClientPertner;
+use App\Models\Document;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\{Document,Client,ClientPertner};
-use App\Models\AumReport;
 
 class Client extends Model
 {
     use HasFactory;
-    protected $table="md_client";
+    protected $table    = "md_client";
     protected $fillable = [
         'client_code',
         'client_name',
@@ -47,15 +48,16 @@ class Client extends Model
         'updated_by',
     ];
 
-    public function ClientDoc(){
-        return $this->hasMany(Document::class,'client_id','id')
-            ->leftjoin('md_document_type','md_document_type.id','=','md_documents.doc_type_id')
-            ->select('md_documents.*','md_document_type.doc_type as doc_type_name');
+    public function ClientDoc()
+    {
+        return $this->hasMany(Document::class, 'client_id', 'id')
+            ->leftjoin('md_document_type', 'md_document_type.id', '=', 'md_documents.doc_type_id')
+            ->select('md_documents.*', 'md_document_type.doc_type as doc_type_name');
     }
 
     public function PertnerDetails()
     {
-        return $this->hasMany(ClientPertner::class,'client_id','id');
+        return $this->hasMany(ClientPertner::class, 'client_id', 'id');
     }
 
     // public function clientdetails()

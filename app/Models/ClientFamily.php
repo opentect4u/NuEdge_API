@@ -33,6 +33,6 @@ class ClientFamily extends Model
 
     public function client()
     {
-        return $this->hasMany(Client::class,'id','family_id');
+        return $this->hasOne(Client::class,'id','family_id');
     }
 }
