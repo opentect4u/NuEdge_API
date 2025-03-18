@@ -40,9 +40,9 @@ class AumCalculationController extends Controller
 
             $mydata=[];
 
-            // PrevDayUnitsJob::dispatch();
+            PrevDayUnitsJob::dispatch();
             // OpNFTManualUpJob::dispatch();
-            // return 'Job Run Successfully';
+            return 'Job Run Successfully';
             $clients=MutualFundTransaction::select('id','first_client_name','first_client_pan')
             // ->where('delete_flag','N')
             // ->where('amc_flag','N')
