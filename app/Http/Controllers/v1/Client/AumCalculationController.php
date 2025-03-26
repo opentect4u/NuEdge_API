@@ -107,19 +107,20 @@ class AumCalculationController extends Controller
 
     public function test()
     {
+        
         // $arr=['B105G','B106D','B106DP'];
-        $clients=MutualFundTransaction::select('id','first_client_name','first_client_pan')
-            // ->whereIn('product_code',$arr)
-            ->groupBy('first_client_name')
-            ->groupBy('first_client_pan')
-            ->get();
+        // $clients=MutualFundTransaction::select('id','first_client_name','first_client_pan')
+        //     // ->whereIn('product_code',$arr)
+        //     ->groupBy('first_client_name')
+        //     ->groupBy('first_client_pan')
+        //     ->get();
         // // return $clients;
         // $valuation_as_on="2025-03-26";
         // foreach ($clients as $key => $client) {
         //     $port=AumCalculationController1::calucationTotUnitsAndInvCost__($client->first_client_name,$client->first_client_pan,$valuation_as_on);
         //     return $port;
         // }
-        AumCalculationJob::dispatch($clients);
+        // AumCalculationJob::dispatch($clients);
 
         // $port=AumCalculationController1::calucationTotUnitsAndInvCost__($client->first_client_name,$client->first_client_pan,$valuation_as_on);
         // return $port;

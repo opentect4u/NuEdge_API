@@ -201,7 +201,8 @@ class AUMController extends Controller
             $all_data = AumReport::leftJoin('md_scheme_isin', 'md_scheme_isin.product_code', '=', 'td_mutual_fund_trans_aum.product_code')
                 ->leftJoin('md_scheme', 'md_scheme.id', '=', 'md_scheme_isin.scheme_id')
             // ->selectRaw('td_mutual_fund_trans_aum.*,SUM(td_mutual_fund_trans_aum.total_unit) AS tot_units, SUM(td_mutual_fund_trans_aum.total_inv_cost) as inv_cost')
-                ->selectRaw('td_mutual_fund_trans_aum.*,SUM(total_unit) AS tot_units,SUM(total_inv_cost) as inv_cost')
+                // ->selectRaw('td_mutual_fund_trans_aum.*,SUM(total_unit) AS tot_units,SUM(total_inv_cost) as inv_cost')
+                ->selectRaw('td_mutual_fund_trans_aum.*,total_unit AS tot_units,total_inv_cost as inv_cost')
                 ->whereRaw($rawQuery)
                 ->groupBy('td_mutual_fund_trans_aum.folio_no', 'td_mutual_fund_trans_aum.product_code')
                 ->get();
