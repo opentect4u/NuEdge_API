@@ -38,6 +38,7 @@ Route::prefix('v1')->group(function () {
             Route::any('testgenpdf',[App\Http\Controllers\v1\Client\PDFController::class,'generatePDFTest']);  // 
             
             Route::get('aum1',[App\Http\Controllers\v1\Client\AumCalculationController::class,'index']);  // 
+            Route::get('aum10',[App\Http\Controllers\v1\Client\AumCalculationController::class,'test']);  // 
             // Route::get('aum2',[App\Http\Controllers\v1\Client\AUMController::class,'search']);  // 
             // Route::get('aum3',[App\Http\Controllers\v1\Client\AUMController::class,'search3']);  // 
             // Route::get('aumScheme1',[App\Http\Controllers\v1\Client\AUMController::class,'aumByScheme']);  // 

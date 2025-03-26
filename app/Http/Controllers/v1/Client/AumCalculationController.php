@@ -104,6 +104,142 @@ class AumCalculationController extends Controller
         }
         return Helper::SuccessResponse($clients);
     }
+
+    public function test()
+    {
+        // $arr=['B105G','B106D','B106DP'];
+        $clients=MutualFundTransaction::select('id','first_client_name','first_client_pan')
+            // ->whereIn('product_code',$arr)
+            ->groupBy('first_client_name')
+            ->groupBy('first_client_pan')
+            ->get();
+        // // return $clients;
+        // $valuation_as_on="2025-03-26";
+        // foreach ($clients as $key => $client) {
+        //     $port=AumCalculationController1::calucationTotUnitsAndInvCost__($client->first_client_name,$client->first_client_pan,$valuation_as_on);
+        //     return $port;
+        // }
+        AumCalculationJob::dispatch($clients);
+
+        // $port=AumCalculationController1::calucationTotUnitsAndInvCost__($client->first_client_name,$client->first_client_pan,$valuation_as_on);
+        // return $port;
+        // calucationTotUnitsAndInvCost($client_name,$pan_no,$valuation_as_on)
+    }
+    public static function calucationTotUnitsAndInvCost__($client_name,$pan_no,$valuation_as_on)
+    {
+        try {
+            session()->forget('valuation_as_on');
+            // return Session::get('valuation_as_on');
+            $client_details='';
+            if ($valuation_as_on) {
+                $rawQuery='';
+                 
+                if ($valuation_as_on) {
+                    $condition_v=(strlen($rawQuery) > 0)? " AND ":" ";
+                    $queryString='td_mutual_fund_trans.trans_date';
+                    $rawQuery.=$condition_v.$queryString."<= '".$valuation_as_on."'";
+                }
+                $client_rawQuery='';
+                if (!$pan_no) {
+                    $queryString='td_mutual_fund_trans.first_client_name';
+                    $rawQuery.=Helper::WhereRawQuery($client_name,$rawQuery,$queryString);
+                }else {
+                    $queryString='td_mutual_fund_trans.first_client_pan';
+                    $rawQuery.=Helper::WhereRawQuery($pan_no,$rawQuery,$queryString);
+                }
+            } 
+
+            session(['valuation_as_on' => $valuation_as_on]);
+            // return $rawQuery;
+            // return $client_details;
+            // DB::enableQueryLog();
+            $all_data=MutualFundTransaction::with('foliotrans')->leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_mutual_fund_trans.product_code')
+                ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
+                ->leftJoin('md_category','md_category.id','=','md_scheme.category_id')
+                ->leftJoin('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
+                ->leftJoin('md_amc','md_amc.amc_code','=','td_mutual_fund_trans.amc_code')
+                ->leftJoin('md_plan','md_plan.id','=','md_scheme_isin.plan_id')
+                ->leftJoin('md_option','md_option.id','=','md_scheme_isin.option_id')
+                ->select('td_mutual_fund_trans.portfolio_show_flag','td_mutual_fund_trans.rnt_id','td_mutual_fund_trans.folio_no','td_mutual_fund_trans.product_code','td_mutual_fund_trans.amc_code','td_mutual_fund_trans.pur_price','td_mutual_fund_trans.trans_date','td_mutual_fund_trans.trans_mode',
+                'md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name','md_category.id as cat_id','md_subcategory.id as subcat_id',
+                'md_amc.amc_short_name as amc_name','md_plan.plan_name as plan_name','md_option.opt_name as option_name')
+                ->selectRaw('UCASE(td_mutual_fund_trans.first_client_name) as first_client_name,td_mutual_fund_trans.first_client_pan')
+                ->selectRaw('IF(td_mutual_fund_trans.rnt_id=1,md_scheme_isin.isin_no,td_mutual_fund_trans.isin_no) as isin_no')
+                ->selectRaw('sum(td_mutual_fund_trans.units) as tot_units')
+                ->selectRaw('sum(td_mutual_fund_trans.amount) as tot_amount')
+                ->selectRaw('sum(td_mutual_fund_trans.stamp_duty) as tot_stamp_duty')
+                ->selectRaw('sum(td_mutual_fund_trans.tds) as tot_tds')
+                ->selectRaw('count(*) as tot_rows')
+                ->selectRaw('IF(td_mutual_fund_trans.rnt_id=1,
+                (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=td_mutual_fund_trans.trxn_type_code AND c_k_trans_type=td_mutual_fund_trans.trxn_type_flag AND c_k_trans_sub_type=td_mutual_fund_trans.trxn_nature_code limit 1),
+                (CASE 
+                    WHEN td_mutual_fund_trans.trans_flag="DP" || td_mutual_fund_trans.trans_flag="DR" THEN (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=td_mutual_fund_trans.kf_trans_type AND k_divident_flag=td_mutual_fund_trans.trans_flag limit 1)
+                    WHEN td_mutual_fund_trans.trans_flag="TO" THEN "Transfer Out"
+                    ELSE (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=td_mutual_fund_trans.kf_trans_type limit 1)
+                END)
+                )as transaction_type')
+                ->selectRaw('IF(td_mutual_fund_trans.rnt_id=1,
+                (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=td_mutual_fund_trans.trxn_type_code AND c_k_trans_type=td_mutual_fund_trans.trxn_type_flag AND c_k_trans_sub_type=td_mutual_fund_trans.trxn_nature_code limit 1),
+                (CASE 
+                    WHEN td_mutual_fund_trans.trans_flag="DP" || td_mutual_fund_trans.trans_flag="DR" THEN (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=td_mutual_fund_trans.kf_trans_type AND k_divident_flag=td_mutual_fund_trans.trans_flag limit 1)
+                    WHEN td_mutual_fund_trans.trans_flag="TO" THEN "Transfer Out"
+                    ELSE (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=td_mutual_fund_trans.kf_trans_type limit 1)
+                END)
+                )as transaction_subtype')
+                ->where('td_mutual_fund_trans.delete_flag','N')
+                ->where('td_mutual_fund_trans.amc_flag','N')
+                ->where('td_mutual_fund_trans.scheme_flag','N')
+                ->where('td_mutual_fund_trans.plan_option_flag','N')
+                ->where('td_mutual_fund_trans.bu_type_flag','N')
+                ->where('td_mutual_fund_trans.divi_mismatch_flag','N')
+                ->where('td_mutual_fund_trans.portfolio_show_flag','Y')
+                ->whereRaw($rawQuery)
+                ->groupBy('td_mutual_fund_trans.folio_no')
+                ->groupBy('td_mutual_fund_trans.product_code')
+                ->groupBy('td_mutual_fund_trans.isin_no')
+                ->orderBy('td_mutual_fund_trans.trans_date','ASC')
+                ->get()
+                ->toArray();
+            // dd(DB::getQueryLog());
+            // dd(DB::getQueryLog());
+            // return $all_data;
+            usort($all_data, function($a, $b) {
+                return $a['scheme_name'] <=> $b['scheme_name'];
+            });
+            $filter_data=[];
+            foreach ($all_data as $data_key => $value1) {
+                // return $value1;
+                $isin_no=$value1['isin_no'];
+                $product_code=$value1['product_code'];
+               
+                $value1['curr_nav']=0;
+                $mydata='';
+                $foliotrans=$value1['foliotrans'];
+                $json  = json_encode($foliotrans);
+                $array = json_decode($json, true);
+                if (array_search('Consolidation In',array_column($array,'transaction_subtype'))) {
+                    // $foliotrans=TransHelper::ConsolidationInQuery($value1['rnt_id'],$value1['folio_no'],$value1['isin_no'],$value1['product_code'],$valuation_as_on);
+                    $foliotrans=AumCalculationController1::ConsolidationInQuery($value1['rnt_id'],$value1['folio_no'],$value1['isin_no'],$value1['product_code'],$valuation_as_on);
+                }
+                // $mydata=TransHelper::calculate($foliotrans,$value1->curr_nav,$valuation_as_on);
+                $mydata=AumCalculationController1::calculate($foliotrans,$value1['curr_nav'],$valuation_as_on);
+
+                $value1['mydata']=$mydata;
+                $value1['idcwp']=0;
+                $value1['idcw_reinv']=isset($mydata['idcw_reinv'])? number_format((float)$mydata['idcw_reinv'], 2, '.', ''):0;
+                $value1['idcwr']=number_format((float)($value1['idcwp'] + $value1['idcw_reinv']), 2, '.', '');
+                $value1['inv_cost']=isset($mydata['inv_cost'])?number_format((float)$mydata['inv_cost'], 2, '.', ''):0;
+                $value1['tot_units']=isset($mydata['tot_units'])?number_format((float)$mydata['tot_units'], 2, '.', ''):0;
+               
+                array_push($filter_data,$value1);
+            }
+            return $filter_data;
+        } catch (\Throwable $th) {
+            // throw $th;
+            return [];
+        }
+    }
+    
     public static function calucationTotUnitsAndInvCost($client_name,$pan_no,$valuation_as_on)
     {
         try {
