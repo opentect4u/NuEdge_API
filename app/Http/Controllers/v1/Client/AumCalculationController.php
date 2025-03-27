@@ -125,6 +125,10 @@ class AumCalculationController extends Controller
         }
         // AumCalculationJob::dispatch($clients);
 
+
+
+
+        
         // $port=AumCalculationController1::calucationTotUnitsAndInvCost__($client->first_client_name,$client->first_client_pan,$valuation_as_on);
         // return $port;
         // calucationTotUnitsAndInvCost($client_name,$pan_no,$valuation_as_on)
