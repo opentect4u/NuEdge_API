@@ -109,20 +109,21 @@ class AumCalculationController extends Controller
     {
         
         // $arr=['B105G','B106D','B106DP'];
-        $pan='AFVPG3416Q';
+        $pan='';
         $clients=MutualFundTransaction::select('id','first_client_name','first_client_pan')
                         // ->whereIn('product_code',$arr)
-            ->where('first_client_pan',$pan)
+            // ->where('first_client_pan',$pan)
             ->groupBy('first_client_name')
             ->groupBy('first_client_pan')
             ->get();
-        return $clients;
-        // $valuation_as_on="2025-03-26";
-        // foreach ($clients as $key => $client) {
-        //     $port=AumCalculationController1::calucationTotUnitsAndInvCost($client->first_client_name,$client->first_client_pan,$valuation_as_on);
-        //     return $port;
-        // }
-        AumCalculationJob::dispatch($clients);
+        // return $clients;
+        
+        $valuation_as_on=date('Y-m-d');
+        foreach ($clients as $key => $client) {
+            $port=AumCalculationController1::calucationTotUnitsAndInvCost($client->first_client_name,$client->first_client_pan,$valuation_as_on);
+            return $port;
+        }
+        // AumCalculationJob::dispatch($clients);
 
         // $port=AumCalculationController1::calucationTotUnitsAndInvCost__($client->first_client_name,$client->first_client_pan,$valuation_as_on);
         // return $port;
@@ -159,7 +160,8 @@ class AumCalculationController extends Controller
             // return $rawQuery;
             // return $client_details;
             // DB::enableQueryLog();
-            $all_data=MutualFundTransaction::with('foliotrans')->leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_mutual_fund_trans.product_code')
+            $all_data=MutualFundTransaction::with('foliotrans')
+                ->leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_mutual_fund_trans.product_code')
                 ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
                 ->leftJoin('md_category','md_category.id','=','md_scheme.category_id')
                 ->leftJoin('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
@@ -168,7 +170,8 @@ class AumCalculationController extends Controller
                 ->leftJoin('md_option','md_option.id','=','md_scheme_isin.option_id')
                 ->select('td_mutual_fund_trans.portfolio_show_flag','td_mutual_fund_trans.rnt_id','td_mutual_fund_trans.folio_no','td_mutual_fund_trans.product_code','td_mutual_fund_trans.amc_code','td_mutual_fund_trans.pur_price','td_mutual_fund_trans.trans_date','td_mutual_fund_trans.trans_mode',
                 'md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name','md_category.id as cat_id','md_subcategory.id as subcat_id',
-                'md_amc.amc_short_name as amc_name','md_plan.plan_name as plan_name','md_option.opt_name as option_name')
+                'md_amc.amc_short_name as amc_name','md_plan.plan_name as plan_name','md_option.opt_name as option_name',
+                'md_scheme.id as scheme_id','md_scheme.amc_id as amc_id')
                 ->selectRaw('UCASE(td_mutual_fund_trans.first_client_name) as first_client_name,td_mutual_fund_trans.first_client_pan')
                 ->selectRaw('IF(td_mutual_fund_trans.rnt_id=1,md_scheme_isin.isin_no,td_mutual_fund_trans.isin_no) as isin_no')
                 ->selectRaw('sum(td_mutual_fund_trans.units) as tot_units')

@@ -48,12 +48,21 @@ class AUMController extends Controller
                     $rawQuery .= Helper::WhereRawQuery($rnt_id, $rawQuery, $queryString);
                 }
 
-                $queryString = 'md_scheme.amc_id';
-                $rawQuery .= Helper::WhereRawQuery($amc_id, $rawQuery, $queryString);
-                $queryString = 'md_scheme.category_id';
-                $rawQuery .= Helper::WhereRawQuery($cat_id, $rawQuery, $queryString);
-                $queryString = 'md_scheme.subcategory_id';
-                $rawQuery .= Helper::WhereRawQuery($sub_cat_id, $rawQuery, $queryString);
+                // $queryString = 'md_scheme.amc_id';
+                // $rawQuery .= Helper::WhereRawQuery($amc_id, $rawQuery, $queryString);
+                // $queryString = 'md_scheme.category_id';
+                // $rawQuery .= Helper::WhereRawQuery($cat_id, $rawQuery, $queryString);
+                // $queryString = 'md_scheme.subcategory_id';
+                // $rawQuery .= Helper::WhereRawQuery($sub_cat_id, $rawQuery, $queryString);
+                // $queryString = 'md_scheme_isin.scheme_id';
+                // $rawQuery .= Helper::WhereRawQuery($scheme_id, $rawQuery, $queryString);
+
+                // $queryString = 'md_scheme.amc_id';
+                // $rawQuery .= Helper::WhereRawQuery($amc_id, $rawQuery, $queryString);
+                // $queryString = 'md_scheme.category_id';
+                // $rawQuery .= Helper::WhereRawQuery($cat_id, $rawQuery, $queryString);
+                // $queryString = 'md_scheme.subcategory_id';
+                // $rawQuery .= Helper::WhereRawQuery($sub_cat_id, $rawQuery, $queryString);
                 $queryString = 'md_scheme_isin.scheme_id';
                 $rawQuery .= Helper::WhereRawQuery($scheme_id, $rawQuery, $queryString);
 
@@ -65,13 +74,19 @@ class AUMController extends Controller
             // return $rawQuery;
             /******************************************************* */
             // $all_data=DB::select('SELECT *,SUM(total_unit) AS tot_units,SUM(total_inv_cost) as inv_cost FROM td_mutual_fund_trans_aum where trans_date=(SELECT MAX(trans_date) FROM td_mutual_fund_trans_aum WHERE trans_date <="'.$date.'") GROUP BY amc_code,product_code');
-            $all_data = AumReport::leftJoin('md_scheme_isin', 'md_scheme_isin.product_code', '=', 'td_mutual_fund_trans_aum.product_code')
-                ->leftJoin('md_scheme', 'md_scheme.id', '=', 'md_scheme_isin.scheme_id')
-                ->leftJoin('md_rnt', 'md_rnt.id', '=', 'td_mutual_fund_trans_aum.rnt_id')
+            $all_data = AumReport::leftJoin('md_rnt', 'md_rnt.id', '=', 'td_mutual_fund_trans_aum.rnt_id')
                 ->selectRaw('td_mutual_fund_trans_aum.*,SUM(td_mutual_fund_trans_aum.total_unit) AS tot_units, SUM(td_mutual_fund_trans_aum.total_inv_cost) as inv_cost,md_rnt.rnt_name')
                 ->whereRaw($rawQuery)
                 ->groupBy('td_mutual_fund_trans_aum.amc_code', 'td_mutual_fund_trans_aum.product_code')
                 ->get();
+
+            // $all_data = AumReport::leftJoin('md_scheme_isin', 'md_scheme_isin.product_code', '=', 'td_mutual_fund_trans_aum.product_code')
+            //     ->leftJoin('md_scheme', 'md_scheme.id', '=', 'md_scheme_isin.scheme_id')
+            //     ->leftJoin('md_rnt', 'md_rnt.id', '=', 'td_mutual_fund_trans_aum.rnt_id')
+            //     ->selectRaw('td_mutual_fund_trans_aum.*,SUM(td_mutual_fund_trans_aum.total_unit) AS tot_units, SUM(td_mutual_fund_trans_aum.total_inv_cost) as inv_cost,md_rnt.rnt_name')
+            //     ->whereRaw($rawQuery)
+            //     ->groupBy('td_mutual_fund_trans_aum.amc_code', 'td_mutual_fund_trans_aum.product_code')
+            //     ->get();
             // return $all_data;
             /******************************************************* */
             /** start for get nav data */

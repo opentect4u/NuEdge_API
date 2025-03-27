@@ -45,6 +45,8 @@ class AumCalculationJob implements ShouldQueue
             $insert_arr=[];
             foreach ($portfolio as $key => $single) {
                 // return $single;
+                \Log::info(json_encode($single));
+
                 AumReport::where('folio_no',$single['folio_no'])
                     ->where('product_code',$single['product_code'])
                     ->where('trans_date',$valuation_as_on)

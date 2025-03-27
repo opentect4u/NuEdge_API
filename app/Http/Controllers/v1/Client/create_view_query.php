@@ -1204,3 +1204,82 @@ FROM
 // FROM tt_broker_change_trans_report
 // LEFT JOIN md_amc ON md_amc.amc_code = tt_broker_change_trans_report.amc_code
 // WHERE tt_broker_change_trans_report.rnt_id=1
+
+
+
+// insert into `tt_broker_change_trans` 
+// (`mailback_process_id`
+// , `rnt_id`
+// , `arn_no`
+// , `sub_brk_cd`
+// , `euin_no`
+// , `first_client_name`
+// , `first_client_pan`
+// , `amc_code`
+// , `folio_no`
+// , `product_code`
+// , `trans_no`
+// , `trans_mode`
+// , `trans_status`
+// , `user_trans_no`
+// , `trans_date`
+// , `post_date`
+// , `pur_price`
+// , `units`
+// , `amount`
+// , `rec_date`
+// , `trxn_type`
+// , `trxn_type_flag`
+// , `trxn_nature`
+// , `te_15h`
+// , `micr_code`
+// , `remarks`
+// , `sw_flag`
+// , `old_folio`
+// , `seq_no`
+// , `reinvest_flag`
+// , `stt`
+// , `stamp_duty`
+// , `tds`
+// , `acc_no`
+// , `bank_name`
+// , `updated_at`
+// , `created_at`
+// ) values (
+// 736
+// , 1
+// , ARN-135987
+// ,  
+// , ?
+// , Sanat Kumar Ganguly  
+// , AFVPG3416Q
+// , B
+// , 1039169264
+// , B02G
+// , 190329096
+// , N
+// , Y
+// , 7151643
+// , 2019-09-12 00:00:00
+// , 2019-09-12 00:00:00
+// , 29.37
+// , 68.097
+// , 2000
+// , 2025-03-27 12:26:50
+// , P81ES
+// , Fresh Purchase Systematic
+// , Systematic
+// , N
+// , 115305
+// ,  
+// , NA
+// , 
+// , 12892572921
+// , Z
+// , 0
+// , 0
+// , ?
+// , 0
+// , 0
+// , 2025-03-27 14:49:53
+// , 2025-03-27 14:49:53)

@@ -32,5 +32,10 @@ class AumReport extends Model
         'total_inv_cost',
         'all_amount_arr',
         'all_date_arr',
+        'portfolio_show_flag',
+        'amc_id',
+        'category_id',
+        'subcategory_id',
+        'scheme_id',
     ];
 }
