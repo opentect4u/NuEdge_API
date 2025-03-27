@@ -331,7 +331,7 @@ class MailBackController extends Controller
                             'seq_no'=>str_replace("'","",$value[33]),
                             'reinvest_flag'=>str_replace("'","",$value[34]),
                             'stt'=>str_replace("'","",$value[36]),
-                            'stamp_duty'=>str_replace("'","",$value[74]),
+                            'stamp_duty'=>str_replace("'","",$value[72]),
                             'tds'=>NULL,
                             'acc_no'=>str_replace("'","",$value[63]),
                             'bank_name'=>str_replace("'","",$value[64]),
