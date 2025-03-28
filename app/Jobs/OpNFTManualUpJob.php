@@ -82,7 +82,7 @@ class OpNFTManualUpJob implements ShouldQueue
                     ->get()
                     ->take(1);
                 
-                \Log::info(json_encode($mydata));
+                // \Log::info(json_encode($mydata));
                 if (count($mydata)>0) {
                     $up_data=MutualFund::where('first_client_id',$mydata[0]->first_client_id)
                         ->where('folio_no',$mydata[0]->folio_no)
@@ -116,7 +116,7 @@ class OpNFTManualUpJob implements ShouldQueue
                     ->get()
                     ->take(1);
                     
-                \Log::info(json_encode($mydata));
+                // \Log::info(json_encode($mydata));
                 if (count($mydata)>0) {
                  
                     $up_data=MutualFund::where('first_client_id',$mydata[0]->first_client_id)
@@ -138,7 +138,7 @@ class OpNFTManualUpJob implements ShouldQueue
             // \Log::info($mydata[0]->product_code);
             // \Log::info($mydata[0]->amount);
             // \Log::info($mydata[0]->stamp_duty);
-            \Log::info('***************************');
+            // \Log::info('***************************');
         }
     }
 }

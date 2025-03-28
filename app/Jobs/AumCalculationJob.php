@@ -76,6 +76,10 @@ class AumCalculationJob implements ShouldQueue
                     'all_amount_arr'=>json_encode($single['mydata']['all_amt_arr']),
                     'all_date_arr'=>json_encode($single['mydata']['all_date_arr']),
                     'portfolio_show_flag'=>$single['portfolio_show_flag'],
+                    'amc_id'=>$single['amc_id'],
+                    'category_id'=>$single['cat_id'],
+                    'subcategory_id'=>$single['subcat_id'],
+                    'scheme_id'=>$single['scheme_id'],
                     'created_at'=>date('Y-m-d H:i:s'),
                     'updated_at'=>date('Y-m-d H:i:s')
                 ];

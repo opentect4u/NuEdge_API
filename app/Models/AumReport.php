@@ -37,5 +37,6 @@ class AumReport extends Model
         'category_id',
         'subcategory_id',
         'scheme_id',
+        
     ];
 }

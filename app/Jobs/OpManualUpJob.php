@@ -86,7 +86,7 @@ class OpManualUpJob implements ShouldQueue
                         ->whereDate('rnt_login_dt','=',date('Y-m-d',strtotime($value->rnt_login_dt)))
                         // ->count();
                         ->update(['manual_trans_status'=>'P','process_date'=>$mydata[0]->trans_date,'form_status'=>'M','folio_no'=>$mydata[0]->folio_no]);
-                    \Log::info("count: ".$up_data);
+                    // \Log::info("count: ".$up_data);
                 }
             }else {
                 // \Log::info('else');
@@ -130,7 +130,7 @@ class OpManualUpJob implements ShouldQueue
             // \Log::info($mydata[0]->product_code);
             // \Log::info($mydata[0]->amount);
             // \Log::info($mydata[0]->stamp_duty);
-            \Log::info('***************************');
+            // \Log::info('***************************');
         }
     }
 }
