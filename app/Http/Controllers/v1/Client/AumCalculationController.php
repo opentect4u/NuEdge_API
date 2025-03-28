@@ -109,7 +109,7 @@ class AumCalculationController extends Controller
     {
         
         // $arr=['B105G','B106D','B106DP'];
-        $pan='AMEPG0111G';
+        $pan='AANPS0036M';
         $clients=MutualFundTransaction::select('id','first_client_name','first_client_pan')
                         // ->whereIn('product_code',$arr)
             ->where('first_client_pan',$pan)
@@ -346,7 +346,8 @@ class AumCalculationController extends Controller
 
         foreach ($foliotrans as $key => $value) {
             if(strpos($value['transaction_subtype'], 'Purchase' )!== false || strpos($value['transaction_subtype'], 'Switch In' )!== false 
-                || strpos($value['transaction_subtype'], 'Dividend Reinvestment')!== false || strpos($value['transaction_subtype'], 'STP In')!== false) {
+                || strpos($value['transaction_subtype'], 'Dividend Reinvestment')!== false || strpos($value['transaction_subtype'], 'STP In')!== false
+                || strpos($value['transaction_subtype'], 'Transmission In')!== false) {
                 array_push($purchase_data,$value);
                 /****************************************** */
                 array_push($all_amt_arr,-$value['tot_amount']);

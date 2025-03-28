@@ -393,7 +393,8 @@ class TransHelper{
 
         foreach ($foliotrans as $key => $value) {
             if(strpos($value->transaction_subtype, 'Purchase' )!== false || strpos($value->transaction_subtype, 'Switch In' )!== false 
-                || strpos($value->transaction_subtype, 'Dividend Reinvestment')!== false || strpos($value->transaction_subtype, 'STP In')!== false) {
+                || strpos($value->transaction_subtype, 'Dividend Reinvestment')!== false || strpos($value->transaction_subtype, 'STP In')!== false
+                || strpos($value['transaction_subtype'], 'Transmission In')!== false) {
                 if ($key > 0) {
                     $value->cumml_units=number_format((float)($value->tot_units + $foliotrans[($key-1)]->cumml_units) , 4, '.', '') ;
                 }else {
