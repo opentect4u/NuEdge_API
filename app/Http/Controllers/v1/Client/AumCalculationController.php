@@ -320,9 +320,11 @@ class AumCalculationController extends Controller
         }
         // **************************End Rejection Amount Delete*************************************
         // return $foliotrans;
+        /*****************start if only rejection data available*************** */
         // if (count($foliotrans)==0) {
         //     $foliotrans=$get_rejection_data;
         // }
+        /*****************end if only rejection data available*************** */
         // $return_data['inv_since']=date('Y-m-d',strtotime($foliotrans[0]['trans_date']));
         // $return_data['pur_nav']=$foliotrans[0]['pur_price'];
         // $return_data['nifty50']=$foliotrans[0]['nifty50'];
