@@ -109,10 +109,10 @@ class AumCalculationController extends Controller
     {
         
         // $arr=['B105G','B106D','B106DP'];
-        $pan='';
+        $pan='AMEPG0111G';
         $clients=MutualFundTransaction::select('id','first_client_name','first_client_pan')
                         // ->whereIn('product_code',$arr)
-            // ->where('first_client_pan',$pan)
+            ->where('first_client_pan',$pan)
             ->groupBy('first_client_name')
             ->groupBy('first_client_pan')
             ->get();
@@ -320,9 +320,9 @@ class AumCalculationController extends Controller
         }
         // **************************End Rejection Amount Delete*************************************
         // return $foliotrans;
-        if (count($foliotrans)==0) {
-            $foliotrans=$get_rejection_data;
-        }
+        // if (count($foliotrans)==0) {
+        //     $foliotrans=$get_rejection_data;
+        // }
         // $return_data['inv_since']=date('Y-m-d',strtotime($foliotrans[0]['trans_date']));
         // $return_data['pur_nav']=$foliotrans[0]['pur_price'];
         // $return_data['nifty50']=$foliotrans[0]['nifty50'];
