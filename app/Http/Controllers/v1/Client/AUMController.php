@@ -63,8 +63,8 @@ class AUMController extends Controller
                 // $rawQuery .= Helper::WhereRawQuery($cat_id, $rawQuery, $queryString);
                 // $queryString = 'md_scheme.subcategory_id';
                 // $rawQuery .= Helper::WhereRawQuery($sub_cat_id, $rawQuery, $queryString);
-                $queryString = 'md_scheme_isin.scheme_id';
-                $rawQuery .= Helper::WhereRawQuery($scheme_id, $rawQuery, $queryString);
+                // $queryString = 'md_scheme_isin.scheme_id';
+                // $rawQuery .= Helper::WhereRawQuery($scheme_id, $rawQuery, $queryString);
 
             }
 
@@ -113,26 +113,28 @@ class AUMController extends Controller
             // return $all_data;
             $final_data = [];
             foreach ($all_data as $key_group_amc_data => $value_group_amc_data) { // amc loop
-                                                                                      // return $value_group_amc_data;
-                $product_code = $value_group_amc_data->product_code;
-                $new          = '';
-                if (count($res_array) > 0) {
-                    foreach ($res_array as $val_nav) {
-                        if ($val_nav->product_code == $product_code) {
-                            $new = $val_nav;
+                // return $value_group_amc_data;
+                if ($value_group_amc_data->inv_cost > 0) {
+                    $product_code = $value_group_amc_data->product_code;
+                    $new          = '';
+                    if (count($res_array) > 0) {
+                        foreach ($res_array as $val_nav) {
+                            if ($val_nav->product_code == $product_code) {
+                                $new = $val_nav;
+                            }
                         }
                     }
+                    $value_group_amc_data->new        = $new;
+                    $value_group_amc_data->curr_nav   = isset($new->nav) ? $new->nav : 0;
+                    $value_group_amc_data->nav_date   = isset($new->nav_date) ? $new->nav_date : 0;
+                    $value_group_amc_data->idcw_reinv = 0;
+                    $value_group_amc_data->idcw_paid  = 0;
+                    $value_group_amc_data->idcwr      = 0;
+                    $value_group_amc_data->curr_aum   = number_format((float) ($value_group_amc_data->curr_nav * $value_group_amc_data->tot_units), 2, '.', '');
+                    $value_group_amc_data->gain_loss  = number_format((float) (($value_group_amc_data->curr_aum - $value_group_amc_data->inv_cost) + $value_group_amc_data->idcwr), 2, '.', '');
+                    $value_group_amc_data->abs_rtn    = ($value_group_amc_data->gain_loss != 0 && $value_group_amc_data->inv_cost != 0) ? number_format((float) (($value_group_amc_data->gain_loss / $value_group_amc_data->inv_cost) * 100), 2, '.', '') : 0;
+                    array_push($final_data, $value_group_amc_data);
                 }
-                $value_group_amc_data->new        = $new;
-                $value_group_amc_data->curr_nav   = isset($new->nav) ? $new->nav : 0;
-                $value_group_amc_data->nav_date   = isset($new->nav_date) ? $new->nav_date : 0;
-                $value_group_amc_data->idcw_reinv = 0;
-                $value_group_amc_data->idcw_paid  = 0;
-                $value_group_amc_data->idcwr      = 0;
-                $value_group_amc_data->curr_aum   = number_format((float) ($value_group_amc_data->curr_nav * $value_group_amc_data->tot_units), 2, '.', '');
-                $value_group_amc_data->gain_loss  = number_format((float) (($value_group_amc_data->curr_aum - $value_group_amc_data->inv_cost) + $value_group_amc_data->idcwr), 2, '.', '');
-                $value_group_amc_data->abs_rtn    = ($value_group_amc_data->gain_loss != 0 && $value_group_amc_data->inv_cost != 0) ? number_format((float) (($value_group_amc_data->gain_loss / $value_group_amc_data->inv_cost) * 100), 2, '.', '') : 0;
-                array_push($final_data, $value_group_amc_data);
             }
             // $final_data = collect($final_data)->map(function($x){ return (array) $x; })->toArray();
             usort($final_data, function ($a, $b) {
