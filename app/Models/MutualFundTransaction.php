@@ -352,4 +352,53 @@ class MutualFundTransaction extends Model
             ->orderBy('trans_date','ASC');
     }
     
+
+    public function aumtrans()
+    {
+        $all_flag='N';
+        return $this->hasMany(MutualFundTransaction::class, ['folio_no', 'product_code'], ['folio_no', 'product_code'])
+            ->where([
+                ['delete_flag','=',$all_flag],
+                ['amc_flag','=',$all_flag],
+                ['scheme_flag','=',$all_flag],
+                ['plan_option_flag','=',$all_flag],
+                ['bu_type_flag','=',$all_flag],
+                ['divi_mismatch_flag','=',$all_flag],
+                ['trans_date','<=',Session::get('valuation_as_on')]
+            ])
+            ->select('rnt_id','folio_no','product_code','isin_no','trans_date','trxn_type','trxn_type_flag','trxn_nature','amount','stamp_duty','tds',
+            'units','pur_price','trans_mode')
+            ->selectRaw('IF(rnt_id=1,
+            (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=trxn_type_code AND c_k_trans_type=trxn_type_flag AND c_k_trans_sub_type=trxn_nature_code limit 1),
+            (CASE 
+                WHEN trans_flag="DP" || trans_flag="DR" THEN (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type AND k_divident_flag=trans_flag limit 1)
+                WHEN trans_flag="TO" THEN "Transfer Out"
+                ELSE (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type limit 1)
+            END)
+            )as transaction_type')
+            ->selectRaw('IF(rnt_id=1,
+            (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=trxn_type_code AND c_k_trans_type=trxn_type_flag AND c_k_trans_sub_type=trxn_nature_code limit 1),
+            (CASE 
+                WHEN trans_flag="DP" || trans_flag="DR" THEN (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type AND k_divident_flag=trans_flag limit 1)
+                WHEN trans_flag="TO" THEN "Transfer Out"
+                ELSE (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=kf_trans_type limit 1)
+            END)
+            )as transaction_subtype')
+            ->selectRaw('units as tot_units,amount as tot_amount,IF(stamp_duty!="",stamp_duty,0.00)as tot_stamp_duty,IF(tds!="",tds,0.00)as tot_tds')
+            // ->selectRaw('sum(units) as tot_units')
+            // ->selectRaw('sum(amount) as tot_amount')
+            // ->selectRaw('IF(stamp_duty!="",sum(stamp_duty),0.00)as tot_stamp_duty')
+            // ->selectRaw('IF(tds!="",sum(tds),0.00)as tot_tds')
+            // ->selectRaw('count(*) as tot_rows')
+            ->selectRaw('(select close from td_benchmark_scheme where benchmark=1 AND date=trans_date) as nifty50')
+            ->selectRaw('(select close from td_benchmark_scheme where benchmark=70 AND date=trans_date) as sensex')
+            // ->groupBy('td_mutual_fund_trans.trans_no')
+            // ->groupBy('td_mutual_fund_trans.trxn_type_flag')
+            // ->groupBy('td_mutual_fund_trans.trxn_nature_code')
+            // ->groupBy('td_mutual_fund_trans.trans_desc')
+            // ->groupBy('td_mutual_fund_trans.kf_trans_type')
+            // ->groupBy('td_mutual_fund_trans.trans_flag')
+            // ->groupBy('td_mutual_fund_trans.pur_price')
+            ->orderBy('td_mutual_fund_trans.trans_date','ASC');
+    }
 }

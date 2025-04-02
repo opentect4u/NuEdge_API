@@ -254,7 +254,8 @@ class AUMController extends Controller
             // return $all_data;
             $final_data = [];
             foreach ($all_data as $key_group_amc_data => $value_group_amc_data) { // amc loop
-                                                                                      // return $value_group_amc_data;
+                // return $value_group_amc_data;
+                
                 $product_code = $value_group_amc_data->product_code;
                 $new          = '';
                 if (count($res_array) > 0) {
