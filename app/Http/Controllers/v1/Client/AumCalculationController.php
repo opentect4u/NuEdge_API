@@ -109,7 +109,7 @@ class AumCalculationController extends Controller
     {
         
         // $arr=['B105G','B106D','B106DP'];
-        $pan='CAJPR4409P';
+        $pan='DHBPS7917B';
         $clients=MutualFundTransaction::select('id','first_client_name','first_client_pan')
                         // ->whereIn('product_code',$arr)
             ->where('first_client_pan',$pan)
@@ -127,7 +127,7 @@ class AumCalculationController extends Controller
         // $port=AumCalculationController1::calucationTotUnitsAndInvCost__($client->first_client_name,$client->first_client_pan,$valuation_as_on);
         // return $port;
         // calucationTotUnitsAndInvCost($client_name,$pan_no,$valuation_as_on)
-        return 'Job Run Successfully';
+        return 'AumCalculationJob Run Successfully';
 
     }
     public static function __calucationTotUnitsAndInvCost($client_name,$pan_no,$valuation_as_on)
@@ -733,7 +733,7 @@ class AumCalculationController extends Controller
                 || strpos($value['transaction_subtype'], 'STP Out')!== false) {
                 array_push($redemption_data,$value);
                 /****************************************** */
-                array_push($all_amt_arr,-$value['tot_amount']);
+                array_push($all_amt_arr,$value['tot_amount']);
                 array_push($all_date_arr,$value['trans_date']);
                 /****************************************** */
             }
