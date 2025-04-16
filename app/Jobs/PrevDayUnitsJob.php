@@ -61,6 +61,13 @@ class PrevDayUnitsJob implements ShouldQueue
                 'divident_reinvest'=>$single->divident_reinvest,
                 'total_unit'=>$single->total_unit,
                 'total_inv_cost'=>$single->total_inv_cost,
+                'all_amount_arr'=>$single->all_amount_arr,
+                'all_date_arr'=>$single->all_date_arr,
+                'portfolio_show_flag'=>$single->portfolio_show_flag,
+                'amc_id'=>$single->amc_id,
+                'category_id'=>$single->category_id,
+                'subcategory_id'=>$single->subcategory_id,
+                'scheme_id'=>$single->scheme_id,
                 'created_at'=>date('Y-m-d H:i:s'),
                 'updated_at'=>date('Y-m-d H:i:s')
             ];
