@@ -3,6 +3,7 @@ namespace App\Helpers;
 use App\Http\Controllers\Controller;
 use DB;
 use Illuminate\Http\Request;
+use App\Models\ActivityLog;
 
 class Helper{
 
@@ -283,4 +284,17 @@ class Helper{
         }
         return date('Y-m-d',strtotime($currentDate));
     }
+
+    public static function createLog($table_id,$description)
+    {
+        $id=(request()->user())? self::modifyUser(request()->user()) : 1;
+        ActivityLog::create([
+            'table_id'=>$table_id,
+            'description'=>$description,
+            'ip_address' => request()->ip(),
+            'created_by'=>$id,
+            'updated_by'=>$id,
+        ]);
+    }
+   
 }

@@ -35,7 +35,8 @@ class OpNFTManualUpJob implements ShouldQueue
     {
         \Log::info('Operation (NFT) Manual Update Job Run Successfully');
         // for final 
-        $non_fin_array=array(29);
+        // $non_fin_array=array(29);
+        $non_fin_array=array(29,23);
             // DB::enableQueryLog();
         $all_data=MutualFund::join('md_client','md_client.id','=','td_mutual_fund.first_client_id')
             ->join('md_trans','md_trans.id','=','td_mutual_fund.trans_id')
@@ -65,75 +66,139 @@ class OpNFTManualUpJob implements ShouldQueue
             // \Log::info($value->amount);
             // \Log::info('---------------------------');
             // \Log::info($value->amount);
-            if ($value->first_client_pan) {
-                // \Log::info('if');
-                $mydata=MutualFundTransaction::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_mutual_fund_trans.product_code')
-                    // ->leftjoin('md_scheme','md_scheme.scheme_id','=','md_scheme_isin.scheme_id')
-                    ->select('td_mutual_fund_trans.rnt_id','td_mutual_fund_trans.product_code','td_mutual_fund_trans.folio_no','td_mutual_fund_trans.trans_date','td_mutual_fund_trans.amount','td_mutual_fund_trans.tds',
-                    'md_scheme_isin.scheme_id','md_scheme_isin.plan_id','md_scheme_isin.option_id',
-                    'td_mutual_fund_trans.remarks')
-                    ->selectRaw('(SELECT id FROM md_client WHERE pan=td_mutual_fund_trans.first_client_pan LIMIT 1)as first_client_id')
-                    ->where('td_mutual_fund_trans.product_code',$value->product_code)
-                    ->where('td_mutual_fund_trans.first_client_pan',$value->first_client_pan)
-                    ->where('td_mutual_fund_trans.folio_no','=',$value->folio_no)
-                    ->whereDate('td_mutual_fund_trans.trans_date','=',$value->rnt_login_cutt_off)
-                    ->where('td_mutual_fund_trans.amount','=',$value->amount)
-                    ->orderBy('td_mutual_fund_trans.trans_date','ASC')
-                    ->get()
-                    ->take(1);
-                
-                // \Log::info(json_encode($mydata));
-                if (count($mydata)>0) {
-                    $up_data=MutualFund::where('first_client_id',$mydata[0]->first_client_id)
-                        ->where('folio_no',$mydata[0]->folio_no)
-                        ->where('trans_scheme_from',$mydata[0]->scheme_id)
-                        ->where('amount',$mydata[0]->amount)
-                        ->whereDate('rnt_login_cutt_off','=',$mydata[0]->trans_date)
-                        // ->count();
-                        ->update([
-                            'manual_trans_status'=>'P',
-                            'process_date'=>$mydata[0]->trans_date,
-                            'form_status'=>'M',
-                            'folio_no'=>$mydata[0]->folio_no,
-                            'manual_update_remarks'=>$mydata[0]->remarks,
-                        ]);
-                }
-            }else {
-                // \Log::info('else');
-                $mydata=MutualFundTransaction::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_mutual_fund_trans.product_code')
-                    // ->leftjoin('md_scheme','md_scheme.scheme_id','=','md_scheme_isin.scheme_id')
-                    ->select('td_mutual_fund_trans.product_code','td_mutual_fund_trans.folio_no','td_mutual_fund_trans.trans_date','td_mutual_fund_trans.amount','td_mutual_fund_trans.stamp_duty',
-                    'md_scheme_isin.scheme_id','md_scheme_isin.plan_id','md_scheme_isin.option_id',
-                    'td_mutual_fund_trans.remarks')
-                    ->selectRaw('(SELECT id FROM md_client WHERE client_name=td_mutual_fund_trans.first_client_name LIMIT 1)as first_client_id')
-                    ->where('td_mutual_fund_trans.product_code',$value->product_code)
-                    ->where('td_mutual_fund_trans.first_client_name',$value->first_client_name)
-                    ->where('td_mutual_fund_trans.folio_no','=',$value->folio_no)
-                    ->whereDate('td_mutual_fund_trans.trans_date','=',$value->rnt_login_cutt_off)
-                    ->where('td_mutual_fund_trans.amount','=',$value->amount)
-                    // ->whereDate('td_mutual_fund_trans.trans_date','>=',date('Y-m-d',strtotime($value->rnt_login_dt)))
-                    ->orderBy('td_mutual_fund_trans.trans_date','ASC')
-                    ->get()
-                    ->take(1);
-                    
-                // \Log::info(json_encode($mydata));
-                if (count($mydata)>0) {
-                 
-                    $up_data=MutualFund::where('first_client_id',$mydata[0]->first_client_id)
-                        ->where('folio_no',$mydata[0]->folio_no)
-                        ->where('trans_scheme_from',$mydata[0]->scheme_id)
-                        ->where('amount',$mydata[0]->amount)
-                        ->whereDate('rnt_login_cutt_off','=',$mydata[0]->trans_date)
-                        // ->count();
-                        ->update([
-                            'manual_trans_status'=>'P',
-                            'process_date'=>$mydata[0]->trans_date,
-                            'form_status'=>'M',
-                            'folio_no'=>$mydata[0]->folio_no,
-                            'manual_update_remarks'=>$mydata[0]->remarks,
-                        ]);
-                }
+            // return $value;
+            $trans_id=$value->trans_id;
+            switch ($trans_id) {
+                case '29':
+                    if ($value->first_client_pan) {
+                        // \Log::info('if');
+                        $mydata=MutualFundTransaction::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_mutual_fund_trans.product_code')
+                            // ->leftjoin('md_scheme','md_scheme.scheme_id','=','md_scheme_isin.scheme_id')
+                            ->select('td_mutual_fund_trans.rnt_id','td_mutual_fund_trans.product_code','td_mutual_fund_trans.folio_no','td_mutual_fund_trans.trans_date','td_mutual_fund_trans.amount','td_mutual_fund_trans.tds',
+                            'md_scheme_isin.scheme_id','md_scheme_isin.plan_id','md_scheme_isin.option_id',
+                            'td_mutual_fund_trans.remarks')
+                            ->selectRaw('(SELECT id FROM md_client WHERE pan=td_mutual_fund_trans.first_client_pan LIMIT 1)as first_client_id')
+                            ->where('td_mutual_fund_trans.product_code',$value->product_code)
+                            ->where('td_mutual_fund_trans.first_client_pan',$value->first_client_pan)
+                            ->where('td_mutual_fund_trans.folio_no','=',$value->folio_no)
+                            ->whereDate('td_mutual_fund_trans.trans_date','=',$value->rnt_login_cutt_off)
+                            ->where('td_mutual_fund_trans.amount','=',$value->amount)
+                            ->orderBy('td_mutual_fund_trans.trans_date','ASC')
+                            ->get()
+                            ->take(1);
+                        
+                        // \Log::info(json_encode($mydata));
+                        if (count($mydata)>0) {
+                            $up_data=MutualFund::where('first_client_id',$mydata[0]->first_client_id)
+                                ->where('folio_no',$mydata[0]->folio_no)
+                                ->where('trans_scheme_from',$mydata[0]->scheme_id)
+                                ->where('amount',$mydata[0]->amount)
+                                ->whereDate('rnt_login_cutt_off','=',$mydata[0]->trans_date)
+                                // ->count();
+                                ->update([
+                                    'manual_trans_status'=>'P',
+                                    'process_date'=>$mydata[0]->trans_date,
+                                    'form_status'=>'M',
+                                    'folio_no'=>$mydata[0]->folio_no,
+                                    'manual_update_remarks'=>$mydata[0]->remarks,
+                                ]);
+                        }
+                    }else {
+                        // \Log::info('else');
+                        $mydata=MutualFundTransaction::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_mutual_fund_trans.product_code')
+                            // ->leftjoin('md_scheme','md_scheme.scheme_id','=','md_scheme_isin.scheme_id')
+                            ->select('td_mutual_fund_trans.product_code','td_mutual_fund_trans.folio_no','td_mutual_fund_trans.trans_date','td_mutual_fund_trans.amount','td_mutual_fund_trans.stamp_duty',
+                            'md_scheme_isin.scheme_id','md_scheme_isin.plan_id','md_scheme_isin.option_id',
+                            'td_mutual_fund_trans.remarks')
+                            ->selectRaw('(SELECT id FROM md_client WHERE client_name=td_mutual_fund_trans.first_client_name LIMIT 1)as first_client_id')
+                            ->where('td_mutual_fund_trans.product_code',$value->product_code)
+                            ->where('td_mutual_fund_trans.first_client_name',$value->first_client_name)
+                            ->where('td_mutual_fund_trans.folio_no','=',$value->folio_no)
+                            ->whereDate('td_mutual_fund_trans.trans_date','=',$value->rnt_login_cutt_off)
+                            ->where('td_mutual_fund_trans.amount','=',$value->amount)
+                            // ->whereDate('td_mutual_fund_trans.trans_date','>=',date('Y-m-d',strtotime($value->rnt_login_dt)))
+                            ->orderBy('td_mutual_fund_trans.trans_date','ASC')
+                            ->get()
+                            ->take(1);
+                            
+                        // \Log::info(json_encode($mydata));
+                        if (count($mydata)>0) {
+                         
+                            $up_data=MutualFund::where('first_client_id',$mydata[0]->first_client_id)
+                                ->where('folio_no',$mydata[0]->folio_no)
+                                ->where('trans_scheme_from',$mydata[0]->scheme_id)
+                                ->where('amount',$mydata[0]->amount)
+                                ->whereDate('rnt_login_cutt_off','=',$mydata[0]->trans_date)
+                                // ->count();
+                                ->update([
+                                    'manual_trans_status'=>'P',
+                                    'process_date'=>$mydata[0]->trans_date,
+                                    'form_status'=>'M',
+                                    'folio_no'=>$mydata[0]->folio_no,
+                                    'manual_update_remarks'=>$mydata[0]->remarks,
+                                ]);
+                        }
+                    }
+                    break;
+                case '23':
+                    $folio_details=FolioDetails::where('rnt_id',$value->rnt_id)
+                        ->where('product_code',$value->product_code)
+                        ->where('folio_no',$value->folio_no)
+                        ->orderBy('folio_date','ASC')
+                        ->get();
+                    // return $folio_details;
+                    if (count($folio_details)>0) {
+                        // return $folio_details;
+                        // return request()->ip();
+                        $pan=$folio_details[0]->pan;
+                        $new_name=$folio_details[0]->first_client_name;
+                        $product_code=$folio_details[0]->product_code;
+                        $folio_no=$folio_details[0]->folio_no;
+                        if($pan){
+                            $first_client_id=Client::where('pan',$pan)->pluck('id')->first();
+                            $up_data=Client::find($first_client_id);
+                            if ($up_data->client_name!=$new_name) {
+                                $client_name=ucwords($new_name);
+                                $words = explode(" ",$client_name);
+                                $client_code="";
+                                $client_code_1 = mb_substr($words[0], 0, 1).mb_substr($words[(count($words)-1)], 0, 1);;
+                                $is_has=Client::where('client_code',$client_code_1)->get();
+                                if (count($is_has)>0) {
+                                    $client_code=$client_code_1.date('dmy',strtotime($up_data->dob)).count($is_has);
+                                }else {
+                                    $client_code=$client_code_1.date('dmy',strtotime($up_data->dob));
+                                }
+                                $up_data->client_code=$client_code;
+                                $up_data->client_name=$client_name;
+                                $up_data->updated_by=1;
+                                $up_data->save();
+                                // return $up_data;
+                                // $description='Client Name Update';
+                                // Helper::createLog($first_client_id,$description);
+                            }
+                            // return $up_data;
+                        }
+                        MutualFundTransaction::where('product_code',$product_code)
+                            ->where('folio_no',$folio_no)
+                            ->update([
+                                'first_client_name'=>$new_name,
+                                'updated_at'=>date('Y-m-d H:i:s'),
+                            ]);
+                        MutualFund::where('id',$value->id)
+                            ->update([
+                                'manual_trans_status'=>'P',
+                                'process_date'=>date('Y-m-d'),
+                                'form_status'=>'M',
+                                // 'folio_no'=>$mydata[0]->folio_no,
+                                // 'manual_update_remarks'=>$mydata[0]->remarks,
+                            ]);
+                    }
+                    break;
+                default:
+                    # code...
+                    break;
             }
+            
             // \Log::info(json_encode($mydata));
             // \Log::info($mydata[0]->product_code);
             // \Log::info($mydata[0]->amount);
