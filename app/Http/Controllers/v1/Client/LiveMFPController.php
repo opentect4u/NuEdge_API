@@ -316,7 +316,7 @@ class LiveMFPController extends Controller
 
             // return $filter_data;
             // for Trans. Duration filter purpose
-            if ($trans_duration) {
+            // if ($trans_duration) {
                 $filter_data1=[];
                 foreach ($filter_data as $filter_data_key => $filter_data_value) {
                     // return $filter_data_value;
@@ -402,6 +402,9 @@ class LiveMFPController extends Controller
                                 }
                                 break;
                             default:
+                                foreach ($cal_purchase_data as $key => $cal_purchase_data_value) {
+                                    array_push($re_cal_purchase_data,$cal_purchase_data_value);
+                                }
                                 break;
                         }
                         // return $re_cal_purchase_data;
@@ -446,7 +449,7 @@ class LiveMFPController extends Controller
                 }
                 // return $filter_data1;
                 $filter_data=$filter_data1;
-            }
+            // }
             // for Trans. Duration filter purpose
 
             $disclaimer=Disclaimer::select('dis_des','font_size','color_code')->find(1);
