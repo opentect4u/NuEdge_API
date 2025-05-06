@@ -28,11 +28,18 @@ Route::prefix('v1')->group(function () {
                 Route::post('aumFundHouse',[App\Http\Controllers\v1\Client\AUMController::class,'search']);  // 
                 Route::post('aumClient',[App\Http\Controllers\v1\Client\AUMController::class,'aumByClient']);  // 
                 Route::post('aumFamily',[App\Http\Controllers\v1\Client\AUMController::class,'aumByFamily']);  // 
+                Route::post('aumBranch',[App\Http\Controllers\v1\Client\AUMController::class,'aumBranch']);  // 
+                Route::post('aumSegment',[App\Http\Controllers\v1\Client\AUMController::class,'aumSegment']);  // 
+                Route::post('aumCityType',[App\Http\Controllers\v1\Client\AUMController::class,'aumCityType']);  // 
+                Route::post('aumGrowth',[App\Http\Controllers\v1\Client\AUMController::class,'aumGrowth']);  // 
+                // Route::post('aumTopClient',[App\Http\Controllers\v1\Client\AUMController::class,'aumTopClient']);  // 
             });
             Route::post('downloadValuation',[App\Http\Controllers\v1\Client\PDFController::class,'downloadValuation']);  // 
             Route::get('downloadValuation',[App\Http\Controllers\v1\Client\PDFController::class,'autoDownloadValuation']);  // 
                 
             // Route::get('liveMFPortfolio1',[App\Http\Controllers\v1\Client\LiveMFPController::class,'search1']);
+            Route::get('aum',[App\Http\Controllers\v1\Client\AUMController::class,'aumGrowth1']);
+            // Route::get('aumtest',[App\Http\Controllers\v1\Client\AUMController::class,'aumtest']);
             // Route::any('aum1',[App\Http\Controllers\v1\Client\AUMController::class,'search1']);  // 
             Route::any('genpdf',[App\Http\Controllers\v1\Client\PDFController::class,'generatePDF']);  // 
             Route::any('testgenpdf',[App\Http\Controllers\v1\Client\PDFController::class,'generatePDFTest']);  // 
@@ -44,6 +51,20 @@ Route::prefix('v1')->group(function () {
             // Route::get('aumScheme1',[App\Http\Controllers\v1\Client\AUMController::class,'aumByScheme']);  // 
             // Route::get('aumClient1',[App\Http\Controllers\v1\Client\AUMController::class,'aumByClient']);  // 
             // Route::get('aumFamily1',[App\Http\Controllers\v1\Client\AUMController::class,'aumByFamily']);  // 
+            
+
+            
+            Route::get('nse',[App\Http\Controllers\v1\Client\NSEController::class,'index']);  // 
+
+            
+            Route::get('bse',[App\Http\Controllers\v1\Client\BSEController::class,'index']);  // 
+
+
+            Route::get('nftoperation',[App\Http\Controllers\v1\Operation\TestOperationController::class,'index']);  // 
+
+
+            Route::get('showCurrAum1',[App\Http\Controllers\v1\Reports\HomeController::class,'currAum1']);  // current aum
+
 
         });
     // })

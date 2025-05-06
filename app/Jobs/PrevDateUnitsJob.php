@@ -39,7 +39,7 @@ class PrevDateUnitsJob implements ShouldQueue
             ->groupBy('first_client_pan')
             ->get();
         // return $clients;
-        for ($i=1; $i <= 14; $i++) { 
+        for ($i=8; $i <= 14; $i++) { 
             // $year=(date('Y') - $i).'-03-01';
             // $valuation_as_on = date("Y-m-t", strtotime($year));
             $time = strtotime(date('Y-m-d'));

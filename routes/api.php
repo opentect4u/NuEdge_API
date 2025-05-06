@@ -466,6 +466,8 @@ Route::prefix('v1')->group(function () {
             /*************************************************Start Dashboard Report************************************************/
             Route::get('showLiveSIPAmount',[App\Http\Controllers\v1\Reports\HomeController::class,'liveSIPAmount']);  // Search sip stp details
             Route::get('showLiveSIPTrend',[App\Http\Controllers\v1\Reports\HomeController::class,'liveSIPTrend']);  // Search sip stp details
+            Route::get('showCurrAum',[App\Http\Controllers\v1\Reports\HomeController::class,'currAum']);  // current aum
+            Route::get('showCurrAumTrend',[App\Http\Controllers\v1\Reports\HomeController::class,'currAumTrend']);  // current aum Trend
             /*************************************************End Dashboard Report************************************************/
 
             // Route::prefix('client')->group(function () {
