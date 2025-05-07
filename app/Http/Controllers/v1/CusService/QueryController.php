@@ -748,6 +748,7 @@ class QueryController extends Controller
                 // $query_status=DB::table('md_query_status')->where('id',2)->value('status_name');
                 $subject="Query status changed to ".$query_status."- QueryId : ".$query_id;
                 $res=SMSHelper::registerReOpen($mobile_no,$short_url,$query_status,$investor_name,$query_id);
+                // return $res;
                 $short_url="";
                 if($res['ErrorCode']=="000"){
                     $Message=$res['MessageData'][0]['Message'];
