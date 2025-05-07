@@ -285,9 +285,8 @@ class Helper{
         return date('Y-m-d',strtotime($currentDate));
     }
 
-    public static function createLog($table_id,$description)
+    public static function createLog($table_id,$description,$id)
     {
-        $id=(request()->user())? self::modifyUser(request()->user()) : 1;
         ActivityLog::create([
             'table_id'=>$table_id,
             'description'=>$description,

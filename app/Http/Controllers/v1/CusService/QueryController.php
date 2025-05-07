@@ -28,6 +28,7 @@ use Excel;
 use App\Helpers\TransHelper;
 use DB;
 use App\Helpers\SMSHelper;
+use App\Helpers\WAHelper;
 use App\Http\Controllers\V1\Client\LiveMFPLController;
 use Mail;
 use App\Mail\CusService\QueryStatusEmail;
@@ -392,17 +393,20 @@ class QueryController extends Controller
                 /*********************start update feedback url****************************/
                 if ($update_data->query_status_id==5 || $update_data->query_status_id==7) {  // Completed and Re-Completed
                     $url=env('QUERY_FEEDBACK').Crypt::encrypt($query_id);
-                    $short_url_json=SMSHelper::createShortUrl($url);
-                    // $short_url_json=json_decode($short_url_json);
-                    // return $short_url_json;
-                    $feedback_url="";
-                    if (isset($short_url_json->status) && $short_url_json->status=='success') {
-                        $feedback_url=$short_url_json->shorturl;
-                    }
-                    // return $short_url;
-                    $update=Query::find($update_data->id);
-                    $update->feedback_url=$feedback_url;
-                    $update->save();
+                    /*****************start text local*************************** */
+                    // $short_url_json=SMSHelper::createShortUrl($url);
+                    // // $short_url_json=json_decode($short_url_json);
+                    // // return $short_url_json;
+                    // $feedback_url="";
+                    // if (isset($short_url_json->status) && $short_url_json->status=='success') {
+                    //     $feedback_url=$short_url_json->shorturl;
+                    // }
+                    // // return $short_url;
+                    /*****************end text local*************************** */
+                    $feedback_url=$url;
+                    // $update=Query::find($update_data->id);
+                    // $update->feedback_url=$feedback_url;
+                    // $update->save();
                 }
                 /*********************end update feedback url****************************/
                 $data=Query::with('allscheme','allscheme.schemename')
@@ -452,15 +456,60 @@ class QueryController extends Controller
                 $investor_email=$data->investor_email;
                 $mobile_no=$data->investor_mobile;
                 $query_status=$data->status_name;
+                /****************create Log********************* */
+                $description='New query created with QueryId : '.$query_id.' and status : '.$query_status;
+                Helper::createLog($update_data->id,$description,Helper::modifyUser($request->user()));
+                /****************create Log********************* */
                 $subject="Query status changed to ".$query_status."- QueryId : ".$query_id;
                 /**********************start sending email and sms and whatsapp******************************/
-                $short_url=$update_data->short_url;
+                // $short_url=$update_data->short_url;
+                $short_url=env('QUERY_DETAILS').Crypt::encrypt($query_id);
                 if ($update_data->query_status_id==2 || $update_data->query_status_id==6) {  // register and reopen
                     $res=SMSHelper::registerReOpen($mobile_no,$short_url,$query_status,$investor_name,$query_id);
+                    // return $res;
+                    $short_url="";
+                    if($res['ErrorCode']=="000"){
+                        $Message=$res['MessageData'][0]['Message'];
+                        $array1=explode("-",$Message);
+                        if($update_data->query_status_id==2 ){
+                            $short_url="https://".trim(str_replace(".\n\nNow you can post your Query directly to NuEdge Customer Care. Call or Whatsapp"," ",$array1[4]));
+                        }else{
+                            $short_url="https://".trim(str_replace(".\n\nNow you can post your Query directly to NuEdge Customer Care. Call or Whatsapp"," ",$array1[5]));
+                        }
+                    }
+                    // $w_res=WAHelper::registerReOpen($mobile_no,$short_url,$query_status,$investor_name,$query_id);
                 } else if ($update_data->query_status_id==3 || $update_data->query_status_id==4) {  // in process and re in process 
                     $res=SMSHelper::inReinProcess($mobile_no,$short_url,$query_status,$investor_name,$query_id,$expected_close_date);
+                    // return $res;
+                    $short_url="";
+                    if($res['ErrorCode']=="000"){
+                        $Message=$res['MessageData'][0]['Message'];
+                        $array1=explode("-",$Message);
+                        $short_url="https://".trim(str_replace(".\nExpected Close Date"," ",$array1[5]));
+                    }
+                    // $w_res=WAHelper::inReinProcess($mobile_no,$short_url,$query_status,$investor_name,$query_id,$expected_close_date);
+                    // return $w_res;
                 } else if ($update_data->query_status_id==5 || $update_data->query_status_id==7) {  // Completed and Re-Completed
+                    // return "dddd";
                     $res=SMSHelper::completedReCompleted($mobile_no,$short_url,$query_status,$investor_name,$query_id,$close_date,$feedback_url);
+                    // return $res;
+                    $short_url="";
+                    if($res['ErrorCode']=="000"){
+                        $Message=$res['MessageData'][0]['Message'];
+                        $array1=explode("-",$Message);
+                        if($update_data->query_status_id==5 ){
+                            $short_url="https://".trim(str_replace(".\nActual Close Date"," ",$array1[4]));
+                            $feedback_url="https://".trim(str_replace("\n\nRegards,\nNuEdge Corporate Private Limited.\nAMFI","",$array1[9]));
+                        }else{
+                            $short_url="https://".trim(str_replace(".\nActual Close Date"," ",$array1[5]));
+                            $feedback_url="https://".trim(str_replace("\n\nRegards,\nNuEdge Corporate Private Limited.\nAMFI","",$array1[10]));
+                            $update=Query::find($update_data->id);
+                            $update->feedback_url=$feedback_url;
+                            $update->save();
+                        }
+                    }
+                    // $w_res=WAHelper::completedReCompleted($mobile_no,$short_url,$query_status,$investor_name,$query_id,$close_date,$feedback_url);
+                    // return $w_res;
                 }
                 // Mail::to($investor_email)->send(new QueryStatusEmail($subject,$investor_name,$query_status,$query_status_id,$data));
                 // $allAtched=QuerySolveAttach::where('query_id',$data->id)->get();
@@ -554,7 +603,17 @@ class QueryController extends Controller
                     $invester_id=DB::table('md_client')->where('client_name',trim($investor_name))->value('id');
                 }
                 // return $invester_id;
-                $count=Query::where('product_id',$request->product_id)->count();
+                $get_query=Query::where('product_id',$request->product_id)->orderBy('date_time','desc')->get();
+                // return $get_query;
+                if(count($get_query)>0){
+                    // return explode('-',$get_query[0]['query_id'])[2];
+                    $tin_query_id=explode('-',$get_query[0]['query_id'])[2];
+                    $count=($tin_query_id + 1);
+                }else{
+                    $count=0;
+                }
+                // return $count;
+                // $count=Query::where('product_id',$request->product_id)->count();
                 if ($request->product_id==1) {
                     $query_id=($count > 0)?"QRY-MF-".(1000+$count):"QRY-MF-1000";
                 } elseif ($request->product_id==2) {
@@ -628,17 +687,20 @@ class QueryController extends Controller
 
                 $url=env('QUERY_DETAILS').Crypt::encrypt($query_id);
                 // return $url;
-                $short_url_json=SMSHelper::createShortUrl($url);
-                // $short_url_json=json_decode($short_url_json);
-                // return $short_url_json;
-                $short_url="";
-                if (isset($short_url_json->status) && $short_url_json->status=='success') {
-                    $short_url=$short_url_json->shorturl;
-                }
-                // return $short_url;
-                $update=Query::find($data->id);
-                $update->short_url=$short_url;
-                $update->save();
+                /**************start text local************ */
+                // $short_url_json=SMSHelper::createShortUrl($url);
+                // // $short_url_json=json_decode($short_url_json);
+                // // return $short_url_json;
+                // $short_url="";
+                // if (isset($short_url_json->status) && $short_url_json->status=='success') {
+                //     $short_url=$short_url_json->shorturl;
+                // }
+                // // return $short_url;
+                /**************end text local************ */
+                $short_url=$url;
+                // $update=Query::find($data->id);
+                // $update->short_url=$short_url;
+                // $update->save();
                 /**********************************************************/
                 $data=Query::with('allscheme','allscheme.schemename')
                     ->with('allattach')
@@ -679,10 +741,29 @@ class QueryController extends Controller
                 $investor_email=$data->investor_email;
                 $mobile_no=$data->investor_mobile;
                 $query_status=$data->status_name;
+                /****************create Log********************* */
+                $description='New query created with QueryId : '.$query_id.' and status : '.$query_status;
+                Helper::createLog($data->id,$description,Helper::modifyUser($request->user()));
+                /****************create Log********************* */
                 // $query_status=DB::table('md_query_status')->where('id',2)->value('status_name');
                 $subject="Query status changed to ".$query_status."- QueryId : ".$query_id;
                 $res=SMSHelper::registerReOpen($mobile_no,$short_url,$query_status,$investor_name,$query_id);
+                $short_url="";
+                if($res['ErrorCode']=="000"){
+                    $Message=$res['MessageData'][0]['Message'];
+                    $array1=explode("-",$Message);
+                    if($data->query_status_id==2 ){
+                        $short_url="https://".trim(str_replace(".\n\nNow you can post your Query directly to NuEdge Customer Care. Call or Whatsapp"," ",$array1[4]));
+                        $update=Query::find($data->id);
+                        $update->short_url=$short_url;
+                        $update->save();
+                    }
+                }
                 // return $res;
+                /*************Whatsapp***************** */
+                // $w_res=WAHelper::registerReOpen($mobile_no,$short_url,$query_status,$investor_name,$query_id);
+                // return $w_res;
+                /**************Whatsapp**************** */
                 // Mail::to($investor_email)->send(new QueryStatusEmail($subject,$investor_name,$query_status,$query_status_id,$data));
                 $files=[];
                 // return $data->allattach;
@@ -1119,6 +1200,8 @@ Mutual Fund investments are subject to market risks, read all scheme related doc
     public function whatsapp(Request $request)
     {
         // return $request;
+        // return WAHelper::registerReOpen($mobile_no,$short_url,$query_status,$investor_name,$query_id);
+        /******************************************************* */
         $curl = curl_init();
 
         // curl_setopt_array($curl, array(
@@ -1145,7 +1228,7 @@ Mutual Fund investments are subject to market risks, read all scheme related doc
         // $CURLOPT_URL='https://server.gallabox.com/devapi/accounts/'.env('GALLABOX_ACC_ID').'/whatsappTemplates';
         
         /****************************************Get WhatsApp Template********************************* */
-        // $CURLOPT_URL ='https://server.gallabox.com/devapi/accounts/'.env('GALLABOX_ACC_ID').'/whatsappTemplates/67862bfa34e6a772b4ce6440';
+        // $CURLOPT_URL ='https://server.gallabox.com/devapi/accounts/'.env('GALLABOX_ACC_ID').'/whatsappTemplates/67efb75707e9fb984aa1d26e';
 
         // curl_setopt_array($curl, array(
         //     CURLOPT_URL => $CURLOPT_URL,
@@ -1168,11 +1251,14 @@ Mutual Fund investments are subject to market risks, read all scheme related doc
         // $data= json_decode($response);
         // return $data;
         /*********************Send Message**************************** */
+        // $id="67f3792d6317817af25fe683";
+        // $status=$this->ckWhatsappStatus($id);
+        // return $status;
         // 67862bfa34e6a772b4ce6440 //template id
-        $channelId='67862bf96e69f3dd498f164d';
-        $p='8159821331';
-        $recipientName='Chitta';
-        $templateName='welcome_basic_template';
+        $channelId='67efb23a75497677e990ae32';
+        $p='';
+        $recipientName='Avi Da';
+        $templateName='welcome';
         // $jsondata=['chitta'];
         // $bodyvalues=json_encode($jsondata);
         // return $bodyvalues;
@@ -1186,18 +1272,22 @@ Mutual Fund investments are subject to market risks, read all scheme related doc
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_POSTFIELDS =>'{
-                "channelId": "67862bf96e69f3dd498f164d",
+                "channelId": "67efb23a75497677e990ae32",
                 "channelType": "whatsapp",
                 "recipient": {
-                    "name": "Chitta",
+                    "name": "Chittaranjan Maity",
                     "phone": "918159821331"
                 },
                 "whatsapp": {
                     "type": "template",
                     "template": {
-                        "templateName": "welcome_basic_template",
+                        "templateName": "query_in_process_or_re_in_process_clone",
                         "bodyValues": {
-                            "customer_name": "Chitta"
+                            "name": "Chittaranjan Maity",
+                            "status": "In Process",
+                            "query_id": "fsgrg",
+                            "query_details": "https://www.facebook.com/nuedgecorporate/",
+                            "date": "23-04-2025"
                         }
                     }
                 }
@@ -1212,11 +1302,14 @@ Mutual Fund investments are subject to market risks, read all scheme related doc
         curl_close($curl);
         // echo $response;
         $msg_data= json_decode($response);
-        // return $msg_data;
+        return $msg_data;
+    }
 
+    public function ckWhatsappStatus($id)
+    {
         $curl = curl_init();
         curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://server.gallabox.com/devapi/accounts/'.env('GALLABOX_ACC_ID').'/messages/'.$msg_data->id.'/status',
+            CURLOPT_URL => 'https://server.gallabox.com/devapi/accounts/'.env('GALLABOX_ACC_ID').'/messages/'.$id.'/status',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
