@@ -216,7 +216,6 @@ class MailBackController extends Controller
                     TempMutualFundTransaction::truncate();
                     // $value=explode("\t",$TotalArray[0]);
                     // return $value;
-                    // return trim(str_replace("'","",$value[39]));
                     $array_set=[];
                     for ($i=$start_count; $i <= $end_count; $i++) { 
                         $value=explode("\t",$TotalArray[$i]);
@@ -227,7 +226,7 @@ class MailBackController extends Controller
                             'sub_brk_cd'=>str_replace("'","",$value[17]),
                             'euin_no'=>str_replace("'","",$value[56]),
                             'first_client_name'=>str_replace("'","",$value[4]),
-                            'first_client_pan'=>(trim(str_replace("'","",$value[39]))=="On Behalf Of Minor")?NULL:str_replace("'","",$value[42]),
+                            'first_client_pan'=>str_replace("'","",$value[42]),
                             'amc_code'=>str_replace("'","",$value[0]),
                             'folio_no'=>str_replace("'","",$value[1]),
                             'product_code'=>str_replace("'","",$value[2]),
@@ -560,7 +559,7 @@ class MailBackController extends Controller
                     if (count($final_array) > 0) {
                         TempSipStpTransaction::insert($final_array);
                     }
-                }elseif ($file_type_id=='3' && $file_id=='4') {  // folio master report WBR9C (working)
+                }elseif ($file_type_id=='3' && $file_id=='4') {  // folio master report WBR9C
                     TempFolioDetails::truncate();
                     // return $TotalArray[0];
                     // $value=explode("\t",$TotalArray[0]);
@@ -751,26 +750,9 @@ class MailBackController extends Controller
                                 return ($val['product_code']==$var1 && $val['folio_no']==$var2 && $val['folio_date']==$var3);
                             });
                             if (!$filtered_array) {
-                                $value['created_at']=date('Y-m-d H:i:s');
-                                $value['updated_at']=date('Y-m-d H:i:s');
-                                array_push($final_array,$value);
-                            }
-                            else {
-                                // return  $filtered_array;
-                                foreach($filtered_array as $key1 => $value1)
-                                $folio_no=$value1['folio_no'];
-                                $product_code=$value1['product_code'];
-                                $created_at=$value1['created_at'];
-                                // DB::select('CALL old_folio_record_delete("'.$folio_no.'", "'.$product_code.'")');
-                                FolioDetails::where('folio_no',$folio_no)->where('product_code',$product_code)->delete();
-                                FolioDetailsReport::where('folio_no',$folio_no)->where('product_code',$product_code)->delete();
-                                $value['created_at']=($created_at)?$created_at:date('Y-m-d H:i:s');
-                                $value['updated_at']=date('Y-m-d H:i:s');
                                 array_push($final_array,$value);
                             }
                         }else {
-                            $value['created_at']=date('Y-m-d H:i:s');
-                            $value['updated_at']=date('Y-m-d H:i:s');
                             array_push($final_array,$value);
                         }
                     }
@@ -1311,24 +1293,9 @@ class MailBackController extends Controller
                                 );
                             });
                             if (!$filtered_array) {
-                                $value['created_at']=date('Y-m-d H:i:s');
-                                $value['updated_at']=date('Y-m-d H:i:s');
-                                array_push($final_array,$value);
-                            }else {
-                                foreach($filtered_array as $key => $value1)
-                                $folio_no=$value1['folio_no'];
-                                $product_code=$value1['product_code'];
-                                $created_at=$value1['created_at'];
-                                // DB::select('CALL old_folio_record_delete("'.$folio_no.'", "'.$product_code.'")');
-                                FolioDetails::where('folio_no',$folio_no)->where('product_code',$product_code)->delete();
-                                FolioDetailsReport::where('folio_no',$folio_no)->where('product_code',$product_code)->delete();
-                                $value['created_at']=($created_at)?$created_at:date('Y-m-d H:i:s');
-                                $value['updated_at']=date('Y-m-d H:i:s');
                                 array_push($final_array,$value);
                             }
                         }else {
-                            $value['created_at']=date('Y-m-d H:i:s');
-                            $value['updated_at']=date('Y-m-d H:i:s');
                             array_push($final_array,$value);
                         }
                     }

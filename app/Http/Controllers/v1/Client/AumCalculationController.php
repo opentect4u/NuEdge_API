@@ -30,6 +30,7 @@ use App\Jobs\PrevDayUnitsJob;
 use App\Jobs\OpManualUpJob;
 use App\Jobs\OpNFTManualUpJob;
 use App\Http\Controllers\V1\Client\AumCalculationController as AumCalculationController1;
+use App\Jobs\PrevDateUnitsJob;
 
 class AumCalculationController extends Controller
 {
@@ -107,7 +108,26 @@ class AumCalculationController extends Controller
 
     public function test()
     {
-        
+        PrevDateUnitsJob::dispatch();
+        return 'PrevDateUnitsJob Run Successfully';
+            // return 'Test';
+        // $clients=MutualFundTransaction::select('id','first_client_name','first_client_pan')
+        //     ->groupBy('first_client_name')
+        //     ->groupBy('first_client_pan')
+        //     ->get();
+        // return $clients;
+        $all_dates=[];
+        for ($i=8; $i <= 14; $i++) { 
+            // $year=(date('Y') - $i).'-03-01';
+            // $year=(date('Y') - $i).'-03-01';
+            $time = strtotime(date('Y-m-d'));
+            $valuation_as_on = date("Y-m-t", strtotime("-".$i." month", $time));
+            // return $valuation_as_on;
+            // $valuation_as_on = date("Y-m-t", strtotime($year));
+            // return $valuation_as_on;
+            array_push($all_dates,$valuation_as_on);
+        }
+        return $all_dates;
         // $arr=['B105G','B106D','B106DP'];
         $pan='DHBPS7917B';
         $clients=MutualFundTransaction::select('id','first_client_name','first_client_pan')
@@ -116,7 +136,7 @@ class AumCalculationController extends Controller
             ->groupBy('first_client_name')
             ->groupBy('first_client_pan')
             ->get();
-        // return $clients;
+        return $clients;
         
         $valuation_as_on=date('Y-m-d');
         foreach ($clients as $key => $client) {

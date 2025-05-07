@@ -61,6 +61,7 @@ Route::prefix('v1')->group(function () {
 
 
             Route::get('nftoperation',[App\Http\Controllers\v1\Operation\TestOperationController::class,'index']);  // 
+            Route::get('deletetest',[App\Http\Controllers\v1\Operation\TestOperationController::class,'test']);  // 
 
 
             Route::get('showCurrAum1',[App\Http\Controllers\v1\Reports\HomeController::class,'currAum1']);  // current aum

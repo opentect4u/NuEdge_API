@@ -477,9 +477,415 @@ class LiveMFPController extends Controller
     {
         try {
             // return $request;
-            $valuation_as_on= "2024-05-17";
-            $client_name= "Debsishu Nursing Home Pvt Ltd";
-            $pan_no= "ACKPK7040E";
+            $valuation_as_on=$request->valuation_as_on;
+            $view_type=$request->view_type;
+            $pan_no=$request->pan_no;
+            $client_name=$request->client_name;
+            $view_funds_type=$request->view_funds_type;
+            $family_members_pan=json_decode($request->family_members_pan);
+            $family_members_name=json_decode($request->family_members_name);
+            $trans_type=$request->trans_type;
+            $trans_duration=$request->trans_duration;
+
+            $valuation_as_on= date('Y-m-d',);
+            $client_name= "MANEESH DWIVEDI";
+            $pan_no= "ACSPD3818R";
+            $view_type= "C";
+            // return $trans_duration;
+            session()->forget('valuation_as_on');
+            session()->forget('from_date');
+            
+            // return Session::get('valuation_as_on');
+            $client_details='';
+            if ($view_type || $valuation_as_on || $view_funds_type || $trans_duration) {
+                $rawQuery='';
+                if ($valuation_as_on) {
+                    $condition_v=(strlen($rawQuery) > 0)? " AND ":" ";
+                    $queryString='td_mutual_fund_trans.trans_date';
+                    $rawQuery.=$condition_v.$queryString."<= '".$valuation_as_on."'";
+                }
+                
+                if ($view_type=='C') {
+                    $client_rawQuery='';
+                    if (!$pan_no) {
+                        $queryString='td_mutual_fund_trans.first_client_name';
+                        $rawQuery.=Helper::WhereRawQuery($client_name,$rawQuery,$queryString);
+                        $client_queryString='md_client.client_name';
+                        $client_rawQuery.=Helper::WhereRawQuery($client_name,$client_rawQuery,$client_queryString);
+                    }else {
+                        $queryString='td_mutual_fund_trans.first_client_pan';
+                        $rawQuery.=Helper::WhereRawQuery($pan_no,$rawQuery,$queryString);
+                        $client_queryString='md_client.pan';
+                        $client_rawQuery.=Helper::WhereRawQuery($pan_no,$client_rawQuery,$client_queryString);
+                    }
+                    $client_details=TransHelper::getClientDetails($client_rawQuery,$view_type);
+                }else {
+                    $queryString='td_mutual_fund_trans.first_client_pan';
+                    $condition=(strlen($rawQuery) > 0)? " AND (":" (";
+                    $row_name_string=  "'" .implode("','", $family_members_pan). "'";
+                    $rawQuery.=$condition.$queryString." IN (".$row_name_string.")";
+                    $queryString='td_mutual_fund_trans.first_client_name';
+                    $condition1=(strlen($rawQuery) > 0)? " OR ":" ";
+                    $row_name_string1=  "'" .implode("','", $family_members_name). "'";
+                    $rawQuery.=$condition1.$queryString." IN (".$row_name_string1."))";
+
+                    /***********************Client************************ */
+                    $client_rawQuery='';
+                    $client_queryString='md_client.pan';
+                    $client_condition=(strlen($client_rawQuery) > 0)? " AND (":" (";
+                    $client_row_name_string="'" .implode("','", $family_members_pan)."'";
+                    $client_rawQuery.=$client_condition.$client_queryString." IN (".$client_row_name_string.")";
+                    $client_queryString='md_client.client_name';
+                    $client_condition1=(strlen($client_rawQuery) > 0)? " OR ":" ";
+                    $client_row_name_string1="'" .implode("','", $family_members_name)."'";
+                    $client_rawQuery.=$client_condition1.$client_queryString." IN (".$client_row_name_string1."))";
+
+                    $client_details=TransHelper::getClientDetails($client_rawQuery,$view_type);
+                }
+                if ($view_funds_type=='S') {
+                    $selected_funds=json_decode($request->selected_funds);
+                    $condition_selected_funds=(strlen($rawQuery) > 0)? " AND ":" ";
+                    foreach ($selected_funds as $single_fund_key => $single_fund) {
+                        // return $single_fund;
+                        if ($single_fund_key==0) {
+                           $rawQuery.=$condition_selected_funds."td_mutual_fund_trans.product_code IN (";
+                        } 
+                        $rawQuery.="'".$single_fund->product_code."'";
+                        if ($single_fund_key==(count($selected_funds)-1)) {
+                            $rawQuery.=")";
+                        }else {
+                            $rawQuery.=",";
+                        }
+                        // $condition_selected_funds=(strlen($rawQuery) > 0)? " AND ":" ";
+                        // $rawQuery.=$condition_selected_funds." (td_mutual_fund_trans.folio_no='".$single_fund->folio_no."' AND td_mutual_fund_trans.product_code='".$single_fund->product_code."' AND td_mutual_fund_trans.isin_no='".$single_fund->isin_no."')";
+                        // $rawQuery.=$condition_selected_funds." (td_mutual_fund_trans.folio_no='".$single_fund->folio_no."' AND td_mutual_fund_trans.product_code='".$single_fund->product_code."')";
+                    }
+                }elseif ($view_funds_type=='T') {
+                    $selected_type=json_decode($request->selected_type);
+                    $condition_selected_type=(strlen($rawQuery) > 0)? " AND ":" ";
+                    foreach ($selected_type as $single_fund_key => $single_fund) {
+                        // return $single_fund;
+                        if ($single_fund_key==0) {
+                           $rawQuery.=$condition_selected_type."td_mutual_fund_trans.product_code IN (";
+                        } 
+                        $rawQuery.="'".$single_fund->product_code."'";
+                        if ($single_fund_key==(count($selected_type)-1)) {
+                            $rawQuery.=")";
+                        }else {
+                            $rawQuery.=",";
+                        }
+                    }
+                }
+
+
+            } 
+
+            session(['valuation_as_on' => $valuation_as_on]);
+            // return $rawQuery;
+            // return $client_details;
+            // DB::enableQueryLog();
+            $all_data=MutualFundTransaction::with('foliotrans')->leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_mutual_fund_trans.product_code')
+                ->leftJoin('md_scheme','md_scheme.id','=','md_scheme_isin.scheme_id')
+                ->leftJoin('md_category','md_category.id','=','md_scheme.category_id')
+                ->leftJoin('md_subcategory','md_subcategory.id','=','md_scheme.subcategory_id')
+                ->leftJoin('md_amc','md_amc.amc_code','=','td_mutual_fund_trans.amc_code')
+                ->leftJoin('md_plan','md_plan.id','=','md_scheme_isin.plan_id')
+                ->leftJoin('md_option','md_option.id','=','md_scheme_isin.option_id')
+                ->select('td_mutual_fund_trans.portfolio_show_flag','td_mutual_fund_trans.rnt_id','td_mutual_fund_trans.folio_no','td_mutual_fund_trans.product_code','td_mutual_fund_trans.pur_price','td_mutual_fund_trans.trans_date','td_mutual_fund_trans.trans_mode',
+                'md_scheme.scheme_name as scheme_name','md_category.cat_name as cat_name','md_subcategory.subcategory_name as subcat_name','md_category.id as cat_id','md_subcategory.id as subcat_id',
+                'md_amc.amc_short_name as amc_name','md_plan.plan_name as plan_name','md_option.opt_name as option_name')
+                ->selectRaw('UCASE(td_mutual_fund_trans.first_client_name) as first_client_name,td_mutual_fund_trans.first_client_pan')
+                ->selectRaw('IF(td_mutual_fund_trans.rnt_id=1,md_scheme_isin.isin_no,td_mutual_fund_trans.isin_no) as isin_no')
+                ->selectRaw('sum(td_mutual_fund_trans.units) as tot_units')
+                ->selectRaw('sum(td_mutual_fund_trans.amount) as tot_amount')
+                ->selectRaw('sum(td_mutual_fund_trans.stamp_duty) as tot_stamp_duty')
+                ->selectRaw('sum(td_mutual_fund_trans.tds) as tot_tds')
+                ->selectRaw('count(*) as tot_rows')
+                ->selectRaw('(select close from td_benchmark_scheme where benchmark=1 AND date=td_mutual_fund_trans.trans_date) as nifty50')
+                ->selectRaw('(select close from td_benchmark_scheme where benchmark=70 AND date=td_mutual_fund_trans.trans_date) as sensex')
+                ->selectRaw('IF(td_mutual_fund_trans.rnt_id=1,
+                (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=td_mutual_fund_trans.trxn_type_code AND c_k_trans_type=td_mutual_fund_trans.trxn_type_flag AND c_k_trans_sub_type=td_mutual_fund_trans.trxn_nature_code limit 1),
+                (CASE 
+                    WHEN td_mutual_fund_trans.trans_flag="DP" || td_mutual_fund_trans.trans_flag="DR" THEN (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=td_mutual_fund_trans.kf_trans_type AND k_divident_flag=td_mutual_fund_trans.trans_flag limit 1)
+                    WHEN td_mutual_fund_trans.trans_flag="TO" THEN "Transfer Out"
+                    ELSE (SELECT trans_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=td_mutual_fund_trans.kf_trans_type limit 1)
+                END)
+                )as transaction_type')
+                ->selectRaw('IF(td_mutual_fund_trans.rnt_id=1,
+                (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_trans_type_code=td_mutual_fund_trans.trxn_type_code AND c_k_trans_type=td_mutual_fund_trans.trxn_type_flag AND c_k_trans_sub_type=td_mutual_fund_trans.trxn_nature_code limit 1),
+                (CASE 
+                    WHEN td_mutual_fund_trans.trans_flag="DP" || td_mutual_fund_trans.trans_flag="DR" THEN (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=td_mutual_fund_trans.kf_trans_type AND k_divident_flag=td_mutual_fund_trans.trans_flag limit 1)
+                    WHEN td_mutual_fund_trans.trans_flag="TO" THEN "Transfer Out"
+                    ELSE (SELECT trans_sub_type FROM md_mf_trans_type_subtype WHERE c_k_trans_sub_type=td_mutual_fund_trans.kf_trans_type limit 1)
+                END)
+                )as transaction_subtype')
+                ->where('td_mutual_fund_trans.delete_flag','N')
+                ->where('td_mutual_fund_trans.amc_flag','N')
+                ->where('td_mutual_fund_trans.scheme_flag','N')
+                ->where('td_mutual_fund_trans.plan_option_flag','N')
+                ->where('td_mutual_fund_trans.bu_type_flag','N')
+                ->where('td_mutual_fund_trans.divi_mismatch_flag','N')
+                ->where('td_mutual_fund_trans.portfolio_show_flag','Y')
+                ->whereRaw($rawQuery)
+                ->where('td_mutual_fund_trans.folio_no','22283853')
+                ->groupBy('td_mutual_fund_trans.folio_no')
+                ->groupBy('td_mutual_fund_trans.product_code')
+                ->groupBy('td_mutual_fund_trans.isin_no')
+                ->orderBy('td_mutual_fund_trans.trans_date','ASC')
+                ->get();
+            // dd(DB::getQueryLog());
+            // $all_data=DB::select("SELECT rnt_id,folio_no,scheme_name,cat_name,product_code,
+            //     subcat_name,amc_name,plan_name,option_name,isin_no,nifty50,sensex,
+            //     SUM(units) AS tot_units, 
+            //     SUM(amount) AS inv_cost, 
+            //     SUM(stamp_duty) AS tot_stamp_duty, 
+            //     SUM(tds) AS tot_tds, 
+            //     COUNT(*) AS tot_rows FROM `portfolio_report` 
+            //     WHERE first_client_pan='".$pan_no."'
+            //     and trans_date <='".$valuation_as_on."'
+            //     GROUP BY scheme_name,cat_name,product_code,
+            //     subcat_name,amc_name,plan_name,option_name,isin_no
+            //     ORDER BY trans_date ASC");
+            // dd(DB::getQueryLog());
+            // return $all_data;
+            $all_trans_product=[];
+            $data=[];
+            foreach ($all_data as $key => $value) {
+                $value->inv_since=date('Y-m-d',strtotime($value->trans_date));
+                $value->pur_nav=$value->pur_price;
+                $f_trans_product="(nav_date=(SELECT MAX(nav_date) FROM td_nav_details WHERE product_code='".$value->product_code."' AND nav_date <='".$valuation_as_on."') AND product_code='".$value->product_code."')";
+                array_push($all_trans_product,$f_trans_product);
+                array_push($data,$value);
+            }
+            usort($data, function($a, $b) {
+                return $a['scheme_name'] <=> $b['scheme_name'];
+            });
+            return $data;
+            $string_version_product_code = implode(',', $all_trans_product);
+            // return $string_version_product_code;
+            $res_array=[];
+            if (count($data)>0) {
+                $res_array =DB::connection('mysql_nav')
+                ->select('SELECT product_code,isin_no,DATE_FORMAT(nav_date, "%Y-%m-%d") as nav_date,nav FROM td_nav_details where '.str_replace(",","  OR  ",$string_version_product_code));
+            }
+            // return $res_array;
+            $filter_data=[];
+            foreach ($data as $data_key => $value1) {
+                $isin_no=$value1->isin_no;
+                $product_code=$value1->product_code;
+                $new='';
+                if (count($res_array) > 0) {
+                    foreach($res_array as $val_nav){
+                        if($val_nav->product_code==$product_code){
+                            $new=$val_nav;
+                        }
+                    }
+                }
+                // return $new;
+                $value1->new=$new;
+                $value1->curr_nav=isset($new->nav)?$new->nav:0;
+                $value1->nav_date=isset($new->nav_date)?$new->nav_date:0;
+                //calculation
+                $mydata='';
+                $foliotrans=$value1->foliotrans;
+                // if ($value1->tot_amount > 0) {
+                    $json  = json_encode($foliotrans);
+                    $array = json_decode($json, true);
+                    if (array_search('Consolidation In',array_column($array,'transaction_subtype'))) {
+                        $foliotrans=TransHelper::ConsolidationInQuery($value1->rnt_id,$value1->folio_no,$value1->isin_no,$value1->product_code,$valuation_as_on);
+                    }
+                    $mydata=TransHelper::calculate($foliotrans,$value1->curr_nav,$valuation_as_on);
+                // }
+                // $mydata=$this->calculate($value1->foliotrans);
+                $value1->mydata=$mydata;
+                $value1->nifty50=isset($mydata['nifty50'])?(int)$mydata['nifty50']:$value1->nifty50;
+                $value1->sensex=isset($mydata['sensex'])?(int)$mydata['sensex']:$value1->sensex;
+                $value1->idcwp=0;
+                $value1->idcw_reinv=isset($mydata['idcw_reinv'])? number_format((float)$mydata['idcw_reinv'], 2, '.', ''):0;
+                $value1->idcwr=number_format((float)($value1->idcwp + $value1->idcw_reinv), 2, '.', '');
+                $value1->inv_since=isset($mydata['inv_since'])? $mydata['inv_since']:$value1->inv_since;
+                $value1->pur_nav=isset($mydata['pur_nav'])?$mydata['pur_nav']:$value1->pur_nav;
+                $value1->transaction_type=isset($mydata['transaction_type'])?$mydata['transaction_type']:$value1->transaction_type;
+                $value1->transaction_subtype=isset($mydata['transaction_subtype'])?$mydata['transaction_subtype']:$value1->transaction_subtype;
+                $value1->inv_cost=isset($mydata['inv_cost'])?number_format((float)$mydata['inv_cost'], 2, '.', ''):0;
+                $value1->tot_units=isset($mydata['tot_units'])?number_format((float)$mydata['tot_units'], 2, '.', ''):0;
+                $value1->curr_val= number_format((float)($value1->curr_nav * $value1->tot_units), 2, '.', '');
+                $value1->gain_loss=number_format((float)(($value1->curr_val - $value1->inv_cost) + $value1->idcwr), 2, '.', '');
+                if ($value1->gain_loss==0 || $value1->inv_cost==0) {
+                    $value1->ret_abs=0;
+                }else {
+                    $value1->ret_abs=number_format((float)(($value1->gain_loss / $value1->inv_cost) * 100), 2, '.', '');
+                }
+                
+                array_push($filter_data,$value1);
+            }
+
+            // return $filter_data;
+            // for Trans. Duration filter purpose
+            // if ($trans_duration) {
+                $filter_data1=[];
+                foreach ($filter_data as $filter_data_key => $filter_data_value) {
+                    // return $filter_data_value;
+                    if ($filter_data_value->curr_val > 0) {
+                        $cal_purchase_data=$filter_data_value['mydata']['cal_purchase_data'];
+                        // return $cal_purchase_data;
+                        $re_cal_purchase_data=[];
+                        switch ($trans_duration) {
+                            case '< 1':
+                                $from_date = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -1 year"));
+                                $to_date =$valuation_as_on;
+                                foreach ($cal_purchase_data as $key => $cal_purchase_data_value) {
+                                    if (strtotime($cal_purchase_data_value['trans_date']) >= strtotime($from_date) && strtotime($cal_purchase_data_value['trans_date']) <= strtotime($to_date)) {
+                                        array_push($re_cal_purchase_data,$cal_purchase_data_value);
+                                    }
+                                }
+                                break;
+                            case '> 1':
+                                $trans_duration_cal_date = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -1 year"));
+                                foreach ($cal_purchase_data as $key => $cal_purchase_data_value) {
+                                    if (strtotime($cal_purchase_data_value['trans_date']) <= strtotime($trans_duration_cal_date)) {
+                                        array_push($re_cal_purchase_data,$cal_purchase_data_value);
+                                    }
+                                }
+                                break;
+                            case '> 2':
+                                $trans_duration_cal_date = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -2 year"));
+                                foreach ($cal_purchase_data as $key => $cal_purchase_data_value) {
+                                    if (strtotime($cal_purchase_data_value['trans_date']) <= strtotime($trans_duration_cal_date)) {
+                                        array_push($re_cal_purchase_data,$cal_purchase_data_value);
+                                    }
+                                }
+                                break;
+                            case '> 3':
+                                $trans_duration_cal_date = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -3 year"));
+                                foreach ($cal_purchase_data as $key => $cal_purchase_data_value) {
+                                    if (strtotime($cal_purchase_data_value['trans_date']) <= strtotime($trans_duration_cal_date)) {
+                                        array_push($re_cal_purchase_data,$cal_purchase_data_value);
+                                    }
+                                }
+                                break;
+                            case '> 4':
+                                $trans_duration_cal_date = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -4 year"));
+                                foreach ($cal_purchase_data as $key => $cal_purchase_data_value) {
+                                    if (strtotime($cal_purchase_data_value['trans_date']) <= strtotime($trans_duration_cal_date)) {
+                                        array_push($re_cal_purchase_data,$cal_purchase_data_value);
+                                    }
+                                }
+                                break;
+                            case '> 5':
+                                $trans_duration_cal_date = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -5 year"));
+                                foreach ($cal_purchase_data as $key => $cal_purchase_data_value) {
+                                    if (strtotime($cal_purchase_data_value['trans_date']) <= strtotime($trans_duration_cal_date)) {
+                                        array_push($re_cal_purchase_data,$cal_purchase_data_value);
+                                    }
+                                }
+                                break;
+                            case '> 7':
+                                $trans_duration_cal_date = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -7 year"));
+                                foreach ($cal_purchase_data as $key => $cal_purchase_data_value) {
+                                    if (strtotime($cal_purchase_data_value['trans_date']) <= strtotime($trans_duration_cal_date)) {
+                                        array_push($re_cal_purchase_data,$cal_purchase_data_value);
+                                    }
+                                }
+                                break;
+                            case '> 10':
+                                $trans_duration_cal_date = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -10 year"));
+                                foreach ($cal_purchase_data as $key => $cal_purchase_data_value) {
+                                    if (strtotime($cal_purchase_data_value['trans_date']) <= strtotime($trans_duration_cal_date)) {
+                                        array_push($re_cal_purchase_data,$cal_purchase_data_value);
+                                    }
+                                }
+                                break;
+                            case 'D':
+                                $trans_date_range=$request->trans_date_range;
+                                $from_date=Carbon::parse(str_replace('/','-',explode("-",$trans_date_range)[0]))->format('Y-m-d') ;
+                                $to_date=Carbon::parse(str_replace('/','-',explode("-",$trans_date_range)[1]))->format('Y-m-d') ;
+                                // return $to_date;
+                                foreach ($cal_purchase_data as $key => $cal_purchase_data_value) {
+                                    if (strtotime($cal_purchase_data_value['trans_date']) >= strtotime($from_date) && strtotime($cal_purchase_data_value['trans_date']) <= strtotime($to_date)) {
+                                        array_push($re_cal_purchase_data,$cal_purchase_data_value);
+                                    }
+                                }
+                                break;
+                            default:
+                                foreach ($cal_purchase_data as $key => $cal_purchase_data_value) {
+                                    array_push($re_cal_purchase_data,$cal_purchase_data_value);
+                                }
+                                break;
+                        }
+                        // return $re_cal_purchase_data;
+                        // $filter_data_value['mydata']=['cal_purchase_data' => $re_cal_purchase_data];
+                        $re_cal_purchase_datas=[];
+                        $re_cal_purchase_datas['re_cal_purchase_data']=$re_cal_purchase_data;
+                        $inv_cost=0;                    
+                        $idcwp=0;
+                        $idcw_reinv=0;
+                        $tot_units=0;
+                        foreach ($re_cal_purchase_data as $key => $re_cal_purchase_data_value) {
+                            if ($re_cal_purchase_data_value['cumml_units'] > 0) {
+                                if (strpos($re_cal_purchase_data_value['transaction_subtype'], 'Dividend Reinvestment')!== false) {
+                                    $idcw_reinv +=number_format((float)$re_cal_purchase_data_value['tot_amount'], 2, '.', '');
+                                }
+                                if (strpos($re_cal_purchase_data_value['transaction_subtype'], 'Dividend Payout')!== false) {
+                                    $idcwp +=number_format((float)$re_cal_purchase_data_value['tot_amount'], 2, '.', '');
+                                }
+                                $inv_cost +=number_format((float)$re_cal_purchase_data_value['tot_amount'], 2, '.', '');
+                            }
+                            $tot_units +=number_format((float)$re_cal_purchase_data_value['tot_units'], 4, '.', '');
+                        }
+                        $re_cal_purchase_datas['idcwp']=$idcwp;
+                        $re_cal_purchase_datas['idcw_reinv']=$idcw_reinv;
+                        $re_cal_purchase_datas['idcwr']=number_format((float)($re_cal_purchase_datas['idcwp'] + $re_cal_purchase_datas['idcw_reinv']), 2, '.', '');
+                        $re_cal_purchase_datas['inv_cost']=number_format((float)$inv_cost, 2, '.', '');
+                        $re_cal_purchase_datas['tot_units']=number_format((float)$tot_units, 4, '.', '');
+                        $re_cal_purchase_datas['curr_val']= number_format((float)($filter_data_value['curr_nav'] * $re_cal_purchase_datas['tot_units']), 2, '.', '');
+                        $re_cal_purchase_datas['gain_loss']=number_format((float)(($re_cal_purchase_datas['curr_val'] - $re_cal_purchase_datas['inv_cost']) + $re_cal_purchase_datas['idcwr']), 2, '.', '');
+                        if ($re_cal_purchase_datas['gain_loss']==0 || $re_cal_purchase_datas['inv_cost']==0) {
+                            $re_cal_purchase_datas['ret_abs']=0;
+                        }else {
+                            $re_cal_purchase_datas['ret_abs']=number_format((float)(($re_cal_purchase_datas['gain_loss'] / $re_cal_purchase_datas['inv_cost']) * 100), 2, '.', '');
+                        }
+
+                        // return $re_cal_purchase_datas;
+                        $filter_data_value['re_cal_purchase_datas']=$re_cal_purchase_datas;
+                        array_push($filter_data1,$filter_data_value);
+                    }else {
+                        array_push($filter_data1,$filter_data_value);
+                    }
+                }
+                // return $filter_data1;
+                $filter_data=$filter_data1;
+            // }
+            // for Trans. Duration filter purpose
+
+            $disclaimer=Disclaimer::select('dis_des','font_size','color_code')->find(1);
+            if ($view_type=='F') {
+                $grouped_types=[];
+                foreach($filter_data as $type){
+                    $grouped_types[$type['first_client_name']][] = $type;
+                }
+                // return $grouped_types;
+                $filter_data=$grouped_types;
+            }
+            $mydata=[];
+            $mydata['client_details']=$client_details;
+            $mydata['data']=$filter_data;
+            $mydata['valuation_as_on']=$valuation_as_on;
+            $mydata['disclaimer']=$disclaimer;
+        } catch (\Throwable $th) {
+            throw $th;
+            return Helper::ErrorResponse(parent::DATA_FETCH_ERROR);
+        }
+        return Helper::SuccessResponse($mydata);
+    }
+
+    public function search1111111(Request $request)
+    {
+        try {
+            // return $request;
+            $valuation_as_on= date('Y-m-d',);
+            $client_name= "MANEESH DWIVEDI";
+            $pan_no= "ACSPD3818R";
             $view_type= "C";
             // trans_type: A
             // view_funds_type: A
@@ -512,7 +918,7 @@ class LiveMFPController extends Controller
                         $client_queryString='md_client.pan';
                         $client_rawQuery.=Helper::WhereRawQuery($pan_no,$client_rawQuery,$client_queryString);
                     }
-                    $client_details=TransHelper::getClientDetails($client_rawQuery);
+                    // $client_details=TransHelper::getClientDetails($client_rawQuery);
                 }else {
                     $queryString='td_mutual_fund_trans.first_client_pan';
                     $condition=(strlen($rawQuery) > 0)? " AND (":" (";
