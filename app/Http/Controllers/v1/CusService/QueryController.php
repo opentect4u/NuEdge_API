@@ -610,22 +610,22 @@ class QueryController extends Controller
                     $tin_query_id=explode('-',$get_query[0]['query_id'])[2];
                     $count=($tin_query_id + 1);
                 }else{
-                    $count=0;
+                    $count=1000;
                 }
                 // return $count;
                 // $count=Query::where('product_id',$request->product_id)->count();
                 if ($request->product_id==1) {
-                    $query_id=($count > 0)?"QRY-MF-".(1000+$count):"QRY-MF-1000";
+                    $query_id=($count > 0)?"QRY-MF-".$count:"QRY-MF-1000";
                 } elseif ($request->product_id==2) {
-                    $query_id=($count > 0)?"QRY-BND-".(1000+$count):"QRY-BND-1000";
+                    $query_id=($count > 0)?"QRY-BND-".$count:"QRY-BND-1000";
                 } elseif ($request->product_id==3) {
-                    $query_id=($count > 0)?"QRY-INS-".(1000+$count):"QRY-INS-1000";
+                    $query_id=($count > 0)?"QRY-INS-".$count:"QRY-INS-1000";
                 } elseif ($request->product_id==4) {
-                    $query_id=($count > 0)?"QRY-FD-".(1000+$count):"QRY-FD-1000";
+                    $query_id=($count > 0)?"QRY-FD-".$count:"QRY-FD-1000";
                 } elseif ($request->product_id==11) {
-                    $query_id=($count > 0)?"QRY-PMS-".(1000+$count):"QRY-PMS-1000";
+                    $query_id=($count > 0)?"QRY-PMS-".$count:"QRY-PMS-1000";
                 } elseif ($request->product_id==12) {
-                    $query_id=($count > 0)?"QRY-ONL-".(1000+$count):"QRY-ONL-1000";
+                    $query_id=($count > 0)?"QRY-ONL-".$count:"QRY-ONL-1000";
                 } else {
                     $query_id='QRY-'.(microtime(true)*1000);
                 }
