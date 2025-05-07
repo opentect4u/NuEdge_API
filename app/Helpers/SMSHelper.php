@@ -41,6 +41,7 @@ class SMSHelper {
                 'Content-Type: application/xml'
             ),
         ));
+        
         $response = curl_exec($curl);
         curl_close($curl);
         // echo $response;
