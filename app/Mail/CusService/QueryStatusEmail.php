@@ -58,7 +58,7 @@ class QueryStatusEmail extends Mailable
         // return $htmlWithInlineCss;
         
         $from_email=env('MAIL_FROM_ADDRESS');
-        $email = $this->from($from_email)
+        $email = $this->from($from_email, env('MAIL_FROM_NAME'))
             ->subject($this->subject)
             // ->html($htmlWithInlineCss);
             ->view('emails.customer_service.query_desk_email');
