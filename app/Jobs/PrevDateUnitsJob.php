@@ -33,6 +33,7 @@ class PrevDateUnitsJob implements ShouldQueue
      */
     public function handle()
     {
+        /***********For manually run**************************** */
         \Log::info('Previous Data Units Job Run Successfully');
         $clients=MutualFundTransaction::select('id','first_client_name','first_client_pan')
             ->groupBy('first_client_name')
