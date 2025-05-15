@@ -33,6 +33,7 @@ use DB;
 use App\Jobs\AumCalculationJob;
 use App\Jobs\OpManualUpJob;
 use App\Jobs\OpNFTManualUpJob;
+use App\Jobs\CurrAumJob;
 
 class MailBackController extends Controller
 {
@@ -193,6 +194,7 @@ class MailBackController extends Controller
                             ->groupBy('first_client_name','first_client_pan')
                             ->get();
                         AumCalculationJob::dispatch($clients);
+                        CurrAumJob::dispatch();
                     }
                 }else if($rnt_id==2){  // KFINTECH
                     if ($file_type_id==1 && $file_id==5) {  // transction MFSD201
@@ -204,6 +206,7 @@ class MailBackController extends Controller
                             ->groupBy('first_client_name','first_client_pan')
                             ->get();
                         AumCalculationJob::dispatch($clients);
+                        CurrAumJob::dispatch();
                     }
                 }
                 /*****************End QUEUE WORK***************************** */

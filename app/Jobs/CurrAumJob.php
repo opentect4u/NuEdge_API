@@ -83,8 +83,6 @@ class CurrAumJob implements ShouldQueue
                 $value_group_amc_data->idcw_paid  = 0;
                 $value_group_amc_data->idcwr      = 0;
                 $value_group_amc_data->curr_aum   = number_format((float) ($value_group_amc_data->curr_nav * $value_group_amc_data->tot_units), 2, '.', '');
-                // $value_group_amc_data->gain_loss  = number_format((float) (($value_group_amc_data->curr_aum - $value_group_amc_data->inv_cost) + $value_group_amc_data->idcwr), 2, '.', '');
-                // $value_group_amc_data->abs_rtn    = ($value_group_amc_data->gain_loss != 0 && $value_group_amc_data->inv_cost != 0) ? number_format((float) (($value_group_amc_data->gain_loss / $value_group_amc_data->inv_cost) * 100), 2, '.', '') : 0;
                 array_push($final_data, $value_group_amc_data);
             }
         }
@@ -94,9 +92,9 @@ class CurrAumJob implements ShouldQueue
             $total_aum  +=$value_final_data->curr_aum;
         }
         // return $total_aum;
-        CurrAumReport::where('aum_date', $date)->delete();
+        CurrAumReport::where('trans_date', $date)->delete();
         CurrAumReport::insert([
-            'aum_date' => $date,
+            'trans_date' => $date,
             'curr_aum' => $total_aum,
             'created_by' => 1,
             'updated_by' => 1,

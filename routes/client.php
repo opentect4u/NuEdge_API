@@ -51,6 +51,7 @@ Route::prefix('v1')->group(function () {
             // Route::get('aumScheme1',[App\Http\Controllers\v1\Client\AUMController::class,'aumByScheme']);  // 
             // Route::get('aumClient1',[App\Http\Controllers\v1\Client\AUMController::class,'aumByClient']);  // 
             // Route::get('aumFamily1',[App\Http\Controllers\v1\Client\AUMController::class,'aumByFamily']);  // 
+            // Route::get('currAum',[App\Http\Controllers\v1\Client\AumCalculationController::class,'currAum']);  // 
             
 
             

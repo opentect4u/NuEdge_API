@@ -34,6 +34,7 @@ use Mail;
 use App\Mail\CusService\QueryStatusEmail;
 use Illuminate\Support\Facades\Crypt;
 use File;
+use App\Mail\TestEmail;
 
 class QueryController extends Controller
 {
@@ -1332,4 +1333,22 @@ Mutual Fund investments are subject to market risks, read all scheme related doc
         $data= json_decode($response);
         return $data;
     }
+
+    public function sendemail()
+    {
+        $email='chittaranjan@synergicsoftek.com';
+        $data=[
+            'title'=>'Chittaranjan Maity',
+            'body'=>'This is a test email'
+        ];
+        Mail::to($email)->send(new TestEmail($data));
+        // Mail::send('emails.myTestMail', $data, function($message)
+        // {
+        //     $message->from('chittaranjan@synergicsoftek.com', 'Nuedge Corporate');
+
+        //     // $message->to('foo@example.com')->cc('bar@example.com');
+        // });
+        return 'Email sent successfully';
+    }
+
 }

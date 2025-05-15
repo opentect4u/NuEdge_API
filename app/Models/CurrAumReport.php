@@ -11,7 +11,7 @@ class CurrAumReport extends Model
     protected $table="td_mutual_fund_curr_aum";
     // protected $primaryKey = 'tin_no';
     protected $fillable = [
-        'aum_date',
+        'trans_date',
         'curr_aum',
         'created_by',
         'updated_by',
