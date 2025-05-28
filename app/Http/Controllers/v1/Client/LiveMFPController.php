@@ -326,6 +326,7 @@ class LiveMFPController extends Controller
                         $re_cal_purchase_data=[];
                         switch ($trans_duration) {
                             case '< 1':
+                                // return $trans_duration;
                                 $from_date = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -1 year"));
                                 $to_date =$valuation_as_on;
                                 foreach ($cal_purchase_data as $key => $cal_purchase_data_value) {
@@ -343,12 +344,15 @@ class LiveMFPController extends Controller
                                 }
                                 break;
                             case '> 2':
+                                // return $trans_duration;
                                 $trans_duration_cal_date = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -2 year"));
+                                // return $trans_duration_cal_date;
                                 foreach ($cal_purchase_data as $key => $cal_purchase_data_value) {
                                     if (strtotime($cal_purchase_data_value['trans_date']) <= strtotime($trans_duration_cal_date)) {
                                         array_push($re_cal_purchase_data,$cal_purchase_data_value);
                                     }
                                 }
+                                // return $re_cal_purchase_data;
                                 break;
                             case '> 3':
                                 $trans_duration_cal_date = date("Y-m-d", strtotime(date("Y-m-d", strtotime($valuation_as_on)) . " -3 year"));
@@ -409,40 +413,42 @@ class LiveMFPController extends Controller
                         }
                         // return $re_cal_purchase_data;
                         // $filter_data_value['mydata']=['cal_purchase_data' => $re_cal_purchase_data];
-                        $re_cal_purchase_datas=[];
-                        $re_cal_purchase_datas['re_cal_purchase_data']=$re_cal_purchase_data;
-                        $inv_cost=0;                    
-                        $idcwp=0;
-                        $idcw_reinv=0;
-                        $tot_units=0;
-                        foreach ($re_cal_purchase_data as $key => $re_cal_purchase_data_value) {
-                            if ($re_cal_purchase_data_value['cumml_units'] > 0) {
-                                if (strpos($re_cal_purchase_data_value['transaction_subtype'], 'Dividend Reinvestment')!== false) {
-                                    $idcw_reinv +=number_format((float)$re_cal_purchase_data_value['tot_amount'], 2, '.', '');
+                        if (count($re_cal_purchase_data)>0) {
+                            $re_cal_purchase_datas=[];
+                            $re_cal_purchase_datas['re_cal_purchase_data']=$re_cal_purchase_data;
+                            $inv_cost=0;                    
+                            $idcwp=0;
+                            $idcw_reinv=0;
+                            $tot_units=0;
+                            foreach ($re_cal_purchase_data as $key => $re_cal_purchase_data_value) {
+                                if ($re_cal_purchase_data_value['cumml_units'] > 0) {
+                                    if (strpos($re_cal_purchase_data_value['transaction_subtype'], 'Dividend Reinvestment')!== false) {
+                                        $idcw_reinv +=number_format((float)$re_cal_purchase_data_value['tot_amount'], 2, '.', '');
+                                    }
+                                    if (strpos($re_cal_purchase_data_value['transaction_subtype'], 'Dividend Payout')!== false) {
+                                        $idcwp +=number_format((float)$re_cal_purchase_data_value['tot_amount'], 2, '.', '');
+                                    }
+                                    $inv_cost +=number_format((float)$re_cal_purchase_data_value['tot_amount'], 2, '.', '');
                                 }
-                                if (strpos($re_cal_purchase_data_value['transaction_subtype'], 'Dividend Payout')!== false) {
-                                    $idcwp +=number_format((float)$re_cal_purchase_data_value['tot_amount'], 2, '.', '');
-                                }
-                                $inv_cost +=number_format((float)$re_cal_purchase_data_value['tot_amount'], 2, '.', '');
+                                $tot_units +=number_format((float)$re_cal_purchase_data_value['tot_units'], 4, '.', '');
                             }
-                            $tot_units +=number_format((float)$re_cal_purchase_data_value['tot_units'], 4, '.', '');
+                            $re_cal_purchase_datas['idcwp']=$idcwp;
+                            $re_cal_purchase_datas['idcw_reinv']=$idcw_reinv;
+                            $re_cal_purchase_datas['idcwr']=number_format((float)($re_cal_purchase_datas['idcwp'] + $re_cal_purchase_datas['idcw_reinv']), 2, '.', '');
+                            $re_cal_purchase_datas['inv_cost']=number_format((float)$inv_cost, 2, '.', '');
+                            $re_cal_purchase_datas['tot_units']=number_format((float)$tot_units, 4, '.', '');
+                            $re_cal_purchase_datas['curr_val']= number_format((float)($filter_data_value['curr_nav'] * $re_cal_purchase_datas['tot_units']), 2, '.', '');
+                            $re_cal_purchase_datas['gain_loss']=number_format((float)(($re_cal_purchase_datas['curr_val'] - $re_cal_purchase_datas['inv_cost']) + $re_cal_purchase_datas['idcwr']), 2, '.', '');
+                            if ($re_cal_purchase_datas['gain_loss']==0 || $re_cal_purchase_datas['inv_cost']==0) {
+                                $re_cal_purchase_datas['ret_abs']=0;
+                            }else {
+                                $re_cal_purchase_datas['ret_abs']=number_format((float)(($re_cal_purchase_datas['gain_loss'] / $re_cal_purchase_datas['inv_cost']) * 100), 2, '.', '');
+                            }
+                            // return $re_cal_purchase_datas;
+                            $filter_data_value['re_cal_purchase_datas']=$re_cal_purchase_datas;
+                            // return $filter_data_value;
+                            array_push($filter_data1,$filter_data_value);
                         }
-                        $re_cal_purchase_datas['idcwp']=$idcwp;
-                        $re_cal_purchase_datas['idcw_reinv']=$idcw_reinv;
-                        $re_cal_purchase_datas['idcwr']=number_format((float)($re_cal_purchase_datas['idcwp'] + $re_cal_purchase_datas['idcw_reinv']), 2, '.', '');
-                        $re_cal_purchase_datas['inv_cost']=number_format((float)$inv_cost, 2, '.', '');
-                        $re_cal_purchase_datas['tot_units']=number_format((float)$tot_units, 4, '.', '');
-                        $re_cal_purchase_datas['curr_val']= number_format((float)($filter_data_value['curr_nav'] * $re_cal_purchase_datas['tot_units']), 2, '.', '');
-                        $re_cal_purchase_datas['gain_loss']=number_format((float)(($re_cal_purchase_datas['curr_val'] - $re_cal_purchase_datas['inv_cost']) + $re_cal_purchase_datas['idcwr']), 2, '.', '');
-                        if ($re_cal_purchase_datas['gain_loss']==0 || $re_cal_purchase_datas['inv_cost']==0) {
-                            $re_cal_purchase_datas['ret_abs']=0;
-                        }else {
-                            $re_cal_purchase_datas['ret_abs']=number_format((float)(($re_cal_purchase_datas['gain_loss'] / $re_cal_purchase_datas['inv_cost']) * 100), 2, '.', '');
-                        }
-
-                        // return $re_cal_purchase_datas;
-                        $filter_data_value['re_cal_purchase_datas']=$re_cal_purchase_datas;
-                        array_push($filter_data1,$filter_data_value);
                     }else {
                         array_push($filter_data1,$filter_data_value);
                     }

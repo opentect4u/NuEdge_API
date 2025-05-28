@@ -14,5 +14,7 @@ class State extends Model
         'name',
         'created_by',
         'updated_by',
+        'bse_code',
+        'nse_code',
     ];
 }

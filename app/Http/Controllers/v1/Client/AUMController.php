@@ -218,6 +218,7 @@ class AUMController extends Controller
                 $rawQuery .= Helper::WhereRawQuery($sub_cat_id, $rawQuery, $queryString);
                 $queryString = 'td_mutual_fund_trans_aum.scheme_id';
                 $rawQuery .= Helper::WhereRawQuery($scheme_id, $rawQuery, $queryString);
+            // return $rawQuery;
 
                 if ($family_head_id) {
                     // return  $request;
@@ -228,7 +229,17 @@ class AUMController extends Controller
                         ->where('client_id', $family_head_id)
                         ->get();
                     // return $all_family_data;
-                    $rawQuery .=' AND ';
+                    $rawQuery .=' AND (';
+                    // foreach ($all_family_data as $client_key => $client) {
+                    //     if (isset($client->client)) {
+                    //         if ($client->client->pan) {
+                    //             $condition_v = ($client_key > 0) ? " OR " : " ";
+                    //             $rawQuery .= $condition_v.' (td_mutual_fund_trans_aum.first_client_pan="' . $client->client->pan . '" AND td_mutual_fund_trans_aum.first_client_name LIKE "%' . $client->client->client_name . '%")';
+                    //         } else {
+                    //             $rawQuery .= ' OR td_mutual_fund_trans_aum.first_client_name LIKE "%' . $client->client->client_name . '%"';
+                    //         }
+                    //     }
+                    // }
                     foreach ($all_family_data as $client_key => $client) {
                         if (isset($client->client)) {
                             if ($client->client->pan) {
@@ -239,6 +250,7 @@ class AUMController extends Controller
                             }
                         }
                     }
+                    $rawQuery .= ')';
                 }
             }
             
@@ -367,16 +379,19 @@ class AUMController extends Controller
                 ->get();
 
             // return $all_family_data;
-            $rawQuery .= ' AND ';
-            foreach ($all_family_data as $client_key => $client) {
-                if (isset($client->client)) {
-                    if ($client->client->pan) {
-                        $condition = ($client_key > 0) ? " OR " : " ";
-                        $rawQuery .= $condition.' (td_mutual_fund_trans_aum.first_client_pan="' . $client->client->pan . '" AND td_mutual_fund_trans_aum.first_client_name LIKE "%' . $client->client->client_name . '%")';
-                    } else {
-                        $rawQuery .= ' OR td_mutual_fund_trans_aum.first_client_name LIKE "%' . $client->client->client_name . '%"';
+            if(count($all_family_data) > 0){
+                $rawQuery .= ' AND (';
+                foreach ($all_family_data as $client_key => $client) {
+                    if (isset($client->client)) {
+                        if ($client->client->pan) {
+                            $condition = ($client_key > 0) ? " OR " : " ";
+                            $rawQuery .= $condition.' (td_mutual_fund_trans_aum.first_client_pan="' . $client->client->pan . '" AND td_mutual_fund_trans_aum.first_client_name LIKE "%' . $client->client->client_name . '%")';
+                        } else {
+                            $rawQuery .= ' OR td_mutual_fund_trans_aum.first_client_name LIKE "%' . $client->client->client_name . '%"';
+                        }
                     }
                 }
+                $rawQuery .= ')';
             }
             // return $rawQuery;
             // DB::enableQueryLog();
@@ -1060,16 +1075,19 @@ class AUMController extends Controller
                         ->where('client_id', $family_head_id)
                         ->get();
                     // return $all_family_data;
-                    $rawQuery .=' AND ';
-                    foreach ($all_family_data as $client_key => $client) {
-                        if (isset($client->client)) {
-                            if ($client->client->pan) {
-                                $condition_v = ($client_key > 0) ? " OR " : " ";
-                                $rawQuery .= $condition_v.' (td_mutual_fund_trans_aum.first_client_pan="' . $client->client->pan . '" AND td_mutual_fund_trans_aum.first_client_name LIKE "%' . $client->client->client_name . '%")';
-                            } else {
-                                $rawQuery .= ' OR td_mutual_fund_trans_aum.first_client_name LIKE "%' . $client->client->client_name . '%"';
+                    if(count($all_family_data) > 0) {
+                        $rawQuery .=' AND (';
+                        foreach ($all_family_data as $client_key => $client) {
+                            if (isset($client->client)) {
+                                if ($client->client->pan) {
+                                    $condition_v = ($client_key > 0) ? " OR " : " ";
+                                    $rawQuery .= $condition_v.' (td_mutual_fund_trans_aum.first_client_pan="' . $client->client->pan . '" AND td_mutual_fund_trans_aum.first_client_name LIKE "%' . $client->client->client_name . '%")';
+                                } else {
+                                    $rawQuery .= ' OR td_mutual_fund_trans_aum.first_client_name LIKE "%' . $client->client->client_name . '%"';
+                                }
                             }
                         }
+                        $rawQuery .= ')';
                     }
                 }
             }
