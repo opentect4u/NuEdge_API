@@ -13,9 +13,11 @@ use App\Models\MutualFundTransaction;
 use App\Models\MutualFundTransactionMerge;
 use App\Models\SchemeISIN;
 use App\Models\Branch;
+use App\Models\CurrAumReport;
 use DB;
 use Illuminate\Http\Request;
 use Session;
+use carbon\Carbon;
 
 class AUMController extends Controller
 {
@@ -869,159 +871,162 @@ class AUMController extends Controller
             // $fin_year="2025-2026";
             // $fin_year="2024-2025";
             // $fin_year="Last 5 Year";
-            $rawQuery       = '';
-            if ($fin_year=="Last 5 Year") {
-                // $getFinYear=Helper::getFinYear();
-                // return $getFinYear;
-                $startDates=[];
-                for ($i=0; $i <= 5; $i++) { 
-                    $getFinYear=explode('-',Helper::getFinYear());
-                    $startYear=($getFinYear[0]-$i).'-03-01';
-                    $date = date("Y-m-t", strtotime($startYear));
-                    // return $date;
-                    array_push($startDates,$date);
-                }
-                // return $startDates;
-                // $condition_v = (strlen($rawQuery) > 0) ? " AND " : " ";
-                // $queryString = 'td_mutual_fund_trans_aum.trans_date';
-                // $rawQuery .= $condition_v . $queryString . "=(SELECT MAX(trans_date) FROM td_mutual_fund_trans_aum WHERE trans_date <='" . $date . "')";
-            }else if($fin_year=="Month"){
-                // return $month_for;
-                $endYear=date("Y-m-d", strtotime("- 1 day"));
-                // strtotime($endYear) > strtotime(date('Y-m-d')) ? date("Y-m-d", strtotime("- 1 day")) : date("Y-m-t",strtotime($endYear));
-                // $start_date = date("Y-m-t", strtotime("-1 month", strtotime($startYear)));
-
-                $startDates=[];
-                $time=strtotime($endYear);
-                // $upto=strtotime($startYear);
-                // $startDates .=$endYear." - ";
-                array_push($startDates,$endYear);
-                for ($i=1; $i <= $month_for; $i++) { 
-                    $date = date("Y-m-t", strtotime("-".$i." month", $time));
-                    // return $date;
-                    // if(strtotime($start_date) <= strtotime($date)) {
-                    //     array_push($startDates,$date);
-                    //     // $startDates .=$date." - ";
-                    // }else {
-                    //     break;
-                    // }
-                    array_push($startDates,$date);
-
-                }
-                // return $startDates;
-            }else if($fin_year=="YTD"){
-                $year= date('Y') - 2018;
-                $startDates=[];
-                for ($i=0; $i <= $year; $i++) { 
-                    $getFinYear=explode('-',Helper::getFinYear());
-                    $startYear=($getFinYear[0]-$i).'-03-01';
-                    $date = date("Y-m-t", strtotime($startYear));
-                    // return $date;
-                    array_push($startDates,$date);
-                }
-                // return $startDates;
-            }else {
-                $years=explode("-",$fin_year);
-                // return $years;
-                $startYear=$years[0].'-04-01';
-                $endYear=$years[1].'-03-30';
-                $endYear=strtotime($endYear) > strtotime(date('Y-m-d')) ? date("Y-m-d", strtotime("- 1 day")) : date("Y-m-t",strtotime($endYear));
-                $start_date = date("Y-m-t", strtotime("-1 month", strtotime($startYear)));
-                // return $startYear.' - '.$endYear;
-                // return $start_date;
-                $startDates=[];
-                $time=strtotime($endYear);
-                // $upto=strtotime($startYear);
-                // $startDates .=$endYear." - ";
-                array_push($startDates,$endYear);
-                for ($i=1; $i <= 12; $i++) { 
-                    $date = date("Y-m-t", strtotime("-".$i." month", $time));
-                    // return $date;
-                    if(strtotime($start_date) <= strtotime($date)) {
+            $rawQuery = '';
+            switch ($fin_year) {
+                case 'Last 5 Year':
+                    $startDates=[];
+                    for ($i=0; $i <= 5; $i++) { 
+                        $getFinYear=explode('-',Helper::getFinYear());
+                        $startYear=($getFinYear[0]-$i).'-03-01';
+                        $date = date("Y-m-t", strtotime($startYear));
                         array_push($startDates,$date);
-                        // $startDates .=$date." - ";
-                    }else {
-                        break;
+                        $queryString = 'td_mutual_fund_curr_aum.trans_date';
+                        $condition_v = (strlen($rawQuery) > 0) ? " OR " : " ";
+                        $rawQuery .= $condition_v ."(". $queryString . "=(SELECT MAX(trans_date) FROM td_mutual_fund_curr_aum WHERE trans_date <='" . $date . "'))";
+                        
                     }
-                }
-                // return $startDates;
+                    break;
+                case 'Month':
+                    $endYear=date("Y-m-d", strtotime("- 1 day"));
+                    // strtotime($endYear) > strtotime(date('Y-m-d')) ? date("Y-m-d", strtotime("- 1 day")) : date("Y-m-t",strtotime($endYear));
+                    // $start_date = date("Y-m-t", strtotime("-1 month", strtotime($startYear)));
+
+                    $startDates=[];
+                    $time=strtotime($endYear);
+                    // $upto=strtotime($startYear);
+                    // $startDates .=$endYear." - ";
+                    array_push($startDates,$endYear);
+                    for ($i=1; $i <= $month_for; $i++) { 
+                        $date = date("Y-m-t", strtotime("-".$i." month", $time));
+                        // return $date;
+                        // if(strtotime($start_date) <= strtotime($date)) {
+                        //     array_push($startDates,$date);
+                        //     // $startDates .=$date." - ";
+                        // }else {
+                        //     break;
+                        // }
+                        array_push($startDates,$date);
+                        $queryString = 'td_mutual_fund_curr_aum.trans_date';
+                        $condition_v = (strlen($rawQuery) > 0) ? " OR " : " ";
+                        $rawQuery .= $condition_v ."(". $queryString . "=(SELECT MAX(trans_date) FROM td_mutual_fund_curr_aum WHERE trans_date <='" . $date . "'))";
+                        
+
+                    }
+                    break;
+                case 'YTD':
+                    $year= date('Y') - 2018;
+                    $startDates=[];
+                    for ($i=0; $i <= $year; $i++) { 
+                        $getFinYear=explode('-',Helper::getFinYear());
+                        $startYear=($getFinYear[0]-$i).'-03-01';
+                        $date = date("Y-m-t", strtotime($startYear));
+                        // return $date;
+                        // array_push($startDates,$date);
+                        $queryString = 'td_mutual_fund_curr_aum.trans_date';
+                        $condition_v = (strlen($rawQuery) > 0) ? " OR " : " ";
+                        $rawQuery .= $condition_v ."(". $queryString . "=(SELECT MAX(trans_date) FROM td_mutual_fund_curr_aum WHERE trans_date <='" . $date . "'))";
+                        
+                    }
+                    break;
+                default:
+                    $years=explode("-",$fin_year);
+                    $start = Carbon::create($years[0],3,1); // April 1, 2024
+                    $end = Carbon::create($years[1],3,30);  // March 31, 2025
+                    // return $start;
+                    $dates = [];
+                    $current = $start->copy();
+                    while ($current <= $end) {
+                        $dates[] = $current->copy()->endOfMonth()->toDateString(); // Last date of the month
+                        $current->addMonth(); // Move to the next month
+                    }
+                    foreach ($dates as $date) {
+                        // array_push($startDates,$date);
+                        $queryString = 'td_mutual_fund_curr_aum.trans_date';
+                        $condition_v = (strlen($rawQuery) > 0) ? " OR " : " ";
+                        $rawQuery .= $condition_v ."(". $queryString . "=(SELECT MAX(trans_date) FROM td_mutual_fund_curr_aum WHERE trans_date <='" . $date . "'))";
+                        
+                    }
+                    break;
             }
             // return $startDates;
+            // return $rawQuery;
 
             // $condition_v = (strlen($rawQuery) > 0) ? " AND " : " ";
             //         $queryString = 'td_mutual_fund_trans_aum.trans_date';
             //         $rawQuery .= $condition_v . $queryString . "=(SELECT MAX(trans_date) FROM td_mutual_fund_trans_aum WHERE trans_date <='" . $date . "')";
 
-            $all_data = AumReport::leftJoin('md_rnt', 'md_rnt.id', '=', 'td_mutual_fund_trans_aum.rnt_id')
-                ->selectRaw('td_mutual_fund_trans_aum.*,SUM(td_mutual_fund_trans_aum.total_unit) AS tot_units, SUM(td_mutual_fund_trans_aum.total_inv_cost) as inv_cost,md_rnt.rnt_name')
-                // ->whereRaw($rawQuery)
-                ->whereIn('td_mutual_fund_trans_aum.trans_date', $startDates)
-                ->groupBy('td_mutual_fund_trans_aum.trans_date','td_mutual_fund_trans_aum.folio_no', 'td_mutual_fund_trans_aum.product_code')
-                ->get();
-            // return $all_data;
-            $all_trans_product = [];
-            foreach ($all_data as $value_product_code) {
-                $f_trans_product = "(nav_date=(SELECT MAX(nav_date) FROM td_nav_details WHERE product_code='" . $value_product_code->product_code . "' AND nav_date <='" . $value_product_code->trans_date . "') AND product_code='" . $value_product_code->product_code . "')";
-                array_push($all_trans_product, $f_trans_product);
-            }
-            // return $all_trans_product;
-            $res_array = [];
-            if (count($all_data) > 0) {
-                $all_trans_product_unique = array_unique($all_trans_product);
-                // return count($all_trans_product).' - '.count($all_trans_product_unique);
-                $string_version_product_code = implode(',', $all_trans_product_unique);
-                // return $string_version_product_code;
-                // return 'SELECT product_code,isin_no,DATE_FORMAT(nav_date, "%Y-%m-%d") as nav_date,nav FROM td_nav_details where '.str_replace(",","  OR  ",$string_version_product_code);
-                $res_array = DB::connection('mysql_nav')
-                    ->select('SELECT product_code,isin_no,DATE_FORMAT(nav_date, "%Y-%m-%d") as nav_date,nav FROM td_nav_details where ' . str_replace(",", "  OR  ", $string_version_product_code));
-            }
-            // return  $res_array;
-            $final_data = [];
-            foreach ($all_data as $key_group_amc_data => $value_group_amc_data) { // amc loop
-                // return $value_group_amc_data;
-                $product_code = $value_group_amc_data->product_code;
-                $trans_date = $value_group_amc_data->trans_date;
-                $new          = '';
-                if (count($res_array) > 0) {
-                    foreach ($res_array as $val_nav) {
-                        if ($val_nav->product_code == $product_code && $val_nav->nav_date >= $trans_date) {
-                            $new = $val_nav;
-                        }
-                    }
-                }
-                // return  $new;
-                $value_group_amc_data->new        = $new;
-                $value_group_amc_data->curr_nav   = isset($new->nav) ? $new->nav : 0;
-                $value_group_amc_data->nav_date   = isset($new->nav_date) ? $new->nav_date : 0;
-                $value_group_amc_data->idcw_reinv = 0;
-                $value_group_amc_data->idcw_paid  = 0;
-                $value_group_amc_data->idcwr      = 0;
-                $value_group_amc_data->curr_aum   = number_format((float) ($value_group_amc_data->curr_nav * $value_group_amc_data->tot_units), 2, '.', '');
-                $value_group_amc_data->gain_loss  = number_format((float) (($value_group_amc_data->curr_aum - $value_group_amc_data->inv_cost) + $value_group_amc_data->idcwr), 2, '.', '');
-                $value_group_amc_data->abs_rtn    = ($value_group_amc_data->gain_loss != 0 && $value_group_amc_data->inv_cost != 0) ? number_format((float) (($value_group_amc_data->gain_loss / $value_group_amc_data->inv_cost) * 100), 2, '.', '') : 0;
-                array_push($final_data, $value_group_amc_data);
-            }
-            // return  $final_data;
-            $final_data1=[];
-            foreach ($final_data as $key => $final_value) {
-                $final_data1[$final_value->trans_date][]=$final_value;
-            }
-            // return $final_data1;
+            // $all_data = AumReport::leftJoin('md_rnt', 'md_rnt.id', '=', 'td_mutual_fund_trans_aum.rnt_id')
+            //     ->selectRaw('td_mutual_fund_trans_aum.*,SUM(td_mutual_fund_trans_aum.total_unit) AS tot_units, SUM(td_mutual_fund_trans_aum.total_inv_cost) as inv_cost,md_rnt.rnt_name')
+            //     ->whereIn('td_mutual_fund_trans_aum.trans_date', $startDates)
+            //     ->groupBy('td_mutual_fund_trans_aum.trans_date','td_mutual_fund_trans_aum.folio_no', 'td_mutual_fund_trans_aum.product_code')
+            //     ->get();
+            // // return $all_data;
+            // $all_trans_product = [];
+            // foreach ($all_data as $value_product_code) {
+            //     $f_trans_product = "(nav_date=(SELECT MAX(nav_date) FROM td_nav_details WHERE product_code='" . $value_product_code->product_code . "' AND nav_date <='" . $value_product_code->trans_date . "') AND product_code='" . $value_product_code->product_code . "')";
+            //     array_push($all_trans_product, $f_trans_product);
+            // }
+            // // return $all_trans_product;
+            // $res_array = [];
+            // if (count($all_data) > 0) {
+            //     $all_trans_product_unique = array_unique($all_trans_product);
+            //     $string_version_product_code = implode(',', $all_trans_product_unique);
+            //     $res_array = DB::connection('mysql_nav')
+            //         ->select('SELECT product_code,isin_no,DATE_FORMAT(nav_date, "%Y-%m-%d") as nav_date,nav FROM td_nav_details where ' . str_replace(",", "  OR  ", $string_version_product_code));
+            // }
+            // // return  $res_array;
+            // $final_data = [];
+            // foreach ($all_data as $key_group_amc_data => $value_group_amc_data) { // amc loop
+            //     // return $value_group_amc_data;
+            //     $product_code = $value_group_amc_data->product_code;
+            //     $trans_date = $value_group_amc_data->trans_date;
+            //     $new          = '';
+            //     if (count($res_array) > 0) {
+            //         foreach ($res_array as $val_nav) {
+            //             if ($val_nav->product_code == $product_code && $val_nav->nav_date >= $trans_date) {
+            //                 $new = $val_nav;
+            //             }
+            //         }
+            //     }
+            //     // return  $new;
+            //     $value_group_amc_data->new        = $new;
+            //     $value_group_amc_data->curr_nav   = isset($new->nav) ? $new->nav : 0;
+            //     $value_group_amc_data->nav_date   = isset($new->nav_date) ? $new->nav_date : 0;
+            //     $value_group_amc_data->idcw_reinv = 0;
+            //     $value_group_amc_data->idcw_paid  = 0;
+            //     $value_group_amc_data->idcwr      = 0;
+            //     $value_group_amc_data->curr_aum   = number_format((float) ($value_group_amc_data->curr_nav * $value_group_amc_data->tot_units), 2, '.', '');
+            //     $value_group_amc_data->gain_loss  = number_format((float) (($value_group_amc_data->curr_aum - $value_group_amc_data->inv_cost) + $value_group_amc_data->idcwr), 2, '.', '');
+            //     $value_group_amc_data->abs_rtn    = ($value_group_amc_data->gain_loss != 0 && $value_group_amc_data->inv_cost != 0) ? number_format((float) (($value_group_amc_data->gain_loss / $value_group_amc_data->inv_cost) * 100), 2, '.', '') : 0;
+            //     array_push($final_data, $value_group_amc_data);
+            // }
+            // // return  $final_data;
+            // $final_data1=[];
+            // foreach ($final_data as $key => $final_value) {
+            //     $final_data1[$final_value->trans_date][]=$final_value;
+            // }
+            // // return $final_data1;
+            // $final_final_data=[];
+            // foreach ($final_data1 as $key_final_data1 => $final_data1_value) {
+            //     // return $key_final_data1;
+            //     $set_data=[];
+            //     $amount=0;
+            //     foreach ($final_data1_value as $key => $final_data1_value_value) {
+            //         // return $final_data1_value_value;
+            //         if($final_data1_value_value->curr_aum > 0) {
+            //             // return $final_data1_value_value;
+            //             $amount +=$final_data1_value_value->curr_aum;
+            //         }
+            //     }
+            //     $set_data['date']=$key_final_data1;
+            //     $set_data['aum']=$amount;
+            //     array_push($final_final_data,$set_data);
+            // }
+            $data=CurrAumReport::select('trans_date','curr_aum')->whereRaw($rawQuery)->get();
+
             $final_final_data=[];
-            foreach ($final_data1 as $key_final_data1 => $final_data1_value) {
-                // return $key_final_data1;
-                $set_data=[];
-                $amount=0;
-                foreach ($final_data1_value as $key => $final_data1_value_value) {
-                    // return $final_data1_value_value;
-                    if($final_data1_value_value->curr_aum > 0) {
-                        // return $final_data1_value_value;
-                        $amount +=$final_data1_value_value->curr_aum;
-                    }
-                }
-                $set_data['date']=$key_final_data1;
-                $set_data['aum']=$amount;
-                array_push($final_final_data,$set_data);
+            foreach ($data as $key => $value) {
+                $final_final_data[$value->trans_date]=$value->curr_aum;
             }
         } catch (\Throwable $th) {
             throw $th;
