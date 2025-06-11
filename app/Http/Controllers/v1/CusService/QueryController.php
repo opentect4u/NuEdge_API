@@ -501,12 +501,18 @@ class QueryController extends Controller
                         if($update_data->query_status_id==5 ){
                             $short_url="https://".trim(str_replace(".\nActual Close Date"," ",$array1[4]));
                             $feedback_url="https://".trim(str_replace("\n\nRegards,\nNuEdge Corporate Private Limited.\nAMFI","",$array1[9]));
+                            // return $update_data->id." - ".$feedback_url;
+                            $update=Query::find($update_data->id);
+                            $update->feedback_url=$feedback_url;
+                            $update->save();
+                            $data->feedback_url=$feedback_url;
                         }else{
                             $short_url="https://".trim(str_replace(".\nActual Close Date"," ",$array1[5]));
                             $feedback_url="https://".trim(str_replace("\n\nRegards,\nNuEdge Corporate Private Limited.\nAMFI","",$array1[10]));
                             $update=Query::find($update_data->id);
                             $update->feedback_url=$feedback_url;
                             $update->save();
+                            $data->feedback_url=$feedback_url;
                         }
                     }
                     // $w_res=WAHelper::completedReCompleted($mobile_no,$short_url,$query_status,$investor_name,$query_id,$close_date,$feedback_url);
