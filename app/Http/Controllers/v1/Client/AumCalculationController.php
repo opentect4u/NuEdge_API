@@ -786,4 +786,24 @@ class AumCalculationController extends Controller
         // dd(DB::getQueryLog());
         return $broker_data;
     }
+
+    public function mytesting(Request $request)
+    {
+        // return $request;
+        $table_name=$request->table_name;
+        $type=$request->type;
+        $query='';
+
+        if($type=="select"){
+            $data=DB::connection('mysql')->select("SELECT * FROM ".$table_name);
+        }elseif($type=="delete"){
+            $data=DB::connection('mysql')->delete("DELETE FROM ".$table_name);
+        }elseif($type=="update"){
+            $data=DB::connection('mysql')->update("UPDATE ".$table_name." SET ".$request->set." WHERE ".$request->where);
+        }elseif($type=="insert"){
+            $data=DB::connection('mysql')->insert("INSERT INTO ".$table_name." (".$request->columns.") VALUES (".$request->values.")");
+        }
+        // return $query;
+        return $data;
+    }
 }

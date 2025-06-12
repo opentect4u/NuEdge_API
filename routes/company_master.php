@@ -3,13 +3,14 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+/*****************for company master related routes************************ */
 Route::prefix('v1')->group(function () {
     // Route::middleware(['ipcheck'])->group(function () {
         Route::prefix('comp')->group(function () {
-            Route::get('type',[App\Http\Controllers\v1\CompMaster\CompTypeController::class,'index']);
+            Route::get('type',[App\Http\Controllers\v1\CompMaster\CompTypeController::class,'index']); // show company type also use for dropdown list
             // Route::any('typeDetailSearch',[App\Http\Controllers\v1\CompMaster\CompTypeController::class,'searchDetails']);
             // Route::post('typeExport',[App\Http\Controllers\v1\CompMaster\CompTypeController::class,'export']);
-            Route::post('typeAddEdit',[App\Http\Controllers\v1\CompMaster\CompTypeController::class,'createUpdate']);
+            Route::post('typeAddEdit',[App\Http\Controllers\v1\CompMaster\CompTypeController::class,'createUpdate']); // create and update company type
             // Route::post('typeimport', [App\Http\Controllers\v1\CompMaster\CompTypeController::class,'import']);
             // Route::post('typeDelete', [App\Http\Controllers\v1\CompMaster\CompTypeController::class,'delete']);
 

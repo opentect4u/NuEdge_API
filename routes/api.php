@@ -18,7 +18,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-// ========================For Mutual Fund================================
+// ========================For Mutual Fund related routes================================
 Route::prefix('v1')->group(function () {
     // Route::middleware(['ipcheck'])->group(function () {
         Route::get('getip',[App\Http\Controllers\v1\TestController::class,'ShowIp']);
