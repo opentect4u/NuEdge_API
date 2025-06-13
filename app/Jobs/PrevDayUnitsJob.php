@@ -35,6 +35,7 @@ class PrevDayUnitsJob implements ShouldQueue
         \Log::info('Previous Day Units Job Run Successfully');
         $old_2_day= date("Y-m-d", strtotime("- 2 day"));
         $old_1_day= date("Y-m-d", strtotime("- 1 day"));
+        AumReport::where('trans_date', $old_1_day)->delete();
         $all_datas=DB::select('SELECT * FROM td_mutual_fund_trans_aum WHERE (trans_date=(SELECT MAX(trans_date) FROM td_mutual_fund_trans_aum WHERE trans_date <="'.$old_2_day.'"))');
         $insert_arr=[];
         foreach ($all_datas as $key => $single) {
