@@ -10,6 +10,11 @@ use Validator;
 
 class BranchController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index(Request $request)
     {
         try {  
@@ -28,6 +33,11 @@ class BranchController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function createUpdate(Request $request)
     {
         $validator = Validator::make(request()->all(),[

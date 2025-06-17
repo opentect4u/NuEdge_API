@@ -24,6 +24,9 @@ use Session;
 
 class LiveMFSTWController extends Controller
 {
+    /**
+     * Search for systematic transactions like SIP, STP, SWP.
+     */
     public function search(Request $request)
     {
         try {
@@ -398,6 +401,9 @@ class LiveMFSTWController extends Controller
         return Helper::SuccessResponse($my_data);
     }
 
+    /**
+     * Get upcoming systematic transactions.
+     */
     public function upcomingTrans(Request $request)
     {
         try {

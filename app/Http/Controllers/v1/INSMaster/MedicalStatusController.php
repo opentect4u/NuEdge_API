@@ -10,6 +10,12 @@ use Validator;
 
 class MedicalStatusController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     * show also list of medical status details 
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function searchDetails(Request $request)
     {
         try {
@@ -39,6 +45,12 @@ class MedicalStatusController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
+
+    /**
+     * Export medical status data based on the status_name filter.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function export(Request $request)
     {
         try {
@@ -57,6 +69,13 @@ class MedicalStatusController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
+
+    /**
+     * Display a listing of the resource.
+     * show also list of medical status details 
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index(Request $request)
     {
         try {  
@@ -82,6 +101,11 @@ class MedicalStatusController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Show the form for creating a new  and update medical status details.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function createUpdate(Request $request)
     {
         $validator = Validator::make(request()->all(),[
@@ -110,6 +134,11 @@ class MedicalStatusController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function delete(Request $request)
     {
         try {
@@ -131,6 +160,11 @@ class MedicalStatusController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Import medical status data from a CSV file.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function import(Request $request)
     {
         try {

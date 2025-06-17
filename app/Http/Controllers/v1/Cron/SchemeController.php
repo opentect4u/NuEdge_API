@@ -12,6 +12,12 @@ use App\Imports\SchemeImport;
 
 class SchemeController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     * show also list of scheme details 
+     * use for cron jon
+     * @return \Illuminate\Http\Response
+     */
     public function nfoTOongoing(Request $request)
     {
         try {

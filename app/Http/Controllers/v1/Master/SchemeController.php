@@ -12,6 +12,11 @@ use App\Imports\SchemeImport;
 
 class SchemeController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function searchDetails(Request $request)
     {
         try {
@@ -239,6 +244,14 @@ class SchemeController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
+
+    /**
+     * Export Scheme Data
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Throwable
+     * 
+     */
     public function export(Request $request)
     {
         try {
@@ -467,6 +480,11 @@ class SchemeController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Filter criteria for the scheme.
+     *
+     * @param string $rawQuery
+     */
     public function index(Request $request)
     {
         try {  
@@ -556,6 +574,11 @@ class SchemeController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Create or update a scheme.
+     *
+     * @param Request $request
+     */
     public function createUpdate(Request $request)
     {
         $validator = Validator::make(request()->all(),[
@@ -1022,6 +1045,11 @@ class SchemeController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Delete a scheme.
+     *
+     * @param Request $request
+     */
     public function delete(Request $request)
     {
         try {
@@ -1043,6 +1071,11 @@ class SchemeController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Import schemes from an Excel file.
+     *
+     * @param Request $request
+     */
     public function import(Request $request)
     {
         try {
@@ -1591,6 +1624,13 @@ class SchemeController extends Controller
         return Helper::SuccessResponse($data1);
     }
 
+    /**
+     * Check if the frequency wise amount is set
+     *
+     * @param mixed $val1
+     * @param mixed $val2
+     * @return string
+     */
     public function freqWiseAmt($val1, $val2)
     {
         if ($val1 && $val2) {
@@ -1601,6 +1641,12 @@ class SchemeController extends Controller
         return $is_checked;
     }
 
+    /**
+     * Check if the frequency wise amount is set for SWP/STP
+     *
+     * @param mixed $val1
+     * @return string
+     */
     public function freqWiseAmt1($val1)
     {
         if ($val1) {
@@ -1612,6 +1658,17 @@ class SchemeController extends Controller
     }
 
 
+    /**
+     * Filter criteria for schemes based on various parameters
+     *
+     * @param string $rawQuery
+     * @param int $amc_id
+     * @param int $cat_id
+     * @param int $subcat_id
+     * @param int $scheme_id
+     * @param int $search_scheme_id
+     * @return string
+     */
     public function filterCriteria($rawQuery,$amc_id,$cat_id,$subcat_id,$scheme_id,$search_scheme_id)
     {
         $queryString1='md_scheme.amc_id';
@@ -1627,7 +1684,12 @@ class SchemeController extends Controller
         return $rawQuery;
     }
 
-
+    /**
+     * Merge schemes based on the request data
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function merge(Request $request)
     {
         try {
@@ -1689,6 +1751,13 @@ class SchemeController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Replace a scheme based on the request data
+     * 
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Throwable
+     */
     public function replace(Request $request)
     {
         try {
@@ -1748,6 +1817,14 @@ class SchemeController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /***
+     * 
+     * Acquisition of scheme
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Throwable
+     * 
+     */
     public function acquisition(Request $request)
     {
         try {

@@ -10,6 +10,11 @@ use Validator;
 
 class EmployeeController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index(Request $request)
     {
         try {  
@@ -53,6 +58,11 @@ class EmployeeController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Show the form for creating and update a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function create(Request $request)
     {
         $validator = Validator::make(request()->all(),[
@@ -83,6 +93,11 @@ class EmployeeController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Show the form for creating and update a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function update(Request $request)
     {
         $validator = Validator::make(request()->all(),[

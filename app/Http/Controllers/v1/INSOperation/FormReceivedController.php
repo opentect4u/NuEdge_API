@@ -10,6 +10,12 @@ use Validator;
 
 class FormReceivedController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     * show also list of form received details 
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function searchDetails(Request $request)
     {
         try {
@@ -108,6 +114,19 @@ class FormReceivedController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Export the form received details based on filter criteria.
+     * This method retrieves the form received data based on various filters such as date range, temporary TIN number, proposer code, insurance business type, insurance type, and received from.
+     * It supports pagination and ordering of the results.
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     * @throws \Throwable   
+     * @description
+     * This method handles the export of form received data based on the provided filters.
+     * It constructs a query based on the filters and retrieves the relevant data from the database.
+     * The results can be ordered by a specified field and order direction.
+     * If no filters are applied, it retrieves all form received data. 
+     */
     public function export(Request $request)
     {
         try {
@@ -206,6 +225,14 @@ class FormReceivedController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Show the form for creating a new resource.
+     * This method retrieves form received details based on various filters such as temporary TIN number and flag.
+     * It supports searching by temporary TIN number and returns the relevant data.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
     public function show(Request $request)
     {
         try {
@@ -267,6 +294,14 @@ class FormReceivedController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Show the form for creating a new resource.
+     * This method creates a new form received entry based on the provided request data.
+     * It generates a temporary TIN number and saves the form received details in the database.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
     public function create(Request $request)
     {
         $validator = Validator::make(request()->all(),[
@@ -316,6 +351,14 @@ class FormReceivedController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Show the form for creating a new resource.
+     * This method updates an existing form received entry based on the provided request data.
+     * It validates the input and updates the corresponding fields in the database.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
     public function update(Request $request)
     {
         $validator = Validator::make(request()->all(),[
@@ -363,6 +406,14 @@ class FormReceivedController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Remove the specified resource from storage.
+     * This method deletes a form received entry based on the provided temporary TIN number.
+     * It checks if there are any associated insurance records before allowing deletion.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
     public function delete(Request $request){
         $validator = Validator::make(request()->all(),[
             'id' =>'required',
@@ -393,6 +444,20 @@ class FormReceivedController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Filter criteria for form received details.
+     * This method constructs the raw query string based on the provided filter criteria such as date range, temporary TIN number, proposer code, insurance business type, insurance type, and received from.
+     *
+     * @param string $rawQuery
+     * @param string $from_date
+     * @param string $to_date
+     * @param string $temp_tin_no
+     * @param string $proposer_code
+     * @param array $ins_bu_type_id
+     * @param array $ins_type_id
+     * @param string $recv_from
+     * @return string
+     */
     public function filterCriteria($rawQuery,$from_date,$to_date,$temp_tin_no,$proposer_code,$ins_bu_type_id,$ins_type_id,$recv_from)
     {
         $queryString='td_ins_form_received.rec_datetime';

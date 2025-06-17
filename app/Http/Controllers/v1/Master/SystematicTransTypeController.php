@@ -16,6 +16,11 @@ use Excel;
 
 class SystematicTransTypeController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function Details(Request $request)
     {
         try {
@@ -40,6 +45,11 @@ class SystematicTransTypeController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index(Request $request)
     {
         try {
@@ -67,6 +77,11 @@ class SystematicTransTypeController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * create and update resource .
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function CreateUpdate(Request $request)
     {
         try {

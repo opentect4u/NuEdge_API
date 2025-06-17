@@ -16,6 +16,11 @@ use Excel;
 
 class SystematicUnregisterController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function Details(Request $request)
     {
         try {
@@ -40,6 +45,11 @@ class SystematicUnregisterController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index(Request $request)
     {
         try {
@@ -64,6 +74,11 @@ class SystematicUnregisterController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Create or update the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function CreateUpdate(Request $request)
     {
         try {

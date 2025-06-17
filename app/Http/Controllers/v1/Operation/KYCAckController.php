@@ -11,6 +11,11 @@ use Illuminate\Support\Carbon;
 
 class KYCAckController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function searchDetails(Request $request)
     {
         try {
@@ -197,6 +202,12 @@ class KYCAckController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
+
+    /**
+     * Export the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function export(Request $request)
     {
         try {
@@ -384,6 +395,12 @@ class KYCAckController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * create and update resource.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function update(Request $request)
     {
         // return $request;

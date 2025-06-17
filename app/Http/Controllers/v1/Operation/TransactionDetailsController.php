@@ -22,6 +22,11 @@ use DB;
 
 class TransactionDetailsController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function upload(Request $request)
     {
         try {
@@ -68,6 +73,12 @@ class TransactionDetailsController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Upload and process the Excel file.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
     public function uploadwithprocess(Request $request)
     {
         try {
@@ -114,6 +125,12 @@ class TransactionDetailsController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Search for mutual fund transactions based on various criteria.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
     public function search(Request $request)
     {
         try {
@@ -352,6 +369,12 @@ class TransactionDetailsController extends Controller
         return Helper::SuccessResponse($mydata);
     }
 
+    /**
+     * Search for mutual fund transactions based on old criteria.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
     public function search_old(Request $request)
     {
         try {
@@ -381,6 +404,12 @@ class TransactionDetailsController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Search for clients based on the provided criteria.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
     public function searchClient(Request $request)
     {
         try {
@@ -411,7 +440,22 @@ class TransactionDetailsController extends Controller
         return Helper::SuccessResponse($data);
     }
 
-
+    /**
+     * Filter criteria for mutual fund transactions.
+     *
+     * @param string $rawQuery
+     * @param string $from_date
+     * @param string $to_date
+     * @param string $tin_no
+     * @param string $proposer_name
+     * @param int $ins_type_id
+     * @param int $company_id
+     * @param int $product_type_id
+     * @param int $product_id
+     * @param string $insured_bu_type
+     * @param string $ack_status
+     * @return string
+     */
     public function filterCriteria($rawQuery,$from_date,$to_date,$tin_no,$proposer_name,$ins_type_id,$company_id,$product_type_id,$product_id,$insured_bu_type,$ack_status)
     {
         $queryString='td_insurance.entry_date';
@@ -435,6 +479,12 @@ class TransactionDetailsController extends Controller
         return $rawQuery;
     }
 
+    /**
+     * Search for mutual fund transactions to delete.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
     public function searchDelete(Request $request){
         try {
             $all_data=MutualFundTransaction::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_mutual_fund_trans.product_code')
@@ -520,6 +570,12 @@ class TransactionDetailsController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Delete mutual fund transactions.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
     public function delete(Request $request){
         try {
             // return $request;
@@ -542,6 +598,20 @@ class TransactionDetailsController extends Controller
     }
 
 
+    /**
+     * Unlock mutual fund transactions.
+     *  * @param Request $request
+     * @return \Illuminate\Http\Response
+     * @throws \Throwable
+     * @throws \Exception
+     * @throws \ErrorException
+     * @throws \Error
+     * @throws \TypeError
+     * @throws \ArgumentCountError
+     * @throws \ParseError
+     * @throws \RuntimeException
+     * @throws \LogicException
+     */
     function unlock(Request $request)
     {
         try {

@@ -10,6 +10,12 @@ use Validator;
 
 class CompProductsController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     * show also list of product details 
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index(Request $request)
     {
         try {  
@@ -36,6 +42,11 @@ class CompProductsController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Show the form for creating a new  and update .
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function createUpdate(Request $request)
     {
         $validator = Validator::make(request()->all(),[
@@ -71,6 +82,12 @@ class CompProductsController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function update(Request $request)
     {
         $validator = Validator::make(request()->all(),[

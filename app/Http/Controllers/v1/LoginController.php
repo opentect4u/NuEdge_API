@@ -11,6 +11,11 @@ use App\Helpers\Helper;
 
 class LoginController extends Controller
 {
+    /**
+     * login a user deatils.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function login(Request $request)
     {
         try {
@@ -34,6 +39,11 @@ class LoginController extends Controller
         return Helper::SuccessResponse($success);
     }
 
+    /**
+     * logout a user details
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function logout(Request $request)
     {
         try {

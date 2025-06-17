@@ -16,6 +16,11 @@ use Excel;
 
 class FolioTaxStatusController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function Details(Request $request)
     {
         try {
@@ -40,6 +45,11 @@ class FolioTaxStatusController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index(Request $request)
     {
         try {
@@ -63,6 +73,11 @@ class FolioTaxStatusController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Create or Update the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function CreateUpdate(Request $request)
     {
         try {

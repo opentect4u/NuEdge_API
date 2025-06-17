@@ -12,6 +12,11 @@ use App\Imports\AMCImport;
 
 class DisclaimerController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index(Request $request)
     {
         try {  
@@ -23,6 +28,11 @@ class DisclaimerController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function createUpdate(Request $request)
     {
         $validator = Validator::make(request()->all(),[
@@ -59,6 +69,11 @@ class DisclaimerController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Import the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function delete(Request $request)
     {
         try {

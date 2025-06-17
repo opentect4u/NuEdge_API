@@ -26,6 +26,11 @@ use DB;
 
 class HomeController extends Controller
 {
+    /**
+     * Display a listing of the live sip amount mutual fund transactions.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function liveSIPAmount(Request $request)
     {
         try {
@@ -72,6 +77,11 @@ class HomeController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Display a listing of the live SIP trend mutual fund transactions.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function liveSIPTrend(Request $request)
     {
         try {
@@ -124,6 +134,11 @@ class HomeController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Display the current AUM of mutual funds.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function currAum1(Request $request)
     {
         try {
@@ -262,6 +277,11 @@ class HomeController extends Controller
         return Helper::SuccessResponse($mydatas);
     }
 
+    /**
+     * Display the current AUM of mutual funds.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function currAum(Request $request)
     {
         try {
@@ -375,6 +395,11 @@ class HomeController extends Controller
     }
 
     // currAumTrend
+    /**
+     * Display the current AUM trend of mutual funds.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function currAumTrend(Request $request)
     {
         try {

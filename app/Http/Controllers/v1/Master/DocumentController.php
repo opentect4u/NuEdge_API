@@ -12,6 +12,11 @@ use App\Imports\DocumentImport;
 
 class DocumentController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function search(Request $request)
     {
         try {  
@@ -48,6 +53,12 @@ class DocumentController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index(Request $request)
     {
         try {  
@@ -68,6 +79,11 @@ class DocumentController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Export the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function Edit(Request $request)
     {
         try {  
@@ -80,6 +96,12 @@ class DocumentController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function create(Request $request)
     {
         $validator = Validator::make(request()->all(),[
@@ -122,6 +144,12 @@ class DocumentController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function update(Request $request)
     {
         $validator = Validator::make(request()->all(),[
@@ -185,6 +213,12 @@ class DocumentController extends Controller
         return Helper::SuccessResponse($data);
     }
   
+    /**
+     * Import the resource from a CSV file.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function import(Request $request)
     {
         try {

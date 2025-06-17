@@ -37,6 +37,11 @@ use App\Jobs\CurrAumJob;
 
 class MailBackController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function Details(Request $request)
     {
         try {
@@ -126,6 +131,12 @@ class MailBackController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
+
+    /**
+     * Upload the file.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function upload(Request $request)
     {
         try {
@@ -1475,6 +1486,10 @@ class MailBackController extends Controller
         return Helper::SuccessResponse($dataArray);
     }
 
+    /**
+     * Upload using Python
+     * @param Request $request
+     */
     public function uploadusingPython(Request $request)
     {
         $validator = Validator::make(request()->all(),[
@@ -1514,6 +1529,10 @@ class MailBackController extends Controller
         return Helper::SuccessResponse($create_dt);
     }
 
+    /**
+     * Mismatch data
+     * @param Request $request
+     */
     public function misMatch(Request $request)
     {
         try {
@@ -1630,6 +1649,10 @@ class MailBackController extends Controller
     }
 
 
+    /**
+     * Lock Transaction
+     * @param Request $request
+     */
     public function lockTransaction(Request $request)
     {
         try {
@@ -1779,6 +1802,10 @@ class MailBackController extends Controller
         return Helper::SuccessResponse($up_data);
     }
 
+    /**
+     * Unlock Transaction
+     * @param Request $request
+     */
     public function unlockTransaction(Request $request)
     {
         try {
@@ -1799,6 +1826,9 @@ class MailBackController extends Controller
     }
 
 
+    /**
+     * Get File Type
+     */
     public function fileType(Request $request)
     {
         try {
@@ -1810,6 +1840,10 @@ class MailBackController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Get File Name
+     * @param Request $request
+     */
     public function fileName(Request $request)
     {
         try {
@@ -1825,6 +1859,10 @@ class MailBackController extends Controller
     }
 
 
+    /**
+     * Mismatch NAV
+     * @param Request $request
+     */
     public function misMatchNAV(Request $request)
     {
         try {
@@ -1872,6 +1910,10 @@ class MailBackController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Mismatch NAV Delete
+     * @param Request $request
+     */
     public function misMatchNAVDelete(Request $request)
     {
         try {
@@ -1893,6 +1935,10 @@ class MailBackController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Mismatch Sip Stp
+     * @param Request $request
+     */
     public function misMatchSipStp(Request $request)
     {
         try {
@@ -2023,6 +2069,10 @@ class MailBackController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Mismatch Sip Stp
+     * @param Request $request
+     */
     public function misMatchFolio(Request $request)
     {
         try {
@@ -2112,6 +2162,10 @@ class MailBackController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Mismatch Broker
+     * @param Request $request
+     */
     public function misMatchBroker(Request $request)
     {
         try {
@@ -2227,6 +2281,10 @@ class MailBackController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Get All Mismatch
+     * @param Request $request
+     */
     public function allMismatch(Request $request)
     {
         try {

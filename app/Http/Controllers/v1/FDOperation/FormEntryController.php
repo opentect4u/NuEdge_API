@@ -10,7 +10,12 @@ use Validator;
 
 class FormEntryController extends Controller
 {
-    //
+    /**
+     * Display a listing of the resource.
+     * show also list of form entry details
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function searchDetails(Request $request)
     {
         try {
@@ -384,6 +389,11 @@ class FormEntryController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Export Fixed Deposit data to Excel
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
     public function export(Request $request)
     {
         try {
@@ -725,6 +735,11 @@ class FormEntryController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index(Request $request)
     {
         try {
@@ -779,6 +794,12 @@ class FormEntryController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function create(Request $request)
     {
         // $validator = Validator::make(request()->all(),[

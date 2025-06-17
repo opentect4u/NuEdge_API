@@ -14,6 +14,12 @@ use App\Models\Email;
 
 class ManualUpdateController extends Controller
 {
+    /**
+     * Search Insurance Details
+     *  @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Throwable
+     */
     public function searchDetails(Request $request)
     {
         try {
@@ -249,6 +255,12 @@ class ManualUpdateController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Export Insurance Details
+     *  @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Throwable
+     */
     public function export(Request $request)
     {
         try {
@@ -499,6 +511,18 @@ class ManualUpdateController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Update Insurance Details
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Throwable
+     * 
+     * This function updates the insurance details based on the provided request data.
+     * It handles the file upload for the policy copy scan and updates the insurance record in the database.
+     * If the policy copy scan is not provided, it retains the existing file.
+     * It also updates various fields such as medical trigger, status, policy issue date, risk date, maturity date, next renewal date, policy number, and form status.
+     * If any error occurs during the update process, it returns an error response.
+     */
     public function update(Request $request)
     {
         try {
@@ -535,6 +559,16 @@ class ManualUpdateController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Final Submit Insurance Details
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * 
+     * This function processes the final submission of insurance details.
+     * It retrieves the insurance data based on the transaction type ID and today's date,
+     * sorts the data by the first client ID, and sends an email with encrypted policy copies.
+     * If any error occurs during the process, it returns an error response.
+     */
     public function finalSubmit(Request $request)
     {
         try {

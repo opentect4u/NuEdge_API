@@ -10,6 +10,11 @@ use Validator;
 
 class CommonController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function showAMC(Request $request)
     {
         try {  
@@ -22,6 +27,12 @@ class CommonController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function showCategory(Request $request)
     {
         try {  
@@ -32,6 +43,12 @@ class CommonController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function showSubCategory(Request $request)
     {
         try {  
@@ -43,6 +60,12 @@ class CommonController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function productshow(Request $request)
     {
         try {  

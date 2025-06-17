@@ -11,6 +11,11 @@ use DB;
 
 class CommonController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     * @return \Illuminate\Http\Response
+     *  
+     */
     public function showFormType(Request $request)
     {
         try {  
@@ -21,6 +26,11 @@ class CommonController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Display a listing of the sub broker detailsresource.
+     * @return \Illuminate\Http\Response
+     * 
+     */
     public function ShowSubBroker()
     {
         try {  
@@ -31,6 +41,10 @@ class CommonController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Display a listing of the sub broker code using ARN number.
+     * @return \Illuminate\Http\Response
+     */
     public function showSubBrokerCode(Request $request)
     {
         try {  
@@ -41,7 +55,10 @@ class CommonController extends Controller
         return Helper::SuccessResponse($data);
     }
 
-    // get transction using type id
+    /**
+     * Display a listing of the transaction details.
+     * @return \Illuminate\Http\Response
+     */
     public function showTrans(Request $request)
     {
         try {  
@@ -54,7 +71,10 @@ class CommonController extends Controller
         return Helper::SuccessResponse($data);
     }
 
-
+    /**
+     * Display a listing of the transaction type details.
+     * @return \Illuminate\Http\Response
+     */
     public function showTransInFormRec(Request $request)
     {
         try {  
@@ -73,6 +93,10 @@ class CommonController extends Controller
     }
 
     // check trans using temp tin no
+    /**
+     * Check transaction using TIN number.
+     * @return \Illuminate\Http\Response
+     */
     public function checkTransUsingTIN(Request $request)
     {
         try {  

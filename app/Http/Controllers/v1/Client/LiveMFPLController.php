@@ -24,6 +24,9 @@ use App\Http\Controllers\V1\Client\LiveMFPController;
 
 class LiveMFPLController extends Controller
 {
+    /**
+     * Search for Mutual Fund Transactions based on various filters.
+     */
     public function search(Request $request)
     {
         try {

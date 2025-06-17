@@ -16,6 +16,11 @@ use Excel;
 
 class SystematicFrequencyController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function Details(Request $request)
     {
         try {
@@ -40,6 +45,11 @@ class SystematicFrequencyController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index(Request $request)
     {
         try {
@@ -67,6 +77,11 @@ class SystematicFrequencyController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Store a create and update resource in database.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function CreateUpdate(Request $request)
     {
         try {

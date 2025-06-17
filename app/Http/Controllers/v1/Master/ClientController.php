@@ -19,6 +19,11 @@ use Carbon\Carbon;
 
 class ClientController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function searchDetails(Request $request)
     {
         try {
@@ -55,6 +60,12 @@ class ClientController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
+
+    /**
+     * Export the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function export(Request $request)
     {
         try {
@@ -122,6 +133,12 @@ class ClientController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index(Request $request)
     {
         try {  
@@ -180,6 +197,11 @@ class ClientController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Show the form for creating and update a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function createUpdate(Request $request)
     {
         // $validator = Validator::make(request()->all(),[
@@ -583,6 +605,12 @@ class ClientController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Import the specified resource from a CSV file.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function import(Request $request)
     {
         try {
@@ -625,6 +653,12 @@ class ClientController extends Controller
         return Helper::SuccessResponse($data1);
     }
 
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function delete(Request $request)
     {
         try {
@@ -646,6 +680,12 @@ class ClientController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Search for clients based on the search term and view type.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function searchWithClient(Request $request)
     {
         try {
@@ -676,6 +716,12 @@ class ClientController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Search for clients with family based on the family ID.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function searchWithClientMem(Request $request)
     {
         try {
@@ -702,6 +748,12 @@ class ClientController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Get clients without family based on the search term.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function clientWithoutFamily(Request $request)
     {
         try {  
@@ -724,6 +776,13 @@ class ClientController extends Controller
         return Helper::SuccessResponse($data);
     }
     
+    /**
+     * Search for clients that can be merged based on duplicate entries.
+     * This method identifies clients with the same PAN or client name and returns their details.
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     * @throws \Throwable
+     */
     public function searchMergeClient(Request $request)
     {
         try {

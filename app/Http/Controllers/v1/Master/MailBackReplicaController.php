@@ -33,6 +33,11 @@ use DB;
 
 class MailBackReplicaController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function showLockTransaction(Request $request)
     {
         try {

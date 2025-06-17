@@ -10,6 +10,11 @@ use Validator;
 
 class KYCController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function searchDetails(Request $request)
     {
         try {
@@ -267,6 +272,12 @@ class KYCController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
+
+    /**
+     * Export the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function export(Request $request)
     {
         try {
@@ -489,6 +500,12 @@ class KYCController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index(Request $request)
     {
         try {  
@@ -514,6 +531,12 @@ class KYCController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function showAdd(Request $request)
     {
         try {  
@@ -530,6 +553,12 @@ class KYCController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function createUpdate(Request $request)
     {
         // $validator = Validator::make(request()->all(),[

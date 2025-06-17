@@ -24,6 +24,12 @@ use DB;
 
 class QueryNatureController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     * show also list of query nature
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index(Request $request)
     {
         try {  
@@ -42,6 +48,11 @@ class QueryNatureController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Show the form for creating a new  and update query nature.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function createUpdate(Request $request)
     {
         $validator = Validator::make(request()->all(),[
@@ -72,6 +83,12 @@ class QueryNatureController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Display a listing of the resource.
+     * show also list of query given by
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function indexGivenBy(Request $request)
     {
         try {  
@@ -90,6 +107,11 @@ class QueryNatureController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Show the form for creating a new  and update query given by.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function createUpdateGivenBy(Request $request)
     {
         $validator = Validator::make(request()->all(),[
@@ -120,6 +142,12 @@ class QueryNatureController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Display a listing of the resource.
+     * show also list of query given through
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function indexGivenThrough(Request $request)
     {
         try {  
@@ -138,6 +166,11 @@ class QueryNatureController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Show the form for creating a new  and update query given through.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function createUpdateGivenThrough(Request $request)
     {
         $validator = Validator::make(request()->all(),[

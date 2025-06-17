@@ -14,6 +14,12 @@ use App\Models\Email;
 
 class AcknowledgementController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     * show also list of acknowledgement details 
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function searchDetails(Request $request)
     {
         try {
@@ -145,6 +151,11 @@ class AcknowledgementController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Export the acknowledgement details based on the search criteria.
+     * 
+    * @return \Illuminate\Http\Response
+     */
     public function export(Request $request)
     {
         try {
@@ -276,6 +287,13 @@ class AcknowledgementController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * 
+     * Update the acknowledgement details.
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     * 
+     */
     public function update(Request $request)
     {
         // return $request;
@@ -323,6 +341,12 @@ class AcknowledgementController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Final submission of acknowledgement details.
+     * 
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
     public function finalSubmit(Request $request)
     {
         try {
@@ -397,6 +421,17 @@ class AcknowledgementController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * this function is used to filter the acknowledgement criteria based on the search parameters.
+     * Filter the acknowledgement criteria based on the search parameters.
+     * @param string $rawQuery
+     * @param string $from_date
+     * @param string $to_date
+     *  @param string $tin_no
+     * @param string $proposer_name
+     * @param string $ins_type_id
+     * @param string $company_id    
+     */
     public function filterCriteria($rawQuery,$from_date,$to_date,$tin_no,$proposer_name,$ins_type_id,$company_id,$product_type_id,$product_id,$insured_bu_type,$ack_status)
     {
         $queryString='td_insurance.entry_date';

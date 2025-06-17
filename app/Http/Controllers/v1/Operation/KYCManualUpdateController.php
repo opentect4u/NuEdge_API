@@ -14,6 +14,12 @@ use App\Models\Email;
 
 class KYCManualUpdateController extends Controller
 {
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function searchDetails(Request $request)
     {
         try {
@@ -205,6 +211,12 @@ class KYCManualUpdateController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+
+    /**
+     * Export the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function export(Request $request)
     {
         try {
@@ -391,6 +403,12 @@ class KYCManualUpdateController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function update(Request $request)
     {
         try {

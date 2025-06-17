@@ -36,6 +36,9 @@ use App\Jobs\CurrAumJob;
 
 class AumCalculationController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     */
     public function index(Request $request)
     {
         try {
@@ -108,6 +111,9 @@ class AumCalculationController extends Controller
         return Helper::SuccessResponse($clients);
     }
 
+    /**
+     * Display the specified resource.
+     */
     public function test()
     {
         // PrevDateUnitsJob::dispatch();
@@ -152,6 +158,9 @@ class AumCalculationController extends Controller
         return 'AumCalculationJob Run Successfully';
     }
 
+    /**
+     * Run the currAum calculation.
+     */
     public static function currAum()
     {
         try {
@@ -234,6 +243,9 @@ class AumCalculationController extends Controller
         return Helper::SuccessResponse([]);
     }
 
+    /**
+     * Calculate total units and investment cost.
+     */
     public static function calucationTotUnitsAndInvCost($client_name,$pan_no,$valuation_as_on)
     {
         try {
@@ -352,6 +364,9 @@ class AumCalculationController extends Controller
         }
     }
 
+    /**
+     * Calculate the purchase and redemption data.
+     */
     public static function calculate($foliotrans,$curr_nav,$valuation_as_on){
         $purchase_data=[];
         $redemption_data=[];
@@ -605,6 +620,9 @@ class AumCalculationController extends Controller
         return $return_data;
     }
 
+    /**
+     * Consolidation In Query for Mutual Fund Transactions.
+     */
     public static function ConsolidationInQuery($rnt_id,$folio_no,$isin_no,$product_code,$valuation_as_on)
     {
         $rawQuery='';
@@ -654,6 +672,9 @@ class AumCalculationController extends Controller
         return $all_data;
     }
 
+    /**
+     * Get broker data based on folio transaction value.
+     */
     public static function getBrokerData($foliotrans_value)
     {
         $rawInnerQuery='';
@@ -685,6 +706,9 @@ class AumCalculationController extends Controller
         return $broker_data;
     }
 
+    /**
+     * Consolidation In Query for Mutual Fund Transactions.
+     */
     public static function __ConsolidationInQuery($rnt_id,$folio_no,$isin_no,$product_code,$valuation_as_on)
     {
         $rawQuery='';
@@ -745,6 +769,9 @@ class AumCalculationController extends Controller
         return $all_data;
     }
 
+    /**
+     * Get broker data based on folio transaction value.
+     */
     public static function __getBrokerData($foliotrans_value)
     {
         $rawInnerQuery='';

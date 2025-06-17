@@ -10,6 +10,12 @@ use Validator;
 
 class PartnershipDetailsController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     * show also list of partnership details 
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index(Request $request)
     {
         try {  
@@ -28,6 +34,11 @@ class PartnershipDetailsController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Show the form for creating a new  and update partnership details.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function createUpdate(Request $request)
     {
         try {

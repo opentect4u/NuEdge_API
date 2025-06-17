@@ -11,6 +11,12 @@ use DB;
 
 class FormReceivedController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     * show also list of form received details
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function searchDetails(Request $request)
     {
         try {
@@ -193,6 +199,12 @@ class FormReceivedController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Export the form received data based on the request parameters.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
     public function export(Request $request)
     {
         try {
@@ -360,6 +372,12 @@ class FormReceivedController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Show the form for creating a new resource.
+     * show also list of form received details
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function show(Request $request)
     {
         try {
@@ -423,6 +441,12 @@ class FormReceivedController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Store a newly created resource in storage.
+     * create new form received details
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function create(Request $request)
     {
         $validator = Validator::make(request()->all(),[
@@ -481,6 +505,12 @@ class FormReceivedController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Update the specified resource in storage.
+     * update form received details
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function update(Request $request)
     {
         $validator = Validator::make(request()->all(),[
@@ -530,6 +560,12 @@ class FormReceivedController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Remove the specified resource from storage.
+     * delete form received details
+     *  * @return \Illuminate\Http\Response
+     * @param Request $request
+     */
     public function delete(Request $request){
         $validator = Validator::make(request()->all(),[
             'id' =>'required',
@@ -560,4 +596,3 @@ class FormReceivedController extends Controller
         return Helper::SuccessResponse($data);
     }
 }
-

@@ -30,6 +30,12 @@ use App\Http\Controllers\V1\Client\LiveMFPLController;
 
 class IndexController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     * show also list of query details 
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index(Request $request)
     {
         try {

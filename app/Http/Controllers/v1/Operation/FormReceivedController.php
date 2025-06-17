@@ -10,6 +10,10 @@ use Validator;
 
 class FormReceivedController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     * @return \Illuminate\Http\Response
+     */
     public function searchDetails(Request $request)
     {
         try {
@@ -232,6 +236,12 @@ class FormReceivedController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
+
+    /**
+     * Export the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function export(Request $request)
     {
         try {
@@ -399,6 +409,12 @@ class FormReceivedController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index(Request $request)
     {
         try {  
@@ -528,6 +544,11 @@ class FormReceivedController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function createShow(Request $request)
     {
         try {
@@ -599,6 +620,12 @@ class FormReceivedController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function create(Request $request)
     {
         $validator = Validator::make(request()->all(),[
@@ -656,6 +683,12 @@ class FormReceivedController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
     public function update(Request $request)
     {
         $validator = Validator::make(request()->all(),[
@@ -701,6 +734,12 @@ class FormReceivedController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
     public function delete(Request $request){
         $validator = Validator::make(request()->all(),[
             'temp_tin_no' =>'required',

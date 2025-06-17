@@ -24,6 +24,11 @@ use Session;
 
 class CapitalGLController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function search(Request $request)
     {
         try {
@@ -661,6 +666,12 @@ class CapitalGLController extends Controller
         return Helper::SuccessResponse($mydata);
     }
 
+    /**
+     * Get broker data based on the provided folio transaction value.
+     *
+     * @param object $foliotrans_value
+     * @return \Illuminate\Support\Collection
+     */
     public static function getBrokerData($foliotrans_value)
     {
         $rawInnerQuery='';
@@ -702,7 +713,12 @@ class CapitalGLController extends Controller
         return $broker_data;
     }
 
-
+    /**
+     * Handle the request to find wise transactions.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function finWiseTrans(Request $request){
         // return $request;
         $asset_type=$request->asset_type;
@@ -867,6 +883,12 @@ class CapitalGLController extends Controller
         return Helper::SuccessResponse($final_dataset);
     }
 
+    /**
+     * Handle the request to get dividend history.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function divHistory(Request $request)
     {
         try {

@@ -14,6 +14,15 @@ use App\Models\Email;
 
 class ManualUpdateController extends Controller
 {
+    /***
+     * 
+     * This function is used to search the details of fixed deposit based on various parameters.
+     * It accepts a request with parameters like tin_no, from_date, to_date, company_id, etc.
+     * It returns a paginated list of fixed deposit records that match the search criteria.
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse    
+     * @throws \Throwable
+     */
     public function searchDetails(Request $request)
     {
         try {
@@ -184,6 +193,15 @@ class ManualUpdateController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /***
+     * 
+     * This function exports the fixed deposit data based on the provided filters.
+     * It accepts a request with parameters like tin_no, from_date, to_date, company_id, etc.
+     * It returns a collection of fixed deposit records that match the export criteria.
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse    
+     * @throws \Throwable
+     */
     public function export(Request $request)
     {
         try {
@@ -354,6 +372,12 @@ class ManualUpdateController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Update the fixed deposit record based on the request data.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function update(Request $request)
     {
         try {
@@ -425,6 +449,15 @@ class ManualUpdateController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * This function handles the final submission of fixed deposit records.
+     * It retrieves records based on the transaction type ID, processes them,
+     * and sends an email with encrypted attachments.
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Throwable
+     * @throws \Exception
+     */
     public function finalSubmit(Request $request)
     {
         try {

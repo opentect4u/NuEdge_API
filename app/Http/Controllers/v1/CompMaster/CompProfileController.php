@@ -10,6 +10,12 @@ use Validator;
 
 class CompProfileController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     * show also list of company profile details 
+     *
+     * @return \Illuminate\Http\Response
+     */
     // show company profile also use for dropdown list
     public function index(Request $request)
     {
@@ -42,6 +48,11 @@ class CompProfileController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Show the form for creating a new  and update company profile.
+     *
+     * @return \Illuminate\Http\Response
+     */
     // create and update company profile
     public function createUpdate(Request $request)
     {
@@ -137,6 +148,12 @@ class CompProfileController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Display a listing of the resource.
+     * show also list of company temp profile details 
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function tempIndex(Request $request)
     {
         try {  
@@ -163,6 +180,11 @@ class CompProfileController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Show the form for creating a new  and update company temp profile.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function tempCreateUpdate(Request $request)
     {
         try {

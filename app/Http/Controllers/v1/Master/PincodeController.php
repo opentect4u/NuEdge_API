@@ -12,6 +12,11 @@ use Excel;
 
 class PincodeController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index(Request $request)
     {
         try {  
@@ -41,6 +46,11 @@ class PincodeController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Create or update a pincode.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function createUpdate(Request $request)
     {
         $validator = Validator::make(request()->all(),[
@@ -97,6 +107,11 @@ class PincodeController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Import pincode data from an Excel file.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function import(Request $request)
     {
         try {
@@ -149,6 +164,11 @@ class PincodeController extends Controller
         return Helper::SuccessResponse($data1);
     }
 
+    /**
+     * Search for pincode details based on various criteria.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function searchDetails(Request $request)
     {
         try {
@@ -325,6 +345,11 @@ class PincodeController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Export pincode data based on search criteria.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function geographyExport(Request $request)
     {
         try {

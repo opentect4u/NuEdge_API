@@ -14,6 +14,12 @@ use App\Models\Email;
 
 class CertificateDeliveryController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     * show also list of certificate delivery
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function searchDetails(Request $request)
     {
         try {
@@ -185,6 +191,11 @@ class CertificateDeliveryController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Export the certificate delivery data.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function export(Request $request)
     {
         try {
@@ -242,6 +253,11 @@ class CertificateDeliveryController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Show the form for creating a new  and update certificate delivery.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function update(Request $request)
     {
         try {
@@ -345,6 +361,11 @@ class CertificateDeliveryController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Final submit for certificate delivery.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function finalSubmit(Request $request)
     {
         try {

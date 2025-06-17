@@ -10,6 +10,12 @@ use Validator;
 
 class ProductController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     * show also list of product details 
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function searchDetails(Request $request)
     {
         try {
@@ -161,6 +167,12 @@ class ProductController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
+
+    /**
+     * Export product data based on various filters.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function export(Request $request)
     {
         try {
@@ -249,6 +261,13 @@ class ProductController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
+
+    /**
+     * Display a listing of the resource.
+     * show also list of product details 
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index(Request $request)
     {
         try {  
@@ -296,6 +315,11 @@ class ProductController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Show the form for creating a new product and update product.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function createUpdate(Request $request)
     {
         $validator = Validator::make(request()->all(),[
@@ -342,6 +366,11 @@ class ProductController extends Controller
         return Helper::SuccessResponse($data1);
     }
 
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function delete(Request $request)
     {
         try {
@@ -363,6 +392,11 @@ class ProductController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Import product data from a CSV file.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function import(Request $request)
     {
         try {
@@ -399,6 +433,11 @@ class ProductController extends Controller
     }
 
 
+    /**
+     * Get product details based on company and product type IDs.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function productDetails(Request $request)
     {
         try {

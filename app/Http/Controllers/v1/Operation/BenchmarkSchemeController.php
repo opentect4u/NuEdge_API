@@ -14,6 +14,11 @@ use DB;
 
 class BenchmarkSchemeController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function searchDetails(Request $request)
     {
         try {
@@ -285,6 +290,12 @@ class BenchmarkSchemeController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
+
+    /**
+     * Export the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function export(Request $request)
     {
         try {
@@ -295,6 +306,12 @@ class BenchmarkSchemeController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index(Request $request)
     {
         try {  
@@ -323,6 +340,11 @@ class BenchmarkSchemeController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * create and update resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function createUpdate(Request $request)
     {
         $validator = Validator::make(request()->all(),[
@@ -385,6 +407,11 @@ class BenchmarkSchemeController extends Controller
         return Helper::SuccessResponse($mydata);
     }
 
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function delete(Request $request)
     {
         try {
@@ -406,6 +433,11 @@ class BenchmarkSchemeController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Import the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function import(Request $request)
     {
         try {
@@ -482,6 +514,11 @@ class BenchmarkSchemeController extends Controller
         return Helper::SuccessResponse($scc_res);
     }
 
+    /**
+     * Import the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function import_old(Request $request)
     {
         try {
@@ -560,4 +597,3 @@ class BenchmarkSchemeController extends Controller
         return Helper::SuccessResponse($data1);
     }
 }
-

@@ -10,6 +10,12 @@ use Validator;
 
 class LicenseDetailsController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     * show also list of license details 
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index(Request $request)
     {
         try {  
@@ -36,6 +42,11 @@ class LicenseDetailsController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Show the form for creating a new  and update license details.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function createUpdate(Request $request)
     {
         $validator = Validator::make(request()->all(),[

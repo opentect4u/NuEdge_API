@@ -21,6 +21,11 @@ use DB;
 
 class MonthlyMisController extends Controller
 {
+    /**
+     * Display a listing of the mutual fund transactions.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function search(Request $request)
     {
         try {
@@ -243,6 +248,12 @@ class MonthlyMisController extends Controller
         return Helper::SuccessResponse($mydata);
     }
 
+    /**
+     * Search mutual fund transactions based on raw query.
+     *
+     * @param string $rawQuery
+     * @return \Illuminate\Support\Collection
+     */
     public function searchTrandsQuery($rawQuery)
     {
         $all_data=MutualFundTransaction::leftJoin('md_scheme_isin','md_scheme_isin.product_code','=','td_mutual_fund_trans.product_code')
@@ -308,6 +319,12 @@ class MonthlyMisController extends Controller
         return $all_data;
     }
 
+    /**
+     * Search mutual fund transactions based on various filters.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
     public function searchTrands(Request $request)
     {
         try {

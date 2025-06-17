@@ -22,7 +22,9 @@ use carbon\Carbon;
 class AUMController extends Controller
 {
 
-    /*********************aum report as ************************** */
+    /***
+     * Search AUM Report
+     */
     public function search(Request $request)
     {
         try {
@@ -153,6 +155,9 @@ class AUMController extends Controller
         return Helper::SuccessResponse($final_data);
     }
 
+    /**
+     * AUM By Client
+     */
     public function aumByClient(Request $request)
     {
         try {
@@ -337,6 +342,9 @@ class AUMController extends Controller
         return Helper::SuccessResponse($final_data);
     }
 
+    /**
+     * AUM By Family
+     */
     public function aumByFamily(Request $request)
     {
         try {
@@ -471,6 +479,9 @@ class AUMController extends Controller
     }
 
 
+    /**
+     * AUM By Branch
+     */
     public function aumBranch(Request $request)
     {
         try {
@@ -618,6 +629,9 @@ class AUMController extends Controller
         return Helper::SuccessResponse($final_data);
     }
 
+    /**
+     * AUM Branch
+     */
     public function aumSegment(Request $request)
     {
         try {
@@ -754,6 +768,9 @@ class AUMController extends Controller
         return Helper::SuccessResponse($final_data);
     }
 
+    /**
+     * AUM By City Type
+     */
     public function aumCityType(Request $request)
     {
         try {
@@ -861,7 +878,9 @@ class AUMController extends Controller
         return Helper::SuccessResponse($final_data);
     }
 
-    /*******************AUM Growth Report************************/
+    /**
+     * AUM Growth
+     */
     public function aumGrowth(Request $request)
     {
         try {
@@ -1035,6 +1054,15 @@ class AUMController extends Controller
         return Helper::SuccessResponse($final_final_data);
     }
 
+    /**
+     * AUM Top Client
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * 
+     * @api {post} /aum-top-client AUM Top Client
+     * @apiName AUMTopClient
+     * @apiGroup AUM
+     */
     public function aumTopClient(Request $request)
     {
         try {
@@ -1176,6 +1204,15 @@ class AUMController extends Controller
         return Helper::SuccessResponse($final_data);
     }
 
+    /**
+     * AUM Growth for 1 year
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * 
+     * @api {post} /aum-growth-1 AUM Growth for 1 year
+     * @apiName AUMGrowth1
+     * @apiGroup AUM
+     */
     public function aumGrowth1(Request $request)
     {
         try {

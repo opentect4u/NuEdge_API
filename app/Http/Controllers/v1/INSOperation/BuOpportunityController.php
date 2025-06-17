@@ -10,6 +10,12 @@ use Validator;
 
 class BuOpportunityController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     * show also list of business opportunity details 
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function searchDetails(Request $request)
     {
         try {
@@ -112,6 +118,11 @@ class BuOpportunityController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Export business opportunity data based on the search criteria.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function export(Request $request)
     {
         try {
@@ -123,6 +134,12 @@ class BuOpportunityController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Display a listing of the resource.
+     * show also list of business opportunity details 
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index(Request $request)
     {
         try {
@@ -142,6 +159,11 @@ class BuOpportunityController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Create or update a business opportunity.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function createUpdate(Request $request)
     {
         try {
@@ -242,6 +264,23 @@ class BuOpportunityController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Filter criteria for business opportunity search.
+     *
+     * @return string
+     * @param string $rawQuery
+     * @param string $from_date
+     * @param string $to_date
+     * @param string $temp_tin_no
+     * @param string $proposer_code
+     * @param array $ins_type_id
+     * @param string $renewal_month
+     * @param string $renewal_year
+     * @param array $company_id
+     * @param array $product_type_id
+     * @param array $product_id
+     * @return string
+     */
     public function filterCriteria($rawQuery,$from_date,$to_date,$temp_tin_no,$proposer_code,$ins_type_id,$renewal_month,$renewal_year,$company_id,$product_type_id,$product_id)
     {
         $queryString='td_ins_bu_opportunity.rec_datetime';

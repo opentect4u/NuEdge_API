@@ -13,6 +13,13 @@ use Illuminate\Support\Carbon;
 
 class BenchmarkController extends Controller
 {
+    /***
+     * 
+     * seaech Details for benchmark
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     * 
+     */
     public function searchDetails(Request $request)
     {
         try {
@@ -53,6 +60,14 @@ class BenchmarkController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
+
+    /***
+     * 
+     * Export benchmark data
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     * 
+     */
     public function export(Request $request)
     {
         try {
@@ -63,6 +78,14 @@ class BenchmarkController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
+
+    /***
+     * 
+     * Index method for benchmark
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     * 
+     */
     public function index(Request $request)
     {
         try {  
@@ -98,6 +121,13 @@ class BenchmarkController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /***
+     * 
+     * Create or Update benchmark
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     * 
+     */
     public function createUpdate(Request $request)
     {
         $validator = Validator::make(request()->all(),[
@@ -171,6 +201,13 @@ class BenchmarkController extends Controller
         return Helper::SuccessResponse($mydata);
     }
 
+    /***
+     * 
+     * Delete benchmark
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     * 
+     */
     public function delete(Request $request)
     {
         try {
@@ -193,6 +230,13 @@ class BenchmarkController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /***
+     * 
+     * Import benchmark data
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     * 
+     */
     public function import(Request $request)
     {
         try {

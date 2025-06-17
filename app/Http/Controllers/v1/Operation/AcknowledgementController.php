@@ -15,7 +15,11 @@ use App\Jobs\AckFinalSubmitJob;
 
 class AcknowledgementController extends Controller
 {
-    
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */   
     public function pending(Request $request)
     {
         try {
@@ -32,6 +36,13 @@ class AcknowledgementController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
+
+    /**
+     * Search for details based on the request parameters.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
     public function searchDetails(Request $request)
     {
         try {
@@ -235,6 +246,11 @@ class AcknowledgementController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Export the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function export(Request $request)
     {
         try {
@@ -478,6 +494,12 @@ class AcknowledgementController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Update the resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function update(Request $request)
     {
         // return $request;
@@ -541,6 +563,12 @@ class AcknowledgementController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Final submit the resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function finalSubmit(Request $request)
     {
         try {
@@ -570,6 +598,12 @@ class AcknowledgementController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Final submit the resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function finalSubmit_old(Request $request)
     {
         try {

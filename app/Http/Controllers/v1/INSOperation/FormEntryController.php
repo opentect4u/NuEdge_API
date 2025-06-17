@@ -10,7 +10,12 @@ use Validator;
 
 class FormEntryController extends Controller
 {
-    //
+    /**
+     * Display a listing of the resource.
+     * show also list of insurance form entry details
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function searchDetails(Request $request)
     {
         try {
@@ -257,6 +262,9 @@ class FormEntryController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Filter criteria for export details
+     */
     public function export(Request $request)
     {
         try {
@@ -499,6 +507,9 @@ class FormEntryController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * for all details filter criteria
+     */
     public function index(Request $request)
     {
         try {
@@ -551,6 +562,9 @@ class FormEntryController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Create a new insurance record.
+     */
     public function create(Request $request)
     {
         // $validator = Validator::make(request()->all(),[
@@ -760,6 +774,21 @@ class FormEntryController extends Controller
     }
 
 
+    /**
+     * Filter criteria for insurance records.
+     * @param string $rawQuery The raw query string to append conditions to.
+     * @param string $from_date The start date for filtering.
+     * @param string $to_date The end date for filtering.
+     *  @param string $tin_no The TIN number for filtering.
+     * @param string $proposer_name The proposer name for filtering.
+     * @param int $ins_type_id The insurance type ID for filtering.
+     *  @param int $company_id The company ID for filtering.
+     * @param int $product_type_id The product type ID for filtering.
+     * @param int $product_id The product ID for filtering.
+     * @param string $insured_bu_type The insured business unit type for filtering.
+     * @return string The modified raw query string with the applied filters.
+     * 
+     */
     public function filterCriteria($rawQuery,$from_date,$to_date,$tin_no,$proposer_name,$ins_type_id,$company_id,$product_type_id,$product_id,$insured_bu_type)
     {
         $queryString='td_insurance.entry_date';

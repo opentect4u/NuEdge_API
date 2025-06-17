@@ -18,6 +18,11 @@ use DB;
 
 class ClientFamilyController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function searchDetails(Request $request)
     {
         try {
@@ -41,6 +46,11 @@ class ClientFamilyController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Show the form for creating and update a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function familyDetail(Request $request)
     {
         try {
@@ -81,6 +91,11 @@ class ClientFamilyController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Show the form for creating and update a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function createUpdate(Request $request)
     {
         $validator = Validator::make(request()->all(),[
@@ -126,6 +141,11 @@ class ClientFamilyController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Show the form for creating and update a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function update(Request $request)
     {
         $validator = Validator::make(request()->all(),[
@@ -175,6 +195,12 @@ class ClientFamilyController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Remove the specified resource from database.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function delete(Request $request)
     {
         try {
@@ -193,6 +219,12 @@ class ClientFamilyController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * List all clients who are not part of any family.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
     public function nonFamilylist(Request $request)
     {
         try {

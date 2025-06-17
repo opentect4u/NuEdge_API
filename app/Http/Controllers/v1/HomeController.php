@@ -12,6 +12,11 @@ use Illuminate\Support\Facades\Hash;
 
 class HomeController extends Controller
 {
+    /**
+     * Display a user deatils.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index(Request $request)
     {
         try {
@@ -24,6 +29,11 @@ class HomeController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Change user password.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function chnagePassword(Request $request)
     {
         $validator = Validator::make($request->all(), [

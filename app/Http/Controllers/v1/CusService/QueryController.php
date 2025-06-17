@@ -38,6 +38,12 @@ use App\Mail\TestEmail;
 
 class QueryController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     * show also list of query details 
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function searchClient(Request $request)
     {
         try {
@@ -95,6 +101,11 @@ class QueryController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Search query by query id
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function search(Request $request)
     {
         try {
@@ -118,6 +129,11 @@ class QueryController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Show the form for displaying query details.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function showDetails(Request $request)
     {
         try {
@@ -150,6 +166,12 @@ class QueryController extends Controller
         return Helper::SuccessResponse($data);
     }
     
+    /**
+     * Display a listing of the resource.
+     * show also list of query details 
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index(Request $request)
     {
         try {
@@ -316,6 +338,11 @@ class QueryController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Show the form for creating a new  and update .
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function createUpdate(Request $request)
     {
         // return $request;
@@ -800,6 +827,11 @@ class QueryController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Display a get folio details using product_code and folio no.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function getFolio(Request $request)
     {
         try {
@@ -821,6 +853,11 @@ class QueryController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Display a get folio wise product details using folio no.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function getFoliowiseProduct(Request $request)
     {
         try {
@@ -991,6 +1028,11 @@ class QueryController extends Controller
     }
 
 
+    /**
+     * Display a get folio wise product details using folio no.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function queryInform(Request $request)
     {
         try {
@@ -1018,6 +1060,11 @@ class QueryController extends Controller
         return Helper::SuccessResponse($update);
     }
 
+    /**
+     * Display a feedback for query.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function feedback(Request $request)
     {
         try {
@@ -1036,6 +1083,11 @@ class QueryController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Add TAT remarks for query.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function addTATRemarks(Request $request)
     {
         try {
@@ -1062,6 +1114,9 @@ class QueryController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /***
+     * Download file from query attachment
+     */
     public function downloadFile(Request $request)
     {
         try {

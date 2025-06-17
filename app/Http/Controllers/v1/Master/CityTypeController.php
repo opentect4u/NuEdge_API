@@ -12,6 +12,11 @@ use Excel;
 
 class CityTypeController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index(Request $request)
     {
         try {  
@@ -31,6 +36,11 @@ class CityTypeController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Show the form for creating and update a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function createUpdate(Request $request)
     {
         $validator = Validator::make(request()->all(),[
@@ -60,6 +70,12 @@ class CityTypeController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Import city types from a CSV file.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
     public function import(Request $request)
     {
         try {
@@ -103,6 +119,12 @@ class CityTypeController extends Controller
 
 
 
+    /**
+     * Map city types from a CSV file to pincode records.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
     public function map(Request $request)
     {
         try {

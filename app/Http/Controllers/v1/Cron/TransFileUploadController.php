@@ -23,6 +23,11 @@ use File;
 
 class TransFileUploadController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function upload(Request $request)
     {
         try {

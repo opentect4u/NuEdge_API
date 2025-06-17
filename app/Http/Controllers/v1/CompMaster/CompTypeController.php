@@ -10,6 +10,12 @@ use Validator;
 
 class CompTypeController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     * show also list of company type details 
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index(Request $request)
     {
         try {  

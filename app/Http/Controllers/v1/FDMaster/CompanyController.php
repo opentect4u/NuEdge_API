@@ -11,6 +11,12 @@ use Excel;
 
 class CompanyController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     * show also list of company details 
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function searchDetails(Request $request)
     {
         try {
@@ -146,6 +152,12 @@ class CompanyController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
+
+    /**
+     * Export company details based on search criteria.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function export(Request $request)
     {
         try {
@@ -276,6 +288,13 @@ class CompanyController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
+
+    /**
+     * Display a listing of the resource.
+     * show also list of company details 
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index(Request $request)
     {
         try {  
@@ -307,6 +326,11 @@ class CompanyController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Show the form for creating a new  and update company.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function createUpdate(Request $request)
     {
         $validator = Validator::make(request()->all(),[
@@ -421,6 +445,12 @@ class CompanyController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
     public function delete(Request $request)
     {
         try {
@@ -442,6 +472,11 @@ class CompanyController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Import company details from an uploaded CSV file.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function import(Request $request)
     {
         try {

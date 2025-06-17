@@ -10,6 +10,12 @@ use Validator;
 
 class SharedHolderController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     * show also list of share holder details 
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index(Request $request)
     {
         try {  
@@ -38,6 +44,11 @@ class SharedHolderController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Show the form for creating a new  and update share holder.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function createUpdate(Request $request)
     {
         $validator = Validator::make(request()->all(),[

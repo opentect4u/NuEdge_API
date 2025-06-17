@@ -10,6 +10,12 @@ use Validator;
 
 class RejectReasonController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     * show also list of reject reason details 
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function searchDetails(Request $request)
     {
         try {
@@ -53,6 +59,13 @@ class RejectReasonController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
+
+    /**
+     * Display a listing of the resource.
+     * show also list of reject reason details for export
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function export(Request $request)
     {
         try {
@@ -96,6 +109,13 @@ class RejectReasonController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
+
+    /**
+     * Display a listing of the resource.
+     * show also list of reject reason details 
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index(Request $request)
     {
         try {  
@@ -121,6 +141,11 @@ class RejectReasonController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Show the form for creating a new  and update reject reason.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function createUpdate(Request $request)
     {
         $validator = Validator::make(request()->all(),[
@@ -149,6 +174,12 @@ class RejectReasonController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function delete(Request $request)
     {
         try {
@@ -170,6 +201,12 @@ class RejectReasonController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Import reject reason from CSV file.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function import(Request $request)
     {
         try {

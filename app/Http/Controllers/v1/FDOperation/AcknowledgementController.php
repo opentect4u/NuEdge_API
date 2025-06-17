@@ -14,6 +14,12 @@ use App\Models\Email;
 
 class AcknowledgementController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     * show also list of acknowledgement
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function searchDetails(Request $request)
     {
         try {
@@ -183,6 +189,11 @@ class AcknowledgementController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Show the form for creating a new  and update acknowledgement.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function export(Request $request)
     {
         try {
@@ -346,6 +357,11 @@ class AcknowledgementController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Show the form for creating a new  and update acknowledgement.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function update(Request $request)
     {
         // return $request;
@@ -393,6 +409,11 @@ class AcknowledgementController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Show the form for creating a new  and update acknowledgement.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function finalSubmit(Request $request)
     {
         try {

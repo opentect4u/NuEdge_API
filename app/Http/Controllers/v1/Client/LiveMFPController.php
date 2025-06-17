@@ -24,6 +24,9 @@ use Session;
 
 class LiveMFPController extends Controller
 {
+    /**
+     * Search for Mutual Fund Portfolio
+     */
     public function search(Request $request)
     {
         try {
@@ -479,6 +482,9 @@ class LiveMFPController extends Controller
         return Helper::SuccessResponse($mydata);
     }
 
+    /**
+     * Search for Mutual Fund Portfolio (Old)
+     */
     public function search1(Request $request)
     {
         try {
@@ -1949,6 +1955,9 @@ class LiveMFPController extends Controller
         return Helper::SuccessResponse($final_arr);
     }
 
+    /**
+     * Search Mutual Fund Transaction Details
+     */
     public function searchDetails(Request $request)
     {
         try {
@@ -2482,6 +2491,9 @@ class LiveMFPController extends Controller
     //     return $broker_data;
     // }
 
+    /**
+     * Get recent transactions based on various filters.
+     */
     public function recentTrans(Request $request)
     {
         try {
@@ -2669,6 +2681,9 @@ class LiveMFPController extends Controller
         return Helper::SuccessResponse($mydata);
     }
 
+    /**
+     * Search for mutual fund transactions based on various filters.
+     */
     public function rejectTrans(Request $request)
     {
         try {
@@ -2852,6 +2867,9 @@ class LiveMFPController extends Controller
         return Helper::SuccessResponse($mydata);
     }
 
+    /**
+     * Get dividend history based on various filters.
+     */
     public function divHistory(Request $request)
     {
         try {
@@ -3021,6 +3039,9 @@ class LiveMFPController extends Controller
     }
 
 
+    /**
+     * Do not show folio based on the request parameters.
+     */
     public function doNotShowFolio(Request $request)
     {
         try {
@@ -3215,6 +3236,11 @@ class LiveMFPController extends Controller
         return Helper::SuccessResponse($mydata);
     }
 
+    /***
+     * Do not show folio lock based on the request parameters.
+     * This function toggles the portfolio_show_flag for a mutual fund transaction.
+     * It updates the flag to 'N' if it was 'Y', and vice versa.
+     */
     public function doNotShowFolioLock(Request $request)
     {
         try {

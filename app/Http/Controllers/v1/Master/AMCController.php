@@ -12,6 +12,12 @@ use App\Imports\AMCImport;
 
 class AMCController extends Controller
 {
+    /**
+     * Search AMC details based on various filters.
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Throwable
+     */
     public function searchDetails(Request $request)
     {
         try {  
@@ -102,6 +108,12 @@ class AMCController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Export AMC details based on filters.
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Throwable
+     */
     public function export(Request $request)
     {
         try {  
@@ -187,6 +199,11 @@ class AMCController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Index method to fetch AMC details based on various filters.
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function index(Request $request)
     {
         try {  
@@ -228,6 +245,11 @@ class AMCController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Create or update AMC details.
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function createUpdate(Request $request)
     {
         $validator = Validator::make(request()->all(),[
@@ -381,6 +403,11 @@ class AMCController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Delete an AMC record.
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function delete(Request $request)
     {
         try {
@@ -403,6 +430,11 @@ class AMCController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Import AMC details from a CSV file.
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function import(Request $request)
     {
         try {
@@ -590,6 +622,11 @@ class AMCController extends Controller
         return Helper::SuccessResponse($data1);
     }
   
+    /**
+     * Merge multiple AMC records into one.
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function merge(Request $request)
     {
         try {
@@ -673,6 +710,11 @@ class AMCController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Replace an AMC record with another.
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function replace(Request $request)
     {
         try {
@@ -754,6 +796,14 @@ class AMCController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Acquisition of AMC records.
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Throwable
+     * This method handles the acquisition of AMC records by merging them into a specified AMC.
+     * It checks if the AMC already exists, and if not, it updates the merge details of the selected AMC.
+     */
     public function acquisition(Request $request)
     {
         try {

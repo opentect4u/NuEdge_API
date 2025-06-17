@@ -15,6 +15,11 @@ use DB;
 
 class ManualUpdateController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function searchDetails(Request $request)
     {
         try {
@@ -293,6 +298,11 @@ class ManualUpdateController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Export the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function export(Request $request)
     {
         try {
@@ -547,6 +557,11 @@ class ManualUpdateController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Update the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function update(Request $request)
     {
         try {
@@ -627,6 +642,11 @@ class ManualUpdateController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Final submit the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function finalSubmit(Request $request)
     {
         try {

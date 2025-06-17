@@ -13,6 +13,12 @@ use DB;
 
 class UserController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     * show also list of users
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index(Request $request)
     {
         try {

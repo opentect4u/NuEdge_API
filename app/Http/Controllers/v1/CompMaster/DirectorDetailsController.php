@@ -11,6 +11,12 @@ use DB;
 
 class DirectorDetailsController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     * show also list of director details 
+     *
+     * @return \Illuminate\Http\Response
+     */
     //show director deatils also use for dropdown list
     public function index(Request $request)
     {
@@ -34,6 +40,11 @@ class DirectorDetailsController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Show the form for creating a new  and update director details.
+     *
+     * @return \Illuminate\Http\Response
+     */
     //create and update director deatils
     public function createUpdate(Request $request)
     {

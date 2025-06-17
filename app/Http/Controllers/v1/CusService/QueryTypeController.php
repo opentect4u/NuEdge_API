@@ -22,6 +22,12 @@ use DB;
 
 class QueryTypeController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     * show also list of query type
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index(Request $request)
     {
         try {  
@@ -51,6 +57,11 @@ class QueryTypeController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Show the form for creating a new  and update query type.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function createUpdate(Request $request)
     {
         $validator = Validator::make(request()->all(),[

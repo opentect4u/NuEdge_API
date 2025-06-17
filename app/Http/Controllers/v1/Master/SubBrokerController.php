@@ -10,6 +10,11 @@ use Validator;
 
 class SubBrokerController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index(Request $request)
     {
         try {  
@@ -40,6 +45,11 @@ class SubBrokerController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Export the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function createUpdate(Request $request)
     {
         $validator = Validator::make(request()->all(),[
@@ -77,4 +87,3 @@ class SubBrokerController extends Controller
 
   
 }
-

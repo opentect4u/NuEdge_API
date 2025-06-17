@@ -10,6 +10,12 @@ use Validator;
 
 class InsuranceTypeController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     * show also list of insurance type details 
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function searchDetails(Request $request)
     {
         try {
@@ -39,6 +45,12 @@ class InsuranceTypeController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
+
+    /**
+     * Export insurance type data based on the type filter.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function export(Request $request)
     {
         try {
@@ -57,6 +69,13 @@ class InsuranceTypeController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
+
+    /**
+     * Display a listing of the resource.
+     * show also list of insurance type details 
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index(Request $request)
     {
         try {  
@@ -82,6 +101,11 @@ class InsuranceTypeController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Show the form for creating a new  and update insurance type.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function createUpdate(Request $request)
     {
         $validator = Validator::make(request()->all(),[
@@ -110,6 +134,12 @@ class InsuranceTypeController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function delete(Request $request)
     {
         try {
@@ -131,6 +161,12 @@ class InsuranceTypeController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+
+    /**
+     * Import insurance type data from a CSV file.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function import(Request $request)
     {
         try {

@@ -11,6 +11,12 @@ use Excel;
 
 class SchemeController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     * show also list of scheme details 
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function searchDetails(Request $request)
     {
         try {
@@ -78,6 +84,13 @@ class SchemeController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
+    
+    /**
+     * Display a listing of the resource.
+     * show also list of scheme details for export
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function export(Request $request)
     {
         try {
@@ -145,6 +158,13 @@ class SchemeController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
+
+    /**
+     * Display a listing of the resource.
+     * show also list of scheme details 
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index(Request $request)
     {
         try {  
@@ -184,6 +204,11 @@ class SchemeController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Show the form for creating a new  and update scheme.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function createUpdate(Request $request)
     {
         $validator = Validator::make(request()->all(),[
@@ -218,6 +243,12 @@ class SchemeController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function delete(Request $request)
     {
         try {
@@ -239,6 +270,11 @@ class SchemeController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Import scheme from csv file.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function import(Request $request)
     {
         try {

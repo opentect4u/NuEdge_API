@@ -22,6 +22,12 @@ use DB;
 
 class QuerySubTypeController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     * show also list of query sub type
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index(Request $request)
     {
         try {  
@@ -48,6 +54,11 @@ class QuerySubTypeController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Show the form for creating a new  and update query sub type.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function createUpdate(Request $request)
     {
         $validator = Validator::make(request()->all(),[

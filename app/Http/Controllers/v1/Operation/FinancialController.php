@@ -11,6 +11,11 @@ use Illuminate\Support\Carbon;
 
 class FinancialController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function searchDetails(Request $request)
     {
         try {
@@ -381,6 +386,12 @@ class FinancialController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
+
+    /**
+     * export the details of mutual fund transactions
+     *
+     *
+     */
     public function export(Request $request)
     {
         try {
@@ -779,6 +790,14 @@ class FinancialController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
+
+    /**
+     * Display a listing of the resource.
+     * @return \Illuminate\Http\Response
+     * @throws \Throwable
+     *  
+     * 
+     */
     public function index(Request $request)
     {
         try {
@@ -923,6 +942,10 @@ class FinancialController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Show the form for creating a new resource.
+     * @return \Illuminate\Http\Response
+     */
     public function createShow(Request $request)
     {
         try {
@@ -992,6 +1015,11 @@ class FinancialController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Store a newly created resource in storage.
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function create(Request $request)
     {
         // $validator = Validator::make(request()->all(),[
@@ -1636,6 +1664,12 @@ class FinancialController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Get folio details based on the provided request parameters.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getFolioDetails(Request $request)
     {
         try {
@@ -1727,7 +1761,12 @@ class FinancialController extends Controller
         return Helper::SuccessResponse($data);
     }
 
-
+    /**
+     * Update mutual fund details based on the provided request parameters.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function update(Request $request)
     {
         // return $request;
@@ -1760,6 +1799,12 @@ class FinancialController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Update mutual fund details for old transactions based on the provided request parameters.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function updateOld(Request $request)
     {
         return $request;
@@ -1817,6 +1862,19 @@ class FinancialController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Filter criteria for mutual fund transactions based on various parameters.
+     * @param string $rawQuery The initial query string.
+     * @param string $from_date The start date for filtering.
+     *  @param string $to_date The end date for filtering.
+     * @param string $tin_no The TIN number for filtering. 
+     * @param string $client_code The client code for filtering.
+     * @param string $amc_name The AMC name for filtering.
+     * @param string $scheme_name The scheme name for filtering.
+     * @param string $rnt_name The RNT name for filtering.
+     * @return string The modified query string with applied filters. 
+     * * This method constructs a query string by appending conditions based on the provided parameters.
+     */
     public function filterCriteria($rawQuery,$from_date,$to_date,$tin_no,$client_code,$amc_name,$scheme_name,$rnt_name)
     {
         $queryString='td_mutual_fund.entry_date';

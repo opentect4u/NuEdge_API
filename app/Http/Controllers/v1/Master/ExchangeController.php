@@ -12,6 +12,11 @@ use App\Imports\ExchangeImport;
 
 class ExchangeController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function searchDetails(Request $request)
     {
         try {
@@ -43,6 +48,12 @@ class ExchangeController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
+
+    /**
+     * Export the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function export(Request $request)
     {
         try {
@@ -53,6 +64,12 @@ class ExchangeController extends Controller
         }
         return Helper::SuccessResponse($data);
     }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index(Request $request)
     {
         try {  
@@ -76,6 +93,11 @@ class ExchangeController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Create or update the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function createUpdate(Request $request)
     {
         $validator = Validator::make(request()->all(),[
@@ -111,6 +133,12 @@ class ExchangeController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function delete(Request $request)
     {
         try {
@@ -133,6 +161,12 @@ class ExchangeController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Import the specified resource from a CSV file.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function import(Request $request)
     {
         try {

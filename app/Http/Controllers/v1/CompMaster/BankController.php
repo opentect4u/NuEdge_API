@@ -10,6 +10,12 @@ use Validator;
 
 class BankController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     * show also list of bank details 
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index(Request $request)
     {
         try {  
@@ -37,6 +43,11 @@ class BankController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * Show the form for creating a new  and update .
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function createUpdate(Request $request)
     {
         // $validator = Validator::make(request()->all(),[

@@ -25,6 +25,11 @@ use DB;
 
 class SipStpTransController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function search(Request $request)
     {
         try {
@@ -371,6 +376,18 @@ class SipStpTransController extends Controller
         return Helper::SuccessResponse($mydata);
     }
 
+    /**
+     * filter details.
+     * @param  string  $rawQuery
+     * @param  string  $folio_no
+     * @param  string  $pan_no
+     * @param  array  $amc_id
+     *  @param  array  $cat_id
+     * @param  array  $sub_cat_id
+     * @param  array  $scheme_id
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function filterCriteria($rawQuery,$folio_no,$pan_no,$amc_id,$cat_id,$sub_cat_id,$scheme_id)
     {
         $queryString='tt_sip_stp_swp_report.folio_no';

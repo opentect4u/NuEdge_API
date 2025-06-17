@@ -10,6 +10,11 @@ use Validator;
 
 class UploadFileHelpController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index(Request $request)
     {
         try {  
@@ -35,6 +40,12 @@ class UploadFileHelpController extends Controller
         return Helper::SuccessResponse($data);
     }
 
+    /**
+     * create and update resource.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function createUpdate(Request $request)
     {
         $validator = Validator::make(request()->all(),[
